@@ -478,73 +478,78 @@
   },
   "CRY|NEW": {
    "fixtureId": 128997,
-   "fetchedAt": "2026-10-25T14:11:48.542Z",
+   "fetchedAt": "2026-10-25T14:24:37.218Z",
    "final": false,
    "home": {
-    "total": 3,
-    "on": 1,
-    "off": 0,
-    "blocked": 2,
-    "reported": 3
+    "total": 7,
+    "on": 2,
+    "off": 2,
+    "blocked": 3,
+    "reported": 7
    },
    "away": {
-    "total": 0,
+    "total": 1,
     "on": 0,
     "off": 0,
-    "blocked": 0
+    "blocked": 1,
+    "reported": 1
    }
   },
   "HUL|BRE": {
    "fixtureId": 128998,
-   "fetchedAt": "2026-10-25T14:11:48.968Z",
+   "fetchedAt": "2026-10-25T14:24:37.760Z",
    "final": false,
    "home": {
-    "total": 0,
-    "on": 0,
-    "off": 0,
-    "blocked": 0
-   },
-   "away": {
-    "total": 2,
-    "on": 1,
-    "off": 1,
-    "blocked": 0,
-    "reported": 2
-   }
-  },
-  "LIV|BHA": {
-   "fixtureId": 129000,
-   "fetchedAt": "2026-10-25T14:11:49.419Z",
-   "final": false,
-   "home": {
-    "total": 0,
-    "on": 0,
-    "off": 0,
-    "blocked": 0
-   },
-   "away": {
-    "total": 0,
-    "on": 0,
-    "off": 0,
-    "blocked": 0
-   }
-  },
-  "MUN|BOU": {
-   "fixtureId": 129001,
-   "fetchedAt": "2026-10-25T14:11:49.870Z",
-   "final": false,
-   "home": {
-    "total": 0,
-    "on": 0,
-    "off": 0,
-    "blocked": 0
-   },
-   "away": {
     "total": 2,
     "on": 0,
     "off": 2,
     "blocked": 0,
     "reported": 2
+   },
+   "away": {
+    "total": 3,
+    "on": 2,
+    "off": 1,
+    "blocked": 0,
+    "reported": 3
+   }
+  },
+  "LIV|BHA": {
+   "fixtureId": 129000,
+   "fetchedAt": "2026-10-25T14:24:38.300Z",
+   "final": false,
+   "home": {
+    "total": 4,
+    "on": 3,
+    "off": 1,
+    "blocked": 0,
+    "reported": 4
+   },
+   "away": {
+    "total": 1,
+    "on": 0,
+    "off": 1,
+    "blocked": 0,
+    "reported": 1
+   }
+  },
+  "MUN|BOU": {
+   "fixtureId": 129001,
+   "fetchedAt": "2026-10-25T14:24:38.839Z",
+   "final": false,
+   "home": {
+    "total": 1,
+    "on": 0,
+    "off": 1,
+    "blocked": 0,
+    "reported": 1
+   },
+   "away": {
+    "total": 3,
+    "on": 0,
+    "off": 2,
+    "blocked": 1,
+    "reported": 3
    }
   }
  }
