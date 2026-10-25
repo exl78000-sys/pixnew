@@ -55922,8 +55922,8 @@
   "SUN|LEE": {
    "fixtureId": 129002,
    "kickoff": "2026-10-25T16:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 0
@@ -56531,12 +56531,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -56553,11 +56547,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+6'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-10-25T18:28:24.068Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-10-25T18:18:44.436Z"
+ "fetchedAt": "2026-10-25T18:28:24.068Z"
 }
