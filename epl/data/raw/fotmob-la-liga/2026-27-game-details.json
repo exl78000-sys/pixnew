@@ -156471,8 +156471,1812 @@
      }
     ]
    }
+  },
+  "VAL|VIL": {
+   "key": "VAL|VIL",
+   "season": "2026-27",
+   "date": "2026-10-24",
+   "matchId": "5868110",
+   "home": "VAL",
+   "away": "VIL",
+   "score": [
+    1,
+    2
+   ],
+   "providerScore": [
+    1,
+    2
+   ],
+   "teamStats": {
+    "VAL": {
+     "possession": 38,
+     "shots": 9,
+     "shotsOn": 5,
+     "shotsOff": 3,
+     "blockedShots": 1,
+     "blocksMade": 4,
+     "corners": 6,
+     "offsides": 2,
+     "fouls": 18,
+     "saves": 1,
+     "passes": 332,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.13
+    },
+    "VIL": {
+     "possession": 62,
+     "shots": 19,
+     "shotsOn": 3,
+     "shotsOff": 12,
+     "blockedShots": 4,
+     "blocksMade": 1,
+     "corners": 9,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 4,
+     "passes": 539,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.5
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "VAL": {
+     "touches_opp_box": 17,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.16,
+     "expected_goals_set_play": 0.19,
+     "expected_goals_non_penalty": 0.34,
+     "expected_goals_on_target": 1.28,
+     "own_half_passes": 128,
+     "opposition_half_passes": 122,
+     "long_balls_accurate": 17,
+     "long_balls_accurate_pct": 35,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 31,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 5,
+     "clearances": 29,
+     "duel_won": 41,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 44,
+     "aerials_won": 11,
+     "aerials_won_pct": 65,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 60,
+     "red_cards": 1
+    },
+    "VIL": {
+     "touches_opp_box": 42,
+     "big_chance": 2,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 1.28,
+     "expected_goals_set_play": 0.21,
+     "expected_goals_non_penalty": 1.5,
+     "expected_goals_on_target": 0.69,
+     "own_half_passes": 210,
+     "opposition_half_passes": 255,
+     "long_balls_accurate": 27,
+     "long_balls_accurate_pct": 49,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 25,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 11,
+     "clearances": 22,
+     "duel_won": 44,
+     "ground_duels_won": 38,
+     "ground_duels_won_pct": 56,
+     "aerials_won": 6,
+     "aerials_won_pct": 35,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     38,
+     62
+    ],
+    "h1": [
+     34,
+     66
+    ],
+    "h2": [
+     42,
+     58
+    ]
+   },
+   "events": [
+    {
+     "minute": 14,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dani Raba"
+    },
+    {
+     "minute": 34,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dani Raba"
+    },
+    {
+     "minute": 37,
+     "extra": null,
+     "team": "VIL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Renato Veiga"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "VAL",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Pepelu"
+    },
+    {
+     "minute": 43,
+     "extra": null,
+     "team": "VIL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ayoze Pérez"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "VIL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Tajon Buchanan"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Pablo Maffeo"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Guido Rodríguez"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Sergi Cardona"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Georges Mikautadze"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alberto Moleiro"
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "VIL",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Alex Freeman"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Arnau Martínez"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harvey Elliott"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hugo Duro"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "VAL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Filip Ugrinic"
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "team": "VIL",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Pape Gueye"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Santi Comesaña"
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "VIL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pau Navarro"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Harvey Elliott"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "VAL",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Harvey Elliott"
+    },
+    {
+     "minute": 90,
+     "extra": 6,
+     "team": "VIL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Georges Mikautadze"
+    }
+   ],
+   "shots": [
+    {
+     "min": 9,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.012,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 72.7,
+     "y": 26.5,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.091,
+     "xgot": 0.216,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 41.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.085,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 36.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.1,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 35.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "VIL",
+     "player": "Carlos Maciá",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.092,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 36,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80,
+     "y": 30.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "VIL",
+     "player": "Ilias Akhomach",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.9,
+     "y": 19.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 30.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "VAL",
+     "player": "Pepelu",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.938,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "VIL",
+     "player": "Ayoze Pérez",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.093,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 40,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "VIL",
+     "player": "Pape Gueye",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 33,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "VIL",
+     "player": "Gerard Moreno",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 32.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "VAL",
+     "player": "José Gayà",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0.101,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.9,
+     "y": 46.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "VAL",
+     "player": "César Tárrega",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.1,
+     "y": 30.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "VAL",
+     "player": "César Tárrega",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.037,
+     "xgot": 0.014,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 31.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 51,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "VIL",
+     "player": "Ilias Akhomach",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.09,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 23.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "VAL",
+     "player": "Arnaut Danjuma",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.052,
+     "xgot": 0.182,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.4,
+     "y": 21.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "VAL",
+     "player": "Arnaut Danjuma",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.2,
+     "y": 32,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 51.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "VIL",
+     "player": "Tajon Buchanan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 42.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "VIL",
+     "player": "Alberto Moleiro",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 42.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "VIL",
+     "player": "Alex Freeman",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.128,
+     "xgot": 0.249,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 30.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "VIL",
+     "player": "Alberto Moleiro",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.141,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 24.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "VAL",
+     "player": "César Tárrega",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 35.4,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "VAL",
+     "player": "Hugo Duro",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 37.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "VAL",
+     "player": "Filip Ugrinic",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.042,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 45.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "VIL",
+     "player": "Georges Mikautadze",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.284,
+     "xgot": 0.223,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.4,
+     "y": 44.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     3,
+     -22
+    ],
+    [
+     4,
+     -16
+    ],
+    [
+     5,
+     -11
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     7,
+     -38
+    ],
+    [
+     8,
+     -49
+    ],
+    [
+     9,
+     -54
+    ],
+    [
+     10,
+     -27
+    ],
+    [
+     11,
+     -41
+    ],
+    [
+     12,
+     -35
+    ],
+    [
+     13,
+     -30
+    ],
+    [
+     14,
+     -5
+    ],
+    [
+     15,
+     -5
+    ],
+    [
+     16,
+     -5
+    ],
+    [
+     17,
+     -11
+    ],
+    [
+     18,
+     -30
+    ],
+    [
+     19,
+     -30
+    ],
+    [
+     20,
+     -35
+    ],
+    [
+     21,
+     -5
+    ],
+    [
+     22,
+     11
+    ],
+    [
+     23,
+     16
+    ],
+    [
+     24,
+     0
+    ],
+    [
+     25,
+     -76
+    ],
+    [
+     26,
+     -65
+    ],
+    [
+     27,
+     -60
+    ],
+    [
+     28,
+     -22
+    ],
+    [
+     29,
+     -54
+    ],
+    [
+     30,
+     -49
+    ],
+    [
+     31,
+     -16
+    ],
+    [
+     32,
+     11
+    ],
+    [
+     33,
+     5
+    ],
+    [
+     34,
+     -11
+    ],
+    [
+     35,
+     0
+    ],
+    [
+     36,
+     5
+    ],
+    [
+     37,
+     11
+    ],
+    [
+     38,
+     0
+    ],
+    [
+     39,
+     0
+    ],
+    [
+     40,
+     0
+    ],
+    [
+     41,
+     11
+    ],
+    [
+     42,
+     3
+    ],
+    [
+     43,
+     -3
+    ],
+    [
+     44,
+     -19
+    ],
+    [
+     45,
+     -100
+    ],
+    [
+     45.5,
+     -11
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -16
+    ],
+    [
+     48,
+     -35
+    ],
+    [
+     49,
+     -30
+    ],
+    [
+     50,
+     -65
+    ],
+    [
+     51,
+     -84
+    ],
+    [
+     52,
+     -68
+    ],
+    [
+     53,
+     -22
+    ],
+    [
+     54,
+     79
+    ],
+    [
+     55,
+     81
+    ],
+    [
+     56,
+     65
+    ],
+    [
+     57,
+     -8
+    ],
+    [
+     58,
+     -5
+    ],
+    [
+     59,
+     11
+    ],
+    [
+     60,
+     -33
+    ],
+    [
+     61,
+     -71
+    ],
+    [
+     62,
+     -81
+    ],
+    [
+     63,
+     -38
+    ],
+    [
+     64,
+     -52
+    ],
+    [
+     65,
+     -30
+    ],
+    [
+     66,
+     -62
+    ],
+    [
+     67,
+     -54
+    ],
+    [
+     68,
+     -22
+    ],
+    [
+     69,
+     -14
+    ],
+    [
+     70,
+     8
+    ],
+    [
+     71,
+     -35
+    ],
+    [
+     72,
+     0
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     0
+    ],
+    [
+     75,
+     0
+    ],
+    [
+     76,
+     -11
+    ],
+    [
+     77,
+     -16
+    ],
+    [
+     78,
+     -16
+    ],
+    [
+     79,
+     -5
+    ],
+    [
+     80,
+     0
+    ],
+    [
+     81,
+     0
+    ],
+    [
+     82,
+     -11
+    ],
+    [
+     83,
+     -5
+    ],
+    [
+     84,
+     11
+    ],
+    [
+     85,
+     68
+    ],
+    [
+     86,
+     68
+    ],
+    [
+     87,
+     52
+    ],
+    [
+     88,
+     38
+    ],
+    [
+     89,
+     54
+    ],
+    [
+     90,
+     54
+    ],
+    [
+     90.5,
+     -4
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VAL": {
+     "team": "VAL",
+     "formation": "4-4-2",
+     "coach": "Javier Aguirre",
+     "xi": [
+      {
+       "name": "Stole Dimitrievski",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Pablo Maffeo",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "César Tárrega",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Justin De Haas",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "José Gayà",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "David Otorbi",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Guido Rodríguez",
+       "shirt": 2,
+       "pos": "M"
+      },
+      {
+       "name": "Pepelu",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Luis Rioja",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Javier Guerra",
+       "shirt": 8,
+       "pos": "F"
+      },
+      {
+       "name": "Arnaut Danjuma",
+       "shirt": 7,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Dani Raba",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Arnau Martínez",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Harvey Elliott",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Filip Ugrinic",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Duro",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Kayne van Oevelen",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Jesus Vázquez",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Mouctar Diakhaby",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Aaron Mayol",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Aliou Dieng",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Ryunosuke Sato",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Aimar Blázquez",
+       "shirt": 37,
+       "pos": "?"
+      }
+     ]
+    },
+    "VIL": {
+     "team": "VIL",
+     "formation": "4-4-2",
+     "coach": "Inigo Pérez",
+     "xi": [
+      {
+       "name": "Péter Gulácsi",
+       "shirt": 25,
+       "pos": "G"
+      },
+      {
+       "name": "Santiago Mouriño",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Juan Foyth",
+       "shirt": 8,
+       "pos": "D"
+      },
+      {
+       "name": "Renato Veiga",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Alex Freeman",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Ilias Akhomach",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Carlos Maciá",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Pape Gueye",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Tajon Buchanan",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Gerard Moreno",
+       "shirt": 7,
+       "pos": "F"
+      },
+      {
+       "name": "Ayoze Pérez",
+       "shirt": 22,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Sergi Cardona",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Alberto Moleiro",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Georges Mikautadze",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Santi Comesaña",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Pau Navarro",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Luíz Júnior",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Rubén Gómez",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Logan Costa",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Alassane Diatta",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Joselillo Gaitán",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Nizar El Jmili",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Tani Oluwaseyi",
+       "shirt": 21,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 32,
+      "center": 16,
+      "right": 52
+     },
+     "firstHalf": {
+      "left": 23,
+      "center": 9,
+      "right": 68
+     },
+     "secondHalf": {
+      "left": 37,
+      "center": 20,
+      "right": 43
+     }
+    },
+    "away": {
+     "total": {
+      "left": 31,
+      "center": 34,
+      "right": 35
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 28,
+      "right": 35
+     },
+     "secondHalf": {
+      "left": 26,
+      "center": 39,
+      "right": 35
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-25T03:41:52.082Z",
+   "fdMatchId": "2026-27-94",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "VIL",
+      "name": "Gerard Moreno",
+      "n": 51,
+      "cx": 59.7,
+      "cy": 43.7,
+      "spread": 26.2,
+      "grid": "0,1,0,0,0,0,2,2,1,6,1,0,1,0,4,6,5,5,0,0,7,6,3,1"
+     },
+     {
+      "team": "VIL",
+      "name": "Pape Gueye",
+      "n": 82,
+      "cx": 61.3,
+      "cy": 41.5,
+      "spread": 23.3,
+      "grid": "0,0,1,0,0,0,1,0,8,8,4,2,0,4,11,11,12,0,0,2,3,4,6,5"
+     },
+     {
+      "team": "VIL",
+      "name": "Carlos Maciá",
+      "n": 83,
+      "cx": 56.3,
+      "cy": 27.7,
+      "spread": 23.1,
+      "grid": "0,4,7,6,2,1,2,7,7,13,7,0,0,2,3,7,9,0,0,0,1,3,1,1"
+     },
+     {
+      "team": "VIL",
+      "name": "Juan Foyth",
+      "n": 60,
+      "cx": 39.9,
+      "cy": 42.4,
+      "spread": 21.8,
+      "grid": "3,0,0,0,0,0,1,2,1,5,1,0,1,10,17,5,0,0,4,3,2,5,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Renato Veiga",
+      "n": 102,
+      "cx": 37.4,
+      "cy": 22.4,
+      "spread": 20.9,
+      "grid": "4,7,6,5,1,1,10,22,25,9,2,0,3,2,2,2,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Alex Freeman",
+      "n": 98,
+      "cx": 52.9,
+      "cy": 24.6,
+      "spread": 34.1,
+      "grid": "8,8,11,8,3,7,2,1,8,6,5,3,1,1,3,0,3,3,5,0,1,7,4,0"
+     },
+     {
+      "team": "VAL",
+      "name": "David Otorbi",
+      "n": 4,
+      "cx": 40.9,
+      "cy": 56.1,
+      "spread": 28.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Tajon Buchanan",
+      "n": 78,
+      "cx": 64.4,
+      "cy": 22.9,
+      "spread": 35.8,
+      "grid": "1,4,12,6,11,8,0,1,2,1,5,6,1,0,0,1,4,0,5,1,1,0,4,4"
+     },
+     {
+      "team": "VAL",
+      "name": "Guido Rodríguez",
+      "n": 66,
+      "cx": 45.1,
+      "cy": 40.4,
+      "spread": 30,
+      "grid": "0,2,0,2,0,2,3,5,6,0,2,0,8,6,1,8,3,1,0,2,5,6,3,1"
+     },
+     {
+      "team": "VAL",
+      "name": "Pablo Maffeo",
+      "n": 46,
+      "cx": 44.6,
+      "cy": 58.7,
+      "spread": 26.5,
+      "grid": "1,0,0,0,0,0,0,0,0,0,0,0,1,1,4,2,0,0,6,9,4,11,4,3"
+     },
+     {
+      "team": "VAL",
+      "name": "César Tárrega",
+      "n": 63,
+      "cx": 36.9,
+      "cy": 41.1,
+      "spread": 32.4,
+      "grid": "1,1,0,0,0,0,6,5,4,0,0,2,11,5,2,6,0,6,4,4,0,5,1,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Stole Dimitrievski",
+      "n": 53,
+      "cx": 11.3,
+      "cy": 32.5,
+      "spread": 9.2,
+      "grid": "0,1,0,0,0,0,26,6,0,0,0,0,16,4,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Justin De Haas",
+      "n": 37,
+      "cx": 22.3,
+      "cy": 20.7,
+      "spread": 20.9,
+      "grid": "8,3,3,2,0,0,10,2,3,1,0,0,2,3,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Luis Rioja",
+      "n": 48,
+      "cx": 60.4,
+      "cy": 35.1,
+      "spread": 34.9,
+      "grid": "2,1,4,2,5,5,0,1,1,2,0,0,0,5,2,0,0,0,0,0,4,3,8,3"
+     },
+     {
+      "team": "VAL",
+      "name": "José Gayà",
+      "n": 52,
+      "cx": 51.6,
+      "cy": 11,
+      "spread": 31.2,
+      "grid": "3,15,4,9,5,7,1,2,0,1,0,3,1,0,1,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Arnaut Danjuma",
+      "n": 26,
+      "cx": 69.2,
+      "cy": 20.9,
+      "spread": 26.6,
+      "grid": "0,0,2,1,5,4,0,0,6,1,1,0,0,0,1,1,0,3,0,1,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Santiago Mouriño",
+      "n": 86,
+      "cx": 45.3,
+      "cy": 50.8,
+      "spread": 23.4,
+      "grid": "0,0,0,0,0,0,2,4,0,1,0,0,3,8,5,4,7,1,2,13,14,16,6,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Pepelu",
+      "n": 65,
+      "cx": 46.2,
+      "cy": 25.9,
+      "spread": 26.2,
+      "grid": "4,3,6,1,3,1,2,7,10,8,2,1,2,2,1,4,3,1,0,1,1,2,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Ilias Akhomach",
+      "n": 43,
+      "cx": 83.3,
+      "cy": 52.7,
+      "spread": 22.6,
+      "grid": "0,0,0,0,0,2,0,0,0,0,0,1,0,0,0,2,2,6,0,1,1,7,7,14"
+     },
+     {
+      "team": "VIL",
+      "name": "Péter Gulácsi",
+      "n": 29,
+      "cx": 6.9,
+      "cy": 36.2,
+      "spread": 7.8,
+      "grid": "0,0,0,0,0,0,10,0,0,0,0,0,17,1,0,0,0,0,1,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Ayoze Pérez",
+      "n": 24,
+      "cx": 74.9,
+      "cy": 34,
+      "spread": 25,
+      "grid": "0,0,1,2,1,0,0,0,2,1,2,3,0,0,1,5,0,3,0,0,0,0,0,3"
+     },
+     {
+      "team": "VAL",
+      "name": "Javier Guerra",
+      "n": 34,
+      "cx": 66.5,
+      "cy": 45.1,
+      "spread": 33.6,
+      "grid": "0,2,0,0,0,3,1,0,1,2,0,0,0,3,1,1,1,1,0,1,1,4,7,5"
+     },
+     {
+      "team": "VAL",
+      "name": "Dani Raba",
+      "n": 35,
+      "cx": 56.3,
+      "cy": 51.8,
+      "spread": 27.9,
+      "grid": "0,0,0,0,0,0,1,0,0,2,1,0,2,3,2,2,0,1,1,1,3,7,5,4"
+     },
+     {
+      "team": "VIL",
+      "name": "Georges Mikautadze",
+      "n": 16,
+      "cx": 62.1,
+      "cy": 19.4,
+      "spread": 24.1,
+      "grid": "0,1,3,2,0,1,0,0,2,0,4,1,0,0,0,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Alberto Moleiro",
+      "n": 18,
+      "cx": 66.4,
+      "cy": 21.6,
+      "spread": 23.9,
+      "grid": "0,2,2,2,1,1,0,0,0,1,3,1,0,0,1,0,3,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Sergi Cardona",
+      "n": 36,
+      "cx": 49.9,
+      "cy": 10.1,
+      "spread": 24.8,
+      "grid": "2,9,10,4,4,2,0,0,0,2,1,0,0,0,0,0,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Arnau Martínez",
+      "n": 26,
+      "cx": 59,
+      "cy": 56.8,
+      "spread": 28,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,2,0,2,2,1,3,6,7,1"
+     },
+     {
+      "team": "VAL",
+      "name": "Harvey Elliott",
+      "n": 10,
+      "cx": 65.7,
+      "cy": 59.3,
+      "spread": 25.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,2,0,3,1,2"
+     },
+     {
+      "team": "VAL",
+      "name": "Filip Ugrinic",
+      "n": 26,
+      "cx": 57.3,
+      "cy": 24.7,
+      "spread": 28.6,
+      "grid": "0,1,2,4,2,2,0,2,4,1,1,0,1,0,0,1,0,0,0,0,0,1,4,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Santi Comesaña",
+      "n": 16,
+      "cx": 43,
+      "cy": 24.6,
+      "spread": 25.7,
+      "grid": "0,1,2,1,1,0,3,1,1,1,0,0,0,0,3,1,1,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "VIL",
+      "name": "Pau Navarro",
+      "n": 10,
+      "cx": 37.7,
+      "cy": 44.2,
+      "spread": 16.3,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,1,1,0,0,1,1,0,0,0"
+     },
+     {
+      "team": "VAL",
+      "name": "Hugo Duro",
+      "n": 11,
+      "cx": 65.8,
+      "cy": 33.8,
+      "spread": 24.8,
+      "grid": "0,0,0,0,0,0,0,2,0,0,3,2,0,1,1,0,1,0,0,0,0,0,1,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-24T20:37:57.794Z"
+ "updatedAt": "2026-10-25T03:41:52.825Z"
 }

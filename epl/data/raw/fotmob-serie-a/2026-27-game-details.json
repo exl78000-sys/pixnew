@@ -122149,8 +122149,1534 @@
    "fetchedAt": "2026-10-24T20:38:02.246Z",
    "fdMatchId": "2026-27-73",
    "heat": null
+  },
+  "LAZ|PAR": {
+   "key": "LAZ|PAR",
+   "season": "2026-27",
+   "date": "2026-10-24",
+   "matchId": "5749715",
+   "home": "LAZ",
+   "away": "PAR",
+   "score": [
+    2,
+    1
+   ],
+   "providerScore": [
+    2,
+    1
+   ],
+   "teamStats": {
+    "LAZ": {
+     "possession": 68,
+     "shots": 21,
+     "shotsOn": 5,
+     "shotsOff": 13,
+     "blockedShots": 3,
+     "blocksMade": 1,
+     "corners": 8,
+     "offsides": 2,
+     "fouls": 5,
+     "saves": 3,
+     "passes": 643,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.74
+    },
+    "PAR": {
+     "possession": 32,
+     "shots": 10,
+     "shotsOn": 4,
+     "shotsOff": 5,
+     "blockedShots": 1,
+     "blocksMade": 3,
+     "corners": 3,
+     "offsides": 3,
+     "fouls": 12,
+     "saves": 4,
+     "passes": 295,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.81
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "LAZ": {
+     "touches_opp_box": 54,
+     "big_chance": 4,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 1,
+     "shots_woodwork": 1,
+     "shots_inside_box": 15,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 1.4,
+     "expected_goals_set_play": 0.34,
+     "expected_goals_non_penalty": 1.74,
+     "expected_goals_on_target": 0.83,
+     "own_half_passes": 207,
+     "opposition_half_passes": 365,
+     "long_balls_accurate": 27,
+     "long_balls_accurate_pct": 53,
+     "accurate_crosses": 9,
+     "accurate_crosses_pct": 23,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 12,
+     "clearances": 27,
+     "duel_won": 54,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 21,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 10,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    },
+    "PAR": {
+     "touches_opp_box": 15,
+     "big_chance": 3,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 8,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.57,
+     "expected_goals_set_play": 0.24,
+     "expected_goals_non_penalty": 0.81,
+     "expected_goals_on_target": 1.18,
+     "own_half_passes": 102,
+     "opposition_half_passes": 110,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 33,
+     "player_throws": 18,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 11,
+     "clearances": 36,
+     "duel_won": 50,
+     "ground_duels_won": 29,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 21,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 45,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     68,
+     32
+    ],
+    "h1": [
+     70,
+     30
+    ],
+    "h2": [
+     67,
+     33
+    ]
+   },
+   "events": [
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "LAZ",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Oliver Provstgaard"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "PAR",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Vincent Sierro"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "PAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Adrián Bernabé"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Diogo Leite"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "LAZ",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Kenneth Taylor"
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "PAR",
+     "type": "Goal",
+     "detail": "Own Goal",
+     "player": null
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "PAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Simone Lontani"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Fisayo Dele-Bashiru"
+    },
+    {
+     "minute": 72,
+     "extra": 0,
+     "team": "PAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matija Frigan"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Manuel Lazzari"
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "LAZ",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alfonso Pedraza"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "PAR",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Giovanni Fabbian"
+    },
+    {
+     "minute": 90,
+     "extra": 5,
+     "team": "PAR",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Simone Lontani"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Gustav Isaksen",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 6,
+     "extra": null,
+     "team": "PAR",
+     "player": "David Romero",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.246,
+     "xgot": 0.456,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.6,
+     "y": 22.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "PAR",
+     "player": "Mariano Troilo",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.151,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 39.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "PAR",
+     "player": "El Bilal Touré",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0.366,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 29.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 10,
+     "extra": null,
+     "team": "PAR",
+     "player": "Enrico Del Prato",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.8,
+     "y": 28.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Davide Frattesi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.042,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.7,
+     "y": 37.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Gustav Isaksen",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.126,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 31,
+     "foot": "OtherBodyParts",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Gustav Isaksen",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 21.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Reda Belahyane",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.143,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 35,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Gustav Isaksen",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 29,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "PAR",
+     "player": "David Romero",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0.298,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 23.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "PAR",
+     "player": "Enrico Del Prato",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.29,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.6,
+     "y": 38.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.007,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 49.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Tijjani Noslin",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.059,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 32.7,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Kenneth Taylor",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0.112,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.8,
+     "y": 43.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "LAZ",
+     "player": "Romano Floriani Mussolini",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.096,
+     "xgot": 0.213,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.7,
+     "y": 26.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Tijjani Noslin",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.055,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 45.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Diogo Leite",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.9,
+     "y": 41.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Kenneth Taylor",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.108,
+     "xgot": 0.357,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.9,
+     "y": 36.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Romano Floriani Mussolini",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.9,
+     "y": 19,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Davide Frattesi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.315,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.159,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "PAR",
+     "player": "Diego Carlos",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": true,
+     "x": 3.6,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Mattia Zaccagni",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.011,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Gustav Isaksen",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.2,
+     "y": 45.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "PAR",
+     "player": "Simone Lontani",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 44.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "PAR",
+     "player": "El Bilal Touré",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.067,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.5,
+     "y": 32.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Fisayo Dele-Bashiru",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 18.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Davide Frattesi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.224,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 31.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "LAZ",
+     "player": "Nuno Tavares",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.181,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 44.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "PAR",
+     "player": "Simone Lontani",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 50.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 5,
+     "team": "PAR",
+     "player": "Simone Lontani",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0.036,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 94.2,
+     "y": 59.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     33
+    ],
+    [
+     3,
+     60
+    ],
+    [
+     4,
+     71
+    ],
+    [
+     5,
+     38
+    ],
+    [
+     6,
+     -5
+    ],
+    [
+     7,
+     -100
+    ],
+    [
+     8,
+     -100
+    ],
+    [
+     9,
+     -100
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     -5
+    ],
+    [
+     12,
+     65
+    ],
+    [
+     13,
+     76
+    ],
+    [
+     14,
+     43
+    ],
+    [
+     15,
+     33
+    ],
+    [
+     16,
+     11
+    ],
+    [
+     17,
+     27
+    ],
+    [
+     18,
+     57
+    ],
+    [
+     19,
+     87
+    ],
+    [
+     20,
+     100
+    ],
+    [
+     21,
+     35
+    ],
+    [
+     22,
+     43
+    ],
+    [
+     23,
+     27
+    ],
+    [
+     24,
+     100
+    ],
+    [
+     25,
+     100
+    ],
+    [
+     26,
+     100
+    ],
+    [
+     27,
+     -60
+    ],
+    [
+     28,
+     -54
+    ],
+    [
+     29,
+     -54
+    ],
+    [
+     30,
+     33
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     27
+    ],
+    [
+     33,
+     27
+    ],
+    [
+     34,
+     22
+    ],
+    [
+     35,
+     11
+    ],
+    [
+     36,
+     71
+    ],
+    [
+     37,
+     100
+    ],
+    [
+     38,
+     100
+    ],
+    [
+     39,
+     76
+    ],
+    [
+     40,
+     57
+    ],
+    [
+     41,
+     52
+    ],
+    [
+     42,
+     16
+    ],
+    [
+     43,
+     19
+    ],
+    [
+     44,
+     57
+    ],
+    [
+     45,
+     60
+    ],
+    [
+     45.5,
+     100
+    ],
+    [
+     46,
+     5
+    ],
+    [
+     47,
+     16
+    ],
+    [
+     48,
+     38
+    ],
+    [
+     49,
+     100
+    ],
+    [
+     50,
+     100
+    ],
+    [
+     51,
+     87
+    ],
+    [
+     52,
+     19
+    ],
+    [
+     53,
+     14
+    ],
+    [
+     54,
+     76
+    ],
+    [
+     55,
+     62
+    ],
+    [
+     56,
+     52
+    ],
+    [
+     57,
+     11
+    ],
+    [
+     58,
+     60
+    ],
+    [
+     59,
+     71
+    ],
+    [
+     60,
+     49
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     0
+    ],
+    [
+     63,
+     -5
+    ],
+    [
+     64,
+     -5
+    ],
+    [
+     65,
+     27
+    ],
+    [
+     66,
+     49
+    ],
+    [
+     67,
+     43
+    ],
+    [
+     68,
+     22
+    ],
+    [
+     69,
+     22
+    ],
+    [
+     70,
+     49
+    ],
+    [
+     71,
+     43
+    ],
+    [
+     72,
+     49
+    ],
+    [
+     73,
+     11
+    ],
+    [
+     74,
+     -27
+    ],
+    [
+     75,
+     -54
+    ],
+    [
+     76,
+     -43
+    ],
+    [
+     77,
+     -5
+    ],
+    [
+     78,
+     5
+    ],
+    [
+     79,
+     5
+    ],
+    [
+     80,
+     0
+    ],
+    [
+     81,
+     14
+    ],
+    [
+     82,
+     14
+    ],
+    [
+     83,
+     30
+    ],
+    [
+     84,
+     22
+    ],
+    [
+     85,
+     60
+    ],
+    [
+     86,
+     43
+    ],
+    [
+     87,
+     54
+    ],
+    [
+     88,
+     49
+    ],
+    [
+     89,
+     60
+    ],
+    [
+     90,
+     33
+    ],
+    [
+     90.5,
+     -3
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "LAZ": {
+     "team": "LAZ",
+     "formation": "4-3-3",
+     "coach": "Gennaro Gattuso",
+     "xi": [
+      {
+       "name": "Christos Mandas",
+       "shirt": 35,
+       "pos": "G"
+      },
+      {
+       "name": "Romano Floriani Mussolini",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Josip Šutalo",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Oliver Provstgaard",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Nuno Tavares",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Davide Frattesi",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Reda Belahyane",
+       "shirt": 21,
+       "pos": "M"
+      },
+      {
+       "name": "Kenneth Taylor",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Gustav Isaksen",
+       "shirt": 11,
+       "pos": "F"
+      },
+      {
+       "name": "Tijjani Noslin",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Mattia Zaccagni",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Diogo Leite",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Fisayo Dele-Bashiru",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Alfonso Pedraza",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Manuel Lazzari",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Davide Renzetti",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Edoardo Motta",
+       "shirt": 40,
+       "pos": "?"
+      },
+      {
+       "name": "Danilho Doekhi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Filipe Bordon",
+       "shirt": 76,
+       "pos": "?"
+      },
+      {
+       "name": "Luca Pellegrini",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Adrian Przyborek",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Danilo Cataldi",
+       "shirt": 32,
+       "pos": "?"
+      },
+      {
+       "name": "Valerio Farcomeni",
+       "shirt": 71,
+       "pos": "?"
+      },
+      {
+       "name": "Federico Serra",
+       "shirt": 63,
+       "pos": "?"
+      },
+      {
+       "name": "Matteo Cancellieri",
+       "shirt": 22,
+       "pos": "?"
+      }
+     ]
+    },
+    "PAR": {
+     "team": "PAR",
+     "formation": "3-5-2",
+     "coach": "Alberto Gilardino",
+     "xi": [
+      {
+       "name": "Edoardo Corvi",
+       "shirt": 40,
+       "pos": "G"
+      },
+      {
+       "name": "Diego Carlos",
+       "shirt": 34,
+       "pos": "D"
+      },
+      {
+       "name": "Mariano Troilo",
+       "shirt": 37,
+       "pos": "D"
+      },
+      {
+       "name": "Dominik Drobnič",
+       "shirt": 72,
+       "pos": "D"
+      },
+      {
+       "name": "Enrico Del Prato",
+       "shirt": 15,
+       "pos": "M"
+      },
+      {
+       "name": "Mandela Keita",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Vincent Sierro",
+       "shirt": 4,
+       "pos": "M"
+      },
+      {
+       "name": "Christian Ordóñez",
+       "shirt": 32,
+       "pos": "M"
+      },
+      {
+       "name": "Emanuele Valeri",
+       "shirt": 14,
+       "pos": "M"
+      },
+      {
+       "name": "David Romero",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "El Bilal Touré",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Adrián Bernabé",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Simone Lontani",
+       "shirt": 76,
+       "pos": "?"
+      },
+      {
+       "name": "Matija Frigan",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Giovanni Fabbian",
+       "shirt": 80,
+       "pos": "?"
+      },
+      {
+       "name": "Giovanni Daffara",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Simone Ghidotti",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Abdoulaye Ndiaye",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Abdou-Salam Konaté",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Franco Carboni",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Sascha Britschgi",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Benjamín Cremaschi",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Ousmane Diallo",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Thomás de Martis",
+       "shirt": 25,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 52,
+      "center": 24,
+      "right": 24
+     },
+     "firstHalf": {
+      "left": 52,
+      "center": 25,
+      "right": 23
+     },
+     "secondHalf": {
+      "left": 53,
+      "center": 22,
+      "right": 25
+     }
+    },
+    "away": {
+     "total": {
+      "left": 41,
+      "center": 27,
+      "right": 32
+     },
+     "firstHalf": {
+      "left": 44,
+      "center": 30,
+      "right": 26
+     },
+     "secondHalf": {
+      "left": 39,
+      "center": 23,
+      "right": 38
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 3,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-25T03:41:55.278Z",
+   "fdMatchId": "2026-27-74",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-24T20:38:02.248Z"
+ "updatedAt": "2026-10-25T03:41:55.280Z"
 }
