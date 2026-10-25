@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-25T03:43:15.085Z",
+ "fetchedAt": "2026-10-25T15:48:09.677Z",
  "teams": [
-  {
-   "code": "LAZ",
-   "fotmobId": 8543,
-   "fotmobName": "Lazio",
-   "fetchedAt": "2026-10-09T12:41:52.062Z",
-   "color": "#75acd4",
-   "teamColors": {
-    "darkMode": "#4096da",
-    "lightMode": "#75acd4",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Olimpico",
-   "city": "Roma",
-   "location": [
-    "41.933947912",
-    "12.454757094"
-   ],
-   "capacity": 70634,
-   "surface": "Grass",
-   "opened": 1932,
-   "coachHistory": [
-    {
-     "id": 187735,
-     "name": "Marco Baroni",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 18,
-     "draw": 11,
-     "loss": 9,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 557567,
-     "name": "Maurizio Sarri",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 12,
-     "loss": 12,
-     "pointsPerGame": 1.42,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 30721,
-     "name": "Gennaro Gattuso",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "INT",
    "fotmobId": 8636,
@@ -113,6 +53,66 @@
     {
      "id": 27692,
      "name": "Cristian Chivu",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "LAZ",
+   "fotmobId": 8543,
+   "fotmobName": "Lazio",
+   "fetchedAt": "2026-10-09T12:41:52.062Z",
+   "color": "#75acd4",
+   "teamColors": {
+    "darkMode": "#4096da",
+    "lightMode": "#75acd4",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Olimpico",
+   "city": "Roma",
+   "location": [
+    "41.933947912",
+    "12.454757094"
+   ],
+   "capacity": 70634,
+   "surface": "Grass",
+   "opened": 1932,
+   "coachHistory": [
+    {
+     "id": 187735,
+     "name": "Marco Baroni",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 18,
+     "draw": 11,
+     "loss": 9,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 557567,
+     "name": "Maurizio Sarri",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 12,
+     "loss": 12,
+     "pointsPerGame": 1.42,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 30721,
+     "name": "Gennaro Gattuso",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -905,66 +905,6 @@
    ]
   },
   {
-   "code": "UDI",
-   "fotmobId": 8600,
-   "fotmobName": "Udinese",
-   "fetchedAt": "2026-10-09T12:41:56.348Z",
-   "color": "#101010",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#101010",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Bluenergy Stadium",
-   "city": "Udine",
-   "location": [
-    "46.081644302",
-    "13.200062513"
-   ],
-   "capacity": 25952,
-   "surface": "Grass",
-   "opened": 1976,
-   "coachHistory": [
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 12,
-     "draw": 8,
-     "loss": 18,
-     "pointsPerGame": 1.16,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 8,
-     "loss": 16,
-     "pointsPerGame": 1.32,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
    "code": "GEN",
    "fotmobId": 10233,
    "fotmobName": "Genoa",
@@ -1021,6 +961,66 @@
      "loss": 4,
      "pointsPerGame": 0.2,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "UDI",
+   "fotmobId": 8600,
+   "fotmobName": "Udinese",
+   "fetchedAt": "2026-10-09T12:41:56.348Z",
+   "color": "#101010",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#101010",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Bluenergy Stadium",
+   "city": "Udine",
+   "location": [
+    "46.081644302",
+    "13.200062513"
+   ],
+   "capacity": 25952,
+   "surface": "Grass",
+   "opened": 1976,
+   "coachHistory": [
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 12,
+     "draw": 8,
+     "loss": 18,
+     "pointsPerGame": 1.16,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 8,
+     "loss": 16,
+     "pointsPerGame": 1.32,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },

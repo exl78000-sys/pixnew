@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-10-25T03:40:18.131Z",
+ "fetchedAt": "2026-10-25T15:44:46.744Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-10-25T03:40:18.131Z",
+   "fetchedAt": "2026-10-25T15:44:46.744Z",
    "count": 380,
    "matches": [
     {
@@ -579,7 +579,7 @@
      "home": "AVL",
      "away": "MCI",
      "utcDate": "2026-10-24T11:30:00Z",
-     "status": "IN_PLAY",
+     "status": "FINISHED",
      "matchday": 8
     },
     {
@@ -587,7 +587,7 @@
      "home": "ARS",
      "away": "EVE",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 8
     },
     {
@@ -595,7 +595,7 @@
      "home": "COV",
      "away": "FUL",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 8
     },
     {
@@ -603,7 +603,7 @@
      "home": "CHE",
      "away": "TOT",
      "utcDate": "2026-10-24T16:30:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 8
     },
     {
@@ -611,7 +611,7 @@
      "home": "LIV",
      "away": "BHA",
      "utcDate": "2026-10-25T14:00:00Z",
-     "status": "TIMED",
+     "status": "IN_PLAY",
      "matchday": 8
     },
     {
@@ -619,7 +619,7 @@
      "home": "CRY",
      "away": "NEW",
      "utcDate": "2026-10-25T14:00:00Z",
-     "status": "TIMED",
+     "status": "IN_PLAY",
      "matchday": 8
     },
     {
@@ -627,7 +627,7 @@
      "home": "MUN",
      "away": "BOU",
      "utcDate": "2026-10-25T14:00:00Z",
-     "status": "TIMED",
+     "status": "IN_PLAY",
      "matchday": 8
     },
     {
@@ -635,7 +635,7 @@
      "home": "HUL",
      "away": "BRE",
      "utcDate": "2026-10-25T14:00:00Z",
-     "status": "TIMED",
+     "status": "IN_PLAY",
      "matchday": 8
     },
     {
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-10-25T03:40:18.131Z",
+   "fetchedAt": "2026-10-25T15:44:46.744Z",
    "count": 552,
    "matches": [
     {
@@ -4121,7 +4121,7 @@
      "home": "SHU",
      "away": "DER",
      "utcDate": "2026-10-24T11:30:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4129,7 +4129,7 @@
      "home": "CHA",
      "away": "NOR",
      "utcDate": "2026-10-24T11:30:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4137,7 +4137,7 @@
      "home": "POR",
      "away": "MIL",
      "utcDate": "2026-10-24T11:30:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4145,7 +4145,7 @@
      "home": "CAR",
      "away": "BIR",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4153,7 +4153,7 @@
      "home": "QPR",
      "away": "SWA",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4161,7 +4161,7 @@
      "home": "STK",
      "away": "BRC",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4169,7 +4169,7 @@
      "home": "PNE",
      "away": "WBA",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4177,7 +4177,7 @@
      "home": "LIN",
      "away": "BUR",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "IN_PLAY",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4185,7 +4185,7 @@
      "home": "WHU",
      "away": "SOU",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4193,7 +4193,7 @@
      "home": "BLB",
      "away": "WRE",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
@@ -4201,7 +4201,7 @@
      "home": "WOL",
      "away": "WAT",
      "utcDate": "2026-10-24T14:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 12
     },
     {
