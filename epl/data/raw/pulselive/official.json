@@ -53187,7 +53187,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 1
+    "away": 2
    },
    "homeId": 6,
    "awayId": 23,
@@ -53616,16 +53616,16 @@
    "goals": [
     {
      "side": "A",
-     "person": 114590,
-     "assist": 9662,
+     "person": 14716,
+     "assist": 68637,
      "team": 23,
-     "min": 47,
-     "label": "47'00",
+     "min": 58,
+     "label": "58'00",
      "phase": "2",
      "type": "G",
      "kind": "G",
      "hs": 0,
-     "as": 1
+     "as": 2
     }
    ],
    "timeline": {
@@ -53649,7 +53649,44 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 14451,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20874,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 135512,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 24797,
+      "team": 6,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -53677,7 +53714,7 @@
      }
     ]
    },
-   "clock": "49'00"
+   "clock": "63'00"
   },
   "HUL|BRE": {
    "fixtureId": 128998,
@@ -54137,7 +54174,44 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 50460,
+      "team": 130,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 127594,
+      "team": 130,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49731,
+      "team": 130,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 115166,
+      "team": 130,
+      "min": 62,
+      "label": "62'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
      {
       "type": "PE",
@@ -54165,7 +54239,7 @@
      }
     ]
    },
-   "clock": "49'00"
+   "clock": "62'00"
   },
   "LIV|BHA": {
    "fixtureId": 129000,
@@ -54663,6 +54737,24 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 147052,
+      "team": 131,
+      "min": 54,
+      "label": "54'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 129259,
+      "team": 131,
+      "min": 54,
+      "label": "54'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
@@ -54692,7 +54784,7 @@
      }
     ]
    },
-   "clock": "48'00"
+   "clock": "61'00"
   },
   "MUN|BOU": {
    "fixtureId": 129001,
@@ -55237,8 +55329,405 @@
      }
     ]
    },
-   "clock": "50'00"
+   "clock": "62'00"
+  },
+  "SUN|LEE": {
+   "fixtureId": 129002,
+   "kickoff": "2026-10-25T16:30:00.000Z",
+   "status": "U",
+   "final": false,
+   "score": {
+    "home": 0,
+    "away": 0
+   },
+   "homeId": 29,
+   "awayId": 9,
+   "home": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 63733,
+      "playerId": null,
+      "name": "Reinildo Mandava",
+      "shirt": 17,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 122126,
+      "playerId": null,
+      "name": "Trai Hume",
+      "shirt": 32,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 115105,
+      "playerId": null,
+      "name": "Nilson Angulo",
+      "shirt": 10,
+      "pos": "F",
+      "posInfo": "Left Winger",
+      "captain": false
+     },
+     {
+      "id": 12136,
+      "playerId": null,
+      "name": "Granit Xhaka",
+      "shirt": 34,
+      "pos": "M",
+      "posInfo": "Defensive Midfielder",
+      "captain": true
+     },
+     {
+      "id": 119614,
+      "playerId": null,
+      "name": "Chris Rigg",
+      "shirt": 11,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 138104,
+      "playerId": null,
+      "name": "Enzo Le Fée",
+      "shirt": 28,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 75692,
+      "playerId": null,
+      "name": "Robin Roefs",
+      "shirt": 22,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 51199,
+      "playerId": null,
+      "name": "Nordi Mukiele",
+      "shirt": 20,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 124944,
+      "playerId": null,
+      "name": "Noah Sadiki",
+      "shirt": 27,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 67784,
+      "playerId": null,
+      "name": "Brian Brobbey",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 10361,
+      "playerId": null,
+      "name": "Luke O'Nien",
+      "shirt": 13,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 125089,
+      "playerId": null,
+      "name": "Malick Fofana",
+      "shirt": 39,
+      "pos": "F",
+      "posInfo": "Winger",
+      "captain": false
+     },
+     {
+      "id": 147437,
+      "playerId": null,
+      "name": "Dayann Méthalie",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 118633,
+      "playerId": null,
+      "name": "Chemsdine Talbi",
+      "shirt": 7,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 338613,
+      "playerId": null,
+      "name": "Juan Angulo",
+      "shirt": 50,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 126110,
+      "playerId": null,
+      "name": "Habib Diarra",
+      "shirt": 19,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 66659,
+      "playerId": null,
+      "name": "Omar Alderete",
+      "shirt": 15,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 135764,
+      "playerId": null,
+      "name": "Tymur Tutierov",
+      "shirt": 57,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 110958,
+      "playerId": null,
+      "name": "Melker Ellborg",
+      "shirt": 31,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 308649,
+      "playerId": null,
+      "name": "Jules Ahoka",
+      "shirt": 29,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 14608,
+      "playerId": null,
+      "name": "Jayden Bogle",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 13961,
+      "playerId": null,
+      "name": "Harry Wilson",
+      "shirt": 10,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 75543,
+      "playerId": null,
+      "name": "Gabriel Gudmundsson",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 63289,
+      "playerId": null,
+      "name": "Brenden Aaronson",
+      "shirt": 11,
+      "pos": "M",
+      "posInfo": "Centre Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 32280,
+      "playerId": null,
+      "name": "James Trafford",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 19731,
+      "playerId": null,
+      "name": "Ethan Ampadu",
+      "shirt": 4,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": true
+     },
+     {
+      "id": 126426,
+      "playerId": null,
+      "name": "Ao Tanaka",
+      "shirt": 22,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 9576,
+      "playerId": null,
+      "name": "Dominic Calvert-Lewin",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 13515,
+      "playerId": null,
+      "name": "James Justin",
+      "shirt": 24,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 114504,
+      "playerId": null,
+      "name": "Tarik Muharemovic",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 50151,
+      "playerId": null,
+      "name": "Jaka Bijol",
+      "shirt": 15,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 144863,
+      "playerId": null,
+      "name": "Jean-Mattéo Bahoya",
+      "shirt": 23,
+      "pos": "F",
+      "posInfo": "Winger",
+      "captain": false
+     },
+     {
+      "id": 33162,
+      "playerId": null,
+      "name": "Noah Okafor",
+      "shirt": 19,
+      "pos": "F",
+      "posInfo": "Winger",
+      "captain": false
+     },
+     {
+      "id": 115255,
+      "playerId": null,
+      "name": "Ilia Gruev",
+      "shirt": 44,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 116888,
+      "playerId": null,
+      "name": "Anton Stach",
+      "shirt": 18,
+      "pos": "M",
+      "posInfo": "Centre Defensive Midfielder",
+      "captain": false
+     },
+     {
+      "id": 14807,
+      "playerId": null,
+      "name": "Lukas Nmecha",
+      "shirt": 14,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 68128,
+      "playerId": null,
+      "name": "Melvin Bard",
+      "shirt": 26,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 45237,
+      "playerId": null,
+      "name": "Michael Zetterer",
+      "shirt": 16,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 128977,
+      "playerId": null,
+      "name": "Alfie Cresswell",
+      "shirt": 50,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 14897,
+      "playerId": null,
+      "name": "Sean Longstaff",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     }
+    ]
+   },
+   "goals": [],
+   "timeline": {
+    "cards": [],
+    "subs": [],
+    "periods": []
+   },
+   "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-25T15:08:04.453Z"
+ "fetchedAt": "2026-10-25T15:20:54.131Z"
 }
