@@ -53187,7 +53187,7 @@
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 6,
    "awayId": 23,
@@ -53613,7 +53613,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 114590,
+     "assist": 9662,
+     "team": 23,
+     "min": 47,
+     "label": "47'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -53638,6 +53652,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -53648,10 +53668,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "49'00"
   },
   "HUL|BRE": {
    "fixtureId": 128998,
@@ -54114,6 +54140,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -54124,10 +54156,16 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "49'00"
   },
   "LIV|BHA": {
    "fixtureId": 129000,
@@ -54565,19 +54603,6 @@
    "goals": [
     {
      "side": "H",
-     "person": 22542,
-     "assist": null,
-     "team": 10,
-     "min": 17,
-     "label": "17'00",
-     "phase": "1",
-     "type": "O",
-     "kind": "O",
-     "hs": 1,
-     "as": 0
-    },
-    {
-     "side": "H",
      "person": 21737,
      "assist": 68840,
      "team": 10,
@@ -54620,9 +54645,33 @@
       "phase": "1",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 112739,
+      "team": 131,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20505,
+      "team": 131,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -54634,10 +54683,16 @@
       "min": 45,
       "label": "45+4'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+4'00"
+   "clock": "48'00"
   },
   "MUN|BOU": {
    "fixtureId": 129001,
@@ -55075,19 +55130,6 @@
    "goals": [
     {
      "side": "A",
-     "person": 134234,
-     "assist": 21519,
-     "team": 127,
-     "min": 38,
-     "label": "38'00",
-     "phase": "1",
-     "type": "G",
-     "kind": "G",
-     "hs": 0,
-     "as": 1
-    },
-    {
-     "side": "A",
      "person": 14846,
      "assist": 74965,
      "team": 127,
@@ -55148,8 +55190,33 @@
       "kind": "黃牌"
      }
     ],
-    "subs": [],
+    "subs": [
+     {
+      "person": 51202,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 5865,
+      "team": 12,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -55161,11 +55228,17 @@
       "min": 45,
       "label": "45+3'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+3'00"
+   "clock": "50'00"
   }
  },
- "fetchedAt": "2026-10-25T14:57:50.690Z"
+ "fetchedAt": "2026-10-25T15:08:04.453Z"
 }
