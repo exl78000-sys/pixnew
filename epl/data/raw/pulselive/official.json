@@ -53183,7 +53183,7 @@
   "CRY|NEW": {
    "fixtureId": 128997,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -53192,16 +53192,38 @@
    "homeId": 6,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      20497
+     ],
+     [
+      50842,
+      54893,
+      147312
+     ],
+     [
+      123848,
+      69595,
+      49759,
+      24334
+     ],
+     [
+      24797,
+      109117
+     ],
+     [
+      20874
+     ]
+    ],
     "xi": [
      {
       "id": 123848,
       "playerId": null,
       "name": "Anan Khalaili",
       "shirt": 25,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -53246,7 +53268,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -53273,7 +53295,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -53381,9 +53403,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      5220,
+      8707,
+      108922
+     ],
+     [
+      67849,
+      20607
+     ],
+     [
+      9662,
+      14446,
+      14716
+     ],
+     [
+      114590
+     ]
+    ],
     "xi": [
      {
       "id": 20607,
@@ -53573,14 +53617,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "HUL|BRE": {
    "fixtureId": 128998,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -53589,9 +53646,29 @@
    "homeId": 41,
    "awayId": 130,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      337567,
+      20081
+     ],
+     [
+      137549,
+      66538,
+      21385,
+      337382
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 8107,
@@ -53607,7 +53684,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -53645,7 +53722,7 @@
       "shirt": 2,
       "pos": "D",
       "posInfo": "Right Full Back",
-      "captain": false
+      "captain": true
      },
      {
       "id": 20081,
@@ -53778,9 +53855,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      133460,
+      65987,
+      20113,
+      24369
+     ],
+     [
+      108421,
+      115166
+     ],
+     [
+      133890,
+      49726,
+      127594
+     ],
+     [
+      124052
+     ]
+    ],
     "xi": [
      {
       "id": 14723,
@@ -53796,7 +53895,7 @@
       "playerId": null,
       "name": "Aaron Hickey",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -53832,7 +53931,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      },
@@ -53870,14 +53969,14 @@
       "shirt": 8,
       "pos": "M",
       "posInfo": "Centre Central Midfielder",
-      "captain": false
+      "captain": true
      },
      {
       "id": 133890,
       "playerId": null,
       "name": "Dango Ouattara",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      }
@@ -53970,14 +54069,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "LIV|BHA": {
    "fixtureId": 129000,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -53986,9 +54098,31 @@
    "homeId": 10,
    "awayId": 131,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      20559
+     ],
+     [
+      66133,
+      133104,
+      5140,
+      116665
+     ],
+     [
+      49909,
+      63633
+     ],
+     [
+      32894,
+      75382,
+      68840
+     ],
+     [
+      21737
+     ]
+    ],
     "xi": [
      {
       "id": 75382,
@@ -54067,7 +54201,7 @@
       "playerId": null,
       "name": "Bradley Barcola",
       "shirt": 29,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -54085,7 +54219,7 @@
       "playerId": null,
       "name": "Cody Gakpo",
       "shirt": 18,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      }
@@ -54175,9 +54309,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      50727,
+      134632,
+      8163,
+      20505
+     ],
+     [
+      22542,
+      129259
+     ],
+     [
+      143240,
+      134333,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 134333,
@@ -54229,7 +54385,7 @@
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -54367,14 +54523,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "MUN|BOU": {
    "fixtureId": 129001,
    "kickoff": "2026-10-25T14:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -54594,9 +54763,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      51942,
+      120109,
+      74965
+     ],
+     [
+      42894,
+      10766
+     ],
+     [
+      134234,
+      21519,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 134234,
@@ -54786,10 +54977,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "01'00"
   }
  },
- "fetchedAt": "2026-10-25T13:56:40.115Z"
+ "fetchedAt": "2026-10-25T14:01:34.956Z"
 }
