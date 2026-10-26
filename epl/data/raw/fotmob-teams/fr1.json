@@ -2,8 +2,68 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-25T15:48:10.462Z",
+ "fetchedAt": "2026-10-26T03:45:34.186Z",
  "teams": [
+  {
+   "code": "REN",
+   "fotmobId": 9851,
+   "fotmobName": "Rennes",
+   "fetchedAt": "2026-10-09T12:42:03.978Z",
+   "color": "#E13327",
+   "teamColors": {
+    "darkMode": "#E13327",
+    "lightMode": "#E13327",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Roazhon Park",
+   "city": "Rennes",
+   "location": [
+    "48.107467009",
+    "-1.712884158"
+   ],
+   "capacity": 31127,
+   "surface": "Grass",
+   "opened": 1912,
+   "coachHistory": [
+    {
+     "id": 1693064,
+     "name": "Sébastien Tambouret",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 2.08,
+     "winPercentage": 0.67
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
   {
    "code": "LIL",
    "fotmobId": 8639,
@@ -365,62 +425,62 @@
    ]
   },
   {
-   "code": "REN",
-   "fotmobId": 9851,
-   "fotmobName": "Rennes",
-   "fetchedAt": "2026-10-09T12:42:03.978Z",
-   "color": "#E13327",
+   "code": "MAR",
+   "fotmobId": 8592,
+   "fotmobName": "Marseille",
+   "fetchedAt": "2026-10-09T12:42:09.613Z",
+   "color": "#0A60A8",
    "teamColors": {
-    "darkMode": "#E13327",
-    "lightMode": "#E13327",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#41b6ff",
+    "lightMode": "#0A60A8",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Roazhon Park",
-   "city": "Rennes",
+   "venue": "CEPAC Vélodrome",
+   "city": "Marseille",
    "location": [
-    "48.107467009",
-    "-1.712884158"
+    "43.269870275",
+    "5.395853519"
    ],
-   "capacity": 31127,
+   "capacity": 67394,
    "surface": "Grass",
-   "opened": 1912,
+   "opened": 1937,
    "coachHistory": [
     {
-     "id": 1693064,
-     "name": "Sébastien Tambouret",
+     "id": 26308,
+     "name": "Jacques Abardonado",
      "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    },
+    {
+     "id": 25518,
+     "name": "Habib Beye",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 6,
+     "draw": 1,
+     "loss": 5,
+     "pointsPerGame": 1.58,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 712734,
+     "name": "Bruno Génésio",
+     "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
      "win": 1,
      "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 804046,
-     "name": "Franck Haise",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 2.08,
-     "winPercentage": 0.67
-    },
-    {
-     "id": 804046,
-     "name": "Franck Haise",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
+     "loss": 4,
+     "pointsPerGame": 0.6,
+     "winPercentage": 0.2
     }
    ]
   },
@@ -545,126 +605,6 @@
    ]
   },
   {
-   "code": "MAR",
-   "fotmobId": 8592,
-   "fotmobName": "Marseille",
-   "fetchedAt": "2026-10-09T12:42:09.613Z",
-   "color": "#0A60A8",
-   "teamColors": {
-    "darkMode": "#41b6ff",
-    "lightMode": "#0A60A8",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "CEPAC Vélodrome",
-   "city": "Marseille",
-   "location": [
-    "43.269870275",
-    "5.395853519"
-   ],
-   "capacity": 67394,
-   "surface": "Grass",
-   "opened": 1937,
-   "coachHistory": [
-    {
-     "id": 26308,
-     "name": "Jacques Abardonado",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
-    },
-    {
-     "id": 25518,
-     "name": "Habib Beye",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 6,
-     "draw": 1,
-     "loss": 5,
-     "pointsPerGame": 1.58,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 712734,
-     "name": "Bruno Génésio",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 0,
-     "loss": 4,
-     "pointsPerGame": 0.6,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "BST",
-   "fotmobId": 8521,
-   "fotmobName": "Brest",
-   "fetchedAt": "2026-10-09T12:42:07.373Z",
-   "color": "#ED1C24",
-   "teamColors": {
-    "darkMode": "#ED1C24",
-    "lightMode": "#ED1C24",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Francis-Le Blé",
-   "city": "Brest",
-   "location": [
-    "48.402881677",
-    "-4.461457729"
-   ],
-   "capacity": 15931,
-   "surface": "Grass",
-   "opened": 1922,
-   "coachHistory": [
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2023/2024",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 17,
-     "draw": 10,
-     "loss": 7,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 15,
-     "draw": 5,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 26268,
-     "name": "Éric Roy",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 9,
-     "loss": 15,
-     "pointsPerGame": 1.15,
-     "winPercentage": 0.29
-    }
-   ]
-  },
-  {
    "code": "TOU",
    "fotmobId": 9941,
    "fotmobName": "Toulouse",
@@ -785,62 +725,62 @@
    ]
   },
   {
-   "code": "STR",
-   "fotmobId": 9848,
-   "fotmobName": "Strasbourg",
-   "fetchedAt": "2026-10-09T12:42:05.056Z",
-   "color": "#294A92",
+   "code": "BST",
+   "fotmobId": 8521,
+   "fotmobName": "Brest",
+   "fetchedAt": "2026-10-09T12:42:07.373Z",
+   "color": "#ED1C24",
    "teamColors": {
-    "darkMode": "#294A92",
-    "lightMode": "#294A92",
+    "darkMode": "#ED1C24",
+    "lightMode": "#ED1C24",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stade de la Meinau",
-   "city": "Strasbourg",
+   "venue": "Stade Francis-Le Blé",
+   "city": "Brest",
    "location": [
-    "48.560068724",
-    "7.755156755"
+    "48.402881677",
+    "-4.461457729"
    ],
-   "capacity": 32047,
+   "capacity": 15931,
    "surface": "Grass",
-   "opened": 1906,
+   "opened": 1922,
    "coachHistory": [
     {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2025/2026",
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2023/2024",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 7,
-     "draw": 3,
+     "win": 17,
+     "draw": 10,
      "loss": 7,
-     "pointsPerGame": 1.41,
-     "winPercentage": 0.41
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.5
     },
     {
-     "id": 24393,
-     "name": "Gary O'Neil",
+     "id": 26268,
+     "name": "Éric Roy",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 15,
+     "draw": 5,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 26268,
+     "name": "Éric Roy",
      "season": "2025/2026",
      "leagueId": 53,
      "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 5,
-     "loss": 4,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 1700757,
-     "name": "Hugo Oliveira",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
+     "win": 10,
+     "draw": 9,
+     "loss": 15,
+     "pointsPerGame": 1.15,
+     "winPercentage": 0.29
     }
    ]
   },
@@ -961,6 +901,66 @@
      "loss": 2,
      "pointsPerGame": 2,
      "winPercentage": 0.58
+    }
+   ]
+  },
+  {
+   "code": "STR",
+   "fotmobId": 9848,
+   "fotmobName": "Strasbourg",
+   "fetchedAt": "2026-10-09T12:42:05.056Z",
+   "color": "#294A92",
+   "teamColors": {
+    "darkMode": "#294A92",
+    "lightMode": "#294A92",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade de la Meinau",
+   "city": "Strasbourg",
+   "location": [
+    "48.560068724",
+    "7.755156755"
+   ],
+   "capacity": 32047,
+   "surface": "Grass",
+   "opened": 1906,
+   "coachHistory": [
+    {
+     "id": 24105,
+     "name": "Liam Rosenior",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 7,
+     "draw": 3,
+     "loss": 7,
+     "pointsPerGame": 1.41,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 24393,
+     "name": "Gary O'Neil",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 5,
+     "loss": 4,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 1700757,
+     "name": "Hugo Oliveira",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },

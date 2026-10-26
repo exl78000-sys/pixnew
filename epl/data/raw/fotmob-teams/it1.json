@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-25T15:48:09.677Z",
+ "fetchedAt": "2026-10-26T03:45:33.790Z",
  "teams": [
   {
    "code": "INT",
@@ -185,66 +185,6 @@
    ]
   },
   {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-10-09T12:41:54.778Z",
-   "color": "#005ea9",
-   "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
-   "location": [
-    "45.813856655",
-    "9.072376192"
-   ],
-   "capacity": 13602,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -305,6 +245,66 @@
    ]
   },
   {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-10-09T12:41:54.778Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
    "code": "FRO",
    "fotmobId": 9891,
    "fotmobName": "Frosinone",
@@ -353,6 +353,66 @@
     {
      "id": 1188285,
      "name": "Massimiliano Alvini",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "JUV",
+   "fotmobId": 9885,
+   "fotmobName": "Juventus",
+   "fetchedAt": "2026-10-09T12:41:54.759Z",
+   "color": "#000001",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000001",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Allianz Stadium",
+   "city": "Torino",
+   "location": [
+    "45.109527284",
+    "7.641302313"
+   ],
+   "capacity": 41689,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 41959,
+     "name": "Massimo Brambilla",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 78584,
+     "name": "Luciano Spalletti",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 15,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
+    },
+    {
+     "id": 78584,
+     "name": "Luciano Spalletti",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -541,66 +601,6 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "JUV",
-   "fotmobId": 9885,
-   "fotmobName": "Juventus",
-   "fetchedAt": "2026-10-09T12:41:54.759Z",
-   "color": "#000001",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000001",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Allianz Stadium",
-   "city": "Torino",
-   "location": [
-    "45.109527284",
-    "7.641302313"
-   ],
-   "capacity": 41689,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 41959,
-     "name": "Massimo Brambilla",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 15,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
     }
    ]
   },

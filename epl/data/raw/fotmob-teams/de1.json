@@ -2,8 +2,68 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-25T15:48:08.814Z",
+ "fetchedAt": "2026-10-26T03:45:33.305Z",
  "teams": [
+  {
+   "code": "FCB",
+   "fotmobId": 9823,
+   "fotmobName": "Bayern München",
+   "fetchedAt": "2026-10-09T12:41:41.791Z",
+   "color": "#C60428",
+   "teamColors": {
+    "darkMode": "#DC052D",
+    "lightMode": "#C60428",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Allianz Arena",
+   "city": "München",
+   "location": [
+    "48.218779054",
+    "11.624743491"
+   ],
+   "capacity": 75024,
+   "surface": "Grass",
+   "opened": 2005,
+   "coachHistory": [
+    {
+     "id": 39027,
+     "name": "Vincent Kompany",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 25,
+     "draw": 7,
+     "loss": 2,
+     "pointsPerGame": 2.41,
+     "winPercentage": 0.74
+    },
+    {
+     "id": 39027,
+     "name": "Vincent Kompany",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 28,
+     "draw": 5,
+     "loss": 1,
+     "pointsPerGame": 2.62,
+     "winPercentage": 0.82
+    },
+    {
+     "id": 39027,
+     "name": "Vincent Kompany",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.5,
+     "winPercentage": 0.75
+    }
+   ]
+  },
   {
    "code": "BVB",
    "fotmobId": 9789,
@@ -65,54 +125,54 @@
    ]
   },
   {
-   "code": "FCB",
-   "fotmobId": 9823,
-   "fotmobName": "Bayern München",
-   "fetchedAt": "2026-10-09T12:41:41.791Z",
-   "color": "#C60428",
+   "code": "SCF",
+   "fotmobId": 8358,
+   "fotmobName": "Freiburg",
+   "fetchedAt": "2026-10-09T12:41:42.199Z",
+   "color": "#BD1C2C",
    "teamColors": {
-    "darkMode": "#DC052D",
-    "lightMode": "#C60428",
+    "darkMode": "#BD1C2C",
+    "lightMode": "#BD1C2C",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Allianz Arena",
-   "city": "München",
+   "venue": "Europa-Park Stadion",
+   "city": "Freiburg im Breisgau",
    "location": [
-    "48.218779054",
-    "11.624743491"
+    "48.021617675",
+    "7.829695355"
    ],
-   "capacity": 75024,
+   "capacity": 34700,
    "surface": "Grass",
-   "opened": 2005,
+   "opened": 2021,
    "coachHistory": [
     {
-     "id": 39027,
-     "name": "Vincent Kompany",
+     "id": 36771,
+     "name": "Julian Schuster",
      "season": "2024/2025",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 25,
+     "win": 16,
      "draw": 7,
-     "loss": 2,
-     "pointsPerGame": 2.41,
-     "winPercentage": 0.74
+     "loss": 11,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.47
     },
     {
-     "id": 39027,
-     "name": "Vincent Kompany",
+     "id": 36771,
+     "name": "Julian Schuster",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 28,
-     "draw": 5,
-     "loss": 1,
-     "pointsPerGame": 2.62,
-     "winPercentage": 0.82
+     "win": 13,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.38
     },
     {
-     "id": 39027,
-     "name": "Vincent Kompany",
+     "id": 36771,
+     "name": "Julian Schuster",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -181,66 +241,6 @@
      "loss": 1,
      "pointsPerGame": 1.75,
      "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "SCF",
-   "fotmobId": 8358,
-   "fotmobName": "Freiburg",
-   "fetchedAt": "2026-10-09T12:41:42.199Z",
-   "color": "#BD1C2C",
-   "teamColors": {
-    "darkMode": "#BD1C2C",
-    "lightMode": "#BD1C2C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Europa-Park Stadion",
-   "city": "Freiburg im Breisgau",
-   "location": [
-    "48.021617675",
-    "7.829695355"
-   ],
-   "capacity": 34700,
-   "surface": "Grass",
-   "opened": 2021,
-   "coachHistory": [
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 11,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 13,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.5,
-     "winPercentage": 0.75
     }
    ]
   },
@@ -545,6 +545,66 @@
    ]
   },
   {
+   "code": "TSG",
+   "fotmobId": 8226,
+   "fotmobName": "Hoffenheim",
+   "fetchedAt": "2026-10-09T12:41:50.120Z",
+   "color": "#005098",
+   "teamColors": {
+    "darkMode": "#0057a3",
+    "lightMode": "#005098",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "SNP Arena",
+   "city": "Sinsheim",
+   "location": [
+    "49.238005290",
+    "8.887740970"
+   ],
+   "capacity": 30164,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 5,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.21
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 18,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
    "code": "HSV",
    "fotmobId": 9790,
    "fotmobName": "Hamburger SV",
@@ -780,66 +840,6 @@
      "draw": 2,
      "loss": 1,
      "pointsPerGame": 1.25,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "TSG",
-   "fotmobId": 8226,
-   "fotmobName": "Hoffenheim",
-   "fetchedAt": "2026-10-09T12:41:50.120Z",
-   "color": "#005098",
-   "teamColors": {
-    "darkMode": "#0057a3",
-    "lightMode": "#005098",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "SNP Arena",
-   "city": "Sinsheim",
-   "location": [
-    "49.238005290",
-    "8.887740970"
-   ],
-   "capacity": 30164,
-   "surface": "Grass",
-   "opened": 2009,
-   "coachHistory": [
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 5,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.21
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
      "winPercentage": 0.25
     }
    ]
