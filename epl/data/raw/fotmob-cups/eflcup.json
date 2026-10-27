@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-10-27T22:08:23.973Z",
+ "retrievedAt": "2026-10-27T22:10:45.280Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-10-27T22:06:00.779Z",
+   "retrievedAt": "2026-10-27T22:10:45.280Z",
    "matches": [
     {
      "id": "5840307",
@@ -2945,19 +2945,22 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       1,
       1
      ],
-     "state": "LIVE",
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": false,
+     "liveScore": null,
+     "state": "FT_PEN",
      "stateKnown": true,
-     "reason": null,
+     "reason": "Pen",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/arsenal-vs-fleetwood-town/pik5if#6275367",
      "unknownReasons": []
     },
@@ -3292,6 +3295,16 @@
      "extraTime": false,
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-09-15T20:38:42.512Z"
+    },
+    "6275367": {
+     "pens": [
+      5,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": false,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-10-27T22:10:45.280Z"
     }
    },
    "unknownReasons": [],
