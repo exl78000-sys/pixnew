@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-27T04:09:33.841Z",
+ "fetchedAt": "2026-10-27T17:43:16.797Z",
  "teams": [
-  {
-   "code": "INT",
-   "fotmobId": 8636,
-   "fotmobName": "Inter",
-   "fetchedAt": "2026-10-09T12:41:51.633Z",
-   "color": "#010E80",
-   "teamColors": {
-    "darkMode": "#0039d0",
-    "lightMode": "#010E80",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Meazza",
-   "city": "Milano",
-   "location": [
-    "45.478083998",
-    "9.123979211"
-   ],
-   "capacity": 75817,
-   "surface": "Grass",
-   "opened": 1926,
-   "coachHistory": [
-    {
-     "id": 25590,
-     "name": "Simone Inzaghi",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 2.13,
-     "winPercentage": 0.63
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 27,
-     "draw": 6,
-     "loss": 5,
-     "pointsPerGame": 2.29,
-     "winPercentage": 0.71
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "LAZ",
    "fotmobId": 8543,
@@ -113,6 +53,66 @@
     {
      "id": 30721,
      "name": "Gennaro Gattuso",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "INT",
+   "fotmobId": 8636,
+   "fotmobName": "Inter",
+   "fetchedAt": "2026-10-09T12:41:51.633Z",
+   "color": "#010E80",
+   "teamColors": {
+    "darkMode": "#0039d0",
+    "lightMode": "#010E80",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Meazza",
+   "city": "Milano",
+   "location": [
+    "45.478083998",
+    "9.123979211"
+   ],
+   "capacity": 75817,
+   "surface": "Grass",
+   "opened": 1926,
+   "coachHistory": [
+    {
+     "id": 25590,
+     "name": "Simone Inzaghi",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 24,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 2.13,
+     "winPercentage": 0.63
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 27,
+     "draw": 6,
+     "loss": 5,
+     "pointsPerGame": 2.29,
+     "winPercentage": 0.71
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -665,6 +665,66 @@
    ]
   },
   {
+   "code": "SAS",
+   "fotmobId": 7943,
+   "fotmobName": "Sassuolo",
+   "fetchedAt": "2026-10-09T12:41:55.202Z",
+   "color": "#009A44",
+   "teamColors": {
+    "darkMode": "#009A44",
+    "lightMode": "#009A44",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "MAPEI Stadium - Città del Tricolore",
+   "city": "Reggio Emilia",
+   "location": [
+    "44.714636965",
+    "10.649710894"
+   ],
+   "capacity": 23717,
+   "surface": "Grass",
+   "opened": 1995,
+   "coachHistory": [
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2024/2025",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 25,
+     "draw": 7,
+     "loss": 6,
+     "pointsPerGame": 2.16,
+     "winPercentage": 0.66
+    },
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 7,
+     "loss": 17,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 27694,
+     "name": "Alberto Aquilani",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
    "code": "LEC",
    "fotmobId": 9888,
    "fotmobName": "Lecce",
@@ -781,66 +841,6 @@
      "loss": 0,
      "pointsPerGame": 1,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "SAS",
-   "fotmobId": 7943,
-   "fotmobName": "Sassuolo",
-   "fetchedAt": "2026-10-09T12:41:55.202Z",
-   "color": "#009A44",
-   "teamColors": {
-    "darkMode": "#009A44",
-    "lightMode": "#009A44",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "MAPEI Stadium - Città del Tricolore",
-   "city": "Reggio Emilia",
-   "location": [
-    "44.714636965",
-    "10.649710894"
-   ],
-   "capacity": 23717,
-   "surface": "Grass",
-   "opened": 1995,
-   "coachHistory": [
-    {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2024/2025",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 25,
-     "draw": 7,
-     "loss": 6,
-     "pointsPerGame": 2.16,
-     "winPercentage": 0.66
-    },
-    {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 7,
-     "loss": 17,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 27694,
-     "name": "Alberto Aquilani",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
     }
    ]
   },
