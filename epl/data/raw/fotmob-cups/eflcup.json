@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-10-27T21:34:22.374Z",
+ "retrievedAt": "2026-10-27T21:47:01.209Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-10-27T21:34:22.374Z",
+   "retrievedAt": "2026-10-27T21:47:01.209Z",
    "matches": [
     {
      "id": "5840307",
@@ -2907,19 +2907,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       2,
       0
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/bradford-city-vs-peterborough-united/2fog42#6275372",
      "unknownReasons": []
     },
