@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-10-27T19:56:07.486Z",
+ "retrievedAt": "2026-10-27T20:08:47.887Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-10-27T19:56:07.486Z",
+   "retrievedAt": "2026-10-27T20:08:47.887Z",
    "matches": [
     {
      "id": "5840307",
@@ -2912,7 +2912,7 @@
      "pensWinner": null,
      "aet": null,
      "liveScore": [
-      0,
+      1,
       0
      ],
      "state": "LIVE",
@@ -2949,8 +2949,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
