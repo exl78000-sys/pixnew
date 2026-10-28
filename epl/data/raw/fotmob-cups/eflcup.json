@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-10-28T22:11:37.317Z",
+ "retrievedAt": "2026-10-28T22:13:55.779Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-10-28T22:09:18.184Z",
+   "retrievedAt": "2026-10-28T22:13:55.779Z",
    "matches": [
     {
      "id": "5840307",
@@ -3141,19 +3141,22 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       1,
       1
      ],
-     "state": "LIVE",
+     "pens": [
+      6,
+      5
+     ],
+     "pensWinner": "home",
+     "aet": false,
+     "liveScore": null,
+     "state": "FT_PEN",
      "stateKnown": true,
-     "reason": null,
+     "reason": "Pen",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/chelsea-vs-liverpool/2f3vr7#6275371",
      "unknownReasons": []
     },
@@ -3333,6 +3336,16 @@
      "extraTime": false,
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-10-28T21:41:27.819Z"
+    },
+    "6275371": {
+     "pens": [
+      6,
+      5
+     ],
+     "pensWinner": "home",
+     "extraTime": false,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-10-28T22:13:55.779Z"
     }
    },
    "unknownReasons": [],
