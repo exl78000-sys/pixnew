@@ -5,7 +5,7 @@
  "leagueId": 133,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-10-28T21:31:38.676Z",
+ "retrievedAt": "2026-10-28T21:41:27.819Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-10-28T21:31:38.676Z",
+   "retrievedAt": "2026-10-28T21:41:27.819Z",
    "matches": [
     {
      "id": "5840307",
@@ -2986,19 +2986,22 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       2,
       2
      ],
-     "state": "LIVE",
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "aet": false,
+     "liveScore": null,
+     "state": "FT_PEN",
      "stateKnown": true,
-     "reason": null,
+     "reason": "Pen",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/manchester-city-vs-brighton-hove-albion/2vnwg2#6275368",
      "unknownReasons": []
     },
@@ -3024,19 +3027,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       3,
       0
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/afc-bournemouth-vs-aston-villa/2yooch#6275374",
      "unknownReasons": []
     },
@@ -3062,19 +3065,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       0,
       1
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/crystal-palace-vs-fulham/37llbg#6275373",
      "unknownReasons": []
     },
@@ -3100,19 +3103,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      3,
+      2
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
-     "liveScore": [
-      3,
-      1
-     ],
-     "state": "LIVE",
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/sunderland-vs-brentford/2sw7v2#6275370",
      "unknownReasons": []
     },
@@ -3320,6 +3323,16 @@
      "extraTime": false,
      "source": "FotMob matchDetails",
      "retrievedAt": "2026-10-27T22:10:45.280Z"
+    },
+    "6275368": {
+     "pens": [
+      4,
+      3
+     ],
+     "pensWinner": "home",
+     "extraTime": false,
+     "source": "FotMob matchDetails",
+     "retrievedAt": "2026-10-28T21:41:27.819Z"
     }
    },
    "unknownReasons": [],
