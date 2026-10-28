@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-28T04:35:52.036Z",
+ "fetchedAt": "2026-10-28T18:05:15.896Z",
  "teams": [
   {
    "code": "LAZ",
@@ -185,66 +185,6 @@
    ]
   },
   {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-10-09T12:41:54.778Z",
-   "color": "#005ea9",
-   "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
-   "location": [
-    "45.813856655",
-    "9.072376192"
-   ],
-   "capacity": 13602,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -300,6 +240,66 @@
      "draw": 2,
      "loss": 0,
      "pointsPerGame": 2.2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-10-09T12:41:54.778Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
      "winPercentage": 0.6
     }
    ]
@@ -1025,66 +1025,6 @@
    ]
   },
   {
-   "code": "FIO",
-   "fotmobId": 8535,
-   "fotmobName": "Fiorentina",
-   "fetchedAt": "2026-10-09T12:41:58.664Z",
-   "color": "#5F259F",
-   "teamColors": {
-    "darkMode": "#6f34af",
-    "lightMode": "#5F259F",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Artemio Franchi",
-   "city": "Firenze",
-   "location": [
-    "43.780787925",
-    "11.282712221"
-   ],
-   "capacity": 43147,
-   "surface": "Grass",
-   "opened": 1931,
-   "coachHistory": [
-    {
-     "id": 42632,
-     "name": "Paolo Vanoli",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 11,
-     "loss": 8,
-     "pointsPerGame": 1.36,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 34320,
-     "name": "Fabio Grosso",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0,
-     "winPercentage": 0
-    },
-    {
-     "id": 42632,
-     "name": "Paolo Vanoli",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "PAR",
    "fotmobId": 10167,
    "fotmobName": "Parma",
@@ -1141,6 +1081,66 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "FIO",
+   "fotmobId": 8535,
+   "fotmobName": "Fiorentina",
+   "fetchedAt": "2026-10-09T12:41:58.664Z",
+   "color": "#5F259F",
+   "teamColors": {
+    "darkMode": "#6f34af",
+    "lightMode": "#5F259F",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Artemio Franchi",
+   "city": "Firenze",
+   "location": [
+    "43.780787925",
+    "11.282712221"
+   ],
+   "capacity": 43147,
+   "surface": "Grass",
+   "opened": 1931,
+   "coachHistory": [
+    {
+     "id": 42632,
+     "name": "Paolo Vanoli",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 11,
+     "loss": 8,
+     "pointsPerGame": 1.36,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 34320,
+     "name": "Fabio Grosso",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 42632,
+     "name": "Paolo Vanoli",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2,
+     "winPercentage": 0.5
     }
    ]
   },
