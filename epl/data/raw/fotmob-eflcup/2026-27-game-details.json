@@ -104291,8 +104291,3142 @@
     "FUL": "Fulham"
    },
    "heat": null
+  },
+  "6275367": {
+   "key": "6275367",
+   "pair": "6275367",
+   "season": "2026-27",
+   "date": "2026-10-27",
+   "matchId": "6275367",
+   "home": "fm45723",
+   "away": "ARS",
+   "score": [
+    1,
+    1
+   ],
+   "providerScore": [
+    1,
+    1
+   ],
+   "teamStats": {
+    "fm45723": {
+     "possession": 22,
+     "shots": 3,
+     "shotsOn": 2,
+     "shotsOff": 0,
+     "blockedShots": 1,
+     "blocksMade": 11,
+     "corners": 2,
+     "offsides": 3,
+     "fouls": 14,
+     "saves": 5,
+     "passes": 180,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.26
+    },
+    "ARS": {
+     "possession": 78,
+     "shots": 26,
+     "shotsOn": 7,
+     "shotsOff": 9,
+     "blockedShots": 10,
+     "blocksMade": 1,
+     "corners": 5,
+     "offsides": 3,
+     "fouls": 5,
+     "saves": 1,
+     "passes": 641,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.21
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "fm45723": {
+     "touches_opp_box": 8,
+     "big_chance": 2,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 0,
+     "expected_goals_open_play": 0.26,
+     "expected_goals_set_play": 0,
+     "expected_goals_non_penalty": 0.26,
+     "expected_goals_on_target": 0.31,
+     "own_half_passes": 29,
+     "opposition_half_passes": 70,
+     "long_balls_accurate": 18,
+     "long_balls_accurate_pct": 26,
+     "accurate_crosses": 0,
+     "accurate_crosses_pct": 0,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 18,
+     "interceptions": 12,
+     "clearances": 29,
+     "duel_won": 41,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 45,
+     "aerials_won": 11,
+     "aerials_won_pct": 38,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 35,
+     "red_cards": 0
+    },
+    "ARS": {
+     "touches_opp_box": 59,
+     "big_chance": 6,
+     "big_chance_missed_title": 5,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 23,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.52,
+     "expected_goals_set_play": 0.7,
+     "expected_goals_non_penalty": 2.21,
+     "expected_goals_on_target": 1.59,
+     "own_half_passes": 180,
+     "opposition_half_passes": 386,
+     "long_balls_accurate": 29,
+     "long_balls_accurate_pct": 69,
+     "accurate_crosses": 8,
+     "accurate_crosses_pct": 35,
+     "player_throws": 22,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 8,
+     "clearances": 21,
+     "duel_won": 54,
+     "ground_duels_won": 36,
+     "ground_duels_won_pct": 55,
+     "aerials_won": 18,
+     "aerials_won_pct": 62,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 35,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     22,
+     78
+    ],
+    "h1": [
+     23,
+     77
+    ],
+    "h2": [
+     21,
+     79
+    ]
+   },
+   "events": [
+    {
+     "minute": 21,
+     "extra": null,
+     "team": "fm45723",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Aaron Loupalo-Bi"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Martin Ødegaard"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ben White"
+    },
+    {
+     "minute": 50,
+     "extra": null,
+     "team": "ARS",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Viktor Gyökeres"
+    },
+    {
+     "minute": 54,
+     "extra": null,
+     "team": "fm45723",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Crispin McLean"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "fm45723",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Adam Murphy"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "fm45723",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ronan Coughlan"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Eberechi Eze"
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "fm45723",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Andy Cannon"
+    },
+    {
+     "minute": 74,
+     "extra": null,
+     "team": "fm45723",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jake Batty"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bruno Guimarães"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "ARS",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ezri Konsa"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "fm45723",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Will Davies"
+    },
+    {
+     "minute": 85,
+     "extra": null,
+     "team": "ARS",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Max Dowman"
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "fm45723",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Andy Cannon"
+    }
+   ],
+   "shots": [
+    {
+     "min": 10,
+     "extra": null,
+     "team": "ARS",
+     "player": "Piero Hincapié",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 29.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "ARS",
+     "player": "Myles Lewis-Skelly",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.7,
+     "y": 32.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "ARS",
+     "player": "Max Dowman",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.2,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Aaron Loupalo-Bi",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.182,
+     "xgot": 0.17,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 45.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ARS",
+     "player": "Ceadach O'Neill",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.163,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 33.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ARS",
+     "player": "Cristhian Mosquera",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.129,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 31.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 40,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "ARS",
+     "player": "Viktor Gyökeres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0.137,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 42.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 26.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 40,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.1,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 30.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 5,
+     "team": "ARS",
+     "player": "Jurriën Timber",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.147,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 36.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 7,
+     "team": "ARS",
+     "player": "Jurriën Timber",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 24.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "ARS",
+     "player": "Viktor Gyökeres",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.327,
+     "xgot": 0.763,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 33.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "ARS",
+     "player": "Max Dowman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.037,
+     "xgot": 0.089,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 20.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.286,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 30.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "ARS",
+     "player": "Myles Lewis-Skelly",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 23.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.105,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.2,
+     "y": 41.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.9,
+     "y": 33.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "ARS",
+     "player": "Myles Lewis-Skelly",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "ARS",
+     "player": "Myles Lewis-Skelly",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.4,
+     "y": 40,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "ARS",
+     "player": "Max Dowman",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0.01,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.2,
+     "y": 47.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "ARS",
+     "player": "Eberechi Eze",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.7,
+     "y": 50.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Andy Cannon",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.013,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 41.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Will Davies",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.064,
+     "xgot": 0.139,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 44.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ARS",
+     "player": "Ben White",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.096,
+     "xgot": 0.432,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 24.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ARS",
+     "player": "Viktor Gyökeres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.3,
+     "y": 32.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "ARS",
+     "player": "Martin Ødegaard",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0.156,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 28.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ARS",
+     "player": "Eberechi Eze",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.5,
+     "y": 50.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.7,
+     "y": 29,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 91,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Ronan Coughlan",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.843,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 92,
+     "extra": null,
+     "team": "ARS",
+     "player": "Martin Ødegaard",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.843,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 93,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Harrison Neal",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.987,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 93,
+     "extra": null,
+     "team": "ARS",
+     "player": "Kai Havertz",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.92,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "LeftFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 94,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Will Davies",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.875,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 95,
+     "extra": null,
+     "team": "ARS",
+     "player": "Viktor Gyökeres",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.593,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 95,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Andy Cannon",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.933,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 96,
+     "extra": null,
+     "team": "ARS",
+     "player": "Bruno Guimarães",
+     "type": "AttemptSaved",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.672,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    },
+    {
+     "min": 97,
+     "extra": null,
+     "team": "fm45723",
+     "player": "Conor Haughey",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.991,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "PenaltyShootout"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -24
+    ],
+    [
+     2,
+     -24
+    ],
+    [
+     3,
+     -24
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     7,
+     0
+    ],
+    [
+     8,
+     0
+    ],
+    [
+     9,
+     0
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     11,
+     -5
+    ],
+    [
+     12,
+     -16
+    ],
+    [
+     13,
+     100
+    ],
+    [
+     14,
+     100
+    ],
+    [
+     15,
+     100
+    ],
+    [
+     16,
+     -22
+    ],
+    [
+     17,
+     -79
+    ],
+    [
+     18,
+     -100
+    ],
+    [
+     19,
+     -100
+    ],
+    [
+     20,
+     -38
+    ],
+    [
+     21,
+     0
+    ],
+    [
+     22,
+     22
+    ],
+    [
+     23,
+     16
+    ],
+    [
+     24,
+     -100
+    ],
+    [
+     25,
+     -100
+    ],
+    [
+     26,
+     -100
+    ],
+    [
+     27,
+     -22
+    ],
+    [
+     28,
+     -33
+    ],
+    [
+     29,
+     -27
+    ],
+    [
+     30,
+     -22
+    ],
+    [
+     31,
+     -49
+    ],
+    [
+     32,
+     -49
+    ],
+    [
+     33,
+     -49
+    ],
+    [
+     34,
+     -11
+    ],
+    [
+     35,
+     -33
+    ],
+    [
+     36,
+     -49
+    ],
+    [
+     37,
+     -60
+    ],
+    [
+     38,
+     -49
+    ],
+    [
+     39,
+     -100
+    ],
+    [
+     40,
+     -100
+    ],
+    [
+     41,
+     -100
+    ],
+    [
+     42,
+     -60
+    ],
+    [
+     43,
+     -19
+    ],
+    [
+     44,
+     -3
+    ],
+    [
+     45,
+     -52
+    ],
+    [
+     45.5,
+     -28
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     -16
+    ],
+    [
+     48,
+     -38
+    ],
+    [
+     49,
+     -49
+    ],
+    [
+     50,
+     -46
+    ],
+    [
+     51,
+     -14
+    ],
+    [
+     52,
+     -8
+    ],
+    [
+     53,
+     0
+    ],
+    [
+     54,
+     -33
+    ],
+    [
+     55,
+     -57
+    ],
+    [
+     56,
+     -57
+    ],
+    [
+     57,
+     -41
+    ],
+    [
+     58,
+     -27
+    ],
+    [
+     59,
+     -87
+    ],
+    [
+     60,
+     -98
+    ],
+    [
+     61,
+     -92
+    ],
+    [
+     62,
+     -62
+    ],
+    [
+     63,
+     -52
+    ],
+    [
+     64,
+     -46
+    ],
+    [
+     65,
+     -43
+    ],
+    [
+     66,
+     -33
+    ],
+    [
+     67,
+     -33
+    ],
+    [
+     68,
+     -16
+    ],
+    [
+     69,
+     -16
+    ],
+    [
+     70,
+     -16
+    ],
+    [
+     71,
+     -11
+    ],
+    [
+     72,
+     -43
+    ],
+    [
+     73,
+     -38
+    ],
+    [
+     74,
+     -27
+    ],
+    [
+     75,
+     -11
+    ],
+    [
+     76,
+     -27
+    ],
+    [
+     77,
+     -43
+    ],
+    [
+     78,
+     -54
+    ],
+    [
+     79,
+     -33
+    ],
+    [
+     80,
+     -33
+    ],
+    [
+     81,
+     -38
+    ],
+    [
+     82,
+     -38
+    ],
+    [
+     83,
+     8
+    ],
+    [
+     84,
+     14
+    ],
+    [
+     85,
+     24
+    ],
+    [
+     86,
+     -5
+    ],
+    [
+     87,
+     5
+    ],
+    [
+     88,
+     -11
+    ],
+    [
+     89,
+     -5
+    ],
+    [
+     90,
+     -57
+    ],
+    [
+     90.5,
+     -61
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "fm45723": {
+     "team": "fm45723",
+     "formation": "3-5-2",
+     "coach": "Matt Lawlor",
+     "xi": [
+      {
+       "name": "Jay Lynch",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Shaun Rooney",
+       "shirt": 26,
+       "pos": "D"
+      },
+      {
+       "name": "Conor Haughey",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Finley Potter",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Rhys Bennett",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Crispin McLean",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Harrison Neal",
+       "shirt": 4,
+       "pos": "M"
+      },
+      {
+       "name": "Mark Helm",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Jake Batty",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Ched Evans",
+       "shirt": 17,
+       "pos": "F"
+      },
+      {
+       "name": "Aaron Loupalo-Bi",
+       "shirt": 20,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Adam Murphy",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Ronan Coughlan",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Andy Cannon",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Will Davies",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "James Pradic",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Danny Andrew",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Robertson",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Raffaele Cirino",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Thomas",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "ARS": {
+     "team": "ARS",
+     "formation": "4-2-3-1",
+     "coach": "Mikel Arteta",
+     "xi": [
+      {
+       "name": "Illan Meslier",
+       "shirt": 30,
+       "pos": "G"
+      },
+      {
+       "name": "Jurriën Timber",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Cristhian Mosquera",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Marli Salmon",
+       "shirt": 89,
+       "pos": "D"
+      },
+      {
+       "name": "Piero Hincapié",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Martín Zubimendi",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Myles Lewis-Skelly",
+       "shirt": 49,
+       "pos": "?"
+      },
+      {
+       "name": "Max Dowman",
+       "shirt": 56,
+       "pos": "M"
+      },
+      {
+       "name": "Kai Havertz",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Ceadach O'Neill",
+       "shirt": 53,
+       "pos": "M"
+      },
+      {
+       "name": "Viktor Gyökeres",
+       "shirt": 14,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Ben White",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Martin Ødegaard",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Eberechi Eze",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Ezri Konsa",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Bruno Guimarães",
+       "shirt": 39,
+       "pos": "?"
+      },
+      {
+       "name": "Kepa Arrizabalaga",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Marcell Washington",
+       "shirt": 60,
+       "pos": "?"
+      },
+      {
+       "name": "Maalik Hashi",
+       "shirt": 74,
+       "pos": "?"
+      },
+      {
+       "name": "Andre Harriman-Annous",
+       "shirt": 43,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 37,
+      "center": 27,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 48,
+      "center": 26,
+      "right": 26
+     },
+     "secondHalf": {
+      "left": 29,
+      "center": 23,
+      "right": 48
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 26,
+      "right": 31
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 28,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 52,
+      "center": 24,
+      "right": 24
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-28T04:34:14.358Z",
+   "fdMatchId": "6275367",
+   "names": {
+    "fm45723": "Fleetwood Town",
+    "ARS": "Arsenal"
+   },
+   "heat": null
+  },
+  "6275372": {
+   "key": "6275372",
+   "pair": "6275372",
+   "season": "2026-27",
+   "date": "2026-10-27",
+   "matchId": "6275372",
+   "home": "fm8484",
+   "away": "fm8677",
+   "score": [
+    2,
+    0
+   ],
+   "providerScore": [
+    2,
+    0
+   ],
+   "teamStats": {
+    "fm8484": {
+     "possession": 50,
+     "shots": 15,
+     "shotsOn": 8,
+     "shotsOff": 4,
+     "blockedShots": 3,
+     "blocksMade": 7,
+     "corners": 8,
+     "offsides": 5,
+     "fouls": 13,
+     "saves": 1,
+     "passes": 356,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.85
+    },
+    "fm8677": {
+     "possession": 50,
+     "shots": 16,
+     "shotsOn": 3,
+     "shotsOff": 7,
+     "blockedShots": 6,
+     "blocksMade": 4,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 11,
+     "saves": 5,
+     "passes": 350,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.21
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "fm8484": {
+     "touches_opp_box": 26,
+     "big_chance": 4,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 6,
+     "shots_woodwork": 0,
+     "shots_inside_box": 12,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 2.26,
+     "expected_goals_set_play": 0.59,
+     "expected_goals_non_penalty": 2.85,
+     "expected_goals_on_target": 2.42,
+     "own_half_passes": 89,
+     "opposition_half_passes": 157,
+     "long_balls_accurate": 30,
+     "long_balls_accurate_pct": 38,
+     "accurate_crosses": 8,
+     "accurate_crosses_pct": 53,
+     "player_throws": 33,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 14,
+     "clearances": 39,
+     "duel_won": 66,
+     "ground_duels_won": 37,
+     "ground_duels_won_pct": 50,
+     "aerials_won": 29,
+     "aerials_won_pct": 64,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 40,
+     "red_cards": 0
+    },
+    "fm8677": {
+     "touches_opp_box": 25,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 1,
+     "shots_inside_box": 8,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 1.1,
+     "expected_goals_set_play": 0.1,
+     "expected_goals_non_penalty": 1.21,
+     "expected_goals_on_target": 0.06,
+     "own_half_passes": 118,
+     "opposition_half_passes": 116,
+     "long_balls_accurate": 32,
+     "long_balls_accurate_pct": 36,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 7,
+     "player_throws": 31,
+     "matchstats.headers.tackles": 19,
+     "interceptions": 10,
+     "clearances": 35,
+     "duel_won": 53,
+     "ground_duels_won": 37,
+     "ground_duels_won_pct": 50,
+     "aerials_won": 16,
+     "aerials_won_pct": 36,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 36,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     50,
+     50
+    ],
+    "h1": [
+     45,
+     55
+    ],
+    "h2": [
+     54,
+     46
+    ]
+   },
+   "events": [
+    {
+     "minute": 5,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Macaulay Gillesphey"
+    },
+    {
+     "minute": 13,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Macaulay Gillesphey"
+    },
+    {
+     "minute": 20,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Reece Welch"
+    },
+    {
+     "minute": 28,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "George Lapslie"
+    },
+    {
+     "minute": 31,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Bobby Pointon"
+    },
+    {
+     "minute": 34,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Callum Connolly"
+    },
+    {
+     "minute": 53,
+     "extra": 0,
+     "team": "fm8484",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aden Baldwin"
+    },
+    {
+     "minute": 53,
+     "extra": 0,
+     "team": "fm8484",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kayden Jackson"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "fm8677",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Matthew Garbett"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "fm8677",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Boluwatife Shofowoke"
+    },
+    {
+     "minute": 57,
+     "extra": 0,
+     "team": "fm8677",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "James Dornelly"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "fm8677",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Lucca Mendonça"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "fm8484",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Adam Phillips"
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "fm8484",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Will Swan"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "fm8677",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Harrison Jones"
+    },
+    {
+     "minute": 67,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Adam Phillips"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "fm8677",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Declan Frith"
+    },
+    {
+     "minute": 68,
+     "extra": 0,
+     "team": "fm8484",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kieran Morgan"
+    },
+    {
+     "minute": 73,
+     "extra": null,
+     "team": "fm8677",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Harley Mills"
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "fm8484",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Kieran Morgan"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Harry Ashfield",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.8,
+     "y": 32.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 4,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Brandon Khela",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.2,
+     "y": 29.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Bobby Pointon",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 19.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Macaulay Gillesphey",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.553,
+     "xgot": 0.853,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 16,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Macaulay Gillesphey",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 40.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Vernon Masara",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 21.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Bobby Pointon",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.608,
+     "xgot": 0.426,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.2,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Owura Edwards",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Ibou Touray",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.046,
+     "xgot": 0.082,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.4,
+     "y": 47.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "fm8677",
+     "player": "Ethan Williams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.133,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Owura Edwards",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0.057,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 47.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Ethan Williams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.14,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.8,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Vernon Masara",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.107,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.1,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Ethan Williams",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.7,
+     "y": 18.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Ethan Williams",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.8,
+     "y": 26.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Harley Mills",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 41.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Matthew Garbett",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.4,
+     "y": 37.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Jake Beesley",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 29.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Brandon Khela",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 34.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Adam Phillips",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0.577,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 88.7,
+     "y": 23.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Harley Mills",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.063,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 44.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Jake Beesley",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.134,
+     "xgot": 0.128,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "fm8677",
+     "player": "Declan Frith",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.1,
+     "y": 40.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Ibou Touray",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.086,
+     "xgot": 0.123,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102.2,
+     "y": 45.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Adam Phillips",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.348,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 27.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Adam Phillips",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.147,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 26.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "fm8484",
+     "player": "Will Swan",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.538,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 32.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "fm8677",
+     "player": "Boluwatife Shofowoke",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.327,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 37.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 2,
+     "team": "fm8484",
+     "player": "Jake Beesley",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0.229,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 23,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "fm8484",
+     "player": "Jake Beesley",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.139,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 28.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "fm8484",
+     "player": "Kieran Morgan",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.075,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.5,
+     "y": 31.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -8
+    ],
+    [
+     3,
+     -8
+    ],
+    [
+     4,
+     -8
+    ],
+    [
+     5,
+     -14
+    ],
+    [
+     6,
+     -8
+    ],
+    [
+     7,
+     -5
+    ],
+    [
+     8,
+     -3
+    ],
+    [
+     9,
+     3
+    ],
+    [
+     10,
+     -11
+    ],
+    [
+     11,
+     -8
+    ],
+    [
+     12,
+     -19
+    ],
+    [
+     13,
+     73
+    ],
+    [
+     14,
+     71
+    ],
+    [
+     15,
+     87
+    ],
+    [
+     16,
+     24
+    ],
+    [
+     17,
+     14
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     5
+    ],
+    [
+     20,
+     22
+    ],
+    [
+     21,
+     16
+    ],
+    [
+     22,
+     0
+    ],
+    [
+     23,
+     5
+    ],
+    [
+     24,
+     -8
+    ],
+    [
+     25,
+     3
+    ],
+    [
+     26,
+     14
+    ],
+    [
+     27,
+     38
+    ],
+    [
+     28,
+     16
+    ],
+    [
+     29,
+     0
+    ],
+    [
+     30,
+     -3
+    ],
+    [
+     31,
+     8
+    ],
+    [
+     32,
+     5
+    ],
+    [
+     33,
+     8
+    ],
+    [
+     34,
+     3
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     36,
+     0
+    ],
+    [
+     37,
+     41
+    ],
+    [
+     38,
+     41
+    ],
+    [
+     39,
+     100
+    ],
+    [
+     40,
+     100
+    ],
+    [
+     41,
+     100
+    ],
+    [
+     42,
+     30
+    ],
+    [
+     43,
+     -33
+    ],
+    [
+     44,
+     -24
+    ],
+    [
+     45,
+     14
+    ],
+    [
+     45.5,
+     -6
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     16
+    ],
+    [
+     49,
+     11
+    ],
+    [
+     50,
+     0
+    ],
+    [
+     51,
+     -81
+    ],
+    [
+     52,
+     -65
+    ],
+    [
+     53,
+     -54
+    ],
+    [
+     54,
+     5
+    ],
+    [
+     55,
+     5
+    ],
+    [
+     56,
+     35
+    ],
+    [
+     57,
+     35
+    ],
+    [
+     58,
+     14
+    ],
+    [
+     59,
+     -11
+    ],
+    [
+     60,
+     -5
+    ],
+    [
+     61,
+     5
+    ],
+    [
+     62,
+     30
+    ],
+    [
+     63,
+     14
+    ],
+    [
+     64,
+     24
+    ],
+    [
+     65,
+     11
+    ],
+    [
+     66,
+     38
+    ],
+    [
+     67,
+     49
+    ],
+    [
+     68,
+     33
+    ],
+    [
+     69,
+     5
+    ],
+    [
+     70,
+     3
+    ],
+    [
+     71,
+     19
+    ],
+    [
+     72,
+     35
+    ],
+    [
+     73,
+     0
+    ],
+    [
+     74,
+     -22
+    ],
+    [
+     75,
+     -54
+    ],
+    [
+     76,
+     -33
+    ],
+    [
+     77,
+     -27
+    ],
+    [
+     78,
+     68
+    ],
+    [
+     79,
+     79
+    ],
+    [
+     80,
+     68
+    ],
+    [
+     81,
+     3
+    ],
+    [
+     82,
+     -24
+    ],
+    [
+     83,
+     14
+    ],
+    [
+     84,
+     11
+    ],
+    [
+     85,
+     100
+    ],
+    [
+     86,
+     100
+    ],
+    [
+     87,
+     79
+    ],
+    [
+     88,
+     -54
+    ],
+    [
+     89,
+     -35
+    ],
+    [
+     90,
+     -30
+    ],
+    [
+     90.5,
+     6
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "fm8484": {
+     "team": "fm8484",
+     "formation": "3-4-2-1",
+     "coach": "Michael Duff",
+     "xi": [
+      {
+       "name": "Jon McCracken",
+       "shirt": 21,
+       "pos": "G"
+      },
+      {
+       "name": "Macaulay Gillesphey",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Reece Welch",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Matthew Pennington",
+       "shirt": 28,
+       "pos": "D"
+      },
+      {
+       "name": "Ibou Touray",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Callum Connolly",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Antoni Sarcevic",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Corey O'Keeffe",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Bobby Pointon",
+       "shirt": 23,
+       "pos": "M"
+      },
+      {
+       "name": "George Lapslie",
+       "shirt": 32,
+       "pos": "M"
+      },
+      {
+       "name": "Jake Beesley",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Aden Baldwin",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Kayden Jackson",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Adam Phillips",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Will Swan",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Kieran Morgan",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Cameron Dawson",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "George Pratt",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Hayden Matthews",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Henry Cartwright",
+       "shirt": 20,
+       "pos": "?"
+      }
+     ]
+    },
+    "fm8677": {
+     "team": "fm8677",
+     "formation": "4-2-3-1",
+     "coach": "Robbie Savage",
+     "xi": [
+      {
+       "name": "Alex Bass",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Carl Johnston",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Lucca Mendonça",
+       "shirt": 18,
+       "pos": "D"
+      },
+      {
+       "name": "Josh Feeney",
+       "shirt": 12,
+       "pos": "D"
+      },
+      {
+       "name": "Harley Mills",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Harry Ashfield",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Brandon Khela",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Owura Edwards",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Ethan Williams",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Vernon Masara",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Danny Ormerod",
+       "shirt": 27,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "James Dornelly",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Matthew Garbett",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Boluwatife Shofowoke",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Harrison Jones",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Declan Frith",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Collin Ndi",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Evan Weir",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Liam Kelly",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Patryk Sykut",
+       "shirt": 21,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 31,
+      "center": 26,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 23,
+      "right": 41
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 28,
+      "right": 44
+     }
+    },
+    "away": {
+     "total": {
+      "left": 40,
+      "center": 20,
+      "right": 40
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 16,
+      "right": 43
+     },
+     "secondHalf": {
+      "left": 40,
+      "center": 24,
+      "right": 36
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-10-28T04:34:13.365Z",
+   "fdMatchId": "6275372",
+   "names": {
+    "fm8484": "Bradford City",
+    "fm8677": "Peterborough United"
+   },
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-10-27T17:41:56.233Z"
+ "updatedAt": "2026-10-28T04:34:14.359Z"
 }
