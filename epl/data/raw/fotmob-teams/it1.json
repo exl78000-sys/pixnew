@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-28T18:05:15.896Z",
+ "fetchedAt": "2026-10-29T04:51:47.286Z",
  "teams": [
-  {
-   "code": "LAZ",
-   "fotmobId": 8543,
-   "fotmobName": "Lazio",
-   "fetchedAt": "2026-10-09T12:41:52.062Z",
-   "color": "#75acd4",
-   "teamColors": {
-    "darkMode": "#4096da",
-    "lightMode": "#75acd4",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Olimpico",
-   "city": "Roma",
-   "location": [
-    "41.933947912",
-    "12.454757094"
-   ],
-   "capacity": 70634,
-   "surface": "Grass",
-   "opened": 1932,
-   "coachHistory": [
-    {
-     "id": 187735,
-     "name": "Marco Baroni",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 18,
-     "draw": 11,
-     "loss": 9,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 557567,
-     "name": "Maurizio Sarri",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 12,
-     "loss": 12,
-     "pointsPerGame": 1.42,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 30721,
-     "name": "Gennaro Gattuso",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "INT",
    "fotmobId": 8636,
@@ -113,6 +53,66 @@
     {
      "id": 27692,
      "name": "Cristian Chivu",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "LAZ",
+   "fotmobId": 8543,
+   "fotmobName": "Lazio",
+   "fetchedAt": "2026-10-09T12:41:52.062Z",
+   "color": "#75acd4",
+   "teamColors": {
+    "darkMode": "#4096da",
+    "lightMode": "#75acd4",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Olimpico",
+   "city": "Roma",
+   "location": [
+    "41.933947912",
+    "12.454757094"
+   ],
+   "capacity": 70634,
+   "surface": "Grass",
+   "opened": 1932,
+   "coachHistory": [
+    {
+     "id": 187735,
+     "name": "Marco Baroni",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 18,
+     "draw": 11,
+     "loss": 9,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 557567,
+     "name": "Maurizio Sarri",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 12,
+     "loss": 12,
+     "pointsPerGame": 1.42,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 30721,
+     "name": "Gennaro Gattuso",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -185,6 +185,66 @@
    ]
   },
   {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-10-09T12:41:54.778Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -245,62 +305,62 @@
    ]
   },
   {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-10-09T12:41:54.778Z",
-   "color": "#005ea9",
+   "code": "NAP",
+   "fotmobId": 9875,
+   "fotmobName": "Napoli",
+   "fetchedAt": "2026-10-09T12:41:54.798Z",
+   "color": "#12A0D7",
    "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
+    "darkMode": "#12A0D7",
+    "lightMode": "#12A0D7",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
+   "venue": "Stadio Diego Armando Maradona",
+   "city": "Napoli",
    "location": [
-    "45.813856655",
-    "9.072376192"
+    "40.827974049",
+    "14.192930460"
    ],
-   "capacity": 13602,
+   "capacity": 54726,
    "surface": "Grass",
-   "opened": 1927,
+   "opened": 1959,
    "coachHistory": [
     {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
+     "id": 22169,
+     "name": "Antonio Conte",
      "season": "2024/2025",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 13,
+     "win": 24,
      "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
+     "loss": 4,
+     "pointsPerGame": 2.16,
+     "winPercentage": 0.63
     },
     {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
+     "id": 22169,
+     "name": "Antonio Conte",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
+     "win": 23,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 2,
+     "winPercentage": 0.61
     },
     {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
+     "id": 129745,
+     "name": "Massimiliano Allegri",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 3,
+     "win": 2,
      "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },
@@ -545,62 +605,62 @@
    ]
   },
   {
-   "code": "NAP",
-   "fotmobId": 9875,
-   "fotmobName": "Napoli",
-   "fetchedAt": "2026-10-09T12:41:54.798Z",
-   "color": "#12A0D7",
+   "code": "BLG",
+   "fotmobId": 9857,
+   "fotmobName": "Bologna",
+   "fetchedAt": "2026-10-09T12:41:59.110Z",
+   "color": "#102880",
    "teamColors": {
-    "darkMode": "#12A0D7",
-    "lightMode": "#12A0D7",
+    "darkMode": "#004eca",
+    "lightMode": "#102880",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "Stadio Diego Armando Maradona",
-   "city": "Napoli",
+   "venue": "Stadio Renato Dall'Ara",
+   "city": "Bologna",
    "location": [
-    "40.827974049",
-    "14.192930460"
+    "44.492290396",
+    "11.309956759"
    ],
-   "capacity": 54726,
+   "capacity": 39279,
    "surface": "Grass",
-   "opened": 1959,
+   "opened": 1927,
    "coachHistory": [
     {
-     "id": 22169,
-     "name": "Antonio Conte",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 10,
-     "loss": 4,
-     "pointsPerGame": 2.16,
-     "winPercentage": 0.63
-    },
-    {
-     "id": 22169,
-     "name": "Antonio Conte",
+     "id": 42581,
+     "name": "Vincenzo Italiano",
      "season": "2025/2026",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 23,
-     "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 2,
-     "winPercentage": 0.61
+     "win": 16,
+     "draw": 8,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.42
     },
     {
-     "id": 129745,
-     "name": "Massimiliano Allegri",
+     "id": 853795,
+     "name": "Domenico Tedesco",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
+     "win": 0,
      "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
+     "loss": 3,
+     "pointsPerGame": 0.25,
+     "winPercentage": 0
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
     }
    ]
   },
@@ -665,6 +725,66 @@
    ]
   },
   {
+   "code": "GEN",
+   "fotmobId": 10233,
+   "fotmobName": "Genoa",
+   "fetchedAt": "2026-10-09T12:41:59.575Z",
+   "color": "#CB1111",
+   "teamColors": {
+    "darkMode": "#CB1111",
+    "lightMode": "#CB1111",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Comunale Luigi Ferraris",
+   "city": "Genova",
+   "location": [
+    "44.416467178",
+    "8.952527046"
+   ],
+   "capacity": 36703,
+   "surface": "Grass",
+   "opened": 1911,
+   "coachHistory": [
+    {
+     "id": 34942,
+     "name": "Patrick Vieira",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 3,
+     "loss": 6,
+     "pointsPerGame": 0.33,
+     "winPercentage": 0
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 9,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 30682,
+     "name": "Daniele De Rossi",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 4,
+     "pointsPerGame": 0.2,
+     "winPercentage": 0
+    }
+   ]
+  },
+  {
    "code": "LEC",
    "fotmobId": 9888,
    "fotmobName": "Lecce",
@@ -721,66 +841,6 @@
      "loss": 3,
      "pointsPerGame": 1.2,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "BLG",
-   "fotmobId": 9857,
-   "fotmobName": "Bologna",
-   "fetchedAt": "2026-10-09T12:41:59.110Z",
-   "color": "#102880",
-   "teamColors": {
-    "darkMode": "#004eca",
-    "lightMode": "#102880",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Renato Dall'Ara",
-   "city": "Bologna",
-   "location": [
-    "44.492290396",
-    "11.309956759"
-   ],
-   "capacity": 39279,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 42581,
-     "name": "Vincenzo Italiano",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 16,
-     "draw": 8,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 853795,
-     "name": "Domenico Tedesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.25,
-     "winPercentage": 0
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
     }
    ]
   },
@@ -901,66 +961,6 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
-    }
-   ]
-  },
-  {
-   "code": "GEN",
-   "fotmobId": 10233,
-   "fotmobName": "Genoa",
-   "fetchedAt": "2026-10-09T12:41:59.575Z",
-   "color": "#CB1111",
-   "teamColors": {
-    "darkMode": "#CB1111",
-    "lightMode": "#CB1111",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Comunale Luigi Ferraris",
-   "city": "Genova",
-   "location": [
-    "44.416467178",
-    "8.952527046"
-   ],
-   "capacity": 36703,
-   "surface": "Grass",
-   "opened": 1911,
-   "coachHistory": [
-    {
-     "id": 34942,
-     "name": "Patrick Vieira",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 3,
-     "loss": 6,
-     "pointsPerGame": 0.33,
-     "winPercentage": 0
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 9,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 30682,
-     "name": "Daniele De Rossi",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 4,
-     "pointsPerGame": 0.2,
-     "winPercentage": 0
     }
    ]
   },
