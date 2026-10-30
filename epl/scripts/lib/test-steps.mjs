@@ -40,6 +40,8 @@ export const STEPS = [
   /* 德義法球隊頁(FotMob)→ 收件匣 → 核對器(2026-10-09):不連網,抓取器那段用假的 fetch。 */
   ['scripts/test-league-teams.mjs', []],
   ['scripts/test-pulse-shots.mjs', []],
+  /* 即時比分分支(2026-10-30,D3 方案 A):在暫存目錄開假遠端,把迴圈推 → 部署疊上 → 重設跑一遍,不連網。 */
+  ['scripts/test-live-data.mjs', []],
   /* 模擬遊玩(2026-09-03):獨立管線的守門 + 側寫對回來源 + 引擎不變量。
      排在英冠之後、文件檢查之前 —— 它只讀產物,不產生別的測試要驗的數字。 */
   ['scripts/game/test-game.mjs', []],

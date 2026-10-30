@@ -73,6 +73,11 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           cd epl
+          # 即時比分推到獨立的 live-data 分支(2026-10-30,D3 方案 A),不推預設分支 ——
+          # 原本一個比賽夜幾十則提交、每則帶整份 web/data,把預設分支的歷史淹掉。
+          # 開工先把那條分支上「還沒被部署併回」的檔疊上來(live-history 這種累積檔不疊就會丟),
+          # 並在本機提交,下面「這一輪有沒有變」的 git diff 才是相對於疊上去之後。
+          node scripts/live-data.mjs overlay --commit || echo "  ⚠ 疊不上 live-data,這一晚從預設分支的狀態開始"
 
           # 迴圈的截止時間要從**這一步開始**算,不是從睡醒開始算(2026-10-25):
           # 原本是睡醒之後再 +5 小時,而進場前可以睡到 75 分鐘 —— 睡超過半小時就撞上 timeout-minutes 330,
@@ -120,27 +125,17 @@ jobs:
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
-                git commit -q -m "chore(epl): 比賽中更新 $(date -u '+%H:%M UTC') [skip ci]"
-                # 建置/部署工作流程也會推同一個分支,推之前先接上
-                # rebase 失敗要 abort —— 半途的 rebase 會讓之後每一輪的 git 全部失效,
-                # 迴圈看起來還在跑、實際一筆都推不出去(2026-08-29 實際發生,
-                # 開發分支高頻推送時撞上,整場上半場沒有即時更新)
-                for try in 1 2 3; do
-                  if ! git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null; then
-                    git rebase --abort 2>/dev/null || true
-                    git checkout --theirs -- epl/data/raw/live.json epl/data/live-history.json 2>/dev/null || true
-                  fi
-                  if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
-                    PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
-                  fi
-                  echo "  [$N] 推送衝突,重試 $try"; sleep 3
-                done
-                # 三次都推不出去:放棄這一輪的提交、回到遠端狀態 —— 丟一輪資料
-                # 比整個迴圈卡死好;下一輪重抓就補回來了
-                if ! git diff --quiet origin/"$GITHUB_REF_NAME"..HEAD 2>/dev/null; then
-                  git rebase --abort 2>/dev/null || true
-                  git fetch -q origin "$GITHUB_REF_NAME" && git reset --hard -q "origin/$GITHUB_REF_NAME"
-                  echo "  [$N] ⚠ 推送失敗,重置到遠端狀態繼續"
+                # 本機提交只是記帳(下一輪的 git diff 從這裡算),不推預設分支。
+                git commit -q -m "chore(epl): 比賽中更新 $(date -u '+%H:%M UTC')"
+                # 推上 live-data 的只有「下一個 job 要接著用的 raw」與前端從 raw 讀的兩份 feed ——
+                # 其餘 web/data 產物讀者要等部署才看得到(Pages 只有部署會更新),推了也沒有人讀。
+                # 推不上去(另一支迴圈剛推)live-data.mjs 自己會重抓重試;三次都不行,這一輪留在本機提交裡,
+                # 下一輪拿的是 HEAD 的版本,會一起推上去。
+                if node epl/scripts/live-data.mjs push --message="chore(epl): 比賽中更新 $(date -u '+%H:%M UTC')" \
+                  epl/data/raw/live.json epl/data/raw/pulselive/ epl/data/raw/api-football/ epl/data/live-history.json \
+                  epl/data/raw/fotmob-cups/ epl/data/raw/football-data/ epl/data/raw/fotmob-ucl/ \
+                  epl/web/data/live.json epl/web/data/cups-live.json; then
+                  PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推到 live-data"
                 fi
               fi
               cd epl

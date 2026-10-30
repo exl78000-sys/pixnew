@@ -252,6 +252,7 @@ npm run laliga:build
 再一次推送與發布；GitHub runner 仍能連官方 FPL API，但不會自行高頻輪詢:
 
 1. **把抓到的即時資料提交回 repo**(`epl/data/raw/live.json` 等,帶 `[skip ci]` 避免遞迴觸發)。
+   比賽夜的迴圈推的是 `live-data` 分支(2026-10-30 起);部署開頭先把它疊上來,回寫時併回預設分支,再把那條分支重設成一則。
    之後在任何環境只要 `git pull` + `npm run build`,就是最新比分。
 2. **部署到 GitHub Pages**(需要先啟用,見下)。
 

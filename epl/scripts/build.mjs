@@ -71,6 +71,7 @@ import { coaches as fotmobCoaches, goals as fotmobGoals, squadNumbers, verifyGoa
 import { loadCoachPhotos, coachPhotoFor } from './lib/adapters/coach-photos.mjs';
 import { loadVerifiedLoans, attachLoans } from './lib/loans.mjs';
 import { fillFromLive, liveKickoffs } from './lib/live-fill.mjs';
+import { liveFeedUrl } from './lib/live-branch.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 /* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
@@ -1068,12 +1069,11 @@ async function main() {
     liveResultsMerged: liveFilled,
     /* 比賽中的快速通道。比賽日的輪詢工作流程每 2 分鐘把 live.json 提交回 repo,
        但 Pages 重新部署要等下一次建置 —— 所以前端直接讀 raw.githubusercontent.com,
-       資料一進 repo 就看得到,不用等部署。
+       資料一進 repo 就看得到,不用等部署。2026-10-30 起比分不在預設分支上,在即時分支
+       (lib/live-branch.mjs,D3 方案 A),網址從那裡組。
        raw 有 access-control-allow-origin: * (已實測),瀏覽器讀得到。
        只有在 Actions 裡建置時才有 repo/分支資訊;本機建置就是 null,前端自動退回讀本地檔。 */
-    liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
-      ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/live.json`
-      : null,
+    liveFeed: liveFeedUrl('epl/web/data/live.json'),
     official: offShapes
       ? {
           available: true, source: 'pulselive', asOf: offShapes.asOf, season: offShapes.season,
@@ -1339,9 +1339,7 @@ async function main() {
         builtAt: BUILT_AT,
         /* 比分快速通道的網址放在**這裡**不是 meta:cups.json 是跨聯賽的一份(三個聯賽的盃賽頁都讀它),
            而 meta 是各聯賽自己的 —— 放 meta 的話站在西甲就拿不到,只能退回讀部署後的舊檔。 */
-        liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
-          ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/cups-live.json`
-          : null,
+        liveFeed: liveFeedUrl('epl/web/data/cups-live.json'),
         note: '足總盃與聯賽盃的賽程與賽果來自 FotMob 的盃賽端點,只涵蓋正賽(足總盃從第一輪起;第九級打起的資格賽不在來源裡)。'
           + 'PK 大戰的比數與勝方另從單場詳情補,補不到的標「勝方待查」。2026-09-02 以前的場次逐場對過 SportMonks 的舊快取,之後只有一個來源。',
         // 對手隊徽查表:sourceId → data URI。**一支球隊只存一份**,不要掛在每一場上

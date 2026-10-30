@@ -58,6 +58,7 @@ import { teamMatchRows, styleTrendFor, attachTrendPercentiles, seasonRuler } fro
 import { attachCareers } from './lib/coach-career.mjs';
 import { attachProfiles } from './lib/coach-profiles.mjs';
 import { coreFromUnderstat } from './lib/player-core.mjs';
+import { liveFeedUrl } from './lib/live-branch.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 /* 即時勝率的時間曲線(npm run tune:inplay 產生;驗收沒過或檔案不在就是 null → 線性)。 */
@@ -1134,9 +1135,7 @@ async function main() {
     live: liveOut.available
       ? { available: true, source: liveOut.source, sourceLabel: liveOut.sourceLabel, fetchedAt: liveOut.fetchedAt, counts: liveOut.counts }
       : { available: false, note: liveOut.note },
-    liveFeed: (process.env.GITHUB_REPOSITORY && process.env.GITHUB_REF_NAME)
-      ? `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/${process.env.GITHUB_REF_NAME}/epl/web/data/leagues/es1/live.json`
-      : null,
+    liveFeed: liveFeedUrl('epl/web/data/leagues/es1/live.json'),
     official: { available: false }, ai: { enabled: false, pre: 0, post: 0 },
   };
 

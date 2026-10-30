@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // 走查回測(walk-forward):只用「比賽日之前」的資料建模,再預測該輪比賽。
 // 用來驗證預測引擎沒有偷看未來,而且真的比亂猜好。
+import { FEED_PATHS } from './lib/live-branch.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { writeFileSync, mkdirSync, readFileSync, existsSync, readdirSync, statSync, rmSync } from 'node:fs';
@@ -3570,10 +3571,14 @@ async function checkDataGap() {
           const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
           return /liveSummary/.test(src) && /中場講評/.test(src) && /自動生成/.test(src);
         })()],
-        ['比賽日迴圈:rebase 失敗要 abort、推不出去要重置(卡死那課)', (() => {
-          const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-matchday.yml'), 'utf8');
-          return /git rebase --abort/.test(wf) && /reset --hard -q "origin/.test(wf);
-        })()],
+        /* 原本守「rebase 失敗要 abort、推不出去要重置」(2026-08-29 卡死那課)。2026-10-30 起迴圈不再推預設分支,
+           也就沒有 rebase:本機提交只是記帳,推的是 live-data.mjs 用暫存 index 拼出來的那一則,撞了就重抓重做。
+           卡死那課的性質換成「迴圈裡沒有任何會留下半途狀態的 git 操作」。 */
+        ['比賽日迴圈:不在迴圈裡 rebase / pull,也不推預設分支(卡死那課換了形狀)', (() =>
+          ['epl-matchday.yml', 'laliga-matchday.yml'].every(f => {
+            const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8');
+            return !/git pull --rebase|git rebase |reset --hard/.test(wf) && !/git push[^\n]*GITHUB_REF_NAME/.test(wf);
+          }))()],
       ];
     })(),
 
@@ -4498,6 +4503,50 @@ async function checkDataGap() {
         const tmo = Number(w.match(/timeout-minutes:\s*(\d+)/)?.[1]);
         return t0 >= 0 && sl > t0 && end > 0 && tmo > 0 && end <= (tmo - 10) * 60 && !/END=\$\(\( \$\(date \+%s\)/.test(w);
       });
+    })()],
+    /* 即時比分分支(2026-10-30,補齊規劃 D3 方案 A)。流程本身由 test-live-data.mjs 拿假遠端跑一遍;
+       這裡守的是**接線**:少接一處的話,live-data 分支照樣有東西、畫面照樣有比分,
+       而累積檔或歐冠逐場快取會在某一次部署靜靜沒被併回(或被重設丟掉)。 */
+    ['即時分支:兩支迴圈開工先 overlay --commit、推的是 live-data.mjs push', (() =>
+      ['epl-matchday.yml', 'laliga-matchday.yml'].every(f => {
+        const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', f), 'utf8');
+        const ov = wf.indexOf('live-data.mjs overlay --commit'), loop = wf.indexOf('while [ "$(date +%s)" -lt "$END" ]');
+        return ov > 0 && loop > ov && /live-data\.mjs push/.test(wf);
+      }))()],
+    ['即時分支:部署在第一次抓取之前 overlay、回寫成功之後才 reset', (() => {
+      const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+      const ov = wf.indexOf('run: node scripts/live-data.mjs overlay'), fe = wf.indexOf('run: npm run fetch');
+      const rs = wf.indexOf('live-data.mjs reset'), wb = wf.indexOf('name: 回寫即時資料');
+      return ov > 0 && fe > ov && rs > wb && wb > 0 && /if \[ "\$ABSORBED" = "1" \]; then\n\s*\(cd epl && node scripts\/live-data\.mjs reset\)/.test(wf);
+    })()],
+    /* 重設會把 live-data 換成「部署工作樹上的版本」——迴圈推上去的 raw 要是**不在回寫清單裡**,
+       它就只在 live-data 上,重設那一刻就沒了。所以迴圈推的每個非 feed 路徑都要被回寫清單涵蓋。 */
+    ['即時分支:迴圈推上 live-data 的每個 raw 路徑,部署的回寫清單都涵蓋', (() => {
+      const dir = join(ROOT, '..', '.github', 'workflows');
+      const live = readFileSync(join(dir, 'epl-live.yml'), 'utf8');
+      const wbBlock = live.slice(live.indexOf('name: 回寫即時資料'), live.indexOf('live-data.mjs reset'));
+      const wbPaths = [...wbBlock.matchAll(/(epl\/[\w./*-]+)/g)].map(m => m[1]);
+      const covered = p => wbPaths.some(w => w === p || (w.endsWith('/') && p.startsWith(w)));
+      const pushed = [];
+      for (const f of ['epl-matchday.yml', 'laliga-matchday.yml']) {
+        const wf = readFileSync(join(dir, f), 'utf8');
+        const blk = wf.slice(wf.indexOf('live-data.mjs push'), wf.indexOf('; then', wf.indexOf('live-data.mjs push')));
+        pushed.push(...[...blk.matchAll(/(epl\/[\w./-]+)/g)].map(m => m[1]).filter(p => !p.startsWith('epl/scripts/')));
+        /* 西甲那支的 $SCORE_PATHS 是從 raw_of 拼的:把對照表展開 */
+        if (/\$SCORE_PATHS/.test(blk)) for (const m of wf.matchAll(/\b[a-z]{2}\d\) echo (fotmob-[\w-]+) ;;/g)) pushed.push(`epl/data/raw/${m[1]}/scores.json`);
+      }
+      const raw = pushed.filter(p => !FEED_PATHS.includes(p));
+      const miss = raw.filter(p => !covered(p));
+      if (miss.length) console.log(`      回寫清單沒涵蓋:${miss.join('、')}`);
+      return raw.length >= 10 && miss.length === 0;
+    })()],
+    ['即時分支:迴圈推的 feed 都在重設要帶的 FEED_PATHS 裡,builds 的 liveFeed 都從 live-branch 組', (() => {
+      const dir = join(ROOT, '..', '.github', 'workflows');
+      const feeds = ['epl-matchday.yml', 'laliga-matchday.yml'].flatMap(f =>
+        [...readFileSync(join(dir, f), 'utf8').matchAll(/(epl\/web\/data\/[\w./-]+\.json)/g)].map(m => m[1]));
+      const builds = ['build.mjs', 'build-laliga.mjs'].map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
+      return feeds.length >= 3 && feeds.every(p => FEED_PATHS.includes(p))
+        && builds.every(b => /liveFeed: liveFeedUrl\(/.test(b) && !/raw\.githubusercontent\.com\/\$\{process\.env\.GITHUB_REPOSITORY\}/.test(b));
     })()],
     /* 新加的探測要排在 **`latest` job 的**最後一步。2026-09-21 踩到:我把它加在**檔尾**,
        而檔尾是 `all` job —— 勾 quick 時 `all` 整個 skipped,於是 run #39 報 success、

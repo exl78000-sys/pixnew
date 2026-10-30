@@ -930,6 +930,11 @@ build → laliga:build,跑完 `npm run local:sync` 再跑 `npm test` 就會紅�
 - 預設分支 `claude/method-feasibility-analysis-60pwfp`(排程與部署跑這條)
 - 做法:在開發分支提交 → push → 合併進預設分支 → push → 把預設分支合回開發分支
 
+**比賽夜的即時資料在 `live-data` 分支**(2026-10-30,D3 方案 A):兩支比賽日迴圈只推它,部署開頭疊上、回寫併回預設分支、
+再把它重設成一則。**不要在它上面開發、不要把它合併進任何分支**(它的歷史每次部署都會被換掉)。
+迴圈新推一個 raw 路徑的話,那個路徑**一定要也在 `epl-live.yml` 的回寫清單裡**,不然重設那一刻就丟了(`npm test` 守著)。
+流程在 `scripts/live-data.mjs`,本機想看比賽夜的最新 raw 就跑 `node scripts/live-data.mjs overlay`。
+
 **合併衝突幾乎都在產物**(`data/backtest*.json`、`web/data/*.json`、
 `data/availability-history.json`)。解法固定:
 

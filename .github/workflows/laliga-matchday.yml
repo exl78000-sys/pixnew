@@ -75,6 +75,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           cd epl
+          # 即時比分推到獨立的 live-data 分支(2026-10-30,D3 方案 A),跟 epl-matchday 同一條。
+          # 開工先疊上那條分支上還沒被部署併回的檔,並在本機提交(下面的 git diff 才是相對於疊上去之後)。
+          node scripts/live-data.mjs overlay --commit || echo "  ⚠ 疊不上 live-data,這一晚從預設分支的狀態開始"
 
           # 截止時間從**這一步開始**算(2026-10-25,跟 epl-matchday 同一個錯):原本睡醒才 +3 小時 50 分,
           # 睡超過 ~18 分鐘就撞 timeout-minutes 250 被取消,notify-ci 當紅寄信。
@@ -148,24 +151,15 @@ jobs:
               if git diff --cached --quiet; then
                 echo "  [$N] 產物無變化"
               else
-                git commit -q -m "chore(laliga): 即時比分 $(date -u '+%H:%M UTC') [skip ci]"
-                # rebase 失敗要 abort:半途的 rebase 會讓之後每一輪的 git 全部失效
-                # (epl-matchday 實際踩過 —— 迴圈看起來在跑,實際一筆都推不出去)
-                for try in 1 2 3; do
-                  if ! git pull --rebase -q origin "$GITHUB_REF_NAME" 2>/dev/null; then
-                    git rebase --abort 2>/dev/null || true
-                    git checkout --theirs -- $SCORE_PATHS epl/data/live-history-la-liga.json 2>/dev/null || true
-                  fi
-                  if git push -q origin "HEAD:${GITHUB_REF_NAME}" 2>/dev/null; then
-                    PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推送"; break
-                  fi
-                  echo "  [$N] 推送衝突,重試 $try"; sleep 3
-                done
-                # 推不出去就放棄這一輪、回到遠端狀態 —— 丟一輪比卡死整個迴圈好
-                if ! git diff --quiet origin/"$GITHUB_REF_NAME"..HEAD 2>/dev/null; then
-                  git rebase --abort 2>/dev/null || true
-                  git fetch -q origin "$GITHUB_REF_NAME" && git reset --hard -q "origin/$GITHUB_REF_NAME"
-                  echo "  [$N] ⚠ 推送失敗,重置到遠端狀態繼續"
+                # 本機提交只是記帳(下一輪的 git diff 從這裡算),不推預設分支。
+                git commit -q -m "chore(laliga): 即時比分 $(date -u '+%H:%M UTC')"
+                # 推上 live-data 的只有下一個 job 要接著用的 raw 與前端從 raw 讀的西甲 feed;
+                # 其餘聯賽產物讀者要等部署才看得到,推了也沒有人讀(Pages 只有部署會更新)。
+                # 推不上去 live-data.mjs 會重抓重試;三次都不行就留在本機提交裡,下一輪一起推。
+                if node epl/scripts/live-data.mjs push --message="chore(laliga): 即時比分 $(date -u '+%H:%M UTC')" \
+                  $SCORE_PATHS epl/data/raw/sportmonks-la-liga/finals.json epl/data/live-history-la-liga.json \
+                  epl/web/data/leagues/es1/live.json; then
+                  PUSHED=$((PUSHED+1)); echo "  [$N] ✔ 已更新並推到 live-data"
                 fi
               fi
             fi

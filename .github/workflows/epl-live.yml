@@ -18,7 +18,7 @@ on:
     #
     # 比賽中的比分不靠這裡:GitHub 的 schedule 是 best-effort,實測設定 15 分鐘、
     # 實際間隔 28~78 分鐘(平均 46)。比賽中的更新交給 epl-matchday.yml ——
-    # 它在 job 內部每 2 分鐘抓一次並把 web/data/ 推回 repo,
+    # 它在 job 內部每 2 分鐘抓一次並把比分推到 live-data 分支(2026-10-30 起,不再推預設分支),
     # 而**實時戰況頁每 20 秒自己去 raw.githubusercontent 讀那一份**
     # (meta.liveFeed),所以比賽中不需要重新部署也看得到最新比分與陣型。
     #
@@ -53,6 +53,14 @@ jobs:
           node-version: '22'
 
       # 專案零依賴,不需要 npm install
+
+      # 比賽夜的迴圈 2026-10-30 起把比分推到獨立的 live-data 分支(D3 方案 A),不推預設分支。
+      # **一定要排在所有抓取之前**:那條分支上有預設分支還沒有的累積檔(live-history、歐冠逐場快取),
+      # 不先疊上來的話,這次建置看不到它們,回寫也不會把它們併回預設分支。
+      # 只拿「上次併回之後改過的檔」;那一則記在 $RUNNER_TEMP,回寫完的重設要對著它做 lease。
+      - name: 疊上比賽夜的即時資料(live-data 分支)
+        run: node scripts/live-data.mjs overlay
+        continue-on-error: true
 
       - name: 抓賽程與賽果(openfootball / FPL 鏡像)
         run: npm run fetch -- --force
@@ -630,11 +638,13 @@ jobs:
           # 但那時就退回「不覆蓋」= 這條通道等於沒有)。
           git add -f epl/web/data/cups-live.json 2>/dev/null || true
           git add -f epl/data/manual/news-curated-archive.json 2>/dev/null || true
+          ABSORBED=0
           if git diff --cached --quiet; then
-            echo "資料沒有變化,不提交"
+            echo "資料沒有變化,不提交"; ABSORBED=1
           else
             # [skip ci] 避免這個提交又觸發自己
             git commit -m "chore(epl): 更新即時資料 $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
+            # (2026-10-30 起比賽日迴圈推 live-data 分支,不再跟這裡搶;下面的重試留著給同時有人推開發合併的情況。)
             # 比賽日的高頻迴圈每 2 分鐘推同一條分支,裸 push 必撞(2026-08-29 實際
             # 把整次部署弄掉:回寫紅 → build job 失敗 → deploy 被跳過)。
             # 重試 + rebase(失敗要 abort);三次不行就放棄回寫但**不擋部署** ——
@@ -670,7 +680,13 @@ jobs:
               if writeback; then PUSHED=1; echo "已回寫即時資料(第 $try 次)"; break; fi
               sleep 4
             done
-            [ "$PUSHED" = "1" ] || echo "⚠ 回寫連撞三次(比賽日迴圈在推),放棄這一批 —— 不擋部署"
+            [ "$PUSHED" = "1" ] && ABSORBED=1 || echo "⚠ 回寫連撞三次,放棄這一批 —— 不擋部署"
+          fi
+          # 比賽夜推到 live-data 的那些已經跟著上面那則併回預設分支了 —— 把那條分支重設成一則
+          # (D3 的「每日 squash」:歷史最多留到下一次部署)。回寫沒成功就不重設,不然那批會兩邊都沒有。
+          # 重設用 lease 對著開頭 overlay 看到的那一則:這段時間迴圈推過就跳過,下一次部署再併。
+          if [ "$ABSORBED" = "1" ]; then
+            (cd epl && node scripts/live-data.mjs reset) || echo "⚠ live-data 重設失敗 —— 不擋部署,下一次再併"
           fi
 
       # Pages 還沒啟用時,deploy 會失敗;先問一下,沒開就跳過,不讓整個流程變紅
