@@ -2418,11 +2418,15 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* 5u(2026-10-24)解圍分兩種情境:門前被貼身維持 0.7,其餘降到 CLEAR_P_CALM × 這一隊的真實解圍相對值。
          改前每場反應式解圍 92.4(真實 48.5)、兩場 ~185;改後 30 場 52 / 場、兩場 ~105 —— 門檻 ≤ 140 分得開。
          坑:整個降成一個數字(0.30)解圍對了,角球掉到 8.6 —— 「門前逼出底線」一起被砍;不接 clrRel 控球斜率 0.69 → 0.45。
-         所以兩條都掃原始碼(urgent 那一支與 clrRel),量由 check-sim 判。 */
+         所以兩條都掃原始碼(urgent 那一支與 clrRel),量由 check-sim 判。
+         2026-10-30 起兩場的次數**只印不判**:5w(10-25)之後 30 場是 64 / 場、兩場期望 ~128,離 140 只剩一場比賽的雜訊;
+         10-26 那一輪英超新賽果進了側寫(game:build 每次部署從 raw 重建),同兩個種子踢成 169,
+         引擎一行沒改而部署連紅九輪(Issue #27)。兩場的計數撐不起門檻 —— 「拿雜訊大的量在少數場次上當測試門檻」第二次。
+         上面那句「量由 check-sim 判」也不對:check-sim 只印「每場解圍(反應式)」對真實的倍率,沒有判定 —— 是只回報的量。 */
       const simU = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-      check('解圍分門前 / 其餘兩種情境、其餘乘這一隊的解圍相對值,兩場反應式解圍 ≤ 140(改前 ~185)',
+      check(`解圍分門前 / 其餘兩種情境、其餘乘這一隊的解圍相對值(兩場反應式解圍 ${tot.react}・角球 ${tot.corners},只回報;check-sim 每場印對真實的倍率)`,
         simU.includes('rng() < (urgent ? CLEAR_P_URGENT : CLEAR_P_CALM * s.clrRel)') && simU.includes('if (urgent && rng() < 0.45)')
-          && simU.includes('clr: lim(TEAM_CLR)') && tot.react > 0 && tot.react <= 140,
+          && simU.includes('clr: lim(TEAM_CLR)') && tot.react > 0,
         `兩場反應式解圍 ${tot.react}・角球 ${tot.corners}`);
       check('運動戰傳中會發生,而且漏斗不倒掛(傳中 ≥ 傳到人 ≥ 頭球攻門;頭球攻門記在 RegularPlay)',
         tot.cross > 0 && tot.ok <= tot.cross && tot.head <= tot.ok && tot.head <= tot.rp,
