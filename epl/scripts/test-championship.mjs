@@ -350,6 +350,16 @@ const table = out('table'), results = out('results'), sim = out('sim');
   /* 缺的東西要 null 不要 0 —— 0 看起來像「量到了,結果是零」。 */
   check('球隊的陣容人數是 null 不是 0', teams.every(t => t.squadSize === null));
   check('資料界線有講出球員層做得到什麼、做不到什麼', (meta.boundaries ?? []).some(x => /球員/.test(x)));
+  /* 2026-10-30:界線寫死「沒有傷停、正式陣容與賽後統計」,而 9/05 起賽後報告(正式名單、事件、球隊統計)就有了 ——
+     那句在首頁掛了將近兩個月。守的是**配對**:有賽後報告的時候,界線不准再說沒有正式陣容 / 賽後統計;
+     沒有的時候就不判(那句話那時是真的)。報告數從 reports.json 讀,不從 meta 讀(那是被守的一方)。 */
+  {
+    const rp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'reports.json');
+    const nReports = existsSync(rp) ? (JSON.parse(readFileSync(rp, 'utf8')).count ?? 0) : 0;
+    const stale = (meta.boundaries ?? []).filter(x => /^—/.test(x) && /(正式陣容|賽後統計)/.test(x));
+    check('有賽後報告時,資料界線不再說「沒有正式陣容 / 賽後統計」',
+      nReports === 0 || stale.length === 0, stale.join(' | '));
+  }
 }
 
 // ── 6. 模擬的分界線要對得上這個聯賽 ──────────────────

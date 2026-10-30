@@ -660,7 +660,18 @@ async function main() {
         && JSON.parse(readFileSync(join(ROOT, 'data', 'championship-coaches-verified.json'), 'utf8')).accepted
         ? ['✓ 教練名冊:人工交付並通過核對(6 支英超對照組跟官方每日名單全對;任內戰績由本站賽果依上任日期切分)']
         : ['— 沒有教練名冊']),
-      '— 沒有傷停、正式陣容與賽後統計',
+      /* 這一行原本寫死「沒有傷停、正式陣容與賽後統計」—— 2026-09-05 接上 FotMob 逐場之後,正式陣容與賽後統計
+         就有了,而這句在首頁的「目前資料界線」掛了將近兩個月(「有哪一句還在講我們沒有它」又一次)。
+         跟著資料走:meta 在報告建好之前寫,所以數的是逐場統計(報告就是從它建的)。 */
+      ...(fotmobStats.count
+        ? [`✓ 賽後報告(FotMob 逐場):正式名單與陣型、事件、球隊統計、逐射門 xG 與逐人評分 —— 本季 `
+            + `${Object.values(fotmobStats.matches).filter(m => m.season === CURRENT_SEASON).length} 場、`
+            + `上季 ${Object.values(fotmobStats.matches).filter(m => m.season === LAST_SEASON).length} 場有逐場統計;`
+            + '比分逐場對回本站賽果才收,控球率沒有第二來源可抽核',
+          /* 「FotMob 有沒有傷停名單」**沒有探測過**(本站的抽取器只留先發與替補),所以這裡只講已知的那一半 ——
+             寫成「FotMob 不含」就是把「我沒試過」寫成「上游沒有」(鐵則三) */
+          '— 沒有傷停與停賽:FPL 只有英超;FotMob 逐場端點有沒有傷停名單還沒探測過']
+        : ['— 沒有傷停、正式陣容與賽後統計(FotMob 逐場資料還沒抓)']),
       ...(tableCaveat ? [`— ${tableCaveat.note.replace(/\*\*/g, '')}`] : []),
       ...(backtest.available
         ? [`✓ 走查回測 ${backtest.season} ${backtest.games} 場:RPS ${backtest.rps}、基準線 ${backtest.baselineRps}`
