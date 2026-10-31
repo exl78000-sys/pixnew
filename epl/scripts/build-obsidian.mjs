@@ -737,6 +737,14 @@ function renderMatch(f, ctx) {
       body.push(`\n## 賽前預測(開賽前存下來的快照)\n\n| 主勝 | 和 | 客勝 |\n|---|---|---|\n| ${pct(p.home)} | ${pct(p.draw)} | ${pct(p.away)} |\n`);
       if (Number.isFinite(p.xgHome) && Number.isFinite(p.xgAway)) body.push(`\n預期進球 ${p.xgHome} : ${p.xgAway}\n`);
       body.push(`\n> 比賽日迴圈在開賽時凍結的機率(Poisson 與 Elo 兩個模型的平均),之後不會被覆寫 —— 模型當時沒有看過這場結果。\n`);
+    } else if (f.prematch?.method === 'walk-forward') {
+      /* 本季沒有快照的已完賽場次:build 跑同一支 walkForward 補的回測賽前預測(lib/played-prematch.mjs,2026-10-31)。
+         訓練只用更早幾週已踢完的賽果;它不是當時站上顯示的數字,所以標題與說明都寫「回測」 */
+      const p = f.prematch;
+      body.push(`\n## 賽前預測(走查回測)\n\n| 主勝 | 和 | 客勝 |\n|---|---|---|\n| ${pct(p.home)} | ${pct(p.draw)} | ${pct(p.away)} |\n`);
+      if (Number.isFinite(p.xgHome) && Number.isFinite(p.xgAway)) body.push(`\n預期進球 ${p.xgHome} : ${p.xgAway}\n`);
+      body.push(`\n> 走查回測:只用這一場那一週之前已踢完的賽果配適同一套模型(Poisson 與 Elo 平均),模型沒有看過這場結果。`
+        + `不是當時站上顯示的那一份 —— 本站沒有存那一份。\n`);
     } else {
       body.push(`\n## 賽前預測\n\n`);
       body.push(`本站沒有保存這場的**賽前機率快照**(只有比賽日迴圈即時追蹤過的場次才有),所以這裡不放預測數字。\n\n`);

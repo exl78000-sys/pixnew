@@ -34,6 +34,7 @@
  *   npm run en2:build
  */
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
@@ -326,6 +327,19 @@ async function main() {
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });
+
+  /* 已完賽場次的賽前預測:走查回測(lib/played-prematch.mjs,2026-10-31)。只補沒有快照的場次 —— 開賽前凍結的快照
+     是當時站上真的顯示的那一份,比回測更接近「賽前」,有就用它。回測不是當時站上的數字,前端照 method 標「回測」 */
+  {
+    const pm = playedPrematch({ past: lastMatches, current: curMatches });
+    let n = 0;
+    for (const f of fixtures) {
+      if (!f.played || f.prediction) continue;
+      const x = pm.byKey.get(prematchKey(f));
+      if (x) { f.prematch = { ...x, method: 'walk-forward' }; n++; }
+    }
+    console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
+  }
 
   const sim = simulateSeason({
     model, fixtures: curLeague.filter(m => !m.played),

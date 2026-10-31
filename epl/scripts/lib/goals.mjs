@@ -4,10 +4,16 @@
 // 這個逐球資料不能把某一球分成運動戰/角球/任意球,所以不留個人級欄位。
 // 球隊整季的進球情境另由 Understat 快取進入 tactics.json,不在這裡重複聚合。
 import { round } from './util.mjs';
+import { normName } from './names.mjs';
 
 /* 一支球隊在一個賽季的進球剖面。
    records 已經過 adapter 修正與比分核對,這裡只做彙總,不再驗證。 */
-export function teamGoals(records, code) {
+/* fullAppearances:records 是不是「這一隊每一場出場都有一列」(含沒有進球也沒有助攻的那幾場)。
+   2026-10-31 之前沒有這個選項,上場分鐘一律從 records 加 —— 而英超的來源(FPL 逐輪鏡像)與早期的 FotMob 人工明細
+   **只收有進球或助攻的列**,於是「上場分鐘」其實是「有進球或助攻那幾場的分鐘」:Haaland 2024-25 印 1,574 分 / 18 場,
+   每 90 分進球 1.26(那一季他踢的不只那 18 場)。每 90 分被系統性高估,而畫面寫著「分母是上場分鐘」。
+   現在只有呼叫端明講是完整出場紀錄時才給分鐘(與每 90 分),其餘一律 null(鐵則一:不是那個意思的數字不印)。 */
+export function teamGoals(records, code, { fullAppearances = false } = {}) {
   const mine = records.filter(r => r.team === code);
   const theirs = records.filter(r => r.opp === code);
 
@@ -34,18 +40,21 @@ export function teamGoals(records, code) {
      `if (r.start)` 則會把 null 判成替補,把整季的球全掛到板凳頭上。
      兩者都是編出來的數字,鐵則一不准。 */
   const hasStart = mine.some(r => r.start != null);
-  const hasMin = mine.some(r => r.min != null);
+  const hasMin = fullAppearances && mine.some(r => r.min != null);
   const byPlayer = new Map();
   for (const r of mine) {
-    if (!r.g && !r.a) continue;
+    if (r.code == null) continue;   // 只有烏龍球的列(沒有可以掛的人)
     if (!byPlayer.has(r.code)) byPlayer.set(r.code, { code: r.code, g: 0, a: 0, startG: 0, subG: 0, min: 0, games: 0 });
     const p = byPlayer.get(r.code);
     p.g += r.g; p.a += r.a; p.min += r.min ?? 0; p.games++;
     if (r.start != null) { if (r.start) p.startG += r.g; else p.subG += r.g; }
   }
+  /* 進球榜只列有進球或助攻的人;分鐘與場次是**他這一季替這一隊的全部出場**(fullAppearances 時),
+     不是只有進球那幾場 —— 所以先全部加完再篩 */
+  for (const [k, p] of byPlayer) if (!p.g && !p.a) byPlayer.delete(k);
   for (const p of byPlayer.values()) {
     if (!hasStart) { p.startG = null; p.subG = null; }
-    if (!hasMin) p.min = null;
+    if (!hasMin) { p.min = null; p.games = fullAppearances ? p.games : null; }
   }
 
   const sum = (rows, k) => rows.reduce((a, r) => a + r[k], 0);
@@ -82,12 +91,13 @@ export function subShare(records) {
    沒有這份清單的話,「逐隊進失球對回賽果」那條斷言會在每次有新賽果、
    而人工交付的明細還沒跟上時變紅,看起來像資料錯了,其實只是涵蓋範圍不同。
    有了它,核對就限定在同一批比賽上,而且畫面也講得出涵蓋率(鐵則四)。 */
-export function buildGoals(bySeason, { nameOf, codes, matchKeys = {} }) {
+export function buildGoals(bySeason, { nameOf, codes, matchKeys = {}, fullAppearances = {} }) {
   const seasons = {};
   for (const [season, records] of Object.entries(bySeason)) {
     const teams = {};
+    const full = fullAppearances[season] === true;
     for (const code of codes) {
-      const t = teamGoals(records, code);
+      const t = teamGoals(records, code, { fullAppearances: full });
       if (!t.for && !t.against) continue;      // 那一季不在英超的球隊直接跳過
       teams[code] = {
         ...t,
@@ -96,8 +106,8 @@ export function buildGoals(bySeason, { nameOf, codes, matchKeys = {} }) {
           name: nameOf(p.code),
           // per-90 的分母是上場分鐘。出場太少的不給這個數字 ——
           // 替補上場 10 分鐘進 1 球換算成每 90 分鐘 9 球,那是誤導不是資訊。
-          g90: p.min >= 450 ? round((p.g / p.min) * 90, 2) : null,
-          a90: p.min >= 450 ? round((p.a / p.min) * 90, 2) : null,
+          g90: p.min != null && p.min >= 450 ? round((p.g / p.min) * 90, 2) : null,
+          a90: p.min != null && p.min >= 450 ? round((p.a / p.min) * 90, 2) : null,
         })),
       };
     }
@@ -107,7 +117,7 @@ export function buildGoals(bySeason, { nameOf, codes, matchKeys = {} }) {
        starterGoals 變成 0,畫面上就是「這隊 100% 的球都是替補進的」,
        那是編出來的。整季都沒有 start 就一律標 null。 */
     const hasStart = records.some(r => r.start != null);
-    const hasMin = records.some(r => r.min != null);
+    const hasMin = full && records.some(r => r.min != null);
     for (const t of Object.values(teams)) {
       if (!hasStart) { t.starterGoals = null; t.subGoals = null; }
     }
@@ -116,10 +126,59 @@ export function buildGoals(bySeason, { nameOf, codes, matchKeys = {} }) {
       subShare: hasStart ? subShare(records) : null,
       startKnown: hasStart,
       minKnown: hasMin,
+      fullAppearances: full,
       goals: records.reduce((a, r) => a + r.g, 0),
       // null = 這一季的來源沒有回報涵蓋哪幾場(往季走 openfootball,整季都有)
       matchKeys: matchKeys[season] ?? null,
     };
   }
   return seasons;
+}
+
+/* FotMob 逐場逐人統計 → buildGoals 要的列(2026-10-31,西甲先用)。每一場**每一位上場的人**一列(含沒進球的),
+   所以分鐘與先發 / 替補是完整出場紀錄(fullAppearances)。
+   每一場先核對:該隊球員進球 + 對手烏龍球 = 比分,對不上的整場不收(跟英冠球員層同一條,lib/season-players.mjs)。
+   烏龍球判定只看事件的 ownGoal / 'Own Goal' 旗標。**逐場統計裡事件的 team 是踢進自家門的那一隊**(沒有翻成得分方 ——
+   翻轉是 toCanonicalDetail 做的,那是賽後報告那條路),所以 t 的烏龍球得分 = 對手隊名下的烏龍球事件,跟 aggregatePlayers 同一個寫法。
+   第一版照「已翻過」寫,西甲兩季 32 場對不回比分,全是烏龍球那一顆記反了。
+   matches:loadFotmobMatchStats 的 matches(同一季);回傳 { rows, matchKeys, excluded, ownGoals }。 */
+export function goalRowsFromMatchStats(matches) {
+  const rows = [], matchKeys = [], excluded = [];
+  let ownGoals = 0;
+  for (const m of matches) {
+    const { home: h, away: a, players, events = [], score } = m;
+    const key = `${h}|${a}`;
+    if (!players || !Object.values(players).some(l => l?.length)) { excluded.push({ key, reason: '這一場沒有逐人統計' }); continue; }
+    if (!score) { excluded.push({ key, reason: '沒有比分' }); continue; }
+    const isOwn = e => e.type === 'Goal' && (e.ownGoal || e.detail === 'Own Goal');
+    const pg = t => (players[t] ?? []).reduce((s, p) => s + (p.goals?.total ?? 0), 0);
+    const og = t => events.filter(e => isOwn(e) && String(e.team) !== String(t)).length;   // t 因為對手的烏龍球得的分
+    const got = [pg(h) + og(h), pg(a) + og(a)];
+    if (got[0] !== score[0] || got[1] !== score[1]) { excluded.push({ key, reason: `球員進球 ${got.join(':')} 對不回比分 ${score.join(':')}` }); continue; }
+    matchKeys.push(key);
+    for (const [t, opp] of [[h, a], [a, h]]) {
+      /* 先發 / 替補看**正式名單**(lineups.xi),不看逐人統計的 substitute —— 那個欄位轉換器寫死 false。
+         名單只有姓名與背號,所以用「同一場、同一隊、背號相同」對,姓名當守門:背號對到而姓名對不起來的不判(null),
+         配錯人比配不到糟(西甲頭貼那條的同一個規矩)。 */
+      const lu = m.lineups?.[t];
+      const shirtOf = list => new Map((list ?? []).filter(x => x.shirt != null).map(x => [Number(x.shirt), x.name]));
+      const xi = shirtOf(lu?.xi), bench = shirtOf(lu?.bench);
+      const same = (x, y) => normName(x) === normName(y);
+      const startOf = p => {
+        if (p.shirt == null || !lu) return null;
+        if (xi.has(Number(p.shirt))) return same(xi.get(Number(p.shirt)), p.name) ? true : null;
+        if (bench.has(Number(p.shirt))) return same(bench.get(Number(p.shirt)), p.name) ? false : null;
+        return null;
+      };
+      for (const p of players[t] ?? []) {
+        if (!(p.minutes > 0)) continue;
+        rows.push({ team: t, opp, code: p.providerId != null ? String(p.providerId) : null, name: p.name,
+          g: p.goals?.total ?? 0, a: p.goals?.assists ?? 0, og: 0, min: p.minutes, start: startOf(p) });
+      }
+      /* t 的球員踢進自家門的球:記在 t 的 og(掛不到人 —— code null,teamGoals 只拿它算進失球) */
+      const n = og(opp);
+      if (n) { rows.push({ team: t, opp, code: null, name: null, g: 0, a: 0, og: n, min: null, start: null }); ownGoals += n; }
+    }
+  }
+  return { rows, matchKeys, excluded, ownGoals };
 }

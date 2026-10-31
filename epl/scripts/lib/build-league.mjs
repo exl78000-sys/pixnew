@@ -29,6 +29,7 @@
  * 而義甲是後 3 名直接降級、沒有附加賽 —— 三句話對讀者的意義完全不同。
  */
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { playedPrematch, prematchKey } from './played-prematch.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
@@ -370,6 +371,19 @@ export async function buildLeague(L) {
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });
+
+  /* 已完賽場次的賽前預測:走查回測(lib/played-prematch.mjs,2026-10-31)。只補沒有快照的場次 —— 開賽前凍結的快照
+     是當時站上真的顯示的那一份,比回測更接近「賽前」,有就用它。回測不是當時站上的數字,前端照 method 標「回測」 */
+  {
+    const pm = playedPrematch({ past: lastMatches, current: curMatches });
+    let n = 0;
+    for (const f of fixtures) {
+      if (!f.played || f.prediction) continue;
+      const x = pm.byKey.get(prematchKey(f));
+      if (x) { f.prematch = { ...x, method: 'walk-forward' }; n++; }
+    }
+    console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
+  }
 
   /* 賽季模擬。**德甲沒有「直升」這個欄位** —— 它的第 16 名打的是跨聯賽的升降級附加賽,
      而本站沒有德乙的資料,評不出對手強度(鐵則二)。所以只給冠軍 / 前四 / 降級,

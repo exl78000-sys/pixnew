@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // 把原始資料 + 分析引擎的結果,產生成前端可直接讀的 JSON 資料集。
 // 用法: npm run build [--as-of=YYYY-MM-DD] [--runs=10000]
+import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -560,6 +561,19 @@ async function main() {
   {
     const n = fixtures.filter(f => f.market).length;
     if (n) console.log(`  逐場模型 vs 市場:${n} 場對得上`);
+  }
+
+  /* 已完賽而沒有開賽前快照的場次(快照從季中才開始存):走查回測補賽前預測(lib/played-prematch.mjs,六個聯賽同一支)。
+     有快照的不碰 —— 快照是當時站上真的顯示過的那一份。回測不是當時的數字,前端照 method 標「回測」 */
+  {
+    const pm = playedPrematch({ past: lastMatches, current: curMatches });
+    let n = 0;
+    for (const f of fixtures) {
+      if (!f.played || f.prediction) continue;
+      const x = pm.byKey.get(prematchKey(f));
+      if (x) { f.prematch = { ...x, method: 'walk-forward' }; n++; }
+    }
+    console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
   }
 
   /* 修正過的要**印出來**:改期是外部事件,靜靜改掉等於沒有人知道本站曾經講錯。

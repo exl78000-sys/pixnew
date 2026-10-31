@@ -3,6 +3,7 @@
 // 球隊風格另取 2025-26 已逐場核對的 Understat 球隊摘要。
 // 輸出維持既有前端的核心資料形狀，但明確關閉沒有可靠來源的球員、傷停、即時與戰術模組。
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
@@ -11,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { loadMatches } from './lib/adapters/openfootball.mjs';
 import { coaches as fotmobCoaches, goals as fotmobGoals, verifyGoals, verifyCoachRecords, goalRecords } from './lib/adapters/fotmob-manual.mjs';
 import { competition } from './lib/canonical.mjs';
-import { buildGoals } from './lib/goals.mjs';
+import { buildGoals, goalRowsFromMatchStats } from './lib/goals.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { laligaMatches, backfillLine } from './lib/laliga-matches.mjs';
 import { europeanKickoff, fotmobBackfillLine } from './lib/league-matches.mjs';
@@ -343,6 +344,19 @@ async function main() {
       colors: pickPair(T.byCode.get(m.home)?.colors, T.byCode.get(m.away)?.colors),
     };
   });
+
+  /* 已完賽場次的賽前預測:走查回測(lib/played-prematch.mjs,2026-10-31)。只補沒有快照的場次 —— 開賽前凍結的快照
+     是當時站上真的顯示的那一份,比回測更接近「賽前」,有就用它。回測不是當時站上的數字,前端照 method 標「回測」 */
+  {
+    const pm = playedPrematch({ past: lastMatches, current: curMatches });
+    let n = 0;
+    for (const f of fixtures) {
+      if (!f.played || f.prediction) continue;
+      const x = pm.byKey.get(prematchKey(f));
+      if (x) { f.prematch = { ...x, method: 'walk-forward' }; n++; }
+    }
+    console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
+  }
 
   const sim = simulateSeason({
     model,
@@ -1367,7 +1381,32 @@ async function main() {
      min 與 start 這個來源沒有,所以每 90 分鐘與「替補進球佔比」不做,
      欄位標 null 而不是 0(0 代表「沒有替補進球」,跟「不知道」是兩件事)。 */
   let goalsOut = { seasons: [], note: '西甲尚未接逐球員進球明細。', data: {} };
-  {
+  /* 2026-10-31 起改由 FotMob 逐場逐人統計建(goalRowsFromMatchStats):每一場每一位上場的人一列,所以上場分鐘、
+     每 90 分與先發 / 替補都是真的;每一場先核對「球員進球 + 對手烏龍球 = 比分」。之前用的人工逐球明細
+     只涵蓋本季 18 場、沒有分鐘也沒有先發替補 —— 逐場統計已經有 98 場,那張表一直停在很早的時候。
+     逐場統計沒有的時候(沙箱還沒抓之類)才退回人工明細那一條。 */
+  const fmSeasons = [LAST_SEASON, CURRENT_SEASON].filter(sn => Object.values(fotmobStats.matches ?? {}).some(m => m.season === sn));
+  if (fmSeasons.length) {
+    const bySeason = {}, keysBy = {}, full = {}, excludedBy = {};
+    let ownGoalsN = 0;
+    for (const sn of fmSeasons) {
+      const r = goalRowsFromMatchStats(Object.values(fotmobStats.matches).filter(m => m.season === sn));
+      bySeason[sn] = r.rows; keysBy[sn] = r.matchKeys; full[sn] = true; excludedBy[sn] = r.excluded; ownGoalsN += r.ownGoals;
+      console.log(`  西甲進球表 ${sn}:FotMob 逐場 ${r.matchKeys.length} 場・對不回比分不收 ${r.excluded.length} 場`
+        + (r.excluded.length ? `(${r.excluded.slice(0, 3).map(e => `${e.key} ${e.reason}`).join('、')})` : ''));
+    }
+    const names = new Map(Object.values(bySeason).flat().filter(r => r.code).map(r => [r.code, r.name]));
+    const codesAll = [...new Set(Object.values(bySeason).flat().flatMap(r => [r.team, r.opp]))];
+    const data = buildGoals(bySeason, { nameOf: c => names.get(c) ?? `#${c}`, codes: codesAll, matchKeys: keysBy, fullAppearances: full });
+    goalsOut = {
+      seasons: fmSeasons, data, source: 'FotMob 逐場逐人統計', retrievedAt: null,
+      matchesUsed: Object.values(keysBy).reduce((n, k) => n + k.length, 0), ownGoals: ownGoalsN,
+      excluded: excludedBy,
+      unavailable: [],
+      note: `FotMob 逐場逐人統計累加(${fmSeasons.map(sn => `${sn} ${keysBy[sn].length} 場`).join('、')}),每一場「球員進球 + 對手烏龍球 = 比分」才收;`
+        + '上場分鐘是這一季替這一隊的全部出場;先發 / 替補看正式名單(背號對、姓名守門)。',
+    };
+  } else {
     const fmGoalsAll = fotmobGoals(ROOT);
     if (fmGoalsAll) {
       const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));

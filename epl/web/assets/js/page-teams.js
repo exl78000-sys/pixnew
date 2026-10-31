@@ -172,9 +172,9 @@ try {
       <h3>誰進的、誰助攻的</h3>
       <div id="${id}tbl"></div>
       <div class="tiny dim" style="margin-top:8px">
-        ${S.minKnown === false ? `這一季的來源是<b>逐球事件</b>,只記錄「哪一分鐘、誰進的」,
-          <b>沒有上場分鐘、也沒有先發或替補</b>,所以先發／替補、上場分鐘與每 90 分鐘那幾欄不列 ——
-          補一個 0 進去會被讀成「沒上場卻進了球」。`
+        ${S.minKnown === false ? `這一季的來源<b>只收有進球或助攻的那幾場</b>(或只有逐球事件),沒有他這一季的<b>全部出場</b>,
+          所以上場分鐘與每 90 分鐘不列 —— 拿「有進球那幾場的分鐘」當分母,每 90 分會被高估。
+          ${S.startKnown === false ? '這一季也沒有先發或替補,那一欄不列。' : ''}`
         : `每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
           替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
         <br><b>這張表不把進球方式掛到個別球員。</b>逐球事件沒有這個 qualifier;
@@ -194,11 +194,13 @@ try {
       /* startG / min 是 null 的時候要印「—」而不是 0。
          `0 / 1` 會被讀成「先發沒進、替補進一球」,上場分鐘 0 會被讀成
          「他沒上場卻進了球」—— 兩個都是這個來源根本沒給的東西。 */
-      /* 來源沒有上場分鐘時(S.minKnown false)這四欄整欄都是「—」—— 不列,說明在表下(鐵則三;2026-10-31 全站掃描量到) */
-      ...(S.minKnown === false ? [] : [
+      /* 來源沒有的欄位整欄都是「—」—— 不列,說明在表下(鐵則三;2026-10-31 全站掃描量到)。
+         先發 / 替補與上場分鐘是兩件事:英超的來源有先發、沒有全部出場的分鐘 */
+      ...(S.startKnown === false ? [] : [
       { key: 'start', label: '先發 / 替補', value: p => p.startG ?? -1, sortable: false, num: true,
         title: '這名球員的進球中,先發上場與替補上場各幾球',
-        render: p => (p.g && p.startG != null ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') },
+        render: p => (p.g && p.startG != null ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') }]),
+      ...(S.minKnown === false ? [] : [
       { key: 'min', label: '上場分鐘', value: p => p.min ?? -1, num: true, render: p => p.min ?? '—' },
       { key: 'g90', label: '進球 / 90', value: p => p.g90 ?? -1, num: true, render: p => p.g90 ?? '—' },
       { key: 'a90', label: '助攻 / 90', value: p => p.a90 ?? -1, num: true, render: p => p.a90 ?? '—' },

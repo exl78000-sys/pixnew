@@ -42,6 +42,8 @@ export function mountFixtureList({
       : !!analysis.pre[C.pairKey(f)])
     : archived.has(f.id));
 
+  /* 已完賽場次的賽前機率:快照優先、沒有才用走查回測(見「模型」欄的說明) */
+  const preOf = f => f.prediction ?? f.prematch ?? null;
   const render = () => {
     const season = document.getElementById(selectIds.season).value;
     const isCurrent = season === meta.currentSeason;
@@ -80,15 +82,20 @@ export function mountFixtureList({
         render: f => (f.prediction ? C.probBar(f.prediction) : '<span class="dim small">—</span>') },
       /* 模型命中只有「已完賽而且留著賽前預測」的列才有內容。英冠德義法的已完賽場次不留預測(西甲只有少數),
          那幾個聯賽這一欄**整欄都是「—」**(2026-10-31 全站掃描量到)—— 這一批列裡一場都沒有就不出欄(鐵則三) */
-      ...(!rows.some(f => f.played && f.prediction) ? [] : [{ key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
+      /* 已完賽場次的賽前預測有兩種:開賽前凍結的快照(prediction,當時站上真的顯示的那一份)與走查回測
+         (prematch,2026-10-31 起:每一批只用更早已踢完的賽果配適,同一套模型,但**不是**當時站上的數字)。
+         有快照用快照;回測的那幾場標「回測」,滑上去講清楚 */
+      ...(!rows.some(f => f.played && preOf(f)) ? [] : [{ key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
         render: f => {
-          if (!f.played || !f.prediction) return '—';
-          const p = f.prediction, act = f.fh > f.fa ? 'home' : f.fh < f.fa ? 'draw2' : 'draw';
+          const p = f.played ? preOf(f) : null;
+          if (!p) return '—';
           const pick = [['home', p.home], ['draw', p.draw], ['away', p.away]].sort((a, b) => b[1] - a[1])[0][0];
           const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
+          const wf = !f.prediction && f.prematch;
+          const tip = wf ? ' title="走查回測:只用這一場之前已踢完的賽果配適同一套模型(Poisson + Elo 平均)得到的賽前機率 —— 不是當時站上顯示的那一份(本站沒有存)"' : '';
           return pick === real
-            ? `<span class="pill accent tiny">命中 ${C.pct(p[real], 0)}</span>`
-            : `<span class="pill tiny">失準 ${C.pct(p[real], 0)}</span>`;
+            ? `<span class="pill accent tiny"${tip}>${wf ? '回測' : ''}命中 ${C.pct(p[real], 0)}</span>`
+            : `<span class="pill tiny"${tip}>${wf ? '回測' : ''}失準 ${C.pct(p[real], 0)}</span>`;
         } }]),
       { key: 'over', label: '大 2.5', value: f => f.prediction?.over25 ?? 0, num: true, fold: 3,
         render: f => (f.prediction ? C.pct(f.prediction.over25, 0) : '—') },
@@ -115,8 +122,8 @@ export function mountFixtureList({
   };
 
   const hitScore = f => {
-    if (!f.played || !f.prediction) return -1;
-    const p = f.prediction;
+    const p = f.played ? preOf(f) : null;
+    if (!p) return -1;
     const real = f.fh > f.fa ? 'home' : f.fh === f.fa ? 'draw' : 'away';
     return p[real];
   };

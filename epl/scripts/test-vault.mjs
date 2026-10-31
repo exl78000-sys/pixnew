@@ -567,6 +567,14 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       const has = t.includes('## 賽前預測(開賽前存下來的快照)');
       if (snap ? !has || !t.includes(`| ${pct(f.prediction.home)} | ${pct(f.prediction.draw)} | ${pct(f.prediction.away)} |`) || t.includes('沒有保存這場的**賽前機率快照**')
         : has) bad('快照', `${zh} ${f.home}-${f.away}:${snap ? '有開賽前快照卻沒印或數字不對' : '沒有快照卻印了一份'}`);
+      /* 沒有快照的場次,build 補了走查回測(f.prematch,2026-10-31):要印那一份、標回測,不准再寫「沒有保存」 */
+      if (!snap && f.prematch) {
+        seen('回測賽前');
+        const sec = sectionOf(t, '賽前預測(走查回測)');
+        const p = f.prematch;
+        if (!sec.includes(`| ${pct(p.home)} | ${pct(p.draw)} | ${pct(p.away)} |`) || t.includes('沒有保存這場的**賽前機率快照**'))
+          bad('回測賽前', `${zh} ${f.home}-${f.away}:有回測賽前預測卻沒印、數字不對,或還寫著沒有保存`);
+      }
     }
 
     // 真人專家觀點:每一則的人、摘要與原文連結都在
@@ -854,7 +862,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       if (!moc.includes(`[[${mfile}]]`)) bad('模型驗證', `${zh}:聯賽首頁沒有連到模型驗證`);
     }
   }
-  for (const k of ['文章', '快照', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績',
+  for (const k of ['文章', '快照', '回測賽前', '專家', '勝率', '交手', '模擬', '近況', '風格', '陣型', '外電', '陣型與成績',
     'Elo', '位移', 'xG走勢', '賽程難度', '預估先發', '模型驗證', '撞鍵']) {
     check(`${k}:筆記跟產物一致`, (N[k] ?? 0) > 0 && !(P[k]?.length), `驗了 ${N[k] ?? 0} 筆${P[k]?.length ? `;${P[k].length} 個問題:${P[k].slice(0, 3).join('、')}` : ''}`);
   }

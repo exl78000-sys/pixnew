@@ -44,7 +44,8 @@ import { teamAvailability, cardWatch } from './lib/availability.mjs';
 import { finalCacheIssues, fixtureScoreOf, goalsOf, minuteOf, shouldRefreshFinal } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
-import { teamGoals } from './lib/goals.mjs';
+import { teamGoals, goalRowsFromMatchStats } from './lib/goals.mjs';
+import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
 // 走查回測的實作抽到 lib,英超與西甲跑同一份 —— 複製一份會讓兩個聯賽的數字慢慢不能比
 import { walkForward, rps, outcome, logLoss, pairedDiff } from './lib/backtest.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
@@ -749,9 +750,11 @@ function checkGoalsDataset() {
       }
       if (covered) {
         const all = fixtures.filter(m => m.season === season).length;
-        cases.push([`${label} ${season} 明細涵蓋清單對得回賽程(${seasonFixtures.length}/${all} 場)`,
+        /* 賽程檔只放本季;往季(西甲 2026-10-31 起收兩季)沒有對照組,印成略過,不是通過也不是失敗 */
+        if (all) cases.push([`${label} ${season} 明細涵蓋清單對得回賽程(${seasonFixtures.length}/${all} 場)`,
           seasonFixtures.length === covered.size,
           `清單 ${covered.size} 場,賽程裡找得到 ${seasonFixtures.length} 場`]);
+        else cases.push([`${label} ${season} 明細涵蓋清單對得回賽程`, true, '', `(賽程檔沒有 ${season},略過)`]);
       }
       /* 賽程檔只放本季,往季的比較就沒有對照組。**這種情況要印成「略過」
          而不是通過** —— 「0 隊全對」是空的綠燈,正是這個專案最怕的東西。
@@ -783,6 +786,14 @@ function checkGoalsDataset() {
           [`${label} ${season} 沒有先發欄位 → 球員的先發/替補進球是 null 不是 0`,
             pZero.length === 0, `${pZero.length} 人被填了數字`],
         );
+      }
+      /* 有上場分鐘的季(fullAppearances,西甲 2026-10-31 起):每 90 分就是 g / min × 90,而且分鐘是全部出場 ——
+         至少不少於他有進球的那幾場(那是舊寫法的值,會讓每 90 分被高估) */
+      if (S.minKnown === true) {
+        const players = Object.values(S.teams).flatMap(t => t.players);
+        const bad = players.filter(p => p.min == null || (p.min >= 450 ? p.g90 !== Math.round(p.g / p.min * 9000) / 100 : p.g90 !== null));
+        cases.push([`${label} ${season} 有上場分鐘 → 每 90 分 = 進球 ÷ 分鐘 × 90(不足 450 分不給)`, bad.length === 0 && S.fullAppearances === true,
+          `${bad.length} 人對不上・fullAppearances=${S.fullAppearances}`]);
       }
       if (S.minKnown === false) {
         const players = Object.values(S.teams).flatMap(t => t.players);
@@ -967,6 +978,46 @@ function checkBacktestShared() {
     ['基準線原樣回傳,不會被改寫', wf.report.baselineProbs.home === 0.4],
   );
 
+  /* 已完賽場次的回測賽前預測(lib/played-prematch.mjs,2026-10-31):一批 = 一個 ISO 週。
+     改掉某一週一場的比分:那一週與之前的預測一個都不能變(同一週彼此不互看、更早的不偷看),之後的週要變。
+     第三條是負向對照的一半 —— 改了比分卻什麼都沒變的話,這個測試等於沒在比 */
+  {
+    const T4 = ['AAA', 'BBB', 'CCC', 'DDD'];
+    const pastP = [], cur = [];
+    /* 上季:四隊雙循環踢九次(108 場 —— walkForward 的訓練集少於 100 場就整批不預測,少了的話下面三條全是空的綠燈) */
+    for (let k = 0; k < 9; k++) T4.forEach((h, i) => T4.forEach((w, j) => {
+      if (i !== j) pastP.push({ home: h, away: w, fh: (i + j + k) % 3, fa: (i * j + k) % 2, played: true, date: `2025-0${1 + (k % 9)}-15` });
+    }));
+    /* 本季:四週,每週兩場(2026-08-03 是週一) */
+    const days = ['2026-08-03', '2026-08-05', '2026-08-10', '2026-08-12', '2026-08-17', '2026-08-19', '2026-08-24', '2026-08-26'];
+    days.forEach((d, i) => cur.push({ home: T4[i % 4], away: T4[(i + 1) % 4], fh: (i * 2) % 3, fa: i % 2, played: true, date: d }));
+    cur.push({ home: 'AAA', away: 'CCC', played: false, date: '2026-08-31', fh: null, fa: null });
+    const a = playedPrematch({ past: pastP, current: cur });
+    const changed = cur.map((m, i) => (i === 2 ? { ...m, fh: 5, fa: 0 } : m));    // 第 2 週的第一場(08-10):同週的 08-12 那一場不准看到它
+    const b = playedPrematch({ past: pastP, current: changed });
+    const same = k => JSON.stringify(a.byKey.get(k)) === JSON.stringify(b.byKey.get(k));
+    const keys = cur.filter(m => m.played).map(prematchKey);
+    cases.push(['回測賽前預測:八場已完賽都有、未賽那一場不給', !a.byKey.has(prematchKey(cur[8])) && a.byKey.size === 8, `${a.byKey.size} 場`],
+      ['回測賽前預測:改第 2 週一場的比分,第 1、2 週的預測不變(不偷看同週與之後)', keys.slice(0, 4).every(same)],
+      ['回測賽前預測:第 3 週以後的預測跟著變(負向對照 —— 不然上一條沒在比東西)', keys.slice(4).some(k => !same(k))],
+      ['回測賽前預測:機率加總為 1', [...a.byKey.values()].every(p => Math.abs(p.home + p.draw + p.away - 1) < 1e-3)]);
+  }
+  /* 產物:每個聯賽的 fixtures.json 掛著的 prematch 只能在已完賽、而且沒有快照預測的場次上(有快照就用快照,
+     那是當時真的顯示過的那一份) */
+  {
+    const dirs = readdirSync(join(ROOT, 'web', 'data', 'leagues')).filter(d => existsSync(join(ROOT, 'web', 'data', 'leagues', d, 'fixtures.json')));
+    for (const d of ['', ...dirs.map(x => `leagues/${x}/`)]) {
+      const p = join(ROOT, 'web', 'data', `${d}fixtures.json`);
+      if (!existsSync(p)) continue;
+      const fx = JSON.parse(readFileSync(p, 'utf8'));
+      const pm = fx.filter(f => f.prematch);
+      const bad = pm.filter(f => !f.played || f.prediction || f.prematch.method !== 'walk-forward'
+        || Math.abs(f.prematch.home + f.prematch.draw + f.prematch.away - 1) > 1e-3);
+      cases.push([`${d || '(英超)'}fixtures:回測賽前預測只掛在已完賽、沒有快照的場次(${pm.length} 場)`, bad.length === 0,
+        bad.slice(0, 3).map(f => f.id).join(', ')]);
+    }
+  }
+
   // 產物:兩個聯賽的回測都要用同一組欄位,不然模型頁得寫兩套
   const KEYS = ['games', 'models', 'calibration', 'byRound', 'surprises', 'baselineProbs', 'vsBaseline'];
   for (const [label, f] of [['英超', 'backtest.json'], ['西甲', 'backtest-laliga.json']]) {
@@ -1103,6 +1154,49 @@ function checkGoalDetails(T) {
       cases.push([`${season} 烏龍球算給對手(${one.team} 的烏龍記成 ${one.opp} 的進球)`,
         t.ownAgainst > 0 && opp.ownFor > 0, `ownAgainst=${t.ownAgainst} ownFor=${opp.ownFor}`]);
     }
+  }
+  /* 上場分鐘只在完整出場紀錄時給(2026-10-31):只收有進球或助攻那幾場的列,分鐘會少算 → 每 90 分被高估。
+     捏一個人:兩場各 90 分、只有一場進球。完整紀錄 → 180 分;沒說是完整 → null(不是 90) */
+  {
+    const rows = [
+      { team: 'AAA', opp: 'BBB', code: 'p1', g: 1, a: 0, og: 0, min: 90, start: true },
+      { team: 'AAA', opp: 'CCC', code: 'p1', g: 0, a: 0, og: 0, min: 90, start: true },
+      { team: 'AAA', opp: 'CCC', code: 'p2', g: 0, a: 0, og: 0, min: 90, start: false },
+    ];
+    const full = teamGoals(rows, 'AAA', { fullAppearances: true }).players;
+    const part = teamGoals(rows.filter(r => r.g || r.a), 'AAA').players;
+    cases.push(['完整出場紀錄:分鐘是全部出場(沒進球的那場也算),沒有進球助攻的人不上榜',
+      full.length === 1 && full[0].min === 180 && full[0].games === 2, JSON.stringify(full)],
+    ['只有進球那幾場的紀錄:分鐘與場次是 null,不是「進球那幾場」的值',
+      part.length === 1 && part[0].min === null && part[0].games === null, JSON.stringify(part)]);
+  }
+  /* FotMob 逐場逐人 → 進球明細(西甲 2026-10-31)。捏一場 HHH 2:1 AAA:HHH 一人進一球、AAA 一人烏龍(事件的 team 是
+     踢進自家門的那一隊 —— 跟 aggregatePlayers 同一個語意,不是得分方)、AAA 一人進一球。
+     先發看名單:背號與姓名都對上 → true;背號對到別人 → null(不是 true) */
+  {
+    const base = {
+      home: 'HHH', away: 'AAA', score: [2, 1],
+      players: {
+        HHH: [{ providerId: 1, name: 'Ann One', shirt: 9, minutes: 90, goals: { total: 1, assists: 0 } },
+              { providerId: 2, name: 'Bob Two', shirt: 7, minutes: 20, goals: { total: 0, assists: 1 } }],
+        AAA: [{ providerId: 3, name: 'Cid Three', shirt: 10, minutes: 90, goals: { total: 1, assists: 0 } },
+              { providerId: 4, name: 'Dan Four', shirt: 5, minutes: 90, goals: { total: 0, assists: 0 } }],
+      },
+      events: [{ type: 'Goal', ownGoal: true, team: 'AAA' }],
+      lineups: { HHH: { xi: [{ name: 'Ann One', shirt: 9 }], bench: [{ name: 'Bob Two', shirt: 7 }] },
+                 AAA: { xi: [{ name: 'Someone Else', shirt: 10 }, { name: 'Dan Four', shirt: 5 }], bench: [] } },
+    };
+    const r = goalRowsFromMatchStats([base]);
+    const row = id => r.rows.find(x => x.code === String(id));
+    const ogRow = r.rows.find(x => x.code == null);
+    cases.push(['逐人統計 + 對手烏龍 = 比分 → 收這一場', r.matchKeys.length === 1 && r.excluded.length === 0, JSON.stringify(r.excluded)],
+      ['烏龍球記在踢進自家門的那一隊(AAA)', ogRow?.team === 'AAA' && ogRow.og === 1 && r.ownGoals === 1, JSON.stringify(ogRow)],
+      ['先發 / 替補看名單:背號 + 姓名都對上才判', row(1)?.start === true && row(2)?.start === false && row(4)?.start === true,
+        JSON.stringify([row(1)?.start, row(2)?.start, row(4)?.start])],
+      ['名單上同一個背號是別人 → 不判(null),不是先發', row(3)?.start === null, String(row(3)?.start)]);
+    const flipped = goalRowsFromMatchStats([{ ...base, events: [{ type: 'Goal', ownGoal: true, team: 'HHH' }] }]);
+    cases.push(['烏龍的隊伍寫反 → 比分對不上,整場不收', flipped.matchKeys.length === 0 && flipped.excluded.length === 1,
+      JSON.stringify(flipped.excluded)]);
   }
   if (!any) return 0;
 
