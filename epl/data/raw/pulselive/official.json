@@ -56568,7 +56568,7 @@
   "CHE|MUN": {
    "fixtureId": 129006,
    "kickoff": "2026-10-31T12:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -56577,9 +56577,31 @@
    "homeId": 4,
    "awayId": 12,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      121704
+     ],
+     [
+      125075,
+      66284,
+      51229,
+      140055
+     ],
+     [
+      99282,
+      112203
+     ],
+     [
+      304474,
+      49293,
+      23968
+     ],
+     [
+      21998
+     ]
+    ],
     "xi": [
      {
       "id": 112203,
@@ -56658,7 +56680,7 @@
       "playerId": null,
       "name": "Estêvão",
       "shirt": 41,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -56766,9 +56788,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      118591,
+      9566,
+      67191,
+      24252
+     ],
+     [
+      133245,
+      124396
+     ],
+     [
+      69176,
+      23396,
+      51202
+     ],
+     [
+      66360
+     ]
+    ],
     "xi": [
      {
       "id": 66360,
@@ -56829,7 +56873,7 @@
       "playerId": null,
       "name": "Amad Diallo",
       "shirt": 16,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -56856,7 +56900,7 @@
       "playerId": null,
       "name": "Matheus Cunha",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre Second Striker",
       "captain": false
      },
@@ -56958,10 +57002,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "29'00"
   }
  },
- "fetchedAt": "2026-10-31T12:21:06.544Z"
+ "fetchedAt": "2026-10-31T13:00:33.077Z"
 }
