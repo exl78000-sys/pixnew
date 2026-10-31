@@ -57295,18 +57295,40 @@
   "BOU|LEE": {
    "fixtureId": 129004,
    "kickoff": "2026-10-31T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 127,
    "awayId": 9,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      134403
+     ],
+     [
+      3512,
+      51942,
+      120109,
+      74965
+     ],
+     [
+      42894,
+      15572
+     ],
+     [
+      134234,
+      21519,
+      14846
+     ],
+     [
+      33032
+     ]
+    ],
     "xi": [
      {
       "id": 42894,
@@ -57340,7 +57362,7 @@
       "playerId": null,
       "name": "Rayan",
       "shirt": 37,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Striker",
       "captain": false
      },
@@ -57394,7 +57416,7 @@
       "playerId": null,
       "name": "Justin Kluivert",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -57493,9 +57515,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13515,
+      12337,
+      114504
+     ],
+     [
+      14608,
+      19731,
+      126426,
+      75543
+     ],
+     [
+      13961,
+      13797
+     ],
+     [
+      9576
+     ]
+    ],
     "xi": [
      {
       "id": 9576,
@@ -57511,7 +57555,7 @@
       "playerId": null,
       "name": "Gabriel Gudmundsson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -57556,7 +57600,7 @@
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -57681,29 +57725,95 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 33032,
+     "assist": 21519,
+     "team": 127,
+     "min": 31,
+     "label": "31'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 12337,
+      "team": 9,
+      "min": 35,
+      "label": "35'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": null,
+      "team": 9,
+      "min": 36,
+      "label": "36'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "36'00"
   },
   "BRE|NFO": {
    "fixtureId": 129005,
    "kickoff": "2026-10-31T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 130,
    "awayId": 15,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-3-3",
+    "formationRaw": "4-3-3",
+    "rows": [
+     [
+      14723
+     ],
+     [
+      133460,
+      20113,
+      65987,
+      24369
+     ],
+     [
+      108421,
+      23194,
+      49726
+     ],
+     [
+      133890,
+      124052,
+      127594
+     ]
+    ],
     "xi": [
      {
       "id": 65987,
@@ -57782,7 +57892,7 @@
       "playerId": null,
       "name": "Kevin Schade",
       "shirt": 7,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -57800,7 +57910,7 @@
       "playerId": null,
       "name": "Keane Lewis-Potter",
       "shirt": 23,
-      "pos": "F",
+      "pos": "D",
       "posInfo": "Striker",
       "captain": false
      }
@@ -57890,9 +58000,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      16035,
+      139648
+     ],
+     [
+      10439,
+      49270,
+      20335,
+      23811
+     ],
+     [
+      15259,
+      50623
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 304238,
@@ -57944,7 +58076,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": true
      },
@@ -57953,7 +58085,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -57980,7 +58112,7 @@
       "playerId": null,
       "name": "Ola Aina",
       "shirt": 34,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -58078,29 +58210,78 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 16035,
+     "assist": null,
+     "team": 130,
+     "min": 30,
+     "label": "30'00",
+     "phase": "1",
+     "type": "O",
+     "kind": "O",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "34'00"
   },
   "COV|SUN": {
    "fixtureId": 129007,
    "kickoff": "2026-10-31T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 5,
    "awayId": 29,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      75413,
+      128136,
+      22043,
+      10438
+     ],
+     [
+      337310,
+      118036
+     ],
+     [
+      122134,
+      66304,
+      51730
+     ],
+     [
+      15340
+     ]
+    ],
     "xi": [
      {
       "id": 15340,
@@ -58125,7 +58306,7 @@
       "playerId": null,
       "name": "Yann Gboho",
       "shirt": 34,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -58287,16 +58468,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75692
+     ],
+     [
+      122126,
+      10361,
+      66659,
+      63733
+     ],
+     [
+      12136,
+      124944
+     ],
+     [
+      119614,
+      138104,
+      115105
+     ],
+     [
+      67784
+     ]
+    ],
     "xi": [
      {
       "id": 10361,
       "playerId": null,
       "name": "Luke O'Nien",
       "shirt": 13,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -58361,7 +58564,7 @@
       "shirt": 34,
       "pos": "M",
       "posInfo": "Defensive Midfielder",
-      "captain": false
+      "captain": true
      },
      {
       "id": 119614,
@@ -58377,7 +58580,7 @@
       "playerId": null,
       "name": "Nilson Angulo",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -58475,29 +58678,86 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 122134,
+     "assist": null,
+     "team": 5,
+     "min": 17,
+     "label": "17'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 118036,
+      "team": 5,
+      "min": 7,
+      "label": "07'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "34'00"
   },
   "HUL|IPS": {
    "fixtureId": 129008,
    "kickoff": "2026-10-31T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 41,
    "awayId": 8,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-4-1",
+    "formationRaw": "5-4-1",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      20081
+     ],
+     [
+      137549,
+      66538,
+      21385,
+      337382
+     ],
+     [
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 133314,
@@ -58540,7 +58800,7 @@
       "playerId": null,
       "name": "Mohamed Belloumi",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -58684,9 +58944,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      8159
+     ],
+     [
+      126111,
+      15154,
+      49884,
+      51454
+     ],
+     [
+      63851,
+      40161
+     ],
+     [
+      127644,
+      125827,
+      64519
+     ],
+     [
+      313194
+     ]
+    ],
     "xi": [
      {
       "id": 63851,
@@ -58729,7 +59011,7 @@
       "playerId": null,
       "name": "Abdul Fatawu",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -58783,7 +59065,7 @@
       "playerId": null,
       "name": "Jaden Philogene",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      }
@@ -58872,29 +59154,86 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 63851,
+     "assist": 126111,
+     "team": 8,
+     "min": 22,
+     "label": "22'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 40161,
+      "team": 8,
+      "min": 28,
+      "label": "28'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "33'00"
   },
   "MCI|BHA": {
    "fixtureId": 129010,
    "kickoff": "2026-10-31T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
-    "away": 0
+    "away": 1
    },
    "homeId": 11,
    "awayId": 131,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-3-3",
+    "formationRaw": "4-3-3",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      76204,
+      137371,
+      16431,
+      67178
+     ],
+     [
+      141425,
+      51593,
+      63741
+     ],
+     [
+      31936,
+      65970,
+      54156
+     ]
+    ],
     "xi": [
      {
       "id": 16431,
@@ -58919,7 +59258,7 @@
       "playerId": null,
       "name": "Matheus Nunes",
       "shirt": 27,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -59081,9 +59420,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      75709
+     ],
+     [
+      146970,
+      134632,
+      8163,
+      20505
+     ],
+     [
+      22542,
+      129259
+     ],
+     [
+      143240,
+      134333,
+      67928
+     ],
+     [
+      145043
+     ]
+    ],
     "xi": [
      {
       "id": 143240,
@@ -59126,7 +59487,7 @@
       "playerId": null,
       "name": "Maxim De Cuyper",
       "shirt": 29,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -59269,14 +59630,51 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 134333,
+     "assist": 67928,
+     "team": 131,
+     "min": 11,
+     "label": "11'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 129259,
+      "team": 131,
+      "min": 20,
+      "label": "20'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "34'00"
   }
  },
- "fetchedAt": "2026-10-31T15:00:13.794Z"
+ "fetchedAt": "2026-10-31T15:36:08.938Z"
 }

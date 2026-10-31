@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T15:01:46.331Z",
+ "fetchedAt": "2026-10-31T15:37:37.424Z",
  "teams": [
   {
    "code": "INT",
@@ -425,6 +425,66 @@
    ]
   },
   {
+   "code": "BLG",
+   "fotmobId": 9857,
+   "fotmobName": "Bologna",
+   "fetchedAt": "2026-10-09T12:41:59.110Z",
+   "color": "#102880",
+   "teamColors": {
+    "darkMode": "#004eca",
+    "lightMode": "#102880",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Renato Dall'Ara",
+   "city": "Bologna",
+   "location": [
+    "44.492290396",
+    "11.309956759"
+   ],
+   "capacity": 39279,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 42581,
+     "name": "Vincenzo Italiano",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 16,
+     "draw": 8,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 853795,
+     "name": "Domenico Tedesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.25,
+     "winPercentage": 0
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    }
+   ]
+  },
+  {
    "code": "JUV",
    "fotmobId": 9885,
    "fotmobName": "Juventus",
@@ -601,66 +661,6 @@
      "loss": 1,
      "pointsPerGame": 2.4,
      "winPercentage": 0.8
-    }
-   ]
-  },
-  {
-   "code": "BLG",
-   "fotmobId": 9857,
-   "fotmobName": "Bologna",
-   "fetchedAt": "2026-10-09T12:41:59.110Z",
-   "color": "#102880",
-   "teamColors": {
-    "darkMode": "#004eca",
-    "lightMode": "#102880",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Renato Dall'Ara",
-   "city": "Bologna",
-   "location": [
-    "44.492290396",
-    "11.309956759"
-   ],
-   "capacity": 39279,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 42581,
-     "name": "Vincenzo Italiano",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 16,
-     "draw": 8,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 853795,
-     "name": "Domenico Tedesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.25,
-     "winPercentage": 0
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
     }
    ]
   },
@@ -845,66 +845,6 @@
    ]
   },
   {
-   "code": "MZA",
-   "fotmobId": 6504,
-   "fotmobName": "Monza",
-   "fetchedAt": "2026-10-09T12:41:57.636Z",
-   "color": "#e10032",
-   "teamColors": {
-    "darkMode": "#e10032",
-    "lightMode": "#e10032",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "U-Power Stadium",
-   "city": "Monza",
-   "location": [
-    "45.583064491",
-    "9.308115542"
-   ],
-   "capacity": 18568,
-   "surface": "Grass",
-   "opened": 1986,
-   "coachHistory": [
-    {
-     "id": 30723,
-     "name": "Alessandro Nesta",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.48,
-     "winPercentage": 0.06
-    },
-    {
-     "id": 39696,
-     "name": "Paolo Bianco",
-     "season": "2025/2026",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 22,
-     "draw": 10,
-     "loss": 6,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    },
-    {
-     "id": 41757,
-     "name": "Ivan Jurić",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
    "code": "SAS",
    "fotmobId": 7943,
    "fotmobName": "Sassuolo",
@@ -961,6 +901,66 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "MZA",
+   "fotmobId": 6504,
+   "fotmobName": "Monza",
+   "fetchedAt": "2026-10-09T12:41:57.636Z",
+   "color": "#e10032",
+   "teamColors": {
+    "darkMode": "#e10032",
+    "lightMode": "#e10032",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "U-Power Stadium",
+   "city": "Monza",
+   "location": [
+    "45.583064491",
+    "9.308115542"
+   ],
+   "capacity": 18568,
+   "surface": "Grass",
+   "opened": 1986,
+   "coachHistory": [
+    {
+     "id": 30723,
+     "name": "Alessandro Nesta",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.48,
+     "winPercentage": 0.06
+    },
+    {
+     "id": 39696,
+     "name": "Paolo Bianco",
+     "season": "2025/2026",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 22,
+     "draw": 10,
+     "loss": 6,
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
+    },
+    {
+     "id": 41757,
+     "name": "Ivan Jurić",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },
