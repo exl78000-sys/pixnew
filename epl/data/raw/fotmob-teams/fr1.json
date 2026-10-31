@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-30T19:02:55.145Z",
+ "fetchedAt": "2026-10-31T01:22:54.992Z",
  "teams": [
   {
    "code": "PSG",
@@ -65,66 +65,6 @@
    ]
   },
   {
-   "code": "REN",
-   "fotmobId": 9851,
-   "fotmobName": "Rennes",
-   "fetchedAt": "2026-10-09T12:42:03.978Z",
-   "color": "#E13327",
-   "teamColors": {
-    "darkMode": "#E13327",
-    "lightMode": "#E13327",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Roazhon Park",
-   "city": "Rennes",
-   "location": [
-    "48.107467009",
-    "-1.712884158"
-   ],
-   "capacity": 31127,
-   "surface": "Grass",
-   "opened": 1912,
-   "coachHistory": [
-    {
-     "id": 1693064,
-     "name": "Sébastien Tambouret",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 804046,
-     "name": "Franck Haise",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 2.08,
-     "winPercentage": 0.67
-    },
-    {
-     "id": 804046,
-     "name": "Franck Haise",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "LIL",
    "fotmobId": 8639,
    "fotmobName": "Lille",
@@ -173,6 +113,66 @@
     {
      "id": 1108529,
      "name": "Davide Ancelotti",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "REN",
+   "fotmobId": 9851,
+   "fotmobName": "Rennes",
+   "fetchedAt": "2026-10-09T12:42:03.978Z",
+   "color": "#E13327",
+   "teamColors": {
+    "darkMode": "#E13327",
+    "lightMode": "#E13327",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Roazhon Park",
+   "city": "Rennes",
+   "location": [
+    "48.107467009",
+    "-1.712884158"
+   ],
+   "capacity": 31127,
+   "surface": "Grass",
+   "opened": 1912,
+   "coachHistory": [
+    {
+     "id": 1693064,
+     "name": "Sébastien Tambouret",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 2.08,
+     "winPercentage": 0.67
+    },
+    {
+     "id": 804046,
+     "name": "Franck Haise",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
