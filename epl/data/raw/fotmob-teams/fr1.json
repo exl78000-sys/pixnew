@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T20:01:18.372Z",
+ "fetchedAt": "2026-10-31T22:31:12.316Z",
  "teams": [
   {
    "code": "PSG",
@@ -785,66 +785,6 @@
    ]
   },
   {
-   "code": "LMA",
-   "fotmobId": 8682,
-   "fotmobName": "Le Mans",
-   "fetchedAt": "2026-10-09T12:42:05.369Z",
-   "color": "#D60000",
-   "teamColors": {
-    "darkMode": "#D60000",
-    "lightMode": "#D60000",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Marie-Marvingt",
-   "city": "Le Mans",
-   "location": [
-    "47.959223534",
-    "0.223524570"
-   ],
-   "capacity": 25064,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2022/2023",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 10,
-     "draw": 13,
-     "loss": 11,
-     "pointsPerGame": 1.26,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 6,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.3
-    },
-    {
-     "id": 1141920,
-     "name": "Mathieu Chabert",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "National",
-     "win": 7,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    }
-   ]
-  },
-  {
    "code": "ANG",
    "fotmobId": 8121,
    "fotmobName": "Angers",
@@ -893,66 +833,6 @@
     {
      "id": 1141972,
      "name": "Stéphane Gilli",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "STR",
-   "fotmobId": 9848,
-   "fotmobName": "Strasbourg",
-   "fetchedAt": "2026-10-09T12:42:05.056Z",
-   "color": "#294A92",
-   "teamColors": {
-    "darkMode": "#294A92",
-    "lightMode": "#294A92",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade de la Meinau",
-   "city": "Strasbourg",
-   "location": [
-    "48.560068724",
-    "7.755156755"
-   ],
-   "capacity": 32047,
-   "surface": "Grass",
-   "opened": 1906,
-   "coachHistory": [
-    {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 7,
-     "draw": 3,
-     "loss": 7,
-     "pointsPerGame": 1.41,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 24393,
-     "name": "Gary O'Neil",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 8,
-     "draw": 5,
-     "loss": 4,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 1700757,
-     "name": "Hugo Oliveira",
      "season": "2026/2027",
      "leagueId": 53,
      "leagueName": "Ligue 1",
@@ -1021,6 +901,126 @@
      "loss": 3,
      "pointsPerGame": 0.8,
      "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "STR",
+   "fotmobId": 9848,
+   "fotmobName": "Strasbourg",
+   "fetchedAt": "2026-10-09T12:42:05.056Z",
+   "color": "#294A92",
+   "teamColors": {
+    "darkMode": "#294A92",
+    "lightMode": "#294A92",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade de la Meinau",
+   "city": "Strasbourg",
+   "location": [
+    "48.560068724",
+    "7.755156755"
+   ],
+   "capacity": 32047,
+   "surface": "Grass",
+   "opened": 1906,
+   "coachHistory": [
+    {
+     "id": 24105,
+     "name": "Liam Rosenior",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 7,
+     "draw": 3,
+     "loss": 7,
+     "pointsPerGame": 1.41,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 24393,
+     "name": "Gary O'Neil",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 8,
+     "draw": 5,
+     "loss": 4,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 1700757,
+     "name": "Hugo Oliveira",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "LMA",
+   "fotmobId": 8682,
+   "fotmobName": "Le Mans",
+   "fetchedAt": "2026-10-09T12:42:05.369Z",
+   "color": "#D60000",
+   "teamColors": {
+    "darkMode": "#D60000",
+    "lightMode": "#D60000",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Marie-Marvingt",
+   "city": "Le Mans",
+   "location": [
+    "47.959223534",
+    "0.223524570"
+   ],
+   "capacity": 25064,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2022/2023",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 10,
+     "draw": 13,
+     "loss": 11,
+     "pointsPerGame": 1.26,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 6,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.3
+    },
+    {
+     "id": 1141920,
+     "name": "Mathieu Chabert",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "National",
+     "win": 7,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
     }
    ]
   },
