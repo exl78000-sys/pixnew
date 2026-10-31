@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // 西甲資料邊界測試：守住兩季、20 隊、真實球隊風格與「不假裝已有球員資料」。
+import { defenseProductChecks } from './lib/defense-check.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -779,21 +780,8 @@ check('摘要漏掉大部分數字 → 擋下',
   /* 產物:每一個給了的人都能從 player-logs 重算回來(場次、分鐘、三項加總),涵蓋數對得回 players.json */
   const lp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'player-logs.json');
   if (existsSync(lp)) {
-    const L = JSON.parse(readFileSync(lp, 'utf8')).logs, P = out('players'), LD = out('leaders');
-    const bad = [];
-    for (const p of P.filter(x => x.defense)) {
-      const rows = (L[p.code] ?? []).filter(r => r.season === p.season);
-      const sum = k => rows.reduce((t, r) => t + (r[k] ?? 0), 0);
-      const min = sum('min');
-      if (rows.length !== p.games || Math.abs(min - p.minutes) > LD.defense.tolMinutes || p.defense.minutes !== min
-        || p.defense.tackles !== sum('tackles') || p.defense.interceptions !== sum('interceptions')) bad.push(`${p.name} ${p.season}`);
-    }
-    check('防守產物:每一個給了的人都從逐場紀錄重算得回來、也都過了場次與分鐘的核對', bad.length === 0, bad.slice(0, 4).join('、'));
-    const counts = Object.entries(LD.defense?.seasons ?? {}).filter(([s, c]) => c.published !== P.filter(x => x.season === s && x.defense).length);
-    check('防守產物:leaders.defense 的逐季涵蓋對得回 players.json', LD.defense && counts.length === 0, counts.map(([s]) => s).join('、'));
-    check('防守產物:有給就不准在「沒有」清單裡講沒有防守數據', !(LD.missing ?? []).some(x => /防守/.test(x)) === !!LD.defense);
-    const PL = out('players-list');
-    check('防守產物:球員列表帶著同一份(列表頁的欄位讀它)', PL.filter(x => x.defense).length === P.filter(x => x.defense).length);
+    for (const c of defenseProductChecks({ players: out('players'), logs: JSON.parse(readFileSync(lp, 'utf8')).logs,
+      leaders: out('leaders'), playersList: out('players-list') })) check(c.label, c.ok, c.detail);
   }
 }
 

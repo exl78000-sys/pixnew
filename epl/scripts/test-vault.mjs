@@ -684,6 +684,28 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
       }
     }
 
+    /* 防守數據(西甲與德義法,2026-10-31):有 defense 的季逐列跟產物一致(Understat id 對,不比姓名);
+       產物一季都沒有的人,筆記不准有那張表(只准寫「沒過核對」那一句) */
+    {
+      const byU = new Map();
+      for (const p of arr(product(lg, 'players'))) if (p.id != null) (byU.get(String(p.id)) ?? byU.set(String(p.id), []).get(String(p.id))).push(p);
+      if (byU.size && [...byU.values()].flat().some(p => p.defense)) {
+        for (const f of list(`${zh}/球員`)) {
+          const t = note(`${zh}/球員/${f}`);
+          const id = fm(t, 'Understat球員id');
+          const ps = id ? byU.get(id) : null;
+          if (!ps) continue;
+          seen('防守');
+          const sec = sectionOf(t, '防守數據(FotMob 逐場加總)');
+          const want = ps.filter(p => p.defense);
+          if (!want.length) { if (sec) bad('防守', `${zh} ${f}:產物沒有防守數據,筆記卻有那張表`); continue; }
+          const v = x => (x == null ? '—' : x);
+          const miss = want.filter(p => !sec.includes(`| ${p.season} | ${p.defense.matches} | ${p.defense.minutes} | ${v(p.defense.tackles)} | ${v(p.defense.interceptions)} | ${v(p.defense.saves)} |`));
+          if (!sec || miss.length) bad('防守', `${zh} ${f}:${miss.map(p => p.season).join('、') || '整段'}跟產物不同`);
+        }
+      }
+    }
+
     // 上季數據風格:雷達的級分(百分位每 10 分一級)與原始值、標籤;人力配置只有有 def 的聯賽印
     /* 英冠德義法的上季風格只在 tactics.json(戰術頁那一份),teams.json 不帶 —— 2026-10-03 前這四個聯賽的球隊筆記
        一塊都沒有,而聯賽筆記寫著「各隊的完整側寫在球隊筆記裡」。所以要求的是**兩份任一份有,筆記就要有** */
@@ -838,6 +860,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
   }
   /* 傷停只有接上的聯賽有(產物沒有就不要求驗到東西,但筆記多寫一段仍然算錯);年齡同理(產物還沒有年齡時 0 筆是對的) */
   check('傷停:筆記跟產物一致', (!expectUA || (N['傷停'] ?? 0) > 0) && !(P['傷停']?.length), `驗了 ${N['傷停'] ?? 0} 筆${P['傷停']?.length ? `;${P['傷停'].slice(0, 3).join('、')}` : ''}`);
+  check('防守:球員筆記跟產物一致(西甲與德義法)', (N['防守'] ?? 0) > 0 && !(P['防守']?.length), `驗了 ${N['防守'] ?? 0} 筆${P['防守']?.length ? `;${P['防守'].length} 個問題:${P['防守'].slice(0, 3).join('、')}` : ''}`);
   check('年齡:英冠球員筆記跟產物一致', !(P['年齡']?.length), `驗了 ${N['年齡'] ?? 0} 筆${P['年齡']?.length ? `;${P['年齡'].length} 個問題:${P['年齡'].slice(0, 3).join('、')}` : ''}`);
 }
 

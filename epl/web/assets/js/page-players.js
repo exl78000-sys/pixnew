@@ -393,6 +393,10 @@ async function matchLogCard(code, league) {
   const v = (x, d = 0) => (x == null ? '—' : d ? C.fx(x, d) : x);
   const list = [...rows].sort((a, b) => b.date.localeCompare(a.date));
   const sum = k => list.reduce((a, r) => a + (r[k] ?? 0), 0);
+  /* 欄位看這個人的資料有沒有:德義法沒有逐場追蹤資料,跑動整欄都會是「—」(鐵則三:不留永遠空白的欄位);
+     搶斷 / 攔截 2026-10-31 起逐場有(FotMob 逐人統計),舊產物沒有那兩個鍵就不出欄 */
+  const any = k => list.some(r => r[k] != null);
+  const hasDist = any('distance'), hasDef = any('tackles') || any('interceptions');
   host.innerHTML = `<div class="card"><h3>逐場紀錄 <span class="dim tiny">FotMob・${list.length} 場</span></h3>
     <div class="row small dim" style="gap:12px;margin-bottom:6px"><span>進球 ${sum('goals')}</span><span>助攻 ${sum('assists')}</span><span>射門 ${sum('shots')}</span><span>xG ${C.fx(sum('xg'), 2)}</span></div>
     <div style="overflow-x:auto">${C.table(list, [
@@ -406,9 +410,13 @@ async function matchLogCard(code, league) {
       { key: 'shots', label: '射門/正', value: r => `${v(r.shots)}/${v(r.shotsOn)}`, sortValue: r => r.shots ?? -1, num: true },
       { key: 'keyPasses', label: '關鍵傳球', value: r => v(r.keyPasses), sortValue: r => r.keyPasses ?? -1, num: true },
       { key: 'xg', label: 'xG', value: r => v(r.xg, 2), sortValue: r => r.xg ?? -1, num: true },
-      { key: 'distance', label: '跑動 km', value: r => (r.distance == null ? '—' : (r.distance / 1000).toFixed(1)), sortValue: r => r.distance ?? -1, num: true },
+      ...(hasDef ? [
+        { key: 'tackles', label: '搶斷', value: r => v(r.tackles), sortValue: r => r.tackles ?? -1, num: true },
+        { key: 'interceptions', label: '攔截', value: r => v(r.interceptions), sortValue: r => r.interceptions ?? -1, num: true },
+      ] : []),
+      ...(hasDist ? [{ key: 'distance', label: '跑動 km', value: r => (r.distance == null ? '—' : (r.distance / 1000).toFixed(1)), sortValue: r => r.distance ?? -1, num: true }] : []),
     ], { sortKey: 'date', desc: true })}</div>
-    <div class="tiny dim" style="margin-top:8px">↑ = 替補上場。xG 是該場逐射門 xG 合計(供應商標記);跑動是追蹤資料,不是每場都有。點欄位標題可換排序。</div>
+    <div class="tiny dim" style="margin-top:8px">↑ = 替補上場。xG 是該場逐射門 xG 合計(供應商標記)${hasDist ? ';跑動是追蹤資料,不是每場都有' : ''}。點欄位標題可換排序。</div>
   </div>`;
 }
 
@@ -653,11 +661,15 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     const line = (label, value) => `<div class="stat-line"><span class="small muted">${label}</span><b class="mono">${value ?? '—'}</b></div>`;
     const value = (v, d = 0) => v == null ? '—' : (d ? C.fx(v, d) : v);
     const stat = p;
+    /* 身分欄位看這個聯賽**有沒有任何一個人**有值:德義法只有 Understat,背號、年齡、身高體重全聯賽都沒有 ——
+       逐人印「—」就是四列永遠空白的欄位(鐵則三),整列拿掉、改一句話講為什麼。西甲有 SportMonks,缺的人才印「—」 */
+    const ID_ROWS = [['年齡', 'age', v => `${v} 歲`], ['背號', 'squadNumber', v => v], ['身高', 'height', v => `${v} cm`], ['體重', 'weight', v => `${v} kg`]];
+    const idShown = ID_ROWS.filter(([, k]) => players.some(x => x[k] != null));
+    const idHidden = ID_ROWS.filter(r => !idShown.includes(r)).map(([label]) => label);
     const info = [
       line('球隊', teamLabel), line('位置', p.posZh ?? '來源未標位置'),
-      line('年齡', p.age == null ? '—' : `${p.age} 歲`), line('背號', p.squadNumber ?? '—'),
-      line('身高', p.height == null ? '—' : `${p.height} cm`), line('體重', p.weight == null ? '—' : `${p.weight} kg`),
-    ].join('');
+      ...idShown.map(([label, k, fmt]) => line(label, p[k] == null ? '—' : fmt(p[k]))),
+    ].join('') + (idHidden.length ? `<div class="tiny dim" style="margin-top:8px">${idHidden.join('、')}:${C.esc(LZ)}的球員資料只有 Understat,它不給這幾項,本站也沒有第二個身分來源。</div>` : '');
     const performance = [
       line('出場', value(stat.games)), line('分鐘', value(stat.minutes)),
       line('進球 / 助攻', `${value(stat.goals)} / ${value(stat.assists)}`),

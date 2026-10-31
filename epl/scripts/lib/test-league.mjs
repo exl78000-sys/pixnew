@@ -25,6 +25,7 @@ import { simZoneIssues } from './sim-zones.mjs';
 import { europeanKickoff } from './league-matches.mjs';
 import { nameCheckVerdict } from './build-league.mjs';
 import { readMatchReports } from './match-archive.mjs';
+import { defenseProductChecks } from './defense-check.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './report/index.mjs';
 
 
@@ -374,6 +375,25 @@ export function testLeague(L) {
     check('資料界線有講出球員層的狀態', (meta.boundaries ?? []).some(x => /球員/.test(x)));
   }
 
+  // ── 4b. 防守數據(2026-10-31,跟西甲同一支 attachDefense)──────────────
+  {
+    const players = out('players');
+    const ms = existsSync(join(ROOT, 'web', 'data', 'leagues', L.key, 'matchstats.json')) ? out('matchstats') : null;
+    const msCount = Object.keys(ms?.matches ?? {}).length;
+    const logs = out('player-logs').logs ?? {};
+    /* 有球員層、也有逐場統計,就一定要有防守數據 —— 沒有的話是 build 那一段沒跑到,而畫面只會照舊寫「沒有防守數據」,看不出來 */
+    if (players.length && msCount) {
+      check('有球員層又有逐場統計,就有逐場紀錄與防守數據', Object.keys(logs).length > 0 && !!out('leaders').defense,
+        `逐場紀錄 ${Object.keys(logs).length} 人`);
+      for (const c of defenseProductChecks({ players, logs, leaders: out('leaders'), playersList: out('players-list') })) check(c.label, c.ok, c.detail);
+      /* 逐場紀錄的跑動欄位:德義法沒有逐場追蹤資料。前端看「這個人有沒有值」決定出不出欄,這裡印出實際有幾列 */
+      const rows = Object.values(logs).flat();
+      console.log(`  · 逐場紀錄 ${rows.length} 人-場,有跑動 ${rows.filter(r => r.distance != null).length}、有搶斷 ${rows.filter(r => r.tackles != null).length}`);
+    } else {
+      check('沒有逐場統計或球員層時不宣稱有防守數據', !out('leaders').defense);
+    }
+  }
+
   // ── 5. 模擬的分界線要對得上這個聯賽 ───────────────────────
   {
     /* 德甲的升降級附加賽是「德甲第 16 名 vs 德乙第 3 名」——**跨聯賽**。
@@ -467,7 +487,7 @@ export function testLeague(L) {
        這一輪 analysis.json 就是漏掉的那一份:首頁 console 印 404、#app 只剩 93 個字元。 */
     const need = ['meta', 'clubs', 'teams', 'fixtures', 'table', 'sim', 'form', 'h2h', 'results',
       'news', 'analysis', 'prob-history', 'players', 'leaders', 'coaches', 'goals', 'experts',
-      'official', 'live', 'live-lite', 'reports', 'tactics', 'lineups', 'shapes', 'overview', 'players-list'];
+      'official', 'live', 'live-lite', 'reports', 'tactics', 'lineups', 'shapes', 'overview', 'players-list', 'player-logs'];
     const miss = need.filter(n => !existsSync(join(ROOT, 'web', 'data', 'leagues', L.key, `${n}.json`)));
     check('前端會讀的資料集一份都不缺', miss.length === 0, miss.join('、'));
 

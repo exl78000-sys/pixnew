@@ -334,15 +334,36 @@ function renderPlayer(p, ctx) {
   /* links 在下面才宣告(球隊、名單那些),這裡先收進 logOppLinks,宣告 links 時併進去 —— 直接 push 會 TDZ 炸掉(踩到) */
   const logOppLinks = [];
   const logs = p.code != null ? ctx.logsFor?.(p.code) : null;
+  /* 防守數據(2026-10-31,西甲與德義法):FotMob 逐場加總,只有過了「場數 = Understat 出場、分鐘差 ≤ 90」的季才有 */
+  const defSeasons = (p.seasons ?? []).filter(s => s.stats?.defense);
+  if (defSeasons.length) {
+    const v = x => (x == null ? '—' : x);
+    body.push(`\n## 防守數據(FotMob 逐場加總)\n\n| 賽季 | 場次 | 分鐘 | 搶斷 | 攔截 | 撲救 |\n|---|---|---|---|---|---|\n`);
+    for (const s of defSeasons) {
+      const d = s.stats.defense;
+      body.push(`| ${s.season} | ${d.matches} | ${d.minutes} | ${v(d.tackles)} | ${v(d.interceptions)} | ${v(d.saves)} |\n`);
+    }
+    body.push(`\n> 逐場加總,只有 FotMob 接到的場數等於 Understat 的出場數、分鐘差 90 分以內的季才列(對不上的季不列,不是 0)。撲救只有門將有。\n`);
+  } else if (ctx.hasDefense && p.understatId) {
+    body.push(`\n## 防守數據\n\n這一位沒過核對:FotMob 接到的場數或分鐘跟 Understat 對不上(或 FotMob 沒有他的逐場紀錄),所以不列 —— 不是 0。\n`);
+  }
   if (logs?.length) {
     const v = x => (x == null ? '—' : x);
-    body.push(`\n## 逐場紀錄(FotMob,${logs.length} 場)\n\n| 日期 | 對手 | 比分 | 分鐘 | 評分 | 球 | 助 | 射門/正 | 關鍵傳球 | xG | 跑動 km |\n|---|---|---|---|---|---|---|---|---|---|---|\n`);
+    /* 欄位看資料有沒有:德義法沒有逐場追蹤資料,跑動整欄會是「—」(鐵則三);搶斷攔截舊產物沒有 */
+    const hasDist = logs.some(r => r.distance != null), hasDef = logs.some(r => r.tackles != null || r.interceptions != null);
+    const head = ['日期', '對手', '比分', '分鐘', '評分', '球', '助', '射門/正', '關鍵傳球', 'xG', ...(hasDef ? ['搶斷', '攔截'] : []), ...(hasDist ? ['跑動 km'] : [])];
+    body.push(`\n## 逐場紀錄(FotMob,${logs.length} 場)\n\n| ${head.join(' | ')} |\n|${head.map(() => '---').join('|')}|\n`);
     for (const r of [...logs].sort((a, b) => b.date.localeCompare(a.date))) {
       const opp = ctx.teamNameOf(r.opp);
       if (opp) logOppLinks.push(opp);
-      body.push(`| ${r.date} | ${r.home ? '主' : '客'} ${opp ? wl(opp) : r.opp} | ${r.score} | ${r.min}${r.sub ? '↑' : ''} | ${r.rating == null ? '—' : r.rating.toFixed(1)} | ${v(r.goals)} | ${v(r.assists)} | ${v(r.shots)}/${v(r.shotsOn)} | ${v(r.keyPasses)} | ${r.xg == null ? '—' : r.xg.toFixed(2)} | ${r.distance == null ? '—' : (r.distance / 1000).toFixed(1)} |\n`);
+      const cells = [r.date, `${r.home ? '主' : '客'} ${opp ? wl(opp) : r.opp}`, r.score, `${r.min}${r.sub ? '↑' : ''}`,
+        r.rating == null ? '—' : r.rating.toFixed(1), v(r.goals), v(r.assists), `${v(r.shots)}/${v(r.shotsOn)}`, v(r.keyPasses),
+        r.xg == null ? '—' : r.xg.toFixed(2),
+        ...(hasDef ? [v(r.tackles), v(r.interceptions)] : []),
+        ...(hasDist ? [r.distance == null ? '—' : (r.distance / 1000).toFixed(1)] : [])];
+      body.push(`| ${cells.join(' | ')} |\n`);
     }
-    body.push(`\n> ↑ = 替補上場。xG 是該場逐射門 xG 合計;跑動是追蹤資料,不是每場都有。\n`);
+    body.push(`\n> ↑ = 替補上場。xG 是該場逐射門 xG 合計${hasDist ? ';跑動是追蹤資料,不是每場都有' : ''}。\n`);
   }
 
   const links = [...logOppLinks];
@@ -1869,14 +1890,16 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
      西甲有 SportMonks,德義法沒有 —— 寫成「不是英超英冠就是 ['傷停與停賽', '防守數據']」的話,
      德義法的筆記會漏講背號與頭貼為什麼是空的。 */
   const noIdentity = players.length > 0 && players.every(p => p.sources?.身分與背號 == null);
+  /* 防守數據(2026-10-31 起西甲與德義法有):看這個聯賽的球員有沒有任何一季帶 defense,不看聯賽代碼 */
+  const hasDefense = players.some(p => (p.seasons ?? []).some(s => s.stats?.defense));
   const playerGaps = lg.key === 'pl' ? []
     /* 英冠:跟著產物講 —— 傷停(賽前缺陣名單)在球隊筆記、年齡看有沒有人有(2026-10-31 起) */
     : lg.key === 'en2' ? [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽',
         '球員 xG 模型(這裡的 xG 是逐射門加總)', players.some(p => p.age != null) ? '身價與頭貼' : '身價、年齡與頭貼']
-      : ['傷停與停賽', '防守數據', ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)'] : [])];
+      : ['傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)'] : [])];
 
   const ctx = {
-    lg, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
+    lg, hasDefense, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
     crestEmbed,
     coachOf: code => coachBy.get(code) ?? null,
     coachFileOf: code => { const c = coachBy.get(code); return c ? coachFileOf(c, lg) : null; },

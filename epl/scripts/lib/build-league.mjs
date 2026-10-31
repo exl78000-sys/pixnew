@@ -55,7 +55,7 @@ import { buildTeamMatchers, tagNewsTeams } from './news-tag.mjs';
 import { coreFromUnderstat } from './player-core.mjs';
 /* 比賽層(2026-09-15):FotMob 逐場 → 逐場統計 + 賽後報告。跟西甲、英冠**同一份實作**,
    不各寫一套(buildProviderMatchReport 自己會再核對一次比分、要求 coverage 齊全)。 */
-import { loadFotmobMatchStats, toCanonicalDetail, pairOf } from './matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, pairOf, buildPlayerLogs, attachDefense } from './matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './match-archive.mjs';
 import { externalizeImages } from './image-files.mjs';
 import { overviewFrom } from './overview.mjs';
@@ -602,6 +602,23 @@ export async function buildLeague(L) {
   }
   const hasPlayers = playersOut.length > 0;
 
+  /* ── 逐場紀錄與防守數據(2026-10-31,跟西甲同一支 buildPlayerLogs / attachDefense)──
+     Understat 不給搶斷、攔截、撲救;FotMob 逐場逐人統計有,而且這三個聯賽的逐場 raw 本來就在抓(賽後報告用的那一份)。
+     buildPlayerLogs 用同一隊名單的姓名配對把每一場接到本站的球員代碼上(不比背號 —— 德義法沒有背號);
+     attachDefense 只在「FotMob 這一季接到的場數 = Understat 的出場數、分鐘差 ≤ 90」時給,對不上的不給
+     (少接到幾場的人加總會偏低,而那看起來就是一個真數字)。逐場紀錄另寫 player-logs.json,球員詳情頁那張「逐場紀錄」讀它。 */
+  let playerLogs = { logs: {}, rows: 0, unmatched: 0, players: 0 };
+  let defenseCount = null;
+  if (hasPlayers && fotmobStats.count) {
+    playerLogs = buildPlayerLogs(playersOut, fotmobStats);
+    console.log(`  ${L.zh}球員逐場紀錄:${playerLogs.players} 人・${playerLogs.rows} 人-場・配不到 ${playerLogs.unmatched} 人-場`);
+    defenseCount = attachDefense(playersOut, playerLogs.logs);
+    for (const [season, c] of Object.entries(defenseCount)) {
+      console.log(`  ${L.zh}防守數據 ${season}:給 ${c.published}/${c.total} 人・場次對不上 ${c.games}・分鐘對不上 ${c.minutes}・沒有逐場列 ${c.none}`);
+    }
+  }
+  const hasDefense = Object.values(defenseCount ?? {}).some(c => c.published > 0);
+
   /* ── 烏龍球對帳:這是**量測**,不是宣稱 ──
      第一版我在界線裡直接寫「差額現在對得起來了」,而當時的資料根本撐不起那句話:
      FotMob 只涵蓋 2026-27 的 19 / 27 場,2025-26 一場都沒有 —— 上一季的缺口
@@ -1047,6 +1064,10 @@ export async function buildLeague(L) {
   }
   await write('prob-history', { season: null, matches: {} });
   await write('players', playersOut);
+  /* 沒有逐場資料時也寫一份空的(前端拿不到就不畫那張卡,但不留 404) */
+  await write('player-logs', { source: 'FotMob 逐人統計 + shotmap', seasons: fotmobStats.seasons ?? [],
+    note: '每人每場一列;xg 是該場逐射門 xG 合計;只收有配到本站球員代碼的人。德義法沒有逐場追蹤資料,跑動一律 null。',
+    players: playerLogs.players, rows: playerLogs.rows, logs: playerLogs.logs });
   // 跨聯賽統一層(聯集 + null):德甲沒有身價與傷停 → null 不是 0
   /* **沒有球員時要寫一份空的,不是不寫。** 跨聯賽的球員搜尋(allplayers)會對
      每一個「導覽列開了 players」的聯賽抓這一份 —— 不寫就是 404,而 404 會讓前端
@@ -1078,7 +1099,9 @@ export async function buildLeague(L) {
        德甲連西甲那層 SportMonks 補充都沒有,所以背號 / 頭貼 / 出生日期全缺,
        「22 歲以下」那張榜因此是空的(ageCoverage 會說出 0 / N)。 */
     missing: ['背號', '頭貼', '出生日期與身價(所以年齡與「22 歲以下」那張榜是空的)',
-      '傷停與停賽', '防守數據(鏟球/攔截/撲救)'],
+      '傷停與停賽', ...(hasDefense ? [] : ['防守數據(鏟球/攔截/撲救)'])],
+    /* 有防守數據時講出處與核對方式(形狀跟西甲那一份相同,前端讀 seasons 講涵蓋) */
+    ...(hasDefense ? { defense: { source: 'FotMob 逐場統計加總', check: 'Understat 的出場與分鐘', tolMinutes: 90, seasons: defenseCount } } : {}),
     sportmonks: {},
     note: 'Understat 提供整季彙總(一季一個請求)。每 90 分鐘僅在上場時間達門檻時給出。'
       /* 原本寫「(見 nameCheck)」—— 那是產物的欄位名,讀者找不到。核對的數字在首頁「目前資料界線」那一條 */
