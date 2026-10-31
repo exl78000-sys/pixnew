@@ -55,11 +55,18 @@ jobs:
         run: npm run probe:league-teams-fetch
         continue-on-error: true
 
-      # **這是 latest job 的最後一步。** pulselive `/stats/match` 有沒有射門 / 射正 / xG,以及進行中的場次有沒有資料
+      # pulselive `/stats/match` 有沒有射門 / 射正 / xG,以及進行中的場次有沒有資料
       # (2026-10-11;最多 7 個請求、唯讀)。進行中那一段要在**有英超比賽在踢的時候**跑才量得到,否則腳本會講「這一輪沒量到」。
       - name: pulselive 場中統計(射門、射正有沒有;進行中的場次有沒有資料)
         working-directory: epl
         run: npm run probe:pulselive-stats
+        continue-on-error: true
+
+      # **這是 latest job 的最後一步。** 英冠的傷停與停賽:FotMob `matchDetails` 有沒有缺陣名單(2026-10-31;
+      # 2 個請求、唯讀:下一場未賽 + 最近一場已完賽,都從倉庫的賽程挑)。只看鍵名像缺陣的欄位與它的形狀,不印姓名。
+      - name: 英冠缺陣名單(FotMob matchDetails 有沒有傷停 / 停賽)
+        working-directory: epl
+        run: npm run probe:unavailable
         continue-on-error: true
 
   all:
