@@ -172,7 +172,7 @@ function collectPlayers(lg, meta) {
            球員層有了之後 vault 沒跟上(「有哪一句還在講我們沒有它」在 vault 又一次) */
         squadNumber: newest.shirt, age: newest.age ?? null, country: newest.country?.name ?? newest.country?.code ?? null,
         dob: null, height: null, weight: null, captain: null,
-        /* 頭貼:2026-10-31 起球員榜上的人有(FotMob,只抓榜上的人) */
+        /* 頭貼:2026-10-31 起由 FotMob 補(榜上的人先,其餘每次部署補一點) */
         statusZh: null, news: null, price: null, photo: rows.find(r => r.photo)?.photo ?? null, loans: [],
         seasons: rows.slice().sort((a, b) => String(a.season).localeCompare(String(b.season))).map(r => ({
           season: r.season, kind: r.season === meta.currentSeason ? '本季至今' : null,
@@ -1906,10 +1906,10 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const playerGaps = lg.key === 'pl' ? []
     /* 英冠:跟著產物講 —— 傷停(賽前缺陣名單)在球隊筆記、年齡看有沒有人有(2026-10-31 起) */
     : lg.key === 'en2' ? [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽',
-        '球員 xG 模型(這裡的 xG 是逐射門加總)', `身價${players.some(p => p.age != null) ? '' : '、年齡'}與${players.some(p => p.photo) ? '多數人的頭貼(只有球員榜上的人有)' : '頭貼'}`]
+        '球員 xG 模型(這裡的 xG 是逐射門加總)', `身價${players.some(p => p.age != null) ? '' : '、年齡'}${players.every(p => p.photo) ? '' : players.some(p => p.photo) ? '與一部分人的頭貼(每次部署補一點,逐步補齊)' : '與頭貼'}`]
       : ['傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)']
-        /* 德義法 2026-10-31 起有 FotMob 背號與榜上的人的頭貼,但出生日期與身價仍然沒有 —— 有什麼就不講沒有,沒有的照講 */
-        : players.length && players.every(p => p.dob == null) ? [`${players.some(p => p.photo) ? '多數人的頭貼、' : '頭貼、'}出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)`] : [])];
+        /* 德義法 2026-10-31 起有 FotMob 背號與頭貼(逐步補齊),但出生日期與身價仍然沒有 —— 有什麼就不講沒有,沒有的照講 */
+        : players.length && players.every(p => p.dob == null) ? [`${players.every(p => p.photo) ? '' : players.some(p => p.photo) ? '一部分人的頭貼、' : '頭貼、'}出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)`] : [])];
 
   const ctx = {
     lg, hasDefense, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
@@ -2035,7 +2035,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   }
   for (const p of players) {
     /* 頭貼:英超是 base64 → 落成 jpg 檔嵌入;西甲是 SportMonks CDN 外連
-       (照實標示離線不顯示)。英冠與德義法 2026-10-31 起球員榜上的人有 FotMob 頭貼(產物裡是圖檔路徑,走第一條);
+       (照實標示離線不顯示)。英冠與德義法 2026-10-31 起有 FotMob 頭貼(逐步補齊;產物裡是圖檔路徑,走第一條);
        沒有頭貼的人 photo 是 null → 兩條都不走。 */
     const d = dataUriBuf(p.photo);
     if (d) {

@@ -16,6 +16,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { photoQueue } from './fetch-league-photos.mjs';
 import { backfillScores } from './lib/league-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -855,6 +856,19 @@ const table = out('table'), results = out('results'), sim = out('sim');
     const lastLeague = Math.max(...['laliga:build', 'en2:build', 'de1:build', 'it1:build', 'fr1:build'].map(k => wf.indexOf(`npm run ${k}`)));
     check('聯賽頭貼的抓取排在各聯賽 build 之後、npm run build 之前', iPhotos > lastLeague && iPhotos < wf.indexOf('run: npm run build'), `${iPhotos} / ${lastLeague}`);
     check('聯賽頭貼的 store 在回寫清單裡', wf.includes('epl/data/manual/league-photos.json'));
+  }
+  /* 頭貼每次只抓一點(2026-10-31,使用者同意):一次部署最多 40 人,榜上的人永遠排最前,其餘本季先、上場分鐘多的先;
+     同一個人在兩個聯賽(轉會)或兩季都出現,只排一次、取最前面的位置。上限守在原始碼的預設值 —— 一人一個請求,
+     有人把它改大就是拿使用者沒同意的量去打 FotMob */
+  {
+    const q = photoQueue([
+      { board: new Map([['9', 'B']]), rest: [{ fid: '1', name: 'old-many', cur: false, minutes: 3000 }, { fid: '2', name: 'cur-few', cur: true, minutes: 100 },
+        { fid: '3', name: 'cur-many', cur: true, minutes: 900 }, { fid: '9', name: 'B-rest', cur: true, minutes: 50 }] },
+      { board: new Map(), rest: [{ fid: '1', name: 'old-many-now-cur', cur: true, minutes: 200 }] },
+    ]).map(x => x.fid);
+    check('頭貼排隊:榜上 → 本季上場多 → 本季上場少 → 上季;同一人只排一次', JSON.stringify(q) === JSON.stringify(['9', '3', '1', '2']), q.join(','));
+    const src = readFileSync(join(ROOT, 'scripts', 'fetch-league-photos.mjs'), 'utf8');
+    check('頭貼一次部署最多 40 人(使用者同意的量)', /const LIMIT = Math\.max\(1, Number\(arg\('limit'\) \|\| 40\)\)/.test(src));
   }
   const iFetch = wf.indexOf('npm run unavailable:fetch -- --league=en2'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf('npm run en2:build');
   check('缺陣名單:部署在 scores 之後、en2:build 之前抓', iFetch > iScores && iScores > 0 && iFetch < iBuild);

@@ -622,12 +622,14 @@ async function main() {
     withCountry: v.agg.players.filter(p => p.country).length,
   }]));
   const curBio = bioCover[CURRENT_SEASON] ?? { players: 0, withAge: 0, withCountry: 0 };
-  /* 頭貼(2026-10-31,使用者選「只抓榜上的人」):英冠的 providerId 本來就是 FotMob 的球員 id,不必配對。
-     有幾人有圖跟著 store 講(「沒有頭貼」那句不寫死) */
+  /* 頭貼(2026-10-31,先抓榜上的人、同日起每次部署再補 40 人):英冠的 providerId 本來就是 FotMob 的球員 id,不必配對。
+     有幾人有圖跟著 store 講(「沒有頭貼」「只有榜上的人有」那種句子都不寫死) */
   const leaguePhotos = loadLeaguePhotos(ROOT).photos;
   const photoN = new Set(Object.values(playerSeasons).flatMap(ps => ps.agg.players)
     .filter(p => p.providerId != null && leaguePhotos[String(p.providerId)]).map(p => String(p.providerId))).size;
-  const photoGap = photoN ? '多數人的頭貼(只有球員榜上的人有)' : '頭貼';
+  const photoAll = new Set(Object.values(playerSeasons).flatMap(ps => ps.agg.players)
+    .filter(p => p.providerId != null).map(p => String(p.providerId))).size;
+  const photoGap = !photoN ? '頭貼' : photoN < photoAll ? `一部分人的頭貼(${photoN} / ${photoAll} 人有,每次部署補 40 人,逐步補齊)` : null;
   /* 賽前缺陣名單(2026-10-31,使用者選「接,用乙」;規則在 lib/unavailable.mjs、抓取在 fetch-fotmob-unavailable.mjs)。
      單一來源:英冠沒有第二份傷停可以對,畫面要講。本季球員層用 FotMob id 接上「本季出賽幾場」,不用姓名接。 */
   const unavailable = (() => {
@@ -697,7 +699,7 @@ async function main() {
                 + (playerSeasons[CURRENT_SEASON]?.boards.some(b => b.key === 'youth')
                   ? ';球員頁的「22 歲以下」榜(進球 + 助攻,定義同西甲)只算有年齡的人' : '')]
             : []),
-          `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}${unavailN ? '' : '傷停、'}${photoGap}。`
+          `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}${unavailN ? '' : '傷停、'}${photoGap ?? ''}`.replace(/、$/, '') + '。'
             + '整季的球員資料源仍然沒有:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
             + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超']
         : ['— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
@@ -904,7 +906,7 @@ async function main() {
          (Jhon Solis / Jhon Solís、Rob Apter / Robert Apter)。沒核對就寫「做不到」跟沒核對就寫「做得到」一樣糟。 */
       missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現',
         unavailN ? '球員頁上的傷停(傷停在單場頁與球隊頁,FotMob 賽前缺陣名單)' : '傷停與停賽',
-        curBio.withAge || curBio.withCountry ? '身高' : '球員年齡、身高與國籍', photoGap],
+        curBio.withAge || curBio.withCountry ? '身高' : '球員年齡、身高與國籍', ...(photoGap ? [photoGap] : [])],
       /* 年齡與國籍逐季涵蓋(單一來源 FotMob 名單;前端照它講幾人有) */
       bios: { source: 'FotMob 名單', single: true, seasons: bioCover },
     });
