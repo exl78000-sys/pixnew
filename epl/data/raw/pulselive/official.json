@@ -56568,7 +56568,7 @@
   "CHE|MUN": {
    "fixtureId": 129006,
    "kickoff": "2026-10-31T12:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -56577,9 +56577,31 @@
    "homeId": 4,
    "awayId": 12,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      121704
+     ],
+     [
+      125075,
+      66284,
+      51229
+     ],
+     [
+      21998,
+      112203,
+      99282,
+      140055
+     ],
+     [
+      304474,
+      49293
+     ],
+     [
+      23968
+     ]
+    ],
     "xi": [
      {
       "id": 112203,
@@ -56595,7 +56617,7 @@
       "playerId": null,
       "name": "Morgan Rogers",
       "shirt": 17,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -56604,7 +56626,7 @@
       "playerId": null,
       "name": "Marco Palestra",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -56622,7 +56644,7 @@
       "playerId": null,
       "name": "Pedro Neto",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -56676,7 +56698,7 @@
       "playerId": null,
       "name": "Cole Palmer",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Attacking Midfielder",
       "captain": false
      }
@@ -56766,9 +56788,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      67910
+     ],
+     [
+      118591,
+      9566,
+      67191,
+      24252
+     ],
+     [
+      133245,
+      124396
+     ],
+     [
+      69176,
+      23396,
+      51202
+     ],
+     [
+      66360
+     ]
+    ],
     "xi": [
      {
       "id": 66360,
@@ -56829,7 +56873,7 @@
       "playerId": null,
       "name": "Amad Diallo",
       "shirt": 16,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -56856,7 +56900,7 @@
       "playerId": null,
       "name": "Matheus Cunha",
       "shirt": 10,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre Second Striker",
       "captain": false
      },
@@ -56958,10 +57002,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-10-31T12:31:33.452Z"
+ "fetchedAt": "2026-10-31T12:33:58.617Z"
 }
