@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T15:37:36.897Z",
+ "fetchedAt": "2026-10-31T17:01:49.977Z",
  "teams": [
   {
    "code": "FCB",
@@ -125,66 +125,6 @@
    ]
   },
   {
-   "code": "RBL",
-   "fotmobId": 178475,
-   "fotmobName": "RB Leipzig",
-   "fetchedAt": "2026-10-09T12:41:46.419Z",
-   "color": "#DD0741",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#DD0741",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Red Bull Arena",
-   "city": "Leipzig",
-   "location": [
-    "51.345776141",
-    "12.348289490"
-   ],
-   "capacity": 47800,
-   "surface": "Grass",
-   "opened": 2004,
-   "coachHistory": [
-    {
-     "id": 36491,
-     "name": "Zsolt Löw",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1099625,
-     "name": "Ole Werner",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 20,
-     "draw": 5,
-     "loss": 9,
-     "pointsPerGame": 1.91,
-     "winPercentage": 0.59
-    },
-    {
-     "id": 30459,
-     "name": "Martín Demichelis",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 0,
-     "loss": 2,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "SCF",
    "fotmobId": 8358,
    "fotmobName": "Freiburg",
@@ -245,61 +185,61 @@
    ]
   },
   {
-   "code": "B04",
-   "fotmobId": 8178,
-   "fotmobName": "Bayer Leverkusen",
-   "fetchedAt": "2026-10-09T12:41:43.679Z",
-   "color": "#cf1e1e",
+   "code": "RBL",
+   "fotmobId": 178475,
+   "fotmobName": "RB Leipzig",
+   "fetchedAt": "2026-10-09T12:41:46.419Z",
+   "color": "#DD0741",
    "teamColors": {
-    "darkMode": "#e32221",
-    "lightMode": "#cf1e1e",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "darkMode": "#FFFFFF",
+    "lightMode": "#DD0741",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "BayArena",
-   "city": "Leverkusen",
+   "venue": "Red Bull Arena",
+   "city": "Leipzig",
    "location": [
-    "51.038213121",
-    "7.002249956"
+    "51.345776141",
+    "12.348289490"
    ],
-   "capacity": 30210,
+   "capacity": 47800,
    "surface": "Grass",
-   "opened": 1958,
+   "opened": 2004,
    "coachHistory": [
     {
-     "id": 656595,
-     "name": "Erik ten Hag",
+     "id": 36491,
+     "name": "Zsolt Löw",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1099625,
+     "name": "Ole Werner",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 0.5,
-     "winPercentage": 0
+     "win": 20,
+     "draw": 5,
+     "loss": 9,
+     "pointsPerGame": 1.91,
+     "winPercentage": 0.59
     },
     {
-     "id": 91505,
-     "name": "Kasper Hjulmand",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 17,
-     "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 1.81,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 1515447,
-     "name": "Carles Martínez",
+     "id": 30459,
+     "name": "Martín Demichelis",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
      "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
+     "draw": 0,
+     "loss": 2,
+     "pointsPerGame": 1.5,
      "winPercentage": 0.5
     }
    ]
@@ -353,6 +293,66 @@
     {
      "id": 33244,
      "name": "Daniel Thioune",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "B04",
+   "fotmobId": 8178,
+   "fotmobName": "Bayer Leverkusen",
+   "fetchedAt": "2026-10-09T12:41:43.679Z",
+   "color": "#cf1e1e",
+   "teamColors": {
+    "darkMode": "#e32221",
+    "lightMode": "#cf1e1e",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "BayArena",
+   "city": "Leverkusen",
+   "location": [
+    "51.038213121",
+    "7.002249956"
+   ],
+   "capacity": 30210,
+   "surface": "Grass",
+   "opened": 1958,
+   "coachHistory": [
+    {
+     "id": 656595,
+     "name": "Erik ten Hag",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 0.5,
+     "winPercentage": 0
+    },
+    {
+     "id": 91505,
+     "name": "Kasper Hjulmand",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 17,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 1.81,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 1515447,
+     "name": "Carles Martínez",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -425,66 +425,6 @@
    ]
   },
   {
-   "code": "FCA",
-   "fotmobId": 8406,
-   "fotmobName": "Augsburg",
-   "fetchedAt": "2026-10-09T12:41:42.579Z",
-   "color": "#B93733",
-   "teamColors": {
-    "darkMode": "#B93733",
-    "lightMode": "#B93733",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "WWK Arena",
-   "city": "Augsburg",
-   "location": [
-    "48.323101360",
-    "10.885949135"
-   ],
-   "capacity": 30662,
-   "surface": "Grass",
-   "opened": 2009,
-   "coachHistory": [
-    {
-     "id": 36889,
-     "name": "Sandro Wagner",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 8,
-     "pointsPerGame": 0.83,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 6,
-     "loss": 7,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "M05",
    "fotmobId": 9905,
    "fotmobName": "Mainz 05",
@@ -545,62 +485,62 @@
    ]
   },
   {
-   "code": "TSG",
-   "fotmobId": 8226,
-   "fotmobName": "Hoffenheim",
-   "fetchedAt": "2026-10-09T12:41:50.120Z",
-   "color": "#005098",
+   "code": "FCA",
+   "fotmobId": 8406,
+   "fotmobName": "Augsburg",
+   "fetchedAt": "2026-10-09T12:41:42.579Z",
+   "color": "#B93733",
    "teamColors": {
-    "darkMode": "#0057a3",
-    "lightMode": "#005098",
+    "darkMode": "#B93733",
+    "lightMode": "#B93733",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "SNP Arena",
-   "city": "Sinsheim",
+   "venue": "WWK Arena",
+   "city": "Augsburg",
    "location": [
-    "49.238005290",
-    "8.887740970"
+    "48.323101360",
+    "10.885949135"
    ],
-   "capacity": 30164,
+   "capacity": 30662,
    "surface": "Grass",
    "opened": 2009,
    "coachHistory": [
     {
-     "id": 601384,
-     "name": "Christian Ilzer",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 5,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 0.96,
-     "winPercentage": 0.21
-    },
-    {
-     "id": 601384,
-     "name": "Christian Ilzer",
+     "id": 36889,
+     "name": "Sandro Wagner",
      "season": "2025/2026",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 18,
-     "draw": 7,
-     "loss": 9,
-     "pointsPerGame": 1.79,
-     "winPercentage": 0.53
+     "win": 3,
+     "draw": 1,
+     "loss": 8,
+     "pointsPerGame": 0.83,
+     "winPercentage": 0.25
     },
     {
-     "id": 601384,
-     "name": "Christian Ilzer",
+     "id": 816800,
+     "name": "Manuel Baum",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 6,
+     "loss": 7,
+     "pointsPerGame": 1.5,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 816800,
+     "name": "Manuel Baum",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
     }
    ]
   },
@@ -653,6 +593,66 @@
     {
      "id": 36490,
      "name": "Sebastian Hoeneß",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "TSG",
+   "fotmobId": 8226,
+   "fotmobName": "Hoffenheim",
+   "fetchedAt": "2026-10-09T12:41:50.120Z",
+   "color": "#005098",
+   "teamColors": {
+    "darkMode": "#0057a3",
+    "lightMode": "#005098",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "SNP Arena",
+   "city": "Sinsheim",
+   "location": [
+    "49.238005290",
+    "8.887740970"
+   ],
+   "capacity": 30164,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 5,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 0.96,
+     "winPercentage": 0.21
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 18,
+     "draw": 7,
+     "loss": 9,
+     "pointsPerGame": 1.79,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 601384,
+     "name": "Christian Ilzer",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
