@@ -168,7 +168,10 @@ function collectPlayers(lg, meta) {
         /* 上游的球員 id(FotMob)。球員榜的列帶的就是它(`pid`),榜上的連結靠它對到這則筆記 —— 不比姓名 */
         fotmobId: newest.providerId != null ? String(newest.providerId) : null,
         teamCode: newest.team, pos: newest.pos, posZh: { G: '門將', D: '後衛', M: '中場', F: '前鋒' }[newest.pos] ?? null,
-        squadNumber: newest.shirt, age: null, dob: null, height: null, weight: null, captain: null,
+        /* 年齡與國籍(2026-10-31 起,FotMob 名單、單一來源、抓取當時的年齡)—— 之前寫死 null,
+           球員層有了之後 vault 沒跟上(「有哪一句還在講我們沒有它」在 vault 又一次) */
+        squadNumber: newest.shirt, age: newest.age ?? null, country: newest.country?.name ?? newest.country?.code ?? null,
+        dob: null, height: null, weight: null, captain: null,
         statusZh: null, news: null, price: null, photo: null, loans: [],
         seasons: rows.slice().sort((a, b) => String(a.season).localeCompare(String(b.season))).map(r => ({
           season: r.season, kind: r.season === meta.currentSeason ? '本季至今' : null,
@@ -180,7 +183,8 @@ function collectPlayers(lg, meta) {
             rating: r.stats.rating },
           teams: [r.teamName].filter(Boolean),
         })),
-        sources: { 表現統計: 'FotMob 逐場累加', 身分與背號: 'FotMob 逐場名單' },
+        sources: { 表現統計: 'FotMob 逐場累加', 身分與背號: 'FotMob 逐場名單',
+          ...(newest.age != null || newest.country ? { 年齡與國籍: 'FotMob 名單(單一來源;年齡是抓取當時的值)' } : {}) },
       };
     });
   }
@@ -303,7 +307,8 @@ function renderPlayer(p, ctx) {
     身高cm: p.height, 體重kg: p.weight, 隊長: p.captain || null,
     狀態: p.statusZh, FPL身價百萬英鎊: p.price,
     租借紀錄數: p.loans?.length || null,
-    表現統計來源: p.sources.表現統計, 身分來源: p.sources.身分與背號,
+    國籍: p.country ?? null,
+    表現統計來源: p.sources.表現統計, 身分來源: p.sources.身分與背號, 年齡國籍來源: p.sources.年齡與國籍 ?? null,
     /* 跨聯賽共用的身分鍵(西甲、德義法)。同名提醒靠它判「同一人 / 不同人」,放進 frontmatter 讓讀者與測試都查得到 */
     Understat球員id: p.understatId,
     /* 英超與英冠的上游 id(2026-09-26,球員榜那一輪):榜上的連結用 id 對到筆記,測試拿它驗連結指的是同一個人 */
@@ -349,6 +354,7 @@ function renderPlayer(p, ctx) {
     ['位置', p.posZh || p.pos],
     ['背號', p.squadNumber],
     ['年齡', p.age],
+    ['國籍', p.country],
     ['身高 / 體重', p.height && p.weight ? `${p.height} cm / ${p.weight} kg` : null],
     ['狀態', p.statusZh],
     ['傷停消息', p.news],
@@ -498,6 +504,9 @@ function renderTeam(t, ctx) {
     const fr = renderForm(t.code, ctx);
     body.push(fr.text);
     links.push(...fr.links);
+    const ua = renderUnavailable(t.code, ctx);
+    body.push(ua.text);
+    links.push(...ua.links);
   }
 
   if (ls) {
@@ -1034,6 +1043,32 @@ function renderSim(s, ctx) {
    近況跟交手都跑過走查回測、沒有進模型:說法照產物自己那一句(form.note)。
    可用人手只有英超有(官方 FPL 的傷停欄位);其他聯賽的 availability 是 null,整塊不寫。 */
 const RES_ZH = { W: '勝', D: '和', L: '負' };
+
+/* 賽前缺陣名單(英冠 2026-10-31 起,unavailable.json)。跟站上球隊頁那張卡講同一件事:
+   這是**某一場的賽前名單**,講清楚是哪一場、什麼時候抓的;那一場踢完了就是當時的狀態。
+   球員連結用 FotMob id 對,不比姓名。產物沒有這一隊就整段不寫(站上講「還沒抓」,筆記不寫空殼)。 */
+function renderUnavailable(code, ctx) {
+  const links = [];
+  const u = ctx.unavailFor?.(code);
+  if (!u) return { links, text: '' };
+  const opp = ctx.teamNameOf(u.opp);
+  if (opp) links.push(opp);
+  const out = [`\n## 傷停(FotMob 賽前缺陣名單)\n\n`
+    + `${u.played ? '上一場' : '下一場'}${u.home ? '主場' : '客場'}對 ${opp ? wl(opp) : u.opp}(開賽 ${u.kickoff})的賽前名單,${u.fetchedAt} 抓的。\n\n`];
+  if (u.list == null) out.push('上游沒有給這一隊的缺陣名單。\n');
+  else if (!u.list.length) out.push('名單上沒有人缺陣。\n');
+  else {
+    out.push('| 球員 | 原因 | 預計 | 本季出賽 |\n|---|---|---|---|\n');
+    for (const p of u.list) {
+      const f = p.pid != null ? ctx.playerFileByFotmob(p.pid) : null;
+      if (f) links.push(f);
+      out.push(`| ${f ? wl(f) : cellText(p.name ?? '—')} | ${cellText(p.typeZh ?? p.type ?? '原因不明')} | ${cellText(p.returnZh ?? p.expectedReturn ?? '—')} | ${p.season ? `${p.season.matches} 場・${p.season.minutes} 分鐘` : '本季還沒出賽'} |\n`);
+    }
+  }
+  out.push(`\n> 單一來源(英冠沒有第二份傷停可以核對),每一場開賽前 ${ctx.unavailWindowH} 小時內抓一次。`
+    + `${u.played ? '那一場已經踢完,這是當時的賽前狀態,不是現在的。' : ''}「出賽成疑」的人不一定缺陣。這一段沒有進預測模型。\n`);
+  return { links, text: out.join('') };
+}
 function renderForm(code, ctx) {
   const t = ctx.formFor(code);
   const links = [];
@@ -1835,7 +1870,9 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
      德義法的筆記會漏講背號與頭貼為什麼是空的。 */
   const noIdentity = players.length > 0 && players.every(p => p.sources?.身分與背號 == null);
   const playerGaps = lg.key === 'pl' ? []
-    : lg.key === 'en2' ? ['傷停與停賽', '球員 xG 模型(這裡的 xG 是逐射門加總)', '身價、年齡與頭貼']
+    /* 英冠:跟著產物講 —— 傷停(賽前缺陣名單)在球隊筆記、年齡看有沒有人有(2026-10-31 起) */
+    : lg.key === 'en2' ? [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽',
+        '球員 xG 模型(這裡的 xG 是逐射門加總)', players.some(p => p.age != null) ? '身價與頭貼' : '身價、年齡與頭貼']
       : ['傷停與停賽', '防守數據', ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)'] : [])];
 
   const ctx = {
@@ -1905,6 +1942,13 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     formAsOf: formFile?.asOf ?? meta.asOf ?? null,
     formNote: formFile?.note ?? null,
     hasAvailability: Object.values(formFile?.teams ?? {}).some(x => x?.availability),
+    /* 賽前缺陣名單(英冠):有 meta.unavailable 的聯賽才讀 */
+    unavailFor: (() => { const U = meta.unavailable ? load(lg.key, 'unavailable') : null; return code => U?.teams?.[code] ?? null; })(),
+    unavailWindowH: meta.unavailable?.windowH ?? null,
+    playerFileByFotmob: (() => {
+      const by = new Map(players.filter(p => p.fotmobId).map(p => [String(p.fotmobId), p.file]));
+      return id => by.get(String(id)) ?? null;
+    })(),
     playerFileByFpl: (() => {
       const by = new Map(players.filter(p => p.fplCode).map(p => [String(p.fplCode), p.file]));
       return code => by.get(String(code)) ?? null;

@@ -519,6 +519,7 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
   const bad = (k, msg) => (P[k] ??= []).push(msg);
   const N = {};   // 類別 → 驗了幾筆
   const seen = k => { N[k] = (N[k] ?? 0) + 1; };
+  let expectUA = false;   // 有接賽前缺陣名單的聯賽才要求「傷停」那一類驗到東西
 
   for (const [lg, zh] of LEAGUE_DIRS) {
     const meta = product(lg, 'meta');
@@ -646,6 +647,40 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
         const av = sec.split('### 可用人手')[1] ?? '';
         if (!av || !av.includes(`**確定缺陣**(${a.outCount} 人`) || (a.cards ?? []).some(c => c.watch && !av.includes(`再 ${c.watch.away} 張黃牌停 ${c.watch.ban} 場`))) bad('近況', `${zh} ${tm.code}:可用人手或停賽門檻不對`);
         if (a.out.length + (a.doubt?.length ?? 0) + (a.cards?.length ?? 0) > 0 && (av.match(/^\| (?!球員|---)/gm) ?? []).length !== a.out.length + (a.doubt?.length ?? 0) + (a.cards?.length ?? 0)) bad('近況', `${zh} ${tm.code}:可用人手的列數跟產物不同`);
+      }
+    }
+
+    /* 傷停(賽前缺陣名單,英冠 2026-10-31 起):有名單的球隊,筆記那一段的列數、原因、抓取時間跟產物一致;
+       那一場已經踢完的要講「不是現在的」;產物沒有名單的球隊不准有那一段(不寫空殼) */
+    const UA = meta.unavailable ? product(lg, 'unavailable') : null;
+    if (UA) expectUA = true;
+    for (const tm of teams) {
+      const u = UA?.teams?.[tm.code];
+      const sec = sectionOf(teamNote.get(tm.code) ?? '', '傷停(FotMob 賽前缺陣名單)');
+      if (!u) { if (sec) bad('傷停', `${zh} ${tm.code}:產物沒有名單,筆記卻有那一段`); continue; }
+      seen('傷停');
+      const rows = (sec.match(/^\| (?!球員|---)/gm) ?? []).length;
+      if (!sec || rows !== (u.list?.length ?? 0) || !sec.includes(u.fetchedAt)
+        || (u.list ?? []).some(x => !sec.includes(x.typeZh ?? x.type ?? '原因不明'))) bad('傷停', `${zh} ${tm.code}:列數、原因或抓取時間跟產物不同`);
+      if (u.played && !sec.includes('不是現在的')) bad('傷停', `${zh} ${tm.code}:那一場已經踢完,卻沒講這是當時的狀態`);
+    }
+
+    /* 年齡與國籍(英冠的逐場累加球員,2026-10-31 起):筆記的年齡跟產物最新那一季一致(用 FotMob id 對,不比姓名);
+       產物沒有年齡的人,筆記不准寫 */
+    if (lg === 'en2') {
+      const newest = new Map();
+      for (const p of arr(product(lg, 'players'))) {
+        const k = String(p.providerId); const prev = newest.get(k);
+        if (!prev || String(p.season) > String(prev.season)) newest.set(k, p);
+      }
+      for (const f of list(`${zh}/球員`)) {
+        const t = note(`${zh}/球員/${f}`);
+        const id = fm(t, 'FotMob球員id');
+        const p = id ? newest.get(id) : null;
+        if (!p) continue;
+        seen('年齡');
+        const a = fm(t, '年齡');
+        if ((p.age ?? null) == null ? a != null && a !== '' : a !== String(p.age)) bad('年齡', `${zh} ${p.name}:筆記 ${a} 對產物 ${p.age}`);
       }
     }
 
@@ -801,6 +836,9 @@ console.log('\n▶ Obsidian vault:分析文章、專家觀點、勝率變化、�
     'Elo', '位移', 'xG走勢', '賽程難度', '預估先發', '模型驗證', '撞鍵']) {
     check(`${k}:筆記跟產物一致`, (N[k] ?? 0) > 0 && !(P[k]?.length), `驗了 ${N[k] ?? 0} 筆${P[k]?.length ? `;${P[k].length} 個問題:${P[k].slice(0, 3).join('、')}` : ''}`);
   }
+  /* 傷停只有接上的聯賽有(產物沒有就不要求驗到東西,但筆記多寫一段仍然算錯);年齡同理(產物還沒有年齡時 0 筆是對的) */
+  check('傷停:筆記跟產物一致', (!expectUA || (N['傷停'] ?? 0) > 0) && !(P['傷停']?.length), `驗了 ${N['傷停'] ?? 0} 筆${P['傷停']?.length ? `;${P['傷停'].slice(0, 3).join('、')}` : ''}`);
+  check('年齡:英冠球員筆記跟產物一致', !(P['年齡']?.length), `驗了 ${N['年齡'] ?? 0} 筆${P['年齡']?.length ? `;${P['年齡'].length} 個問題:${P['年齡'].slice(0, 3).join('、')}` : ''}`);
 }
 
 // ── 上游的物件欄位與缺值 ────────────────────────────

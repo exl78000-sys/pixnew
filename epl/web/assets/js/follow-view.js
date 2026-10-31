@@ -181,7 +181,7 @@ function teamCard(pool, code, extraFixtures) {
           <i class="frm ${res}">${res}</i>${C.badge(f.home)}<span class="mono">${f.fh}-${f.fa}</span>${C.badge(f.away)}</a>`;
       }).join('')}</div>` : ''}
 
-    ${outList === null
+    ${pool.unavail ? unavailLine(pool.unavail, code) : outList === null
       ? `<div class="tiny dim" style="margin-top:12px">${fvEsc(pool.injuryWhy)}</div>`
       : outList.length
         ? `<div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">不能上的人</h3>
@@ -196,6 +196,21 @@ function teamCard(pool, code, extraFixtures) {
         <span class="pill tiny">${fvEsc(n.cat)}</span> ${fvEsc(n.title)}</span>
         <span class="tiny dim mono">${C.dateZh(n.date)}</span></div>`).join('')}` : ''}
   </div>`;
+}
+
+/* 賽前缺陣名單那一段(英冠):講清楚是哪一場的賽前名單、什麼時候抓的 ——
+   那一場已經踢完的話,它是當時的狀態,不是現在的。 */
+function unavailLine(U, code) {
+  const u = U.teams?.[code];
+  if (!u) return `<div class="tiny dim" style="margin-top:12px">還沒有這一隊的賽前缺陣名單(FotMob,每一場開賽前 ${U.windowH} 小時內抓一次)。</div>`;
+  const when = `${u.played ? '上一場' : '下一場'}對 ${fvEsc(C.name(u.opp))}・${C.kickoffLocal(u.fetchedAt)} 抓的`;
+  if (u.list == null) return `<div class="tiny dim" style="margin-top:12px">${when}:上游沒有給這一隊的缺陣名單。</div>`;
+  if (!u.list.length) return `<div class="tiny dim" style="margin-top:12px">賽前缺陣名單(${when}):沒有人缺陣。</div>`;
+  return `<div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">不能上的人</h3>
+      <span class="hint">FotMob 賽前名單・${when}</span></div>
+    <div class="tiny">${u.list.map(p => `${fvEsc(p.name ?? '—')}
+      <span class="dim">(${fvEsc(p.typeZh ?? p.type ?? '原因不明')}${p.returnZh ?? p.expectedReturn ? `・${fvEsc(p.returnZh ?? p.expectedReturn)}` : ''})</span>`).join('、')}</div>
+    ${u.played ? '<div class="tiny dim">那一場已經踢完,這是當時的賽前狀態,不是現在的。</div>' : ''}`;
 }
 
 /* 球隊挑選器:可關注的聯賽的全部球隊,打勾就關注。 */
@@ -264,8 +279,12 @@ export async function renderFollowTeams(host) {
            前端沒有 Markdown 處理器,星號會原樣印出來(CLAUDE.md 那條坑),
            而且 npm test 有一條掃原始碼的守著。 */
         : `${C.LEAGUES[lg]?.zh ?? lg}有球員資料,但沒有傷停來源,所以這裡不列名單。空著不代表全隊都能上,是本站查不到。`;
+      /* 第三種傷停來源(2026-10-31,英冠):FotMob 的賽前缺陣名單,形狀跟 FPL 的 status 不同 ——
+         是「某一場的賽前名單」,不是「現在的狀態」。有 meta.unavailable 的聯賽才載。 */
+      const unavail = data.meta.unavailable
+        ? (await C.loadFrom(lg, ['unavailable']).catch(() => ({ data: {} }))).data?.unavailable ?? null : null;
       pools.push({ lg, meta: data.meta, teams: data.teams, fixtures: data.fixtures,
-        news: Array.isArray(data.news) ? data.news : [], players, next, injurySource, injuryWhy });
+        news: Array.isArray(data.news) ? data.news : [], players, next, injurySource, injuryWhy, unavail });
       C.registerTeams(data.teams);
     } catch { /* 某個聯賽載不到就少那一段,不要整頁掛掉 */ }
   }
