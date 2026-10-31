@@ -197,7 +197,11 @@ export function testLeague(L) {
          `leaders.source` 分岔的,自己取形狀的話會變成「有資料但前端讀不到」
          (第一版就是這樣:boards 依賽季分組、source 寫小寫,榜整個畫不出來)。 */
       const l2 = es1('leaders');
-      const miss = Object.keys(l2).filter(k => !(k in leaders));
+      /* 西甲自己有、德義法還沒有的**選用**欄位不算形狀不同:前端看到才畫,沒有就不畫。
+         `defense`(2026-10-31):西甲的防守數據是 FotMob 逐場加總(`attachDefense`),德義法的 build 還沒接逐場球員紀錄。
+         第一版沒列這個例外,部署被擋在這一條 —— 本機用的是沒重建的舊 es1 產物(還沒有 defense),所以本機綠、CI 紅。 */
+      const OPTIONAL = new Set(['defense']);
+      const miss = Object.keys(l2).filter(k => !(k in leaders) && !OPTIONAL.has(k));
       check('leaders 的欄位跟西甲一致(前端看 source 分岔,形狀不能自己取)', miss.length === 0, miss.join('、'));
       check('leaders.source 是 Understat(大小寫要跟前端的判斷一致)', leaders.source === 'Understat');
       check('boards 是「榜的定義」陣列,不是依賽季分組的物件', Array.isArray(leaders.boards));
