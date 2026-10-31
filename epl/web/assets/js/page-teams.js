@@ -1,4 +1,4 @@
-import * as C from './core.js?v=c7bc9971';
+import * as C from './core.js?v=6cff8a5f';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -1291,8 +1291,8 @@ try {
     return `<div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
       <div class="card">
         <div class="small dim" style="margin-bottom:8px">${u.played ? '上一場' : '下一場'}${u.home ? '主場' : '客場'}對 ${C.teamLink(u.opp)}(${C.kickoffLocal(u.kickoff)})的賽前名單</div>
-        ${C.unavailableRows(u.list)}
-        <div class="tiny dim" style="margin-top:8px">${C.unavailableNote(u)}${u.played ? '比賽已經踢完,這是當時的賽前狀態,不是現在的。' : ''}</div>
+        ${C.absenceRows(u.list)}
+        <div class="tiny dim" style="margin-top:8px">${C.absenceNote(u)}${u.played ? '比賽已經踢完,這是當時的賽前狀態,不是現在的。' : ''}</div>
       </div>`;
   }
 

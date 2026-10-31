@@ -819,8 +819,9 @@ const table = out('table'), results = out('results'), sim = out('sim');
     awayTeam: { id: 2, name: 'B' } } } });
   check('缺陣名單:沒有 unavailable 鍵 = null(不知道),不是 [](沒人缺陣)', P.ok && P.home.list.length === 1 && P.away.list === null);
   check('缺陣名單:回應裡沒有 lineup 就 ok:false', parseUnavailable({ content: {} }).ok === false);
-  check('缺陣名單:只翻見過的(injury、Doubtful、Unknown、上中下旬),其餘回 null 讓前端印原文',
-    typeZh('injury') === '受傷' && typeZh('suspension') === null && returnZh('Doubtful') === '出賽成疑'
+  check('缺陣名單:只翻見過的(injury、suspension、Doubtful、Unknown、Back in training、Out for season、上中下旬),其餘回 null 讓前端印原文',
+    typeZh('injury') === '受傷' && typeZh('suspension') === '停賽' && typeZh('international duty') === null && returnZh('Doubtful') === '出賽成疑'
+    && returnZh('Out for season') === '本季報銷'
     && returnZh('Late November 2026') === '預計 2026 年 11 月下旬回歸' && returnZh('After the international break') === null);
 
   /* 上季那一場排在前面:沒有用開賽時間收斂的話,find 會先拿到它 */

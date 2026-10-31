@@ -8,7 +8,8 @@
    但那是不是賽前那一份、還是事後改過的,分不出來 —— 所以只信開賽前抓的。
 
    單一來源(英冠沒有第二份傷停可以對),使用者同意了;畫面要講。
-   探測裡 type 只見過 `injury`,**停賽怎麼寫沒見過** —— 沒見過的類型不翻譯,原文照印(跟進球子代碼同一條規矩)。 */
+   沒見過的類型與回歸寫法不翻譯,原文照印(跟進球子代碼同一條規矩)。探測只見過 `injury`;第一次真抓(2026-10-31 那一輪 11 場、
+   run 41165630794)才見到 `suspension`(兩人,回歸寫 Late October 2026)、`Back in training`、`Out for season`,那天補上。 */
 
 export const WINDOW_H = 24;            // 開賽前多久內抓
 export const MAX_PER_RUN = 16;         // 一次部署的硬上限(一輪 12 場;雙週賽的週中也不會在 24 小時內超過)
@@ -53,12 +54,14 @@ export function parseUnavailable(raw) {
 }
 
 /* 只翻見過的。沒見過的回 null,前端印原文 —— 猜一個翻譯就是編。 */
-export const typeZh = t => ({ injury: '受傷' }[t] ?? null);
+export const typeZh = t => ({ injury: '受傷', suspension: '停賽' }[t] ?? null);
 const MONTHS = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
 export function returnZh(s) {
   if (s == null) return null;
   if (s === 'Doubtful') return '出賽成疑';
   if (s === 'Unknown') return '回歸時間不明';
+  if (s === 'Back in training') return '已恢復訓練';
+  if (s === 'Out for season') return '本季報銷';
   const m = /^(Early|Mid|Late) ([A-Z][a-z]+) (\d{4})$/.exec(s);
   if (m && MONTHS[m[2]]) return `預計 ${m[3]} 年 ${MONTHS[m[2]]} 月${{ Early: '上旬', Mid: '中旬', Late: '下旬' }[m[1]]}回歸`;
   return null;

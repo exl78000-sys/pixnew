@@ -1,4 +1,4 @@
-import * as C from './core.js?v=c7bc9971';
+import * as C from './core.js?v=6cff8a5f';
 
 const app = document.getElementById('app');
 
@@ -440,8 +440,8 @@ try {
     const unavailBlock = !unavail ? '' : ua ? `
       <div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
       <div class="grid g2">${[f.home, f.away].map(code => `<div class="card">
-        <h3>${C.teamCell(code, { link: false })} 缺陣</h3>${C.unavailableRows(code === f.home ? ua.home : ua.away)}</div>`).join('')}</div>
-      <div class="tiny dim" style="margin-top:6px">${C.unavailableNote(ua)}</div>`
+        <h3>${C.teamCell(code, { link: false })} 缺陣</h3>${C.absenceRows(code === f.home ? ua.home : ua.away)}</div>`).join('')}</div>
+      <div class="tiny dim" style="margin-top:6px">${C.absenceNote(ua)}</div>`
       : f.played ? '' : `
       <div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
       <div class="note info">這一場的賽前缺陣名單還沒抓 —— 開賽前 ${unavail.windowH} 小時內的部署才抓(部署 12 小時一次),抓到之後出現在這裡。</div>`;

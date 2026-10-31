@@ -2740,8 +2740,8 @@ export function versus(rows, { home, away, colors, note = null } = {}) {
    英冠 2026-10-31 起(FotMob matchDetails 的 lineup.unavailable,開賽前 24 小時內每場抓一次;產物 unavailable.json)。
    單場頁與球隊頁共用這一支 —— 各寫一份的話,改了一邊另一邊會悄悄過期。
    list 是 null 代表上游這一場沒給這一隊的名單(不知道),[] 代表名單上沒有人(上游說沒人缺陣):兩句話不同。
-   類型與回歸時間只印 build 翻過的(typeZh / returnZh),沒翻的照原文印 —— 停賽怎麼寫還沒見過,不猜。 */
-export function unavailableRows(list) {
+   類型與回歸時間只印 build 翻過的(typeZh / returnZh),沒翻的照原文印 —— 沒見過的寫法不猜。 */
+export function absenceRows(list) {
   if (list == null) return '<div class="dim small">這一場上游沒有給這一隊的缺陣名單。</div>';
   if (!list.length) return '<div class="dim small">賽前名單上沒有人缺陣。</div>';
   return list.map(p => {
@@ -2754,5 +2754,5 @@ export function unavailableRows(list) {
     </div>`;
   }).join('');
 }
-export const unavailableNote = e => `FotMob 賽前缺陣名單,${kickoffLocal(e.fetchedAt)} 抓的(開賽前 24 小時內每一場抓一次)。`
+export const absenceNote = e => `FotMob 賽前缺陣名單,${kickoffLocal(e.fetchedAt)} 抓的(開賽前 24 小時內每一場抓一次)。`
   + '單一來源 —— 英冠沒有第二份傷停可以核對;「出賽成疑」的人不一定缺陣。';
