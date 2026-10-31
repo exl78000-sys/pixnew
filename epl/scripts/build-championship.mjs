@@ -52,6 +52,7 @@ import { buildTeamProfiles, fotmobTeamStore } from './lib/team-profiles.mjs';
 import { splitFixtureGrids } from './lib/fixture-grids.mjs';
 import { loadFotmobMatchStats, toCanonicalDetail, pairOf } from './lib/matchstats.mjs';
 import { aggregatePlayers, leadersFrom, squadsFrom, PLAYER_STAT_META } from './lib/season-players.mjs';
+import { buildUnavailable, WINDOW_H } from './lib/unavailable.mjs';
 import { attachNewsZh } from './lib/news-zh.mjs';
 import { buildTeamMatchers, tagNewsTeams } from './lib/news-tag.mjs';
 import { competition } from './lib/canonical.mjs';
@@ -606,6 +607,18 @@ async function main() {
     withCountry: v.agg.players.filter(p => p.country).length,
   }]));
   const curBio = bioCover[CURRENT_SEASON] ?? { players: 0, withAge: 0, withCountry: 0 };
+  /* 賽前缺陣名單(2026-10-31,使用者選「接,用乙」;規則在 lib/unavailable.mjs、抓取在 fetch-fotmob-unavailable.mjs)。
+     單一來源:英冠沒有第二份傷停可以對,畫面要講。本季球員層用 FotMob id 接上「本季出賽幾場」,不用姓名接。 */
+  const unavailable = (() => {
+    const cp = join(ROOT, 'data', 'raw', 'fotmob-championship', 'unavailable.json');
+    const cache = existsSync(cp) ? JSON.parse(readFileSync(cp, 'utf8')).matches ?? {} : {};
+    const out = buildUnavailable({ cache, fixtures, players: playerSeasons[CURRENT_SEASON]?.agg.players ?? [] });
+    const n = Object.keys(out.fixtures).length;
+    if (Object.keys(cache).length) console.log(`  賽前缺陣名單:快取 ${Object.keys(cache).length} 場・掛上本站場次 ${n} 場・${Object.keys(out.teams).length} 隊`
+      + (out.unmatched.length ? `・對不到本站場次 ${out.unmatched.length} 場(${out.unmatched.slice(0, 3).join('、')})` : ''));
+    return { ...out, source: 'FotMob 賽前缺陣名單(matchDetails 的 lineup.unavailable)', single: true, windowH: WINDOW_H };
+  })();
+  const unavailN = Object.keys(unavailable.fixtures).length;
   const meta = {
     /* **不要設 edition**。那個欄位在前端被當成「是不是西甲」的二元旗標用
        (page-index / page-teams / page-tactics / fixture-list 都是),
@@ -620,6 +633,9 @@ async function main() {
       coaches: existsSync(join(ROOT, 'data', 'championship-coaches-verified.json'))
         && JSON.parse(readFileSync(join(ROOT, 'data', 'championship-coaches-verified.json'), 'utf8')).accepted,
       xg: false, lineups: false, live: false },
+    /* 賽前缺陣名單另外一個欄位,不是 capabilities.injuries:那個旗標在首頁與「我的球隊」接的是英超的
+       FPL / 外電形狀(傷停名單的數字從外電算),設成 true 會讓英冠拿外電去數傷停。 */
+    unavailable: { source: unavailable.source, single: true, windowH: WINDOW_H, fixtures: unavailN, teams: Object.keys(unavailable.teams).length },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     /* 欄位名要跟另外兩個聯賽一致:currentSeason / lastSeason。
        第一版寫成 season,首頁那句「2025-26 完整・undefined 進行中」就是這樣來的 ——
@@ -636,7 +652,8 @@ async function main() {
       + '做出積分預測、單場勝負機率與賽季模擬,並跟市場賠率並排比較。'
       + (hasPlayers
         ? '球員層由逐場統計累加而來(出賽、進球、助攻、評分),'
-          + '但沒有球員 xG 模型、身價與傷停 —— 英冠沒有整季的球員級資料源(下方「目前資料界線」有實測細節)。'
+          + `但沒有球員 xG 模型、身價${unavailN ? '' : '與傷停'} —— 英冠沒有整季的球員級資料源(下方「目前資料界線」有實測細節)。`
+          + (unavailN ? '傷停來自 FotMob 的賽前缺陣名單(單一來源),在單場頁與球隊頁。' : '')
         : '這個聯賽只做到球隊與比賽這一層 —— 沒有球員數據、沒有 xG、沒有陣容與傷停,'
           + '因為英冠沒有免費的球員級資料源(下方「目前資料界線」有實測細節)。'),
     boundaries: [
@@ -659,7 +676,7 @@ async function main() {
                 + (playerSeasons[CURRENT_SEASON]?.boards.some(b => b.key === 'youth')
                   ? ';球員頁的「22 歲以下」榜(進球 + 助攻,定義同西甲)只算有年齡的人' : '')]
             : []),
-          `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}傷停、頭貼。`
+          `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}${unavailN ? '' : '傷停、'}頭貼。`
             + '整季的球員資料源仍然沒有:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
             + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超']
         : ['— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
@@ -683,10 +700,12 @@ async function main() {
             + `${Object.values(fotmobStats.matches).filter(m => m.season === CURRENT_SEASON).length} 場、`
             + `上季 ${Object.values(fotmobStats.matches).filter(m => m.season === LAST_SEASON).length} 場有逐場統計;`
             + '比分逐場對回本站賽果才收,控球率沒有第二來源可抽核',
-          /* 「FotMob 有沒有傷停名單」**沒有探測過**(本站的抽取器只留先發與替補),所以這裡只講已知的那一半 ——
-             寫成「FotMob 不含」就是把「我沒試過」寫成「上游沒有」(鐵則三) */
-          '— 沒有傷停與停賽:FPL 只有英超。FotMob 逐場名單有缺陣名單(2026-10-31 探測過:每人帶類型與預計回歸,未賽與已完賽的場次都有),'
-            + '但還沒接 —— 那會是單一來源,而且本站的抓取只在完賽後打這支端點']
+          /* 傷停:2026-10-31 探測過、同一天接上(FotMob 賽前缺陣名單)。句子跟著資料走 —— 一場都還沒抓到時不講「有」 */
+          unavailN
+            ? `✓ 傷停(FotMob 賽前缺陣名單,單一來源 —— 英冠沒有第二份傷停可以對):開賽前 ${WINDOW_H} 小時內每一場抓一次`
+              + `(部署 12 小時一次,所以是賽前 12~${WINDOW_H} 小時的狀態),目前 ${unavailN} 場有名單,在單場頁與球隊頁;`
+              + '類型只翻見過的(受傷),沒見過的照原文印'
+            : `— 傷停:已接 FotMob 賽前缺陣名單(開賽前 ${WINDOW_H} 小時內每一場抓一次),還沒有任何一場抓到`]
         : ['— 沒有傷停、正式陣容與賽後統計(FotMob 逐場資料還沒抓)']),
       ...(tableCaveat ? [`— ${tableCaveat.note.replace(/\*\*/g, '')}`] : []),
       ...(backtest.available
@@ -759,7 +778,8 @@ async function main() {
       ? { available: true, source: 'match-aggregate',
           note: `由 FotMob 逐場詳情的逐人統計累加(本季 ${playerSeasons[CURRENT_SEASON]?.agg.reconciled ?? 0} 場、上季 ${playerSeasons[LAST_SEASON]?.agg.reconciled ?? 0} 場對回本站賽果才計入)。`
             + '沒有整季的球員資料源:Understat 不涵蓋英冠、FPL 只有英超(兩者都實測過),'
-            + '所以沒有球員 xG 模型、身價、年齡與傷停 —— 這一層做得到的是出賽、進球、助攻、牌、評分與逐場統計的累加。' }
+            + `所以沒有球員 xG 模型與身價${curBio.withAge ? '' : '、年齡'}${unavailN ? '' : '、傷停'} —— 這一層做得到的是出賽、進球、助攻、牌、評分與逐場統計的累加`
+            + `${curBio.withAge ? ',年齡與國籍來自 FotMob 名單(單一來源)' : ''}${unavailN ? ',傷停來自 FotMob 賽前缺陣名單(單一來源,在單場頁與球隊頁)' : ''}。` }
       : { available: false, note: 'Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,同一請求 EPL 537 人、西甲 600 人),FPL 只有英超。' },
   };
 
@@ -768,6 +788,7 @@ async function main() {
   await write('clubs', T.list);
   await write('teams', teams);
   await write('team-stats', teamStatsFrom(fotmobStats.teams, teams));   // 球隊頁詳情才載(2026-09-28,A8)
+  await write('unavailable', unavailable);   // 單場頁與球隊頁詳情才載(meta.unavailable 有值時)
   /* 官方賽程狀態(延期/取消)—— 跟英超同一份實作,快照太舊不掛 */
   {
     const ssPath = join(ROOT, 'data', 'raw', 'schedule-status.json');
@@ -858,7 +879,8 @@ async function main() {
       /* 「跨季的球員身分」本來也列在這裡,**核對過之後拿掉了**:上游的球員 id 跨季是穩定的 ——
          兩季都出現的 331 人裡 315 人姓名完全相同,其餘 16 筆是同一個人的拼法或暱稱差異
          (Jhon Solis / Jhon Solís、Rob Apter / Robert Apter)。沒核對就寫「做不到」跟沒核對就寫「做得到」一樣糟。 */
-      missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現', '傷停與停賽',
+      missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現',
+        unavailN ? '球員頁上的傷停(傷停在單場頁與球隊頁,FotMob 賽前缺陣名單)' : '傷停與停賽',
         curBio.withAge || curBio.withCountry ? '身高' : '球員年齡、身高與國籍', '頭貼'],
       /* 年齡與國籍逐季涵蓋(單一來源 FotMob 名單;前端照它講幾人有) */
       bios: { source: 'FotMob 名單', single: true, seasons: bioCover },

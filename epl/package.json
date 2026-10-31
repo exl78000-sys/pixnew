@@ -152,6 +152,7 @@
     "probe:new-leagues": "node scripts/probe-new-leagues.mjs",
     "probe:pulselive-stats": "node scripts/probe-pulselive-stats.mjs",
     "probe:unavailable": "node scripts/probe-fotmob-unavailable.mjs",
+    "unavailable:fetch": "node scripts/fetch-fotmob-unavailable.mjs",
     "probe:league-teams-fetch": "node scripts/probe-league-teams-fetch.mjs",
     "de1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=de1",
     "it1:teams-fetch": "node scripts/fetch-league-teams-fotmob.mjs --league=it1",

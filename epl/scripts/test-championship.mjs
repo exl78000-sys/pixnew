@@ -25,6 +25,7 @@ import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
 import { fotmobPlayers, lineupBios } from './lib/adapters/fotmob-match.mjs';
 import { aggregatePlayers, leadersFrom } from './lib/season-players.mjs';
+import { pickDue, parseUnavailable, buildUnavailable, returnZh, typeZh, WINDOW_H, MAX_PER_RUN } from './lib/unavailable.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -798,6 +799,64 @@ const table = out('table'), results = out('results'), sim = out('sim');
     }
     check('22 歲以下:產物每一列對得回 players.json(年齡、進球 + 助攻)、涵蓋數一致', bad.length === 0, bad.slice(0, 5).join('、'));
   }
+}
+
+// ── 賽前缺陣名單(2026-10-31,使用者選「接,用乙」:開賽前 24 小時內每場抓一次)──────────
+{
+  const H = 3600e3, now = Date.parse('2026-11-01T00:00:00Z');
+  const M = (id, h, extra = {}) => ({ matchId: id, home: 'AAA', away: 'BBB', utcTime: new Date(now + h * H).toISOString(), started: false, finished: false, cancelled: false, ...extra });
+  const due = pickDue({ now, matches: [M('a', 5), M('b', 23.9), M('c', 24.5), M('d', -1), M('e', 3, { started: true }), M('f', 3, { cancelled: true })] }).map(m => m.matchId);
+  check('缺陣名單:只抓開賽前 24 小時內、還沒開踢、沒取消的', due.join(',') === 'a,b', due.join(','));
+  const cache = { a: { ok: true, fetchedAt: new Date(now - H).toISOString() }, b: { ok: false, attempts: 1 }, c: { ok: false, attempts: 2 } };
+  const due2 = pickDue({ now, cache, matches: [M('a', 5), M('b', 6), M('c', 7)] }).map(m => m.matchId);
+  check('缺陣名單:抓過的不再抓(一場一個請求)、沒拿到名單的最多再試一次', due2.join(',') === 'b', due2.join(','));
+  const due3 = pickDue({ now, cache: { a: { ok: true, fetchedAt: new Date(now - 40 * H).toISOString() } }, matches: [M('a', 5)] }).map(m => m.matchId);
+  check('缺陣名單:改期 —— 在新開賽時間 30 小時以前抓的當成沒抓過', due3.join(',') === 'a');
+  check('缺陣名單:一次部署有硬上限', pickDue({ now, matches: Array.from({ length: 40 }, (_, i) => M(`m${i}`, 1 + i * 0.1)) }).length === MAX_PER_RUN);
+
+  const P = parseUnavailable({ content: { lineup: {
+    homeTeam: { id: 1, name: 'A', unavailable: [{ id: 9, name: 'X', unavailability: { type: 'injury', expectedReturn: 'Late November 2026' } }] },
+    awayTeam: { id: 2, name: 'B' } } } });
+  check('缺陣名單:沒有 unavailable 鍵 = null(不知道),不是 [](沒人缺陣)', P.ok && P.home.list.length === 1 && P.away.list === null);
+  check('缺陣名單:回應裡沒有 lineup 就 ok:false', parseUnavailable({ content: {} }).ok === false);
+  check('缺陣名單:只翻見過的(injury、Doubtful、Unknown、上中下旬),其餘回 null 讓前端印原文',
+    typeZh('injury') === '受傷' && typeZh('suspension') === null && returnZh('Doubtful') === '出賽成疑'
+    && returnZh('Late November 2026') === '預計 2026 年 11 月下旬回歸' && returnZh('After the international break') === null);
+
+  /* 上季那一場排在前面:沒有用開賽時間收斂的話,find 會先拿到它 */
+  const fx = [{ id: 'f0', home: 'AAA', away: 'BBB', kickoff: '2026-05-10T15:00:00+01:00', played: true },
+              { id: 'f1', home: 'AAA', away: 'BBB', kickoff: '2026-11-01T15:00:00+00:00', played: false }];
+  const B = buildUnavailable({ fixtures: fx, players: [{ providerId: 9, matches: 7, minutes: 600 }], cache: {
+    m1: { ok: true, matchId: 'm1', home: 'AAA', away: 'BBB', utcTime: '2026-11-01T15:00:00Z', fetchedAt: '2026-10-31T20:00:00Z', sides: { home: [{ pid: 9, name: 'X', type: 'injury', expectedReturn: 'Doubtful' }], away: [] } },
+    m2: { ok: false, matchId: 'm2', home: 'AAA', away: 'BBB', utcTime: '2026-11-08T15:00:00Z' },
+    m3: { ok: true, matchId: 'm3', home: 'CCC', away: 'DDD', utcTime: '2026-11-01T15:00:00Z', fetchedAt: '2026-10-31T20:00:00Z', sides: { home: [], away: [] } } } });
+  check('缺陣名單:同主客用開賽時間收斂到本站那一場(不掛到上季同組對戰)', Object.keys(B.fixtures).join(',') === 'f1' && B.unmatched.length === 1, JSON.stringify(Object.keys(B.fixtures)));
+  check('缺陣名單:本季出賽用 FotMob id 接、ok:false 的不掛', B.fixtures.f1.home[0].season?.matches === 7 && B.fixtures.f1.home[0].returnZh === '出賽成疑' && B.teams.AAA?.fixtureId === 'f1');
+
+  /* 產物:掛上的每一場都在賽程裡、meta 的計數對得回產物、界線說「有」若且唯若真的有 */
+  if (existsSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'unavailable.json'))) {
+    const U = out('unavailable'), meta = out('meta'), F = out('fixtures');
+    const ids = new Set(F.map(f => f.id));
+    check('缺陣名單產物:掛上的場次都在賽程裡', Object.keys(U.fixtures).every(id => ids.has(id)));
+    check('缺陣名單產物:meta.unavailable 的計數對得回產物', meta.unavailable?.fixtures === Object.keys(U.fixtures).length
+      && meta.unavailable?.teams === Object.keys(U.teams).length);
+    const claims = (meta.boundaries ?? []).some(x => /^✓ 傷停/.test(x));
+    check('缺陣名單產物:界線說「✓ 傷停」若且唯若有場次掛上', claims === Object.keys(U.fixtures).length > 0);
+    check('缺陣名單產物:沒有拿首頁的外電傷停形狀(capabilities.injuries 仍是 false)', meta.capabilities?.injuries === false);
+  }
+
+  /* 部署:抓取在 scores 之後(它的輸入)、en2:build 之前;快取所在目錄在回寫清單裡(不回寫就每次都當沒抓過) */
+  const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+  const iFetch = wf.indexOf('npm run unavailable:fetch -- --league=en2'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf('npm run en2:build');
+  check('缺陣名單:部署在 scores 之後、en2:build 之前抓', iFetch > iScores && iScores > 0 && iFetch < iBuild);
+  /* 「每一場恰好有一次部署落在窗口裡」要成立,窗口不能比部署間隔短 —— 間隔從排程讀,不寫死 */
+  const every = Number(/cron:\s*'0 \*\/(\d+) \* \* \*'/.exec(wf)?.[1]);
+  check('缺陣名單:抓取窗口不短於部署間隔(每一場都會有一次部署落進去)', every > 0 && WINDOW_H >= every, `間隔 ${every} 小時、窗口 ${WINDOW_H}`);
+  check('缺陣名單:快取目錄在部署的回寫清單裡', /epl\/data\/raw\/fotmob-championship\/ \\/.test(wf));
+
+  /* 前端:單場頁的關鍵球員卡讀得了逐場累加的形狀(2026-10-31 之前英冠每人都印 0 球 0 助) */
+  const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
+  check('單場頁關鍵球員:逐場累加的形狀讀 stats.goals / stats.goal_assist', /match-aggregate/.test(pa) && /x\.stats\?\.goals/.test(pa) && /x\.stats\?\.goal_assist/.test(pa));
 }
 
 if (process.exitCode) throw new Error('英冠自我檢查失敗');

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=9be39e04';
+import * as C from './core.js?v=c7bc9971';
 
 const app = document.getElementById('app');
 
@@ -15,6 +15,8 @@ try {
   const data = await C.load('meta', 'clubs', 'overview', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live-lite', 'shapes', 'official', 'form', 'prob-history', 'news', 'fixture-grids');
   const { meta, clubs, overview, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, 'live-lite': live, shapes, official, form } = data;
   const teams = overview?.teams ?? [];
+  /* 賽前缺陣名單:只有 meta.unavailable 有值的聯賽(英冠)才去載,其他聯賽不發這個請求 */
+  const unavail = meta.unavailable ? (await C.loadFrom(C.league(), ['unavailable'])).data.unavailable ?? null : null;
   /* 比分機率格(2026-09-30,A9):fixtures.json 不再帶 grid,另存 fixture-grids.json(首頁那幾頁不用載它)。
      掛回 prediction.grid / postFit.grid,下面的熱圖一個字沒改;缺檔就沒有熱圖(本來 p.grid 沒有就不畫)。 */
   for (const f of fixtures ?? []) {
@@ -432,15 +434,34 @@ try {
         { label: '近五戰失球', h: form.teams[f.home].summary?.ga, a: form.teams[f.away].summary?.ga, digits: 0, better: 'low' },
       ], { home: f.home, away: f.away, colors: f.colors, note: '近況是獨立參考欄位，沒有偷偷加權到上方機率。' })}</div>
       <div class="grid g2">${recentCard(f.home)}${recentCard(f.away)}</div>` : '';
+    /* 賽前缺陣名單(英冠 2026-10-31 起;有 meta.unavailable 的聯賽才載)。
+       未賽而還沒抓到:講什麼時候會抓,不留空殼;已完賽而沒抓過:整節不畫(那一場不是在接上之後踢的)。 */
+    const ua = unavail?.fixtures?.[f.id];
+    const unavailBlock = !unavail ? '' : ua ? `
+      <div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
+      <div class="grid g2">${[f.home, f.away].map(code => `<div class="card">
+        <h3>${C.teamCell(code, { link: false })} 缺陣</h3>${C.unavailableRows(code === f.home ? ua.home : ua.away)}</div>`).join('')}</div>
+      <div class="tiny dim" style="margin-top:6px">${C.unavailableNote(ua)}</div>`
+      : f.played ? '' : `
+      <div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
+      <div class="note info">這一場的賽前缺陣名單還沒抓 —— 開賽前 ${unavail.windowH} 小時內的部署才抓(部署 12 小時一次),抓到之後出現在這裡。</div>`;
+    /* 球員清單有兩種合法形狀(看 meta.players.source 分岔,跟球員頁同一個分法):Understat(西甲、德義法)是攤平的
+       goals / assists / xGI;逐場累加(英冠)放在 stats 底下、沒有 xGI。2026-10-31 之前這張卡只讀前一種 ——
+       英冠每一個人都印「0 球・0 助・xGI —」、排序也失效(Swansea 的 Josh Tymon 本季 2 助攻,卡上是 0),
+       那是在畫面上編數字。逐場累加這一種的人沒有能點進去的球員頁鍵,所以不做成可點。 */
+    const aggShape = meta.players?.source === 'match-aggregate';
+    const sq = aggShape
+      ? { g: x => x.stats?.goals ?? 0, a: x => x.stats?.goal_assist ?? 0, x2: x => x.stats?.expected_goals ?? null, x2Label: 'xG', tie: '助攻' }
+      : { g: x => x.goals ?? 0, a: x => x.assists ?? 0, x2: x => x.xGI ?? null, x2Label: 'xGI', tie: 'xGI' };
     const squadCard = code => {
       const rows = players.filter(x => x.team === code && x.season === f.season && (x.minutes ?? 0) >= 90)
-        .sort((a, b) => (b.goals ?? 0) - (a.goals ?? 0) || (b.xGI ?? 0) - (a.xGI ?? 0)).slice(0, 5);
+        .sort((a, b) => sq.g(b) - sq.g(a) || (aggShape ? sq.a(b) - sq.a(a) : (sq.x2(b) ?? 0) - (sq.x2(a) ?? 0))).slice(0, 5);
       return `<div class="card"><h3>${C.teamCell(code, { link: false })} 關鍵球員</h3>
-        ${rows.length ? rows.map(x => `<div class="stat-line clickable" data-player-code="${C.esc(x.code ?? x.id)}" tabindex="0" role="button">
-          <span class="row small" style="gap:7px">${C.playerPhoto({ ...x, team: code }, 28)}<span>${C.esc(x.name)} <span class="dim tiny">${C.esc(x.posZh ?? '')}</span></span></span>
-          <span class="mono small">${x.goals ?? 0} 球・${x.assists ?? 0} 助・xGI ${C.fx(x.xGI, 2)}</span></div>`).join('')
+        ${rows.length ? rows.map(x => `<div class="stat-line${aggShape ? '' : ' clickable'}"${aggShape ? '' : ` data-player-code="${C.esc(x.code ?? x.id)}" tabindex="0" role="button"`}>
+          <span class="row small" style="gap:7px">${C.playerPhoto({ ...x, team: code }, 28)}<span>${C.esc(x.name)} <span class="dim tiny">${C.esc(x.posZh ?? (aggShape ? { G: '門將', D: '後衛', M: '中場', F: '前鋒' }[x.pos] ?? '' : ''))}</span></span></span>
+          <span class="mono small">${sq.g(x)} 球・${sq.a(x)} 助・${sq.x2Label} ${C.fx(sq.x2(x), 2)}</span></div>`).join('')
           : '<div class="dim small">本季尚無足夠出場資料</div>'}
-        <div class="tiny dim" style="margin-top:8px">點擊球員可開啟完整資料；排序以本季進球，再以 xGI 輔助。</div>
+        <div class="tiny dim" style="margin-top:8px">${aggShape ? '' : '點擊球員可開啟完整資料;'}排序以本季進球,再以${sq.tie}輔助${aggShape ? '(xG 是逐射門加總,只算射門圖完整的場次)' : ''}。</div>
       </div>`;
     };
     const tacticsBlock = ht?.radar && at?.radar ? `
@@ -562,6 +583,7 @@ try {
       ${scoreGrid}
       ${tacticsBlock}
       ${recent}
+      ${unavailBlock}
       <div class="grid g2" style="margin-top:16px">
         <div class="card"><h3>歷來交手</h3>
           <div class="tiny dim" style="margin:-4px 0 8px">${meta.h2hSeasons?.[0] ?? ''} 起的可核對紀錄</div>

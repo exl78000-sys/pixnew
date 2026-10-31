@@ -501,6 +501,9 @@ export function testLeague(L) {
              照建置順序它一定會有,但單獨跑 `de1:build` 之後這裡不該紅。
              戳對不對得回檔案內容由 `test.mjs` 專門一節守著。 */
           if (n === 'meta' && k === 'assets') continue;
+          /* meta.unavailable(賽前缺陣名單)只有接上的聯賽才有(2026-10-31 英冠)。前端的判斷是「有這個鍵才去載 unavailable.json」,
+             沒有這個鍵 = 這個聯賽沒接 —— 不是缺欄位。寫 null 也行,但沒接的聯賽連鍵都不寫比較不會被讀成「接了但是空的」。 */
+          if (n === 'meta' && k === 'unavailable') continue;
           if (!(k in b)) { bad.push(`${n}.${k} 缺`); continue; }
           // null 代表「這個聯賽沒有」,不算型別不符;容器型別不同才是
           if (kind(a[k]) === 'null' || kind(b[k]) === 'null') continue;

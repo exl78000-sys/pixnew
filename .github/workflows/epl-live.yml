@@ -395,6 +395,14 @@ jobs:
           done
         continue-on-error: true
 
+      # 英冠賽前缺陣名單(傷停,2026-10-31,使用者選「接,用乙」):開賽前 24 小時內還沒抓的場次,每一場一個請求。
+      # 部署 12 小時一次,所以每一場恰好有一次部署落在窗口裡 —— 一輪 12 場就是 12 個請求,不重抓。
+      # 輸入是上一步剛抓的 scores.json(matchId 與開賽時間);快取寫在 fotmob-championship/,那個目錄本來就在回寫清單裡 ——
+      # 不回寫的話「一場只抓一次」就不成立。
+      - name: 抓英冠賽前缺陣名單(FotMob,開賽前 24 小時內每場一次)
+        run: npm run unavailable:fetch -- --league=en2
+        continue-on-error: true
+
       - name: 抓本季逐輪球員資料
         run: npm run season
         continue-on-error: true

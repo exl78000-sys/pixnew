@@ -1,4 +1,4 @@
-import * as C from './core.js?v=9be39e04';
+import * as C from './core.js?v=c7bc9971';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -24,6 +24,9 @@ try {
     const stats = (await C.loadFrom(C.league(), ['team-stats']).catch(() => ({ data: {} }))).data?.['team-stats'] ?? {};
     for (const t of teams) if (stats[t.code]?.games) t.matchStats = stats[t.code];
   }
+  /* 賽前缺陣名單(英冠 2026-10-31 起):只有詳情、而且 meta.unavailable 有值的聯賽才載 */
+  const unavail = code && meta.unavailable
+    ? (await C.loadFrom(C.league(), ['unavailable']).catch(() => ({ data: {} }))).data?.unavailable ?? null : null;
   const teamBy = new Map(teams.map(t => [t.code, t]));
   const coachBy = new Map(coaches.coaches.map(c => [c.team, c]));
 
@@ -1279,6 +1282,20 @@ try {
       </div>`;
   }
 
+  /* 傷停卡:這一隊最近一次抓到的賽前缺陣名單。那可能是一場已經踢完的比賽的賽前名單 —— 講是哪一場、什麼時候抓的。 */
+  function unavailableCard(t) {
+    if (!unavail) return '';
+    const u = unavail.teams?.[t.code];
+    if (!u) return `<div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
+      <div class="note info">還沒有這一隊的賽前缺陣名單 —— 每一場開賽前 ${unavail.windowH} 小時內才抓一次。</div>`;
+    return `<div class="section" style="margin-top:18px"><h2>傷停</h2><span class="hint">FotMob 賽前缺陣名單・單一來源</span></div>
+      <div class="card">
+        <div class="small dim" style="margin-bottom:8px">${u.played ? '上一場' : '下一場'}${u.home ? '主場' : '客場'}對 ${C.teamLink(u.opp)}(${C.kickoffLocal(u.kickoff)})的賽前名單</div>
+        ${C.unavailableRows(u.list)}
+        <div class="tiny dim" style="margin-top:8px">${C.unavailableNote(u)}${u.played ? '比賽已經踢完,這是當時的賽前狀態,不是現在的。' : ''}</div>
+      </div>`;
+  }
+
   function detail(t) {
     const co = coachBy.get(t.code);
     /* 這裡只放**下三場**。六場時這個區塊佔整頁高度 9.5%(量過,是頁面上第三大的卡片);
@@ -1296,6 +1313,7 @@ try {
     ${kpiRow(t)}
     <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
     ${nextFixturesBlock(t, next, nextFew)}
+    ${unavailableCard(t)}
     ${seasonHistorySection(t)}
     ${lastSeasonBlock(t)}
     ${coachCard(co)}
