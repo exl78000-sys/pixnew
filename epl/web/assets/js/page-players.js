@@ -737,10 +737,11 @@ function renderAggregate({ meta, players, leaders }) {
     const boards = leaders.boards[season] ?? [];
     document.getElementById('boards').innerHTML = boards.map(b => `<div class="card">
       <div class="spread"><h3 style="margin:0;font-size:15px">${C.esc(b.zh)}</h3><span class="dim tiny">母體 ${b.pool} 人</span></div>
+      ${b.ageKnown ? `<div class="tiny dim" style="margin-top:4px">只算知道年齡的 ${b.ageKnown.known}/${b.ageKnown.total} 人(FotMob 名單,抓取當時的年齡);其餘的人不在這張榜上,不是超齡。</div>` : ''}
       <div style="display:grid;gap:2px;margin-top:8px">
         ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
           <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
-          <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}</span>
+          <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}${r.age != null ? ` <span class="tiny dim">${r.age} 歲</span>` : ''}</span>
           <span class="tiny dim">${C.badge(r.teamId)}</span>
           <b class="mono small">${fx(r.value, b.dp)}${C.esc(b.unit)}</b>
         </div>`).join('')}

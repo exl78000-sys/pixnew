@@ -1606,6 +1606,8 @@ function buildLeagueBoards(lg, meta, D, { players, teamFile, builtAt }) {
           rows: (b.rows ?? []).map(r => ({ cells: links => [
             playerCell(r.pid != null ? `en2:${r.pid}` : null, r.name, links), teamCell(r.teamId, r.team, links),
             aggregateValue(b, r.value), r.minutes ?? '—', r.matches ?? '—'] })),
+          /* 22 歲以下只算知道年齡的人(站上那張卡片同一句;涵蓋率照產物講) */
+          after: b.ageKnown ? `只算知道年齡的 ${b.ageKnown.known}/${b.ageKnown.total} 人(FotMob 名單,抓取當時的年齡);其餘的人不在這張榜上,不是超齡。` : null,
         })),
         headers: () => ['球員', '球隊', '數值', '分鐘', '出賽'],
         boundary: [dropNote, missingLine, `建置時間 ${builtAt}`],

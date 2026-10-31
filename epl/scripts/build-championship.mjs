@@ -437,7 +437,7 @@ async function main() {
       }
       return { source: 'football-data.co.uk(E1 季檔,逐場牌數)', compared, agree, withRed, other: other.slice(0, 10), otherCount: other.length };
     })();
-    playerSeasons[season] = { agg, boards: leadersFrom(agg), squads: squadsFrom(agg), cardCheck };
+    playerSeasons[season] = { agg, boards: leadersFrom(agg, { youth: true }), squads: squadsFrom(agg), cardCheck };
     console.log(`  球員層 ${season}:${agg.players.length} 人・對回比分 ${agg.reconciled}/${agg.matches} 場・射門圖完整 ${agg.xgComplete} 場${agg.excluded.length ? `・不計 ${agg.excluded.length} 場` : ''}${agg.cardsUnmatched ? `・牌事件配不到球員 ${agg.cardsUnmatched} 筆(多半是教練)` : ''}`);
     if (cardCheck) console.log(`    牌對獨立來源:${cardCheck.agree}/${cardCheck.compared} 一致(${(cardCheck.agree / cardCheck.compared * 100).toFixed(1)}%)・有紅牌的場次記法不同 ${cardCheck.withRed} 組・其餘不一致 ${cardCheck.otherCount} 組`);
     for (const e of agg.excluded.slice(0, 3)) console.log(`    ⚠ ${e.key}:${e.reason}`);
@@ -655,7 +655,9 @@ async function main() {
             + '每一場都要「球員進球 + 對手烏龍球 = 本站賽果的比分」才計入,牌另外拿 football-data.co.uk 逐場核對',
           ...(curBio.withAge || curBio.withCountry
             ? [`✓ 年齡與國籍(FotMob 名單,單一來源 —— 英冠沒有第二份可以對):本季 ${curBio.withAge}/${curBio.players} 人有年齡、`
-                + `${curBio.withCountry}/${curBio.players} 人有國籍。年齡是 FotMob 抓取當時的值,不是比賽當天的`]
+                + `${curBio.withCountry}/${curBio.players} 人有國籍。年齡是 FotMob 抓取當時的值,不是比賽當天的`
+                + (playerSeasons[CURRENT_SEASON]?.boards.some(b => b.key === 'youth')
+                  ? ';球員頁的「22 歲以下」榜(進球 + 助攻,定義同西甲)只算有年齡的人' : '')]
             : []),
           `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}傷停、頭貼。`
             + '整季的球員資料源仍然沒有:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'

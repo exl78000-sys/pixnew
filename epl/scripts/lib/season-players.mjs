@@ -157,7 +157,27 @@ export function aggregatePlayers(rows, { teamNames = {} } = {}) {
 /* `minMatches` 讓呼叫端調評分榜的門檻。聯賽用 2 就夠(一季 38~46 輪,兩場以上的人是絕大多數);
    **盃賽不行** —— 淘汰制,大部分人只踢一兩場,門檻 2 會讓一個踢了兩場拿 8.5 的人排在整個賽事第一。
    所以門檻是參數,不是常數;呼叫端要**照自己賽事的場次分布**挑一個,並且把門檻印在榜的標題上。 */
-export function leadersFrom(agg, { limit = 12, minMatches = null } = {}) {
+/* 22 歲以下(2026-10-31,英冠)。定義照西甲那張(lib/adapters/understat-players.mjs 的 youth:
+   年齡 ≤ 22、排進球 + 助攻),不另外發明一個。年齡是 FotMob 名單給的、抓取當時的值(單一來源),
+   所以**只有知道年齡的人進得了這張榜** —— 沒有年齡的人不假裝是超齡,涵蓋率跟著榜一起輸出(`ageKnown`)。
+   預設不開:歐冠與盃賽也走這一支,而那兩邊的年齡涵蓋沒有人講過,開了就是一張說不清母體的榜。 */
+const YOUTH_MAX_AGE = 22;
+function youthBoard(agg, limit) {
+  const known = agg.players.filter(p => p.age != null);
+  if (!known.length) return null;
+  const pool = known.filter(p => p.age <= YOUTH_MAX_AGE);
+  const rows = pool
+    .map(p => ({ name: p.name, team: p.teamName, teamId: p.team,
+      ...(p.providerId != null ? { pid: p.providerId } : {}),
+      value: (p.stats.goals ?? 0) + (p.stats.goal_assist ?? 0), minutes: p.minutes, matches: p.matches, age: p.age }))
+    .filter(r => r.value > 0)
+    .sort((a, b) => b.value - a.value || a.minutes - b.minutes || a.name.localeCompare(b.name)).slice(0, limit);
+  if (!rows.length) return null;
+  return { key: 'youth', zh: `${YOUTH_MAX_AGE} 歲以下(進球 + 助攻)`, unit: '', rows, pool: pool.length,
+    ageKnown: { known: known.length, total: agg.players.length } };
+}
+
+export function leadersFrom(agg, { limit = 12, minMatches = null, youth = false } = {}) {
   const out = [];
   for (const c of LEADERS) {
     const need = c.minMatches ? (minMatches ?? c.minMatches) : 0;
@@ -176,6 +196,8 @@ export function leadersFrom(agg, { limit = 12, minMatches = null } = {}) {
     const zh = c.minMatches ? c.zh.replace(/出賽 ≥ \d+ 場/, `出賽 ≥ ${need} 場`) : c.zh;
     if (rows.length) out.push({ key: c.key, zh, unit: c.unit, dp: c.dp, rows, pool: eligible.length, ...(need ? { minMatches: need } : {}) });
   }
+  const y = youth ? youthBoard(agg, limit) : null;
+  if (y) out.push(y);
   return out;
 }
 

@@ -24,7 +24,7 @@ import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/repo
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
 import { fotmobPlayers, lineupBios } from './lib/adapters/fotmob-match.mjs';
-import { aggregatePlayers } from './lib/season-players.mjs';
+import { aggregatePlayers, leadersFrom } from './lib/season-players.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -763,6 +763,40 @@ const table = out('table'), results = out('results'), sim = out('sim');
     const cur = L.bios?.seasons?.[L.seasons?.current];
     const claims = (meta.boundaries ?? []).some(x => /^✓ 年齡與國籍/.test(x));
     check('年齡國籍:界線說「有」若且唯若本季真的有人有', claims === !!(cur && (cur.withAge || cur.withCountry)));
+  }
+}
+
+// ── 22 歲以下(2026-10-31):定義照西甲那張(年齡 ≤ 22、進球 + 助攻),只算知道年齡的人 ──
+{
+  const P = (name, age, g, a, minutes = 900) => ({ name, team: 'AAA', teamName: 'A', providerId: name, minutes, matches: 10,
+    ...(age != null ? { age } : {}), stats: { goals: g, goal_assist: a } });
+  const agg = { players: [P('old', 23, 9, 9), P('kid', 22, 3, 2), P('kid2', 19, 4, 0, 500), P('nobody', null, 20, 0), P('zero', 20, 0, 0)] };
+  const y = leadersFrom(agg, { youth: true }).find(b => b.key === 'youth');
+  check('22 歲以下:23 歲與年齡不明的人不在榜上(不假裝是超齡,也不當成符合)', y && !y.rows.some(r => r.name === 'old' || r.name === 'nobody'));
+  check('22 歲以下:值是進球 + 助攻、0 的不列', y && y.rows.map(r => `${r.name}:${r.value}`).join(',') === 'kid:5,kid2:4',
+    y && y.rows.map(r => `${r.name}:${r.value}`).join(','));
+  check('22 歲以下:母體與年齡涵蓋照實給', y && y.pool === 3 && y.ageKnown.known === 4 && y.ageKnown.total === 5, JSON.stringify(y && { pool: y.pool, ak: y.ageKnown }));
+  check('22 歲以下:預設不開(歐冠與盃賽也走 leadersFrom)', !leadersFrom(agg).some(b => b.key === 'youth'));
+  check('22 歲以下:一個人都不知道年齡就不出這張榜(不給空殼)',
+    !leadersFrom({ players: agg.players.map(({ age, ...p }) => p) }, { youth: true }).some(b => b.key === 'youth'));
+
+  /* 產物:榜上每一列都要對得回 players.json 的同一個人,而且 ≤ 22 */
+  const lp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'leaders.json');
+  const pp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'players.json');
+  if (existsSync(lp) && existsSync(pp)) {
+    const L = JSON.parse(readFileSync(lp, 'utf8')), PL = JSON.parse(readFileSync(pp, 'utf8'));
+    const bad = [];
+    for (const [season, boards] of Object.entries(L.boards ?? {})) {
+      const yb = boards.find(b => b.key === 'youth');
+      const withAge = PL.filter(x => x.season === season && x.age != null).length;
+      if (!yb) { if (withAge && PL.some(x => x.season === season && x.age <= 22 && (x.stats.goals ?? 0) + (x.stats.goal_assist ?? 0) > 0)) bad.push(`${season} 有人符合卻沒有榜`); continue; }
+      if (yb.ageKnown.known !== withAge) bad.push(`${season} ageKnown ${yb.ageKnown.known} ≠ ${withAge}`);
+      for (const r of yb.rows) {
+        const m = PL.find(x => x.season === season && x.providerId === r.pid);
+        if (!m || m.age !== r.age || r.age > 22 || (m.stats.goals ?? 0) + (m.stats.goal_assist ?? 0) !== r.value) bad.push(`${season} ${r.name}`);
+      }
+    }
+    check('22 歲以下:產物每一列對得回 players.json(年齡、進球 + 助攻)、涵蓋數一致', bad.length === 0, bad.slice(0, 5).join('、'));
   }
 }
 
