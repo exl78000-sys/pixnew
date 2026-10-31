@@ -597,6 +597,14 @@ async function main() {
     console.log(`  外電:${externalNews.length} 則${zhN ? `(${zhN} 則有中文譯文)` : ''}`);
   }
 
+  /* 年齡與國籍的涵蓋(2026-10-30 起,FotMob 名單,單一來源)。抽取器那天才開始留這兩個欄位,
+     已快取的場次要重抓才有 —— 所以一定是**部分涵蓋**,畫面上的每一句都從這裡講幾人有,不寫死「有」或「沒有」。 */
+  const bioCover = Object.fromEntries(Object.entries(playerSeasons).map(([k, v]) => [k, {
+    players: v.agg.players.length,
+    withAge: v.agg.players.filter(p => p.age != null).length,
+    withCountry: v.agg.players.filter(p => p.country).length,
+  }]));
+  const curBio = bioCover[CURRENT_SEASON] ?? { players: 0, withAge: 0, withCountry: 0 };
   const meta = {
     /* **不要設 edition**。那個欄位在前端被當成「是不是西甲」的二元旗標用
        (page-index / page-teams / page-tactics / fixture-list 都是),
@@ -644,7 +652,11 @@ async function main() {
         ? [`✓ 球員層(逐場累加):出賽、分鐘、進球、助攻、射門、創造機會、搶斷、攔截、牌與逐場評分平均 —— `
             + `本季 ${playerSeasons[CURRENT_SEASON]?.agg.players.length ?? 0} 人、上季 ${playerSeasons[LAST_SEASON]?.agg.players.length ?? 0} 人;`
             + '每一場都要「球員進球 + 對手烏龍球 = 本站賽果的比分」才計入,牌另外拿 football-data.co.uk 逐場核對',
-          '— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、年齡與國籍、傷停、頭貼。'
+          ...(curBio.withAge || curBio.withCountry
+            ? [`✓ 年齡與國籍(FotMob 名單,單一來源 —— 英冠沒有第二份可以對):本季 ${curBio.withAge}/${curBio.players} 人有年齡、`
+                + `${curBio.withCountry}/${curBio.players} 人有國籍。年齡是 FotMob 抓取當時的值,不是比賽當天的`]
+            : []),
+          `— 球員層沒有的:球員 xG 模型(這裡的 xG 是逐射門加總)、身價、${curBio.withAge ? '' : '年齡與國籍、'}傷停、頭貼。`
             + '整季的球員資料源仍然沒有:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
             + '而同一個請求 EPL 回 537 人、西甲回 600 人),FPL 只有英超']
         : ['— 沒有球員數據與 xG:Understat 不涵蓋英冠(2026-08-28 實測四種聯賽代碼皆回空陣列,'
@@ -798,7 +810,8 @@ async function main() {
     for (const [season, ps] of Object.entries(playerSeasons)) {
       for (const p of ps.agg.players) {
         flat.push({ season, team: p.team, teamName: p.teamName, providerId: p.providerId, name: p.name,
-          pos: p.pos, shirt: p.shirt, matches: p.matches, minutes: p.minutes, ratedMatches: p.ratedMatches, stats: p.stats });
+          pos: p.pos, shirt: p.shirt, ...(p.age != null ? { age: p.age } : {}), ...(p.country ? { country: p.country } : {}),
+          matches: p.matches, minutes: p.minutes, ratedMatches: p.ratedMatches, stats: p.stats });
       }
     }
     await write('players', flat);
@@ -813,6 +826,7 @@ async function main() {
           team: p.team, pos: p.pos, posZh: { G: '門將', D: '後衛', M: '中場', F: '前鋒' }[p.pos] ?? null,
           age: null, price: null, status: null, statusZh: null, seasons: [] };
         e.name = p.name; e.fullName = p.name; e.team = p.team;
+        if (p.age != null) e.age = Math.max(e.age ?? 0, p.age);   // 年齡只會往上長(FotMob 抓取當時的值)
         e.seasons.push({ season: p.season, minutes: p.minutes, goals: p.stats.goals ?? null, assists: p.stats.goal_assist ?? null,
           xG: p.stats.expected_goals ?? null, xA: p.stats.expected_assists ?? null,
           shots: p.stats.shots_total ?? null, keyPasses: p.stats.total_att_assist ?? null,
@@ -840,7 +854,10 @@ async function main() {
       /* 「跨季的球員身分」本來也列在這裡,**核對過之後拿掉了**:上游的球員 id 跨季是穩定的 ——
          兩季都出現的 331 人裡 315 人姓名完全相同,其餘 16 筆是同一個人的拼法或暱稱差異
          (Jhon Solis / Jhon Solís、Rob Apter / Robert Apter)。沒核對就寫「做不到」跟沒核對就寫「做得到」一樣糟。 */
-      missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現', '傷停與停賽', '球員年齡、身高與國籍', '頭貼'],
+      missing: ['球員 xG 模型(這裡的 xG 是逐射門加總,只算射門圖完整的場次)', '身價與週表現', '傷停與停賽',
+        curBio.withAge || curBio.withCountry ? '身高' : '球員年齡、身高與國籍', '頭貼'],
+      /* 年齡與國籍逐季涵蓋(單一來源 FotMob 名單;前端照它講幾人有) */
+      bios: { source: 'FotMob 名單', single: true, seasons: bioCover },
     });
   } else {
     await write('players', []);

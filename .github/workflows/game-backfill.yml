@@ -21,6 +21,11 @@ on:
         description: '本次請求上限(英超一場兩個請求;整季 380 場填 800)'
         required: false
         default: '800'
+      refresh:
+        description: '已快取的場次也重抓(抽取器多存了欄位、但不想 +1 版本時用;2026-10-30 英冠年齡與國籍)'
+        type: boolean
+        required: false
+        default: false
 
 concurrency:
   group: game-backfill
@@ -43,7 +48,7 @@ jobs:
       - name: 抓逐場資料(FotMob)
         working-directory: epl
         # --retry:不理抓取器 30 分鐘的退避 —— 人按下去就是要現在試
-        run: npm run game:fetch -- --league=${{ inputs.league }} --season=${{ inputs.season }} --limit=${{ inputs.limit }} --retry
+        run: npm run game:fetch -- --league=${{ inputs.league }} --season=${{ inputs.season }} --limit=${{ inputs.limit }} --retry ${{ inputs.refresh && '--refresh' || '' }}
 
       - name: 回填進度(有 teamExtra 的場次 / 全部)
         working-directory: epl

@@ -23,6 +23,8 @@ import { simZoneIssues } from './lib/sim-zones.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './lib/report/index.mjs';
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
+import { fotmobPlayers, lineupBios } from './lib/adapters/fotmob-match.mjs';
+import { aggregatePlayers } from './lib/season-players.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEASONS = ['2023-24', '2024-25', '2025-26', '2026-27'];
@@ -712,6 +714,56 @@ const table = out('table'), results = out('results'), sim = out('sim');
   const hasHalf = code => byCode.get(code)?.lastSeason?.half?.leadHoldPct != null;
   check('英冠賽前文章有守成率那一段(兩隊都有上季 half 時)', pre.length > 0 && pre.every(b => !(hasHalf(b.home.code) && hasHalf(b.away.code)) || (b.facts.some(f => f.id === 'home.leadHold') && b.facts.some(f => f.id === 'away.leadHold'))));
   check('英冠賽後文章講正式陣型、不講 FPL / 英超', Object.values(an.post).every(a => /正式陣型/.test(a.caveat) && !/FPL|英超/.test(a.paragraphs.join('') + a.caveat)));
+}
+
+// ── 年齡與國籍(2026-10-30,FotMob 名單,單一來源)──────────────────
+/* 不連網:捏一份 matchDetails 的形狀(名單的 15 個鍵裡用到的那幾個 + playerStats)。
+   守三件事:用 FotMob 球員 id 接(不用姓名)、不合理的值不收、聚合時年齡取最大(只會往上長)、國籍取最多次。 */
+{
+  const raw = { content: {
+    lineup: {
+      homeTeam: { starters: [{ id: 1, name: 'A', age: 24, countryCode: 'ENG', countryName: 'England' },
+                             { id: 2, name: 'Same', age: 3, countryCode: '', countryName: '' }], subs: [] },
+      awayTeam: { starters: [{ id: 9, name: 'Same', age: 30, countryCode: 'WAL', countryName: 'Wales' }], subs: [] },
+    },
+    playerStats: {
+      1: { id: 1, name: 'A', teamId: 10, stats: [] },
+      2: { id: 2, name: 'Same', teamId: 10, stats: [] },
+      3: { id: 3, name: 'Same', teamId: 20, stats: [] },   // 名單上沒有 id 3:同名的 9 號**不准**被姓名接過來
+    },
+  } };
+  const bios = lineupBios(raw);
+  const pl = fotmobPlayers(raw, { homeId: 10, awayId: 20, homeCode: 'AAA', awayCode: 'BBB' });
+  const a = pl.AAA.find(p => p.providerId === 1), z = pl.AAA.find(p => p.providerId === 2), b3 = pl.BBB.find(p => p.providerId === 3);
+  check('年齡國籍:用 FotMob id 接名單', a.age === 24 && a.country?.code === 'ENG' && a.country?.name === 'England');
+  check('年齡國籍:不合理的年齡不收、空字串不當國籍', !('age' in z) && !('country' in z) && bios.get('2') === undefined);
+  check('年齡國籍:名單上沒有這個 id 就不給(不用同名的人頂)', !('age' in b3) && !('country' in b3));
+  const row = (key, age, code) => ({ key, home: 'AAA', away: 'BBB', score: [0, 0], events: [], shots: [],
+    players: { AAA: [{ providerId: 1, name: 'A', minutes: 90, goals: { total: 0 }, ...(age != null ? { age } : {}),
+      ...(code ? { country: { code, name: code } } : {}) }], BBB: [] } });
+  const agg = aggregatePlayers([row('m1', 24, 'ENG'), row('m2', 25, 'ENG'), row('m3', null, 'IRL')]);
+  const p = agg.players[0];
+  check('年齡國籍:聚合取最大年齡、國籍取出現最多次的', p.age === 25 && p.country?.code === 'ENG', JSON.stringify({ age: p.age, country: p.country }));
+  const none = aggregatePlayers([row('m1', null, null)]).players[0];
+  check('年齡國籍:沒有就不放鍵(畫面印「—」,不印 0)', !('age' in none) && !('country' in none));
+}
+
+// 產物:有年齡的話涵蓋數要對得回 players.json,沒有就不准講「有」
+{
+  const lp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'leaders.json');
+  const pp = join(ROOT, 'web', 'data', 'leagues', 'en2', 'players.json');
+  if (existsSync(lp) && existsSync(pp)) {
+    const L = JSON.parse(readFileSync(lp, 'utf8')), P = JSON.parse(readFileSync(pp, 'utf8'));
+    const bad = Object.entries(L.bios?.seasons ?? {}).filter(([season, b]) => {
+      const ps = P.filter(x => x.season === season);
+      return b.players !== ps.length || b.withAge !== ps.filter(x => x.age != null).length || b.withCountry !== ps.filter(x => x.country).length;
+    });
+    check('年齡國籍:leaders.bios 的涵蓋數對得回 players.json', bad.length === 0, bad.map(([k]) => k).join('、'));
+    const meta = out('meta');
+    const cur = L.bios?.seasons?.[L.seasons?.current];
+    const claims = (meta.boundaries ?? []).some(x => /^✓ 年齡與國籍/.test(x));
+    check('年齡國籍:界線說「有」若且唯若本季真的有人有', claims === !!(cur && (cur.withAge || cur.withCountry)));
+  }
 }
 
 if (process.exitCode) throw new Error('英冠自我檢查失敗');

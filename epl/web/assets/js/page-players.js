@@ -689,7 +689,9 @@ function renderAggregate({ meta, players, leaders }) {
   app.innerHTML = `
     <h1>${C.esc(meta.leagueLabel ?? '')}球員 <span class="dim">逐場累加</span></h1>
     <p class="lede">每一場比賽的逐人統計加起來就是這一頁。<b>這不是整季的球員資料庫</b> ——
-      沒有球員 xG 模型、身價、年齡與傷停,那幾樣這個聯賽沒有免費來源。</p>
+      沒有球員 xG 模型、身價與傷停,那幾樣這個聯賽沒有免費來源${
+        Object.values(leaders.bios?.seasons ?? {}).some(b => b.withAge || b.withCountry)
+          ? ';年齡與國籍取自 FotMob 名單(單一來源),只有部分球員有' : ';年齡與國籍也還沒有'}。</p>
     <div id="srcNote"></div>
     <div class="filters" id="seasonBar" style="margin-top:12px"></div>
     <div id="boards" class="grid g3" style="margin-top:12px"></div>
@@ -720,6 +722,13 @@ function renderAggregate({ meta, players, leaders }) {
           ${cc.withRed} 組差在有紅牌的場次(兩邊對「兩黃變一紅」的記法不同,不是錯)${cc.otherCount ? `,其餘 ${cc.otherCount} 組不一致` : ''}。` : ''}
         ${L.cardsUnmatched ? `另有 ${L.cardsUnmatched} 筆牌事件接不到球員 —— 那是總教練吃牌,本來就不該掛到球員身上。` : ''}
       </div>
+      ${(() => {
+        /* 年齡與國籍(2026-10-30 起):單一來源、部分涵蓋 —— 涵蓋幾人照產物講,不寫死(鐵則四) */
+        const b = leaders.bios?.seasons?.[season];
+        return b && (b.withAge || b.withCountry) ? `<div class="tiny" style="margin-top:6px">年齡與國籍來自 ${C.esc(leaders.bios.source)}:
+          ${season} <b>${b.withAge}/${b.players}</b> 人有年齡、<b>${b.withCountry}/${b.players}</b> 人有國籍。
+          這是<b>單一來源</b>(英冠沒有第二份球員年齡可以核對);年齡是 FotMob 抓取當時的值,不是比賽當天的。沒有的人印「—」。</div>` : '';
+      })()}
       <div class="tiny dim" style="margin-top:6px">這一層<b>沒有</b>:${(leaders.missing ?? []).map(C.esc).join('、')}。</div>
     </div>`;
   };
@@ -750,6 +759,12 @@ function renderAggregate({ meta, players, leaders }) {
       { key: 'shirt', label: '背號', num: true, fold: 8, value: p => p.shirt ?? -1, render: p => p.shirt ?? '—' },
       { key: 'pos', label: '位置', fold: 7, value: p => ['G', 'D', 'M', 'F'].indexOf(p.pos), render: p => POS_ZH_AGG[p.pos] ?? '—' },
       { key: 'team', label: '球隊', left: true, value: p => p.team, render: p => C.teamCell(p.team) },
+      /* 年齡與國籍只在這一季有人有值時才出欄(整欄都是「—」的欄位比不放更糟) */
+      ...(seasonPlayers().some(p => p.age != null)
+        ? [{ key: 'age', label: '年齡', num: true, fold: 11, value: p => p.age ?? -1, render: p => p.age ?? '—' }] : []),
+      ...(seasonPlayers().some(p => p.country)
+        ? [{ key: 'country', label: '國籍', left: true, fold: 12, value: p => p.country?.name ?? p.country?.code ?? '',
+            render: p => C.esc(p.country?.name ?? p.country?.code ?? '—') }] : []),
       { key: 'matches', label: '出賽', num: true, value: p => p.matches },
       n('mins_played', '分鐘'),
       n('goals', '進球'), n('goal_assist', '助攻'),

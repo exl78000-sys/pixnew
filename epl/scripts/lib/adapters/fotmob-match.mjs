@@ -162,9 +162,32 @@ const USED_PLAYER_KEYS = new Set();
 const v = (s, key) => { USED_PLAYER_KEYS.add(key); return numOrNull(s[key]?.value); };
 const t = (s, key) => { USED_PLAYER_KEYS.add(key); return numOrNull(s[key]?.total); };
 
+/* 名單(content.lineup)上的球員物件帶 `age` 與 `countryName` / `countryCode`(2026-09-21 歐冠照片探測 run #40 量到的
+   15 個鍵之一),而 playerStats 沒有 —— 兩邊用 FotMob 球員 id 接。2026-10-30 起留下來給英冠球員層(年齡、國籍)。
+   **單一來源**:英冠沒有第二份球員年齡可以對,畫面要講。對不到 id 的人不給(不用姓名猜,配錯人比配不到糟)。
+   `age` 是 FotMob **回應當下**的年齡(探測時是整數),不是比賽當天的;重抓過的場次會是重抓那天的值。 */
+export function lineupBios(raw) {
+  const out = new Map();
+  for (const side of ['homeTeam', 'awayTeam']) {
+    const t = raw?.content?.lineup?.[side];
+    for (const p of [...(t?.starters ?? []), ...(t?.subs ?? [])]) {
+      if (p?.id == null) continue;
+      /* 14~50 之外當成上游的壞值不收(職業聯賽的球員年齡落不到那裡;收進來會變成畫面上一個像答案的數字) */
+      const a = numOrNull(p.age);
+      const age = Number.isInteger(a) && a >= 14 && a <= 50 ? a : null;
+      const code = typeof p.countryCode === 'string' && p.countryCode ? p.countryCode : null;
+      const name = typeof p.countryName === 'string' && p.countryName ? p.countryName : null;
+      if (age === null && !code && !name) continue;
+      out.set(String(p.id), { age, country: code || name ? { code, name } : null });
+    }
+  }
+  return out;
+}
+
 export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
   const out = { [homeCode]: [], [awayCode]: [] };
   const seen = new Set();
+  const bios = lineupBios(raw);
   for (const entry of Object.values(raw?.content?.playerStats ?? {})) {
     const code = Number(entry?.teamId) === Number(homeId) ? homeCode
       : Number(entry?.teamId) === Number(awayId) ? awayCode : null;
@@ -216,6 +239,11 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
       recoveries: v(s, 'recoveries'),
       clearances: v(s, 'clearances'),
       xA: v(s, 'expected_assists'),
+      /* 有對到名單才帶(加法:舊快取沒有這兩個鍵,讀的人一律當「沒有」) */
+      ...(() => {
+        const b = entry.id != null ? bios.get(String(entry.id)) : null;
+        return b ? { ...(b.age != null ? { age: b.age } : {}), ...(b.country ? { country: b.country } : {}) } : {};
+      })(),
     });
   }
   out.__unmapped = [...seen].filter(k => !USED_PLAYER_KEYS.has(k));

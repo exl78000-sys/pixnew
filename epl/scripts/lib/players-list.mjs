@@ -26,7 +26,8 @@ export function playersListFrom(players, { source }) {
   if (source === 'match-aggregate') {
     return rows.map(p => ({
       season: p.season ?? null, team: p.team ?? null, providerId: p.providerId ?? null, name: p.name,
-      pos: p.pos ?? null, shirt: p.shirt ?? null, matches: p.matches ?? null, minutes: p.minutes ?? null,
+      pos: p.pos ?? null, shirt: p.shirt ?? null, age: p.age ?? null, country: p.country ?? null,
+      matches: p.matches ?? null, minutes: p.minutes ?? null,
       stats: pick(p.stats, AGG_STAT),
     }));
   }

@@ -106,7 +106,7 @@ export function aggregatePlayers(rows, { teamNames = {} } = {}) {
       for (const p of list ?? []) {
         if (!Number.isFinite(p.minutes) || p.minutes <= 0) continue;   // 沒上場的不列
         const id = `${t}|${p.providerId ?? p.name}`;
-        const e = byPlayer.get(id) ?? { team: t, providerId: p.providerId ?? null, name: p.name, minutes: 0, matches: 0, ratings: [], s: {}, pos: new Map(), shirt: new Map() };
+        const e = byPlayer.get(id) ?? { team: t, providerId: p.providerId ?? null, name: p.name, minutes: 0, matches: 0, ratings: [], s: {}, pos: new Map(), shirt: new Map(), age: null, country: new Map() };
         const add = (k, v) => { if (Number.isFinite(v)) e.s[k] = (e.s[k] ?? 0) + v; };
         e.name = p.name; e.minutes += p.minutes; e.matches++;
         /* 位置與背號:上游是**逐場**給的,同一個人可能場場不同(而且替補上場那幾場的位置是 '?')。
@@ -114,6 +114,13 @@ export function aggregatePlayers(rows, { teamNames = {} } = {}) {
            不要拿最後一場當答案:那等於讓一次客串決定他整季的位置。 */
         if (p.pos && p.pos !== '?') e.pos.set(p.pos, (e.pos.get(p.pos) ?? 0) + 1);
         if (p.shirt != null) e.shirt.set(p.shirt, (e.shirt.get(p.shirt) ?? 0) + 1);
+        /* 年齡與國籍(FotMob 名單,單一來源;2026-10-30 起英冠用)。年齡取**看過的最大值**:FotMob 給的是回應當下的年齡,
+           只會往上長,最大的那個就是最近一次抓到的。國籍跟位置同一套,取出現最多次的。 */
+        if (Number.isInteger(p.age)) e.age = Math.max(e.age ?? 0, p.age);
+        if (p.country && (p.country.code || p.country.name)) {
+          const ck = JSON.stringify([p.country.code ?? null, p.country.name ?? null]);
+          e.country.set(ck, (e.country.get(ck) ?? 0) + 1);
+        }
         if (Number.isFinite(p.rating)) e.ratings.push(p.rating);
         add('goals', p.goals?.total); add('goal_assist', p.goals?.assists);
         add('shots_total', p.shots?.total); add('ontarget_total', p.shots?.on);
@@ -137,6 +144,9 @@ export function aggregatePlayers(rows, { teamNames = {} } = {}) {
     const modal = m => [...m.entries()].sort((x, y) => y[1] - x[1] || String(x[0]).localeCompare(String(y[0])))[0]?.[0] ?? null;
     return { team: e.team, teamName: teamNames[e.team] ?? String(e.team), providerId: e.providerId, name: e.name,
       pos: modal(e.pos), shirt: modal(e.shirt),
+      /* 沒有就不放鍵(加法):舊快取與沒對到名單的人,畫面印「—」,不印 0 */
+      ...(e.age != null ? { age: e.age } : {}),
+      ...(e.country.size ? { country: (([code, name]) => ({ code, name }))(JSON.parse(modal(e.country))) } : {}),
       minutes: e.minutes, matches: e.matches, ratedMatches: e.ratings.length, stats };
   });
   // 排序固定,兩個 build 的輸出才逐位元組相同
