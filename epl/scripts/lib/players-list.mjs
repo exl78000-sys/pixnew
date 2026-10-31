@@ -27,6 +27,7 @@ export function playersListFrom(players, { source }) {
     return rows.map(p => ({
       season: p.season ?? null, team: p.team ?? null, providerId: p.providerId ?? null, name: p.name,
       pos: p.pos ?? null, shirt: p.shirt ?? null, age: p.age ?? null, country: p.country ?? null,
+      ...(p.photo ? { photo: p.photo } : {}),   // 只有榜上的人有(2026-10-31,FotMob),沒有就不放鍵
       matches: p.matches ?? null, minutes: p.minutes ?? null,
       stats: pick(p.stats, AGG_STAT),
     }));

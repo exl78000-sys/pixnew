@@ -25,7 +25,7 @@ import { simZoneIssues } from './sim-zones.mjs';
 import { europeanKickoff } from './league-matches.mjs';
 import { nameCheckVerdict } from './build-league.mjs';
 import { readMatchReports } from './match-archive.mjs';
-import { defenseProductChecks } from './defense-check.mjs';
+import { defenseProductChecks, identityProductChecks } from './defense-check.mjs';
 import { preMatchBundle, postMatchBundle, templateFor, verify } from './report/index.mjs';
 
 
@@ -304,9 +304,13 @@ export function testLeague(L) {
         && nc.some(x => x.transfers > 0 && x.minutesHi > x.minutesLo),
         `有季中轉隊的列 ${nc.filter(x => x.transfers > 0).length} 筆`);
 
-      /* 有了一部分之後最容易忘記講剩下的沒有 —— 德甲連西甲那層 SportMonks 都沒有。 */
-      check('明講這一層沒有背號 / 頭貼 / 傷停', Array.isArray(leaders.missing) && leaders.missing.length >= 3
-        && /背號/.test(leaders.missing.join('')) && /傷停/.test(leaders.missing.join('')));
+      /* 有了一部分之後最容易忘記講剩下的沒有 —— 德甲連西甲那層 SportMonks 都沒有。
+         2026-10-31 起背號由 FotMob 補,所以「背號」跟著資料:有人有背號就不准講沒有、沒有人有就一定要講
+         (這條原本寫死「一定要提背號」—— 那是在守當時的現況,不是在守「講實話」) */
+      const mj = (leaders.missing ?? []).join('');
+      const anyShirt = players.some(p => p.squadNumber != null);
+      check('明講這一層還沒有的(出生日期、傷停;背號跟著資料)', Array.isArray(leaders.missing)
+        && /出生日期/.test(mj) && /傷停/.test(mj) && /背號/.test(mj) === !anyShirt, mj);
       check(`沒有 SportMonks 那一層(${L.zh}沒有身分欄位來源)`, Object.keys(leaders.sportmonks ?? {}).length === 0);
       check('年齡全是 null,而且涵蓋率照實寫出來(不是假裝有)',
         players.every(p => p.age == null)
@@ -386,6 +390,8 @@ export function testLeague(L) {
       check('有球員層又有逐場統計,就有逐場紀錄與防守數據', Object.keys(logs).length > 0 && !!out('leaders').defense,
         `逐場紀錄 ${Object.keys(logs).length} 人`);
       for (const c of defenseProductChecks({ players, logs, leaders: out('leaders'), playersList: out('players-list') })) check(c.label, c.ok, c.detail);
+      for (const c of identityProductChecks({ players, logs, leaders: out('leaders') })) check(c.label, c.ok, c.detail);
+      check('FotMob 身分:有逐場統計就有背號(德義法的背號只有這一個來源)', players.some(p => p.squadNumber != null));
       /* 逐場紀錄的跑動欄位:德義法沒有逐場追蹤資料。前端看「這個人有沒有值」決定出不出欄,這裡印出實際有幾列 */
       const rows = Object.values(logs).flat();
       console.log(`  · 逐場紀錄 ${rows.length} 人-場,有跑動 ${rows.filter(r => r.distance != null).length}、有搶斷 ${rows.filter(r => r.tackles != null).length}`);

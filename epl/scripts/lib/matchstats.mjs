@@ -318,6 +318,9 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
   const finders = new Map();
   const find = (code, name) => { if (!finders.has(code)) finders.set(code, finderFor(code)); return finders.get(code)(name); };
   const logs = {};
+  /* 身分(2026-10-31):每個人每季在 FotMob 那邊接到的球員 id 與背號(最近一場的)。
+     不放進逐場列(那會讓 player-logs 變大而前端用不到),另外回傳給 attachFotmobIdentity */
+  const ident = {};
   let rows = 0, unmatched = 0;
   for (const m of Object.values(stats?.matches ?? {}).sort((a, b) => a.date.localeCompare(b.date))) {
     if (!m.players) continue;
@@ -331,6 +334,9 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
         if (!(p.minutes > 0)) continue;
         const who = find(code, p.name);
         if (!who) { unmatched++; continue; }
+        const id = ((ident[who.code] ??= {})[m.season] ??= { fids: new Set(), shirt: null, shirtDate: null });
+        if (p.providerId != null) id.fids.add(String(p.providerId));
+        if (p.shirt != null && (!id.shirtDate || m.date >= id.shirtDate)) { id.shirt = p.shirt; id.shirtDate = m.date; }
         const ph = physBy.get(`${code}|${p.name}`);
         const xg = xgBy.get(`${code}|${p.name}`);
         (logs[who.code] ??= []).push({
@@ -348,7 +354,54 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
       }
     }
   }
-  return { logs, rows, unmatched, players: Object.keys(logs).length };
+  return { logs, ident, rows, unmatched, players: Object.keys(logs).length };
+}
+
+/* FotMob 那邊的「同一個人」的逐場列,跟 Understat 的整季出場與分鐘對不對得起來(兩家各自記的)。
+   attachDefense 與 attachFotmobIdentity 共用這一條判準 —— 各寫一份的話兩邊的「對上了」會不是同一件事。 */
+export function logsAgree(p, rows, tol = 90) {
+  if (!rows.length) return 'none';
+  if (rows.length !== p.games) return 'games';
+  const min = rows.reduce((a, r) => a + (r.min ?? 0), 0);
+  return Math.abs(min - (p.minutes ?? 0)) > tol ? 'minutes' : 'ok';
+}
+
+/* 把 FotMob 的球員 id 與背號掛到本站的球員上(2026-10-31,使用者選「頭貼只抓榜上的人、背號也一起補」)。
+   - 只掛**對上了**的那一季(`logsAgree` 是 ok:場數等於 Understat 出場、分鐘差 ≤ tol)—— 姓名配對配錯人的話,
+     場數與分鐘幾乎不可能剛好一樣;配錯人掛上別人的臉比沒有臉糟得多(租借姓名那條坑)。
+   - 那一季只接到**一個** FotMob id、而且那個 id 這一季沒有被別人認領,才掛 `fotmobId`。
+   - 背號:只在本站還沒有背號時補(西甲有 SportMonks,不蓋掉),取這一季最近一場的;季中換號的人拿到的是現在的號碼。
+     來源記在 `squadNumberSource`,畫面要講是單一來源。
+   - 頭貼:`photos` 是 FotMob id → data URI(`data/manual/league-photos.json`,只抓榜上的人);本站已經有頭貼的不換。 */
+/* `seasonal(season)`:這一季的背號要不要以 FotMob 為準。西甲的 SportMonks 是**現在**的名單快照,
+   build 把它掛到兩季上 —— 上一季的列印的是現在的號碼(實測 2025-26 兩邊都有的 283 人裡 52 人不同,
+   抽看的都是換過號的情形:Fermín López 的 FotMob 2025-26 逐場名單記 16、SportMonks 現在記 7)。FotMob 是逐場名單、本來就是那一季的號碼,
+   所以往季以它為準;本季仍以 SportMonks 為主(兩邊不同的 6 人無從判斷誰對,不換)。 */
+export function attachFotmobIdentity(players, built, { tol = 90, photos = {}, seasonal = () => false } = {}) {
+  /* shirtCheck:本站已經有背號(西甲的 SportMonks)而 FotMob 也有時,兩邊一不一致 —— 那是 FotMob 背號唯一能被獨立對照的地方,
+     德義法拿 FotMob 背號當單一來源的依據就是這個數字(build log 印出來,不寫死) */
+  const count = { id: 0, shirt: 0, replaced: 0, photo: 0, ambiguous: 0, shared: 0, shirtCheck: { same: 0, diff: 0 } };
+  const cand = [];
+  for (const p of players) {
+    const rows = (built?.logs?.[p.code] ?? []).filter(r => r.season === p.season);
+    if (logsAgree(p, rows, tol) !== 'ok') continue;
+    const id = built?.ident?.[p.code]?.[p.season];
+    if (!id) continue;
+    if (id.fids.size !== 1) { count.ambiguous++; continue; }
+    cand.push({ p, fid: [...id.fids][0], shirt: id.shirt });
+  }
+  const claims = new Map();
+  for (const c of cand) { const k = `${c.p.season}|${c.fid}`; claims.set(k, (claims.get(k) ?? 0) + 1); }
+  for (const { p, fid, shirt } of cand) {
+    if (claims.get(`${p.season}|${fid}`) > 1) { count.shared++; continue; }
+    p.fotmobId = fid; count.id++;
+    if (p.squadNumber != null && shirt != null && !seasonal(p.season)) count.shirtCheck[Number(p.squadNumber) === Number(shirt) ? 'same' : 'diff']++;
+    if (shirt != null && p.squadNumber != null && seasonal(p.season) && Number(p.squadNumber) !== Number(shirt)) {
+      p.squadNumber = shirt; p.squadNumberSource = 'fotmob'; count.replaced++;
+    } else if (p.squadNumber == null && shirt != null) { p.squadNumber = shirt; p.squadNumberSource = 'fotmob'; count.shirt++; }
+    if (!p.photo && photos[fid]) { p.photo = photos[fid]; p.photoSource = 'FotMob'; count.photo++; }
+  }
+  return count;
 }
 
 /* 搶斷、攔截、撲救的整季合計(2026-10-31,西甲)。Understat 不給防守數字;FotMob 逐場統計有,
@@ -366,10 +419,9 @@ export function attachDefense(players, logs, { tol = 90 } = {}) {
     const c = (count[p.season] ??= { published: 0, games: 0, minutes: 0, none: 0, total: 0 });
     c.total++;
     const rows = (logs?.[p.code] ?? []).filter(r => r.season === p.season);
-    if (!rows.length) { c.none++; continue; }
-    if (rows.length !== p.games) { c.games++; continue; }
+    const agree = logsAgree(p, rows, tol);
+    if (agree !== 'ok') { c[agree]++; continue; }
     const min = rows.reduce((a, r) => a + (r.min ?? 0), 0);
-    if (Math.abs(min - (p.minutes ?? 0)) > tol) { c.minutes++; continue; }
     const sum = k => (rows.some(r => r[k] == null) ? null : rows.reduce((a, r) => a + r[k], 0));
     /* 撲救只給門將:外場球員的 saves 是 null(上游沒給),加出來也是 null,但寫明比較不會被誤讀 */
     p.defense = { tackles: sum('tackles'), interceptions: sum('interceptions'),

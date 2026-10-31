@@ -37,7 +37,8 @@ import { buildTeamProfiles } from './lib/team-profiles.mjs';   // 2026-10-02 搬
 import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, attachDefense, pairOf } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, attachDefense, attachFotmobIdentity, pairOf } from './lib/matchstats.mjs';
+import { loadLeaguePhotos } from './lib/league-photos.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
@@ -1285,7 +1286,7 @@ async function main() {
     }
   }
   /* 搶斷 / 攔截 / 撲救(2026-10-31):FotMob 逐場加總,跟 Understat 的出場與分鐘對過才給(規則在 attachDefense) */
-  let defenseCount = null;
+  let defenseCount = null, identityCount = null;
   if (fotmobStats.count) {
     const hit = attachPlayerTracking(playersOut, fotmobStats);
     if (hit.total) console.log(`  逐人跑動與熱區:${hit.matched}/${hit.total} 位配到球員主檔`);
@@ -1295,6 +1296,12 @@ async function main() {
       players: logs.players, rows: logs.rows, logs: logs.logs });
     console.log(`  球員逐場紀錄:${logs.players} 人・${logs.rows} 人-場・配不到 ${logs.unmatched} 人-場`);
     defenseCount = attachDefense(playersOut, logs.logs);
+    /* FotMob id、背號與頭貼(2026-10-31):西甲的背號與頭貼以 SportMonks 為主,這裡只補它沒有的人;
+       FotMob 背號跟 SportMonks 背號兩邊都有時印出一致率 —— 德義法用 FotMob 背號當單一來源,依據就是這個數字 */
+    identityCount = attachFotmobIdentity(playersOut, logs, { photos: loadLeaguePhotos(ROOT).photos, seasonal: s => s !== CURRENT_SEASON });
+    const idc = identityCount;
+    console.log(`  FotMob 身分:掛上 id ${idc.id} 人・補背號 ${idc.shirt}・往季改成當季號碼 ${idc.replaced}・補頭貼 ${idc.photo}・一季接到兩個 id ${idc.ambiguous}・同 id 被兩人認領 ${idc.shared}`
+      + `・背號跟 SportMonks 一致 ${idc.shirtCheck.same} / 不一致 ${idc.shirtCheck.diff}`);
     for (const [season, c] of Object.entries(defenseCount)) {
       console.log(`  防守數據 ${season}:給 ${c.published}/${c.total} 人・場次對不上 ${c.games}・分鐘對不上 ${c.minutes}・沒有逐場列 ${c.none}`);
     }

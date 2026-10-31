@@ -848,6 +848,14 @@ const table = out('table'), results = out('results'), sim = out('sim');
 
   /* 部署:抓取在 scores 之後(它的輸入)、en2:build 之前;快取所在目錄在回寫清單裡(不回寫就每次都當沒抓過) */
   const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+  /* 聯賽球員榜的頭貼(2026-10-31):要讀剛 build 的 players.json 裡的 fotmobId,所以一定排在各聯賽 build 之後、
+     英超那支 build 之前;抓到的 store 要回寫,不然下一次部署又從零開始(一人一個請求,重抓就是浪費使用者點頭的那份額度) */
+  {
+    const iPhotos = wf.indexOf('npm run league:photos');
+    const lastLeague = Math.max(...['laliga:build', 'en2:build', 'de1:build', 'it1:build', 'fr1:build'].map(k => wf.indexOf(`npm run ${k}`)));
+    check('聯賽頭貼的抓取排在各聯賽 build 之後、npm run build 之前', iPhotos > lastLeague && iPhotos < wf.indexOf('run: npm run build'), `${iPhotos} / ${lastLeague}`);
+    check('聯賽頭貼的 store 在回寫清單裡', wf.includes('epl/data/manual/league-photos.json'));
+  }
   const iFetch = wf.indexOf('npm run unavailable:fetch -- --league=en2'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf('npm run en2:build');
   check('缺陣名單:部署在 scores 之後、en2:build 之前抓', iFetch > iScores && iScores > 0 && iFetch < iBuild);
   /* 「每一場恰好有一次部署落在窗口裡」要成立,窗口不能比部署間隔短 —— 間隔從排程讀,不寫死 */

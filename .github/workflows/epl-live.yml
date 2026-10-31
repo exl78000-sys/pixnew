@@ -510,6 +510,16 @@ jobs:
       - name: 建立法甲資料集
         run: npm run fr1:build
 
+      # 聯賽球員榜的頭貼(2026-10-31,使用者選「只抓榜上的人」):英冠、西甲、德甲、義甲、法甲。**一人一個請求**,
+      # 已經有圖的不重抓;第一次約 292 人、一輪最多 150,兩次部署補完,之後每輪只補榜上新出現的人。
+      # 排在各聯賽 build **之後**:它要讀剛 build 出來的 players.json 裡的 fotmobId(聯賽產物不回寫,
+      # 倉庫裡那份是舊的、沒有那個欄位)。抓到的圖下一次部署才掛得上去 —— 一次部署的延遲,跟歐冠那一支同一個理由。
+      # Pillow 在上面那一步裝了;沒裝的話它自己會說略過、結束碼 0。
+      - name: 補抓聯賽球員榜的頭貼(FotMob)
+        working-directory: epl
+        run: npm run league:photos
+        continue-on-error: true
+
       # 近況/交手特徵的調參與驗收。三個賽季都已完結,數字很穩定 ——
       # 跑它是為了讓模型頁上「測過但沒進模型」那一段的數字永遠是現跑的,而不是寫死的。
       - name: 特徵驗證(調參賽季挑係數、驗收賽季驗收)
@@ -628,6 +638,7 @@ jobs:
             epl/data/form-tuning.json \
             epl/data/availability-history.json \
             epl/data/manual/ucl-photos.json \
+            epl/data/manual/league-photos.json \
             epl/data/manual/ucl-team-ids.json \
             epl/data/manual/crests-ucl.json \
             epl/data/situation-tuning.json \

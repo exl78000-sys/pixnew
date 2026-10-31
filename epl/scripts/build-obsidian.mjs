@@ -172,7 +172,8 @@ function collectPlayers(lg, meta) {
            球員層有了之後 vault 沒跟上(「有哪一句還在講我們沒有它」在 vault 又一次) */
         squadNumber: newest.shirt, age: newest.age ?? null, country: newest.country?.name ?? newest.country?.code ?? null,
         dob: null, height: null, weight: null, captain: null,
-        statusZh: null, news: null, price: null, photo: null, loans: [],
+        /* 頭貼:2026-10-31 起球員榜上的人有(FotMob,只抓榜上的人) */
+        statusZh: null, news: null, price: null, photo: rows.find(r => r.photo)?.photo ?? null, loans: [],
         seasons: rows.slice().sort((a, b) => String(a.season).localeCompare(String(b.season))).map(r => ({
           season: r.season, kind: r.season === meta.currentSeason ? '本季至今' : null,
           /* statTable 讀的是扁平的鍵,所以把累加的 stats 攤平成跟另外兩個聯賽同名的欄位。
@@ -240,7 +241,9 @@ function collectPlayers(lg, meta) {
       /* 來源照產物自己宣告的(`dataSources`)。原本寫死「身分與背號:SportMonks」——
          西甲是對的,德義法**沒有**身分來源(Understat 不給背號、頭貼與出生日期),
          於是那三個聯賽的每一則球員筆記都寫著一個它根本沒用的來源(「寫死的不是聯賽名,是資料來源」那條坑)。 */
-      sources: { 表現統計: newest.dataSources?.performance ?? 'Understat', 身分與背號: newest.dataSources?.identity ?? null },
+      /* 德義法的背號 2026-10-31 起來自 FotMob 逐場名單(單一來源)—— 產物沒有宣告身分來源時,看背號的來源補一句 */
+      sources: { 表現統計: newest.dataSources?.performance ?? 'Understat',
+        身分與背號: newest.dataSources?.identity ?? (newest.squadNumberSource === 'fotmob' ? 'FotMob 逐場名單(只有背號,單一來源)' : null) },
     };
   });
 }
@@ -1895,8 +1898,10 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   const playerGaps = lg.key === 'pl' ? []
     /* 英冠:跟著產物講 —— 傷停(賽前缺陣名單)在球隊筆記、年齡看有沒有人有(2026-10-31 起) */
     : lg.key === 'en2' ? [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽',
-        '球員 xG 模型(這裡的 xG 是逐射門加總)', players.some(p => p.age != null) ? '身價與頭貼' : '身價、年齡與頭貼']
-      : ['傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)'] : [])];
+        '球員 xG 模型(這裡的 xG 是逐射門加總)', `身價${players.some(p => p.age != null) ? '' : '、年齡'}與${players.some(p => p.photo) ? '多數人的頭貼(只有球員榜上的人有)' : '頭貼'}`]
+      : ['傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)']
+        /* 德義法 2026-10-31 起有 FotMob 背號與榜上的人的頭貼,但出生日期與身價仍然沒有 —— 有什麼就不講沒有,沒有的照講 */
+        : players.length && players.every(p => p.dob == null) ? [`${players.some(p => p.photo) ? '多數人的頭貼、' : '頭貼、'}出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)`] : [])];
 
   const ctx = {
     lg, hasDefense, teamNameOf, playersByTeam, fixturesByTeam, historyByTeam, statCols, playerGaps,
@@ -2022,7 +2027,8 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
   }
   for (const p of players) {
     /* 頭貼:英超是 base64 → 落成 jpg 檔嵌入;西甲是 SportMonks CDN 外連
-       (照實標示離線不顯示);英冠沒有頭貼(逐場資料不帶),photo 是 null → 兩條都不走。 */
+       (照實標示離線不顯示)。英冠與德義法 2026-10-31 起球員榜上的人有 FotMob 頭貼(產物裡是圖檔路徑,走第一條);
+       沒有頭貼的人 photo 是 null → 兩條都不走。 */
     const d = dataUriBuf(p.photo);
     if (d) {
       const f = `頭貼 ${sanitize(p.id)}.${d.ext}`;

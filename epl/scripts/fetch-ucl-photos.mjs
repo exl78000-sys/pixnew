@@ -34,11 +34,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pillowReady, toJpeg } from './lib/photo-jpeg.mjs';
+import { fetchFotmobPhoto, FOTMOB_PHOTO_URL as TEMPLATE } from './lib/fotmob-photo.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const STORE = join(ROOT, 'data', 'manual', 'ucl-photos.json');
 const UCL = join(ROOT, 'web', 'data', 'ucl.json');
-const TEMPLATE = 'https://images.fotmob.com/image_resources/playerimages/{id}.png';
 
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 /* 50 而不是 25(英超那一支的預設):本季的榜就是 40 個不重複球員,一輪跑不完的話
@@ -76,19 +76,7 @@ async function loadStore() {
   return s;
 }
 
-async function request(id) {
-  const url = TEMPLATE.replace('{id}', id);
-  try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(20000),
-      headers: { 'user-agent': 'pl-war-room/1.0 (football analysis side project)' } });
-    if (!res.ok) return { ok: false, status: res.status, why: `HTTP ${res.status}` };
-    const buf = Buffer.from(await res.arrayBuffer());
-    /* 有些 CDN 對不存在的 id 回 200 加一張佔位圖或一段 HTML ——
-       只看 res.ok 會把那個存成一張「頭貼」。魔數是最便宜的判準。 */
-    if (!(buf[0] === 0x89 && buf[1] === 0x50)) return { ok: false, status: res.status, why: '回的不是 PNG' };
-    return { ok: true, buf };
-  } catch (e) { return { ok: false, status: 0, why: e.message }; }
-}
+const request = fetchFotmobPhoto;   // 請求與魔數判準在 lib/fotmob-photo.mjs(聯賽那一支共用)
 
 async function main() {
   const { ids, why, season } = await wantedIds();

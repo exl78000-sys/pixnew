@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 西甲資料邊界測試：守住兩季、20 隊、真實球隊風格與「不假裝已有球員資料」。
-import { defenseProductChecks } from './lib/defense-check.mjs';
+import { defenseProductChecks, identityProductChecks } from './lib/defense-check.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -19,7 +19,7 @@ import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
 import { simZoneIssues } from './lib/sim-zones.mjs';
-import { attachDefense } from './lib/matchstats.mjs';
+import { attachDefense, attachFotmobIdentity } from './lib/matchstats.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -777,11 +777,40 @@ check('摘要漏掉大部分數字 → 擋下',
   check('防守:沒有逐場列的不給、另一季只算那一季', !z.defense && a2.defense?.tackles === 5);
   check('防守:涵蓋數照實數', c.S.published === 3 && c.S.games === 1 && c.S.minutes === 1 && c.S.none === 1 && c.S.total === 6, JSON.stringify(c.S));
 
+  /* FotMob 身分(2026-10-31):id / 背號 / 頭貼只掛在逐場跟 Understat 對上的那一季 */
+  {
+    const r = (season, min) => ({ season, min });
+    const ps = [
+      { code: 'a', season: 'S', games: 2, minutes: 180 },                       // 對上、一個 id → 掛 id、補背號、補頭貼
+      { code: 'b', season: 'S', games: 3, minutes: 270 },                       // 場數對不上 → 什麼都不掛
+      { code: 'c', season: 'S', games: 1, minutes: 90 },                        // 一季接到兩個 id → 不掛
+      { code: 'd', season: 'S', games: 1, minutes: 90 },                        // 跟 e 認領同一個 id → 兩個都不掛
+      { code: 'e', season: 'S', games: 1, minutes: 90 },
+      { code: 'f', season: 'S', games: 1, minutes: 90, squadNumber: 9, photo: 'sm' },   // 已有背號與頭貼(SportMonks)→ 不蓋
+      { code: 'f', season: 'P', games: 1, minutes: 90, squadNumber: 9 },        // 往季 seasonal:號碼以 FotMob 為準
+    ];
+    const built = {
+      logs: { a: [r('S', 90), r('S', 90)], b: [r('S', 90), r('S', 90)], c: [r('S', 90)], d: [r('S', 90)], e: [r('S', 90)], f: [r('S', 90), r('P', 90)] },
+      ident: { a: { S: { fids: new Set(['1']), shirt: 7 } }, b: { S: { fids: new Set(['2']), shirt: 8 } },
+        c: { S: { fids: new Set(['3', '4']), shirt: 5 } }, d: { S: { fids: new Set(['5']), shirt: 1 } }, e: { S: { fids: new Set(['5']), shirt: 2 } },
+        f: { S: { fids: new Set(['6']), shirt: 10 }, P: { fids: new Set(['6']), shirt: 16 } } },
+    };
+    const k = attachFotmobIdentity(ps, built, { photos: { 1: 'img1', 6: 'img6' }, seasonal: s => s === 'P' });
+    const [pa, pb, pc, pd, pe, pf, pf2] = ps;
+    check('FotMob 身分:對上的掛 id、補背號(標 fotmob)、補頭貼', pa.fotmobId === '1' && pa.squadNumber === 7 && pa.squadNumberSource === 'fotmob' && pa.photo === 'img1');
+    check('FotMob 身分:場數對不上的什麼都不掛(拿不準是誰)', pb.fotmobId == null && pb.squadNumber == null);
+    check('FotMob 身分:一季接到兩個 id、或同一個 id 被兩人認領的都不掛', pc.fotmobId == null && pd.fotmobId == null && pe.fotmobId == null && k.ambiguous === 1 && k.shared === 2);
+    check('FotMob 身分:本季已有的背號與頭貼不蓋掉,兩邊不同時記進 shirtCheck', pf.squadNumber === 9 && pf.photo === 'sm' && k.shirtCheck.diff === 1);
+    check('FotMob 身分:往季的背號以 FotMob 為準(SportMonks 是現在的快照)', pf2.squadNumber === 16 && pf2.squadNumberSource === 'fotmob' && k.replaced === 1);
+  }
+
   /* 產物:每一個給了的人都能從 player-logs 重算回來(場次、分鐘、三項加總),涵蓋數對得回 players.json */
   const lp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'player-logs.json');
   if (existsSync(lp)) {
-    for (const c of defenseProductChecks({ players: out('players'), logs: JSON.parse(readFileSync(lp, 'utf8')).logs,
+    const lgs = JSON.parse(readFileSync(lp, 'utf8')).logs;
+    for (const c of defenseProductChecks({ players: out('players'), logs: lgs,
       leaders: out('leaders'), playersList: out('players-list') })) check(c.label, c.ok, c.detail);
+    for (const c of identityProductChecks({ players: out('players'), logs: lgs, leaders: out('leaders') })) check(c.label, c.ok, c.detail);
   }
 }
 

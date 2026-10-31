@@ -34,7 +34,9 @@ async function updateXLeague(q) {
    - nameCell / teamCol:狀態徽章、跨隊標記這些聯賽特有的呈現
    - afterId:聯賽特有欄(FPL 的出場數、西甲的 games)
    - tail:接在最後的聯賽特有欄(西甲的搶斷 / 攔截 / 撲救,2026-10-31) */
-function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [] }) {
+/* hide:這一份資料**整份都沒有**的身分欄(德義法的年齡 —— Understat 不給,FotMob 名單也沒有)。
+   整欄都是「—」的欄位比不放更糟(鐵則三);有部分人有值的照舊出欄,沒有的人印「—」 */
+function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [], hide = [] }) {
   const POS_ORDER = ['GK', 'DEF', 'MID', 'FWD', 'D', 'M', 'F'];
   /* fold:視窗放不下時收欄的優先序(數字越大越先收;規則在 core.js 的 foldPlan)。
      收的都是算得出來或次要的:背號、年齡、紅黃牌、進球參與(= 進球 + 助攻)、xGI(= xG + xA)、xGI/90。
@@ -51,9 +53,9 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [] }) {
     { key: 'name', label: '球員', value: p => p.name, left: true, render: nameCell },
     teamCol,
     { key: 'pos', label: '位置', value: p => POS_ORDER.indexOf(p.pos), render: p => C.esc(p.posZh ?? p.pos ?? '—') },
-    { key: 'age', label: '年齡', fold: 6, value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
-    { key: 'squadNumber', label: '背號', fold: 7, value: p => p.squadNumber ?? 0, num: true,
-      render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) },
+    ...(hide.includes('age') ? [] : [{ key: 'age', label: '年齡', fold: 6, value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' }]),
+    ...(hide.includes('squadNumber') ? [] : [{ key: 'squadNumber', label: '背號', fold: 7, value: p => p.squadNumber ?? 0, num: true,
+      render: p => (p.squadNumber == null ? '—' : `${p.squadNumber}${C.numberSourceMark(p)}`) }]),
     ...afterId,
     n('minutes', '分鐘'), n('goals', '進球'), n('assists', '助攻'), n('ga', '進球參與', { fold: 3 }),
     n('xG', 'xG', { fx: true }), n('xA', 'xA', { fx: true }), n('xGI', 'xGI', { fx: true, fold: 2 }),
@@ -552,6 +554,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       teamCol: { key: 'team', label: '球隊', value: p => codeName(currentTeamCode(p)), left: true, render: teamCell },
       afterId: [{ key: 'games', label: '出場', value: p => p.games ?? 0, num: true }],
       tail: defenseCols(bySeason(season)),   // 欄位跟著這一季,不跟著篩選結果(篩到沒人有值也不要整欄消失又出現)
+      hide: ['age', 'squadNumber'].filter(k => !bySeason(season).some(p => p[k] != null)),
     }), { sortKey: 'goals', desc: true, pageSize: 100, onRow: p => C.go('players', { code: p.id }) })   // 先畫 100 列(B5)
       + `<div class="tiny dim" style="margin-top:8px">共 ${rows.length} 人。點欄位標題可換排序。
         <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。${defenseNote()}</div>`;
@@ -668,8 +671,9 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     const idHidden = ID_ROWS.filter(r => !idShown.includes(r)).map(([label]) => label);
     const info = [
       line('球隊', teamLabel), line('位置', p.posZh ?? '來源未標位置'),
-      ...idShown.map(([label, k, fmt]) => line(label, p[k] == null ? '—' : fmt(p[k]))),
-    ].join('') + (idHidden.length ? `<div class="tiny dim" style="margin-top:8px">${idHidden.join('、')}:${C.esc(LZ)}的球員資料只有 Understat,它不給這幾項,本站也沒有第二個身分來源。</div>` : '');
+      ...idShown.map(([label, k, fmt]) => line(label, p[k] == null ? '—' : fmt(p[k]) + (k === 'squadNumber' ? C.numberSourceMark(p) : ''))),
+    ].join('') + (idHidden.length ? `<div class="tiny dim" style="margin-top:8px">${idHidden.join('、')}:${C.esc(LZ)}沒有來源給這幾項(Understat 不給,FotMob 的逐場名單也沒有)。</div>` : '')
+      + (p.squadNumberSource === 'fotmob' ? `<div class="tiny dim" style="margin-top:4px">背號 * 來自 FotMob 這一季最近一場的正式名單(單一來源;只有 FotMob 逐場跟 Understat 的出場與分鐘對上的人才補)。</div>` : '');
     const performance = [
       line('出場', value(stat.games)), line('分鐘', value(stat.minutes)),
       line('進球 / 助攻', `${value(stat.goals)} / ${value(stat.assists)}`),
@@ -783,6 +787,9 @@ function renderAggregate({ meta, players, leaders }) {
     </div>`;
   };
 
+  /* 榜上的頭貼(2026-10-31):FotMob id → 圖,只有榜上的人抓了。沒有圖的留同寬的空位 ——
+     這張卡右邊本來就有隊徽,退回隊徽(playerPhoto 的退路)的話同一列會出現兩個一樣的隊徽 */
+  const photoOf = new Map(players.filter(p => p.photo && p.providerId != null).map(p => [String(p.providerId), p.photo]));
   const drawBoards = () => {
     const boards = leaders.boards[season] ?? [];
     document.getElementById('boards').innerHTML = boards.map(b => `<div class="card">
@@ -791,6 +798,8 @@ function renderAggregate({ meta, players, leaders }) {
       <div style="display:grid;gap:2px;margin-top:8px">
         ${b.rows.map((r, i) => `<div class="stat-line" style="gap:8px;align-items:center">
           <span class="tiny dim mono" style="min-width:18px">${i + 1}</span>
+          ${photoOf.has(String(r.pid)) ? C.playerPhoto({ name: r.name, team: r.teamId, photo: photoOf.get(String(r.pid)) }, 22)
+            : '<span style="width:22px;height:22px;flex:none"></span>'}
           <span class="small" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${C.esc(r.name)}${r.age != null ? ` <span class="tiny dim">${r.age} 歲</span>` : ''}</span>
           <span class="tiny dim">${C.badge(r.teamId)}</span>
           <b class="mono small">${fx(r.value, b.dp)}${C.esc(b.unit)}</b>
