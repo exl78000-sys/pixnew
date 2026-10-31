@@ -418,7 +418,7 @@ async function matchLogCard(code, league) {
       ] : []),
       ...(hasDist ? [{ key: 'distance', label: '跑動 km', value: r => (r.distance == null ? '—' : (r.distance / 1000).toFixed(1)), sortValue: r => r.distance ?? -1, num: true }] : []),
     ], { sortKey: 'date', desc: true })}</div>
-    <div class="tiny dim" style="margin-top:8px">↑ = 替補上場。xG 是該場逐射門 xG 合計(供應商標記)${hasDist ? ';跑動是追蹤資料,不是每場都有' : ''}。點欄位標題可換排序。</div>
+    <div class="tiny dim" style="margin-top:8px">↑ = 替補上場(看正式名單的背號與姓名;名單對不上的場次不標)。xG 是該場逐射門 xG 合計(供應商標記)${hasDist ? ';跑動是追蹤資料,不是每場都有' : ''}。點欄位標題可換排序。</div>
   </div>`;
 }
 

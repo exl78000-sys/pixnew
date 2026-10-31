@@ -188,6 +188,14 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
   const out = { [homeCode]: [], [awayCode]: [] };
   const seen = new Set();
   const bios = lineupBios(raw);
+  /* 先發 / 替補:名單的 starters / subs 帶著同一個球員 id(2026-10-31 之前這裡寫死 false;舊快取由讀取器用名單重算,
+     見 lib/lineup-role.mjs)。兩邊都不在的回 null,不是 false */
+  const roleById = new Map();
+  for (const side of ['homeTeam', 'awayTeam']) {
+    const lu = raw?.content?.lineup?.[side];
+    for (const p of lu?.starters ?? []) if (p?.id != null) roleById.set(String(p.id), false);
+    for (const p of lu?.subs ?? []) if (p?.id != null) roleById.set(String(p.id), true);
+  }
   for (const entry of Object.values(raw?.content?.playerStats ?? {})) {
     const code = Number(entry?.teamId) === Number(homeId) ? homeCode
       : Number(entry?.teamId) === Number(awayId) ? awayCode : null;
@@ -203,7 +211,7 @@ export function fotmobPlayers(raw, { homeId, awayId, homeCode, awayCode }) {
       minutes: v(s, 'minutes_played'),
       rating: v(s, 'rating_title'),
       captain: entry.isCaptain === true,
-      substitute: false,
+      substitute: entry.id == null ? null : roleById.get(String(entry.id)) ?? null,
       offsides: v(s, 'Offsides'),
       /* 逐人**沒有**「總射門」這個 key —— 只有射正/射偏/被封阻三個。
          三個都在才相加,缺一個就留空:湊不齊的和是錯的數,不是估計值。 */

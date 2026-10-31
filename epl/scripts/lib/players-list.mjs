@@ -43,6 +43,8 @@ export function playersListFrom(players, { source }) {
       ...pick(p, US_STAT),
       /* 搶斷 / 攔截 / 撲救(西甲 2026-10-31 起,FotMob 逐場加總、對過 Understat 才有;沒有就不放鍵) */
       ...(p.defense ? { defense: p.defense } : {}),
+      /* FotMob 球員 id(2026-10-31,attachFotmobIdentity 對上才有):球隊頁的進球表在西甲是 FotMob 逐場統計建的,用它對頭貼 */
+      ...(p.fotmobId ? { fotmobId: String(p.fotmobId) } : {}),
     }));
   }
   if (source !== 'fpl') throw new Error(`playersListFrom:不認得的來源 ${source}(fpl / Understat / match-aggregate)`);

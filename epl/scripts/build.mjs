@@ -53,7 +53,8 @@ import { attachScheduleStatus } from './lib/schedule-status.mjs';
 import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib/form.mjs';
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
-import { buildGoals } from './lib/goals.mjs';
+import { buildGoals, goalRowsFromMatchStats, verifiedCodeMap } from './lib/goals.mjs';
+import { matchOne as nameMatchOne } from './lib/names.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
@@ -266,12 +267,6 @@ async function main() {
   const history = HISTORY_SEASONS.flatMap(s => bySeason.get(s));
   const lastMatches = bySeason.get(LAST_SEASON);
   const curMatches = bySeason.get(CURRENT_SEASON);
-  fotmobStats = loadFotmobMatchStats(ROOT, { results: [...history, ...curMatches] });
-  if (fotmobStats.count) {
-    const ver = Object.entries(fotmobStats.verification).map(([sn, v]) => `${sn} ${v ? `${v.agree}/${v.checked} 抽核通過` : '未抽核'}`).join('、');
-    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率 ${ver}`);
-    for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
-  }
   const curCodes = [...new Set(curMatches.flatMap(m => [m.home, m.away]))].sort();
   const lastCodes = [...new Set(lastMatches.flatMap(m => [m.home, m.away]))].sort();
 
@@ -287,6 +282,16 @@ async function main() {
   if (liveFilled) {
     const rounds = [...new Set(liveFilledList.map(x => x.round))].sort((a, b) => a - b);
     console.log(`  FPL 官方 API 補賽果:${liveFilled} 場(第 ${rounds.join('、')} 輪;openfootball 還沒有)`);
+  }
+
+  /* FotMob 逐場統計要在**補完賽果之後**才載(2026-10-31 改):它拿本站賽果逐場核對比分,沒有賽果的場次整場不收。
+     原本排在 fillFromLive 之前,openfootball 還沒更新、只有 FPL 即時那一份有比分的場次(那天是 30 / 80 場)
+     從逐場統計、球隊統計、球員逐場紀錄與進球表一起消失 —— 不報錯,只是少。 */
+  fotmobStats = loadFotmobMatchStats(ROOT, { results: [...history, ...curMatches] });
+  if (fotmobStats.count) {
+    const ver = Object.entries(fotmobStats.verification).map(([sn, v]) => `${sn} ${v ? `${v.agree}/${v.checked} 抽核通過` : '未抽核'}`).join('、');
+    console.log(`  FotMob 逐場統計:${fotmobStats.count} 場(${fotmobStats.seasons.join('、')})・退回 ${fotmobStats.rejected.length} 場・控球率 ${ver}`);
+    for (const r of fotmobStats.rejected.slice(0, 5)) console.log(`    ⚠ ${r.key}:${r.reason}`);
   }
 
   /* **開球時間也要信最新的那一份**(2026-09-20 使用者回報「還沒到開賽時間卻顯示等賽果」)。
@@ -1586,28 +1591,49 @@ async function main() {
       if (!goalNames.has(r.code)) goalNames.set(r.code, r.web_name);
     }
   }
-  /* 本季逐球員進球明細(FotMob 人工交付)。規劃裡這一格原本卡在
-     「vaastav 的 2026-27 merged_gw 還沒發布(HTTP 404)」—— 現在有替代來源了。
-     只收**核對通過**的場次;min 與 start 上游沒有,所以那一季的每 90 分鐘
-     與先發/替補拆分不做。 */
-  const goalMatchKeys = {};
+  /* 本季逐球員進球明細。2026-10-31 起由 FotMob 逐場逐人統計建(goalRowsFromMatchStats,西甲同一支):每一場每一位上場的人一列,
+     上場分鐘與先發 / 替補是全部出場,每一場「球員進球 + 對手烏龍球 = 比分」才收。之前用的人工逐球明細只涵蓋 10 場
+     (而本季已踢 80 場),沒有分鐘也沒有先發替補。換來源前逐場比過那 10 場:45 / 45 人-場的進球助攻相同、進球 29 = 29、烏龍 1 = 1。
+     球員身分照 verifiedCodeMap 接回 FPL 代碼(頭貼與名字跟著走),對不上的保留 FotMob 身分(前綴 fm:)。
+     逐場統計沒有本季的時候才退回人工明細那一條。往季照舊走 FPL(那兩季的明細只收有進球或助攻的場次,所以沒有分鐘)。 */
+  const goalMatchKeys = {}, goalFull = {};
+  let goalSource = null;
   {
-    const fmGoalsAll = fotmobGoals(ROOT);
-    if (fmGoalsAll && !goalsBySeason[CURRENT_SEASON]) {
-      const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
-      const v = verifyGoals('pl', fmGoalsAll, ourPlayed);
-      const keys = new Set(v.matched.map(x => x.key));
-      const { rows, ownGoals } = goalRecords('pl', fmGoalsAll, { onlyKeys: keys });
-      if (rows.length) {
-        goalsBySeason[CURRENT_SEASON] = rows;
-        goalMatchKeys[CURRENT_SEASON] = [...keys];
-        for (const r of rows) if (!goalNames.has(r.code)) goalNames.set(r.code, r.name);
-        console.log(`  英超本季逐球明細(FotMob):${keys.size} 場・${rows.length} 筆・烏龍球 ${ownGoals}`);
+    const curFm = Object.values(fotmobStats?.matches ?? {}).filter(m => m.season === CURRENT_SEASON);
+    if (curFm.length && !goalsBySeason[CURRENT_SEASON]) {
+      const r = goalRowsFromMatchStats(curFm);
+      const idm = verifiedCodeMap(r.rows, players, { matchOne: nameMatchOne });
+      const rows = r.rows.map(x => {
+        if (x.code == null) return x;
+        const code = idm.map.get(`${x.team}|${x.code}`);
+        if (!code) goalNames.set(`fm:${x.code}`, x.name);
+        return { ...x, code: code ?? `fm:${x.code}` };
+      });
+      goalsBySeason[CURRENT_SEASON] = rows;
+      goalMatchKeys[CURRENT_SEASON] = r.matchKeys;
+      goalFull[CURRENT_SEASON] = true;
+      goalSource = { season: CURRENT_SEASON, source: 'FotMob 逐場逐人統計', matches: r.matchKeys.length, excluded: r.excluded,
+        identity: { verified: idm.map.size, total: idm.total, why: idm.why } };
+      console.log(`  英超本季進球表:FotMob 逐場 ${r.matchKeys.length} 場・對不回比分不收 ${r.excluded.length} 場・烏龍球 ${r.ownGoals}`
+        + `・身分接回 FPL ${idm.map.size}/${idm.total} 人(沒接上的 ${JSON.stringify(idm.why)})`);
+    } else {
+      const fmGoalsAll = fotmobGoals(ROOT);
+      if (fmGoalsAll && !goalsBySeason[CURRENT_SEASON]) {
+        const ourPlayed = curPlayed.map(m => ({ home: m.home, away: m.away, fh: m.fh, fa: m.fa }));
+        const v = verifyGoals('pl', fmGoalsAll, ourPlayed);
+        const keys = new Set(v.matched.map(x => x.key));
+        const { rows, ownGoals } = goalRecords('pl', fmGoalsAll, { onlyKeys: keys });
+        if (rows.length) {
+          goalsBySeason[CURRENT_SEASON] = rows;
+          goalMatchKeys[CURRENT_SEASON] = [...keys];
+          for (const r of rows) if (!goalNames.has(r.code)) goalNames.set(r.code, r.name);
+          console.log(`  英超本季逐球明細(FotMob 人工交付,逐場統計沒有本季時的退路):${keys.size} 場・${rows.length} 筆・烏龍球 ${ownGoals}`);
+        }
       }
     }
   }
   const goalsOut = buildGoals(goalsBySeason, {
-    matchKeys: goalMatchKeys,
+    matchKeys: goalMatchKeys, fullAppearances: goalFull,
     nameOf: c => goalNames.get(c) ?? `#${c}`,
     /* team 與 opp 都要收。只收 team 的話,一支「還沒進過球」的球隊
        整個從資料集消失 —— Coventry 首輪 0-3 輸球,goals.json 裡查無此隊,
@@ -1625,7 +1651,10 @@ async function main() {
   }
   await write('goals.json', {
     seasons: Object.keys(goalsOut),
-    note: '逐場進球與助攻;FPL 事件不含單球進球方式。球隊層級的運動戰/角球/定位球季統計另由 Understat 提供。',
+    note: '逐場進球與助攻;往季來自 FPL(只收有進球或助攻的場次,所以沒有上場分鐘)'
+      + (goalSource ? `,本季來自 FotMob 逐場逐人統計(${goalSource.matches} 場,全部出場的分鐘與先發 / 替補)` : '')
+      + '。不含單球進球方式;球隊層級的運動戰/角球/定位球季統計另由 Understat 提供。',
+    ...(goalSource ? { current: goalSource } : {}),
     data: goalsOut,
   });
 

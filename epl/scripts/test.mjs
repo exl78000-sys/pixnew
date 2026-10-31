@@ -44,8 +44,10 @@ import { teamAvailability, cardWatch } from './lib/availability.mjs';
 import { finalCacheIssues, fixtureScoreOf, goalsOf, minuteOf, shouldRefreshFinal } from './fetch-official.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
-import { teamGoals, goalRowsFromMatchStats } from './lib/goals.mjs';
+import { teamGoals, goalRowsFromMatchStats, verifiedCodeMap } from './lib/goals.mjs';
+import { matchOne as namesMatchOne } from './lib/names.mjs';
 import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
+import { buildPlayerLogs } from './lib/matchstats.mjs';
 // 走查回測的實作抽到 lib,英超與西甲跑同一份 —— 複製一份會讓兩個聯賽的數字慢慢不能比
 import { walkForward, rps, outcome, logLoss, pairedDiff } from './lib/backtest.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
@@ -1002,6 +1004,34 @@ function checkBacktestShared() {
       ['回測賽前預測:第 3 週以後的預測跟著變(負向對照 —— 不然上一條沒在比東西)', keys.slice(4).some(k => !same(k))],
       ['回測賽前預測:機率加總為 1', [...a.byKey.values()].every(p => Math.abs(p.home + p.draw + p.away - 1) < 1e-3)]);
   }
+  /* 逐場紀錄的「↑ 替補上場」(2026-10-31):轉換器原本寫死 false,三個月一筆都沒有 —— 整份是 0 跟「沒有人替補上場」長得一模一樣。
+     守兩件事:有替補的列、而且佔比像足球(一隊一場最多 5 人換上,實測約四分之一);替補上場的人不會踢滿全場 */
+  {
+    const files = [join(ROOT, 'web', 'data', 'player-logs.json'),
+      ...readdirSync(join(ROOT, 'web', 'data', 'leagues')).map(d => join(ROOT, 'web', 'data', 'leagues', d, 'player-logs.json'))].filter(existsSync);
+    for (const f of files) {
+      const rows = Object.values(JSON.parse(readFileSync(f, 'utf8')).logs ?? {}).flat();
+      if (!rows.length) continue;
+      const sub = rows.filter(r => r.sub === true), share = sub.length / rows.length;
+      const full = sub.filter(r => r.min >= 95);
+      const label = f.replace(join(ROOT, 'web', 'data') + '/', '');
+      cases.push([`${label}:替補上場佔 ${(share * 100).toFixed(1)}%(10~45%)、沒有替補踢滿全場`, share >= 0.10 && share <= 0.45 && full.length === 0,
+        `${sub.length}/${rows.length}・踢滿 ${full.length}`]);
+    }
+  }
+  /* 進球表的頭貼(2026-10-31):這張表原本從來不傳頭貼,每一列都是隊徽。西甲的進球表代碼是 FotMob id,
+     要 players-list 帶著 fotmobId 才對得到;少了它不報錯,只是整張表退回隊徽 */
+  {
+    const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+    cases.push(['球隊頁進球表傳頭貼(依這一季來源選 FotMob id 或本站代碼)', /photo: photoOfGoal\(p\.code\)/.test(src) && /p\.fotmobId : p\.code/.test(src)]);
+    for (const d of readdirSync(join(ROOT, 'web', 'data', 'leagues'))) {
+      const pp = join(ROOT, 'web', 'data', 'leagues', d, 'players.json'), lp = join(ROOT, 'web', 'data', 'leagues', d, 'players-list.json');
+      if (!existsSync(pp) || !existsSync(lp)) continue;
+      const P = JSON.parse(readFileSync(pp, 'utf8')), L = JSON.parse(readFileSync(lp, 'utf8'));
+      const a = (Array.isArray(P) ? P : P.players ?? []).filter(p => p.fotmobId).length, b = (Array.isArray(L) ? L : []).filter(p => p.fotmobId).length;
+      if (a) cases.push([`${d} players-list 帶著 fotmobId(${b} / players.json ${a})`, a === b]);
+    }
+  }
   /* 產物:每個聯賽的 fixtures.json 掛著的 prematch 只能在已完賽、而且沒有快照預測的場次上(有快照就用快照,
      那是當時真的顯示過的那一份) */
   {
@@ -1169,6 +1199,40 @@ function checkGoalDetails(T) {
       full.length === 1 && full[0].min === 180 && full[0].games === 2, JSON.stringify(full)],
     ['只有進球那幾場的紀錄:分鐘與場次是 null,不是「進球那幾場」的值',
       part.length === 1 && part[0].min === null && part[0].games === null, JSON.stringify(part)]);
+  }
+  /* 英超本季進球表的身分(2026-10-31):FotMob id 接回 FPL 代碼,只在進球、先發、分鐘都對得上 FPL 本季累計時接。
+     名字對上而數字對不上的不接(轉隊的人 FPL 累計含前東家);兩個 FotMob id 對到同一個代碼也不接 */
+  {
+    const roster = [
+      { code: 'P1', name: 'Smith', fullName: 'John Smith', team: 'AAA', current: { goals: 1, starts: 1, minutes: 90 } },
+      { code: 'P2', name: 'Jones', fullName: 'Tom Jones', team: 'AAA', current: { goals: 2, starts: 1, minutes: 90 } },
+      { code: 'P3', name: 'Brown', fullName: 'Ann Brown', team: 'AAA', current: { goals: 0, starts: 0, minutes: 30 } },
+    ];
+    const row = (code, name, g, min, start) => ({ team: 'AAA', opp: 'BBB', code, name, g, a: 0, og: 0, min, start });
+    const r = verifiedCodeMap([row('11', 'John Smith', 1, 88, true), row('22', 'Tom Jones', 1, 90, true), row('33', 'Ann Brown', 0, 10, false)],
+      roster, { matchOne: namesMatchOne });
+    cases.push(['身分接回:進球、先發、分鐘(±10)都對才接', r.map.get('AAA|11') === 'P1', JSON.stringify([...r.map])],
+      ['身分接回:名字對上而進球對不上 → 不接', !r.map.has('AAA|22') && r.why.goals === 1, JSON.stringify(r.why)],
+      ['身分接回:分鐘差超過 10 → 不接', !r.map.has('AAA|33') && r.why.minutes === 1, JSON.stringify(r.why)]);
+    const twin = verifiedCodeMap([row('11', 'John Smith', 1, 45, true), row('44', 'John Smith', 1, 45, true)],
+      [{ ...roster[0], current: { goals: 1, starts: 1, minutes: 90 } }], { matchOne: namesMatchOne, tol: 100 });
+    cases.push(['身分接回:兩個 FotMob id 對到同一個代碼 → 兩個都不接', twin.map.size === 0, JSON.stringify([...twin.map])]);
+  }
+  /* 逐場紀錄的姓名配對(2026-10-31):全名比不到時退回「姓 = 簡稱而且唯一」,但那會把 Juan Riquelme Angulo 對到 Nilson Angulo
+     (同一場兩人都上場 → 一場兩列)。名字的首字母要對得上全名的某一個字,或互相包含(日本球員姓在前、Tino ↔ Valentino 都要放行)。 */
+  {
+    const roster = [{ code: '1', name: 'Angulo', fullName: 'Nilson Angulo', team: 'SUN' }, { code: '2', name: 'Endo', fullName: 'Endo Wataru', team: 'LIV' },
+      { code: '3', name: 'Livramento', fullName: 'Tino Livramento', team: 'NEW' }];
+    const pl = (name, minutes) => ({ name, minutes, goals: { total: 0, assists: 0 } });
+    const stats = { matches: { 'S|SUN|LIV': { season: 'S', date: '2026-10-01', key: 'S|SUN|LIV', home: 'SUN', away: 'LIV', score: [1, 0], shots: [],
+      players: { SUN: [pl('Juan Riquelme Angulo', 9), pl('Nilson Angulo', 73)], LIV: [pl('Wataru Endo', 10)] } },
+      'S|NEW|SUN': { season: 'S', date: '2026-10-08', key: 'S|NEW|SUN', home: 'NEW', away: 'SUN', score: [0, 0], shots: [],
+      players: { NEW: [pl('Valentino Livramento', 90)], SUN: [] } } } };
+    const b = buildPlayerLogs(roster, stats);
+    const n = c => (b.logs[c] ?? []).length;
+    cases.push(['逐場紀錄:姓相同而名字對不上的人不認(Juan Riquelme Angulo ≠ Nilson Angulo),一人一場一列',
+      n('1') === 1 && b.logs['1'][0].min === 73, JSON.stringify(b.logs['1'])],
+    ['逐場紀錄:姓在前的全名與暱稱照樣配得上(Endo Wataru、Tino ↔ Valentino)', n('2') === 1 && n('3') === 1, `${n('2')} / ${n('3')}`]);
   }
   /* FotMob 逐場逐人 → 進球明細(西甲 2026-10-31)。捏一場 HHH 2:1 AAA:HHH 一人進一球、AAA 一人烏龍(事件的 team 是
      踢進自家門的那一隊 —— 跟 aggregatePlayers 同一個語意,不是得分方)、AAA 一人進一球。

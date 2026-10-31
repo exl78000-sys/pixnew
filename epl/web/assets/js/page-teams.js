@@ -177,17 +177,29 @@ try {
           ${S.startKnown === false ? '這一季也沒有先發或替補,那一欄不列。' : ''}`
         : `每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
           替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
+        ${goals.current?.season === season ? `<br>這一季來自 FotMob 逐場逐人統計(${goals.current.matches} 場,每一場球員進球加對手烏龍球對得回比分才收)。
+          球員身分接回本站名冊 ${goals.current.identity.verified} / ${goals.current.identity.total} 人 —— 進球、先發與上場分鐘都要跟 FPL 的本季累計對得上才接,
+          沒接上的人(多半是季中轉隊或名字寫法不同)照 FotMob 的名字列出、沒有頭貼。` : ''}
         <br><b>這張表不把進球方式掛到個別球員。</b>逐球事件沒有這個 qualifier;
         球隊層級的運動戰、角球與任意球加總來自 Understat,列在戰術區。
       </div>
     </div>`;
 
+    /* 進球表的頭貼(2026-10-31 之前這張表從來沒有傳頭貼,每一列都是隊徽):球員代碼是哪一種 id 看這一季的來源 ——
+       FotMob 逐場統計建的(西甲兩季)是 FotMob 球員 id,對 players-list 的 fotmobId;其餘(英超)是本站代碼。
+       英超本季沒接回本站身分的人代碼是「fm:…」,兩邊都查不到 → 隊徽,表下有講。 */
+    const fotmobKeyed = String(goals.source ?? '').startsWith('FotMob');
+    const photoOfGoal = code => {
+      if (code == null) return null;
+      const hit = (players ?? []).find(p => p.photo && String(fotmobKeyed ? p.fotmobId : p.code) === String(code));
+      return hit?.photo ?? null;
+    };
     /* 一球未進的球隊(例如剛升上來、首輪就輸的)進球榜是空的。
        只印表頭會看起來像載入失敗,直接說「還沒有進球」比較清楚。 */
     document.getElementById(id + 'tbl').innerHTML = g.players.length
       ? C.table(g.players, [
       { key: 'name', label: '球員', value: p => p.name,
-        render: p => `<span class="team-cell">${C.playerPhoto({ code: p.code, name: p.name, team: t.code }, 24)}
+        render: p => `<span class="team-cell">${C.playerPhoto({ code: p.code, name: p.name, team: t.code, photo: photoOfGoal(p.code) }, 24)}
           <span>${C.esc(p.name)}</span></span>` },
       { key: 'g', label: '進球', value: p => p.g, num: true, render: p => (p.g ? `<b>${p.g}</b>` : '—') },
       { key: 'a', label: '助攻', value: p => p.a, num: true, render: p => (p.a ? p.a : '—') },

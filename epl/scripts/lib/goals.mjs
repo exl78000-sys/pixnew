@@ -4,7 +4,7 @@
 // 這個逐球資料不能把某一球分成運動戰/角球/任意球,所以不留個人級欄位。
 // 球隊整季的進球情境另由 Understat 快取進入 tactics.json,不在這裡重複聚合。
 import { round } from './util.mjs';
-import { normName } from './names.mjs';
+import { lineupRole } from './lineup-role.mjs';
 
 /* 一支球隊在一個賽季的進球剖面。
    records 已經過 adapter 修正與比分核對,這裡只做彙總,不再驗證。 */
@@ -157,19 +157,9 @@ export function goalRowsFromMatchStats(matches) {
     if (got[0] !== score[0] || got[1] !== score[1]) { excluded.push({ key, reason: `球員進球 ${got.join(':')} 對不回比分 ${score.join(':')}` }); continue; }
     matchKeys.push(key);
     for (const [t, opp] of [[h, a], [a, h]]) {
-      /* 先發 / 替補看**正式名單**(lineups.xi),不看逐人統計的 substitute —— 那個欄位轉換器寫死 false。
-         名單只有姓名與背號,所以用「同一場、同一隊、背號相同」對,姓名當守門:背號對到而姓名對不起來的不判(null),
-         配錯人比配不到糟(西甲頭貼那條的同一個規矩)。 */
+      /* 先發 / 替補看正式名單(lib/lineup-role.mjs,逐場紀錄的「↑ 替補上場」走同一支) */
       const lu = m.lineups?.[t];
-      const shirtOf = list => new Map((list ?? []).filter(x => x.shirt != null).map(x => [Number(x.shirt), x.name]));
-      const xi = shirtOf(lu?.xi), bench = shirtOf(lu?.bench);
-      const same = (x, y) => normName(x) === normName(y);
-      const startOf = p => {
-        if (p.shirt == null || !lu) return null;
-        if (xi.has(Number(p.shirt))) return same(xi.get(Number(p.shirt)), p.name) ? true : null;
-        if (bench.has(Number(p.shirt))) return same(bench.get(Number(p.shirt)), p.name) ? false : null;
-        return null;
-      };
+      const startOf = p => lineupRole(lu, p);
       for (const p of players[t] ?? []) {
         if (!(p.minutes > 0)) continue;
         rows.push({ team: t, opp, code: p.providerId != null ? String(p.providerId) : null, name: p.name,
@@ -181,4 +171,38 @@ export function goalRowsFromMatchStats(matches) {
     }
   }
   return { rows, matchKeys, excluded, ownGoals };
+}
+
+/* FotMob 球員 id → 本站(FPL)的球員代碼(2026-10-31,英超本季進球表改用 FotMob 逐場統計時)。
+ *
+ * 只用來決定**頭貼與名字跟哪個人走**,所以寧可對不上也不能對錯:先用姓名在同一隊的名冊裡找(全名、再試簡稱),
+ * 再拿 FPL 自己的本季累計當獨立核對 —— 進球相等、先發相等、上場分鐘差不超過 `tol`。三個都對才採用,
+ * 一個 FotMob id 對到兩個代碼、或兩個 id 對到同一個代碼的都不採用。對不上的人回 null,呼叫端保留 FotMob 的身分
+ * (加前綴,FotMob id 與 FPL 代碼都是六、七位數,不加會撞)。
+ * 季中轉隊的人 FPL 累計含前東家的,核對一定不過 —— 那是對的結果(拿不準是誰就不認)。
+ * tol 10 分鐘是量過的:2026-10-31 本機 456 人 × 隊,差 ≤ 5 分鐘 340 人、≤ 10 分鐘 349 人、≤ 20 分鐘 351 人。 */
+export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c => c.name } = {}) {
+  const agg = new Map();
+  for (const r of rows) {
+    if (r.code == null) continue;
+    const k = `${r.team}|${r.code}`;
+    const a = agg.get(k) ?? { team: r.team, fid: r.code, name: r.name, g: 0, min: 0, starts: 0 };
+    a.g += r.g; a.min += r.min ?? 0; if (r.start === true) a.starts++;
+    agg.set(k, a);
+  }
+  const cand = new Map(), why = {};
+  for (const [k, a] of agg) {
+    const pool = roster.filter(p => p.team === a.team);
+    const p = matchOne(pool, a.name) ?? matchOne(pool, a.name, { nameOf });
+    const c = p?.current ?? null;
+    const fail = !p ? 'nomatch' : !c ? 'nototal' : (c.goals ?? 0) !== a.g ? 'goals' : (c.starts ?? 0) !== a.starts ? 'starts'
+      : Math.abs((c.minutes ?? 0) - a.min) > tol ? 'minutes' : null;
+    if (fail) { why[fail] = (why[fail] ?? 0) + 1; continue; }
+    cand.set(k, String(p.code));
+  }
+  const byCode = new Map();
+  for (const [k, code] of cand) byCode.set(code, [...(byCode.get(code) ?? []), k]);
+  const out = new Map();
+  for (const [code, ks] of byCode) if (ks.length === 1) out.set(ks[0], code); else why.shared = (why.shared ?? 0) + ks.length;
+  return { map: out, total: agg.size, why };
 }

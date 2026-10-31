@@ -14,7 +14,8 @@
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { matchOne } from './names.mjs';
+import { matchOne, normName } from './names.mjs';
+import { markSubstitutes } from './lineup-role.mjs';
 
 const r2 = n => Math.round(n * 100) / 100;
 const r3 = n => Math.round(n * 1000) / 1000;
@@ -121,7 +122,8 @@ export function loadFotmobMatchStats(root, { results = [], rawDir = 'fotmob-epl'
         /* 跑動 / 衝刺(2026-09-03 重探後加):供應商的追蹤資料,不是每場都有(2025-26 有 282/380,缺的集中在 11 座主場);沒有就是 null,不是 0 */
         physical: m.physical ?? null,
         heat: m.heat ?? null, zones: m.zones ?? null,
-        players: pstore.matches?.[pairOf(m)]?.players ?? null,
+        /* substitute 由正式名單重算(轉換器寫死 false,而那個 false 已經存進 raw;規則見 lib/lineup-role.mjs) */
+        players: markSubstitutes(pstore.matches?.[pairOf(m)]?.players ?? null, m.lineups),
         /* **空的射門圖不算「完整」。** 0-0 收場的場次,沒有任何射門時 `shotGoals === 0 === 比分合計`
            也成立 —— 於是索引會說「射門圖完整」,畫面就不印「這一場沒有 xG」那句,
            而實際上一顆射門都沒有。實測:足總盃 2025-26 第二輪 5040321(0-0、PK 4-5)就是這樣,
@@ -259,6 +261,29 @@ export function toCanonicalDetail(m, { verified = false } = {}) {
    先走 lib/names.mjs 的 matchOne(姓氏 + 名字首字母,配不出唯一就 null),再一道「姓氏 = 簡稱且隊裡唯一」的退路
    (「David Raya」↔「Raya」)。配不到就不掛 —— 配錯人比不掛糟。回傳配對統計給 build 印出來。
    模擬遊玩的側寫(scripts/game/lib/profile.mjs)也走這一個函式,不要再抄一份。 */
+/* 簡稱退路:FPL 的簡稱(web_name)常常只有姓(「Raya」),全名比不到時拿 FotMob 名字的最後一個字比簡稱。
+   **只看「姓相同而且唯一」會對錯人**(2026-10-31 量到:Sunderland 的「Juan Riquelme Angulo」被對到「Nilson Angulo」,
+   同一場裡 Nilson 本人也在,於是他在那一場有兩列)—— 這正是 CLAUDE.md 租借核對器那條坑。所以名字有兩個字以上時,
+   名字的首字母還要對得上名冊全名(規則在 okGiven)。attachPlayerTracking 與 buildPlayerLogs 共用這一支。 */
+function webNameFinder(squad) {
+  return name => {
+    const parts = normName(name).split(/\s+/).filter(Boolean);
+    const last = parts.at(-1), first = parts[0]?.[0];
+    if (!last) return null;
+    const given = parts[0];
+    const okGiven = p => {
+      if (parts.length < 2) return true;
+      const toks = normName(p.fullName ?? '').split(/\s+/).filter(Boolean);
+      /* 首字母比「全名任何一個字」:日本球員名冊是姓在前(Endo Wataru ↔ Wataru Endo);
+         或其中一個名字包含另一個(暱稱:Tino ↔ Valentino Livramento)。2026-10-31 量過:這兩條放回
+         Endo、Mitoma、Tanaka、Livramento 四人共 87 人-場,擋下的只剩 Juan Riquelme Angulo ↔ Nilson Angulo。 */
+      return toks.some(t => t[0] === first) || toks.some(t => t.length >= 3 && (given.startsWith(t) || given.endsWith(t)));
+    };
+    const hits = squad.filter(p => normName(p.name) === last && okGiven(p));
+    return hits.length === 1 ? hits[0] : null;
+  };
+}
+
 export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = {}) {
   let matched = 0, total = 0;
   const byTeam = new Map();
@@ -266,11 +291,7 @@ export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = 
   for (const [code, t] of Object.entries(stats?.teams ?? {})) {
     const squad = byTeam.get(code) ?? [];
     const cands = squad.filter(p => p.fullName);
-    const byWeb = name => {
-      const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
-      const hits = squad.filter(p => String(p.name ?? '').toLowerCase() === last);
-      return hits.length === 1 ? hits[0] : null;
-    };
+    const byWeb = webNameFinder(squad);
     const find = name => matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name);
     for (const r of t.physical?.players ?? []) {
       total++;
@@ -305,11 +326,7 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
     const squad = byTeam.get(code) ?? [];
     const cands = squad.filter(p => p.fullName);
     const cache = new Map();
-    const byWeb = name => {
-      const last = String(name).trim().split(/\s+/).at(-1)?.toLowerCase();
-      const hits = squad.filter(p => String(p.name ?? '').toLowerCase() === last);
-      return hits.length === 1 ? hits[0] : null;
-    };
+    const byWeb = webNameFinder(squad);
     return name => {
       if (!cache.has(name)) cache.set(name, matchOne(cands, name, { nameOf: c => c.fullName }) ?? byWeb(name));
       return cache.get(name);
@@ -321,7 +338,8 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
   /* 身分(2026-10-31):每個人每季在 FotMob 那邊接到的球員 id 與背號(最近一場的)。
      不放進逐場列(那會讓 player-logs 變大而前端用不到),另外回傳給 attachFotmobIdentity */
   const ident = {};
-  let rows = 0, unmatched = 0;
+  let rows = 0, unmatched = 0, conflicts = 0;
+  const claimed = new Set();
   for (const m of Object.values(stats?.matches ?? {}).sort((a, b) => a.date.localeCompare(b.date))) {
     if (!m.players) continue;
     const xgBy = new Map();
@@ -334,6 +352,10 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
         if (!(p.minutes > 0)) continue;
         const who = find(code, p.name);
         if (!who) { unmatched++; continue; }
+        /* 同一場同一個人只能有一列:兩個 FotMob 名字對到同一個人時,第二個不收(記成配不到),不要讓他一場踢兩次 */
+        const seenKey = `${who.code}|${m.key}`;
+        if (claimed.has(seenKey)) { unmatched++; conflicts++; continue; }
+        claimed.add(seenKey);
         const id = ((ident[who.code] ??= {})[m.season] ??= { fids: new Set(), shirt: null, shirtDate: null });
         if (p.providerId != null) id.fids.add(String(p.providerId));
         if (p.shirt != null && (!id.shirtDate || m.date >= id.shirtDate)) { id.shirt = p.shirt; id.shirtDate = m.date; }
@@ -346,7 +368,8 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
           min: p.minutes, rating: p.rating ?? null, goals: p.goals?.total ?? null, assists: p.goals?.assists ?? null,
           shots: p.shots?.total ?? null, shotsOn: p.shots?.on ?? null, keyPasses: p.passes?.key ?? null,
           xg: xg == null ? null : r2(xg), distance: ph?.distance ?? null, topSpeed: ph?.topSpeed == null ? null : r2(ph.topSpeed),
-          sub: p.substitute === true,
+          /* 判不出來(名單對不上)留 null —— 寫成 false 會被讀成「先發」 */
+          sub: p.substitute === true ? true : p.substitute === false ? false : null,
           /* 防守三項(2026-10-31,西甲的球員頁用;attachDefense 加總)。逐場 playerStats 給的就是這一場的次數 */
           tackles: p.tackles?.total ?? null, interceptions: p.tackles?.interceptions ?? null, saves: p.goals?.saves ?? null,
         });
@@ -354,7 +377,7 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
       }
     }
   }
-  return { logs, ident, rows, unmatched, players: Object.keys(logs).length };
+  return { logs, ident, rows, unmatched, conflicts, players: Object.keys(logs).length };
 }
 
 /* FotMob 那邊的「同一個人」的逐場列,跟 Understat 的整季出場與分鐘對不對得起來(兩家各自記的)。

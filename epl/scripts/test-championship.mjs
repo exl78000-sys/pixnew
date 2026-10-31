@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { photoQueue } from './fetch-league-photos.mjs';
+import { markSubstitutes } from './lib/lineup-role.mjs';
 import { backfillScores } from './lib/league-matches.mjs';
 import { loadTeams } from './lib/teams.mjs';
 import { simulateSeason } from './lib/simulate.mjs';
@@ -740,6 +741,29 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('年齡國籍:用 FotMob id 接名單', a.age === 24 && a.country?.code === 'ENG' && a.country?.name === 'England');
   check('年齡國籍:不合理的年齡不收、空字串不當國籍', !('age' in z) && !('country' in z) && bios.get('2') === undefined);
   check('年齡國籍:名單上沒有這個 id 就不給(不用同名的人頂)', !('age' in b3) && !('country' in b3));
+  /* 先發 / 替補(2026-10-31):轉換器原本寫死 substitute: false,逐場紀錄的「↑ 替補上場」從來沒出現過。
+     現在看名單的 starters / subs(同一個 id);名單上沒有的回 null,不是 false(false 會被讀成「先發」) */
+  {
+    const r2 = { content: { lineup: { homeTeam: { starters: [{ id: 1, name: 'A' }], subs: [{ id: 2, name: 'B' }] }, awayTeam: { starters: [], subs: [] } },
+      playerStats: { 1: { id: 1, name: 'A', teamId: 10, stats: [] }, 2: { id: 2, name: 'B', teamId: 10, stats: [] }, 3: { id: 3, name: 'C', teamId: 20, stats: [] } } } };
+    const q = fotmobPlayers(r2, { homeId: 10, awayId: 20, homeCode: 'AAA', awayCode: 'BBB' });
+    const by = id => [...q.AAA, ...q.BBB].find(p => p.providerId === id)?.substitute;
+    check('先發 / 替補:轉換器看名單的 starters / subs,名單上沒有的是 null', by(1) === false && by(2) === true && by(3) === null,
+      JSON.stringify([by(1), by(2), by(3)]));
+  }
+  /* 舊快取裡已經存了寫死的 false,讀取器用名單重算(lib/lineup-role.mjs):名單只有姓名與背號,背號對上、姓名當守門 */
+  {
+    const lineups = { AAA: { xi: [{ name: 'Ann One', shirt: 9 }], bench: [{ name: 'Bob Two', shirt: 7 }, { name: 'Someone Else', shirt: 5 }] } };
+    const players = { AAA: [{ name: 'Ann One', shirt: 9, minutes: 90, substitute: false }, { name: 'Bob Two', shirt: 7, minutes: 20, substitute: false },
+      { name: 'Dan Four', shirt: 5, minutes: 10, substitute: false }, { name: 'Eve', shirt: null, minutes: 5, substitute: false }] };
+    const m = markSubstitutes(players, lineups).AAA.map(p => p.substitute);
+    check('先發 / 替補:舊快取由名單重算 —— 先發 false、替補 true、背號對到別人或沒背號 null', JSON.stringify(m) === JSON.stringify([false, true, null, null]), JSON.stringify(m));
+    check('先發 / 替補:重算不改原物件(raw 快取是共用的)', players.AAA[1].substitute === false);
+    check('先發 / 替補:進球表與逐場紀錄走同一支(goals.mjs 不再自己寫一份)',
+      /lineupRole\(/.test(readFileSync(join(ROOT, 'scripts', 'lib', 'goals.mjs'), 'utf8'))
+      && /markSubstitutes\(/.test(readFileSync(join(ROOT, 'scripts', 'lib', 'matchstats.mjs'), 'utf8'))
+      && !/normName/.test(readFileSync(join(ROOT, 'scripts', 'lib', 'goals.mjs'), 'utf8')));
+  }
   const row = (key, age, code) => ({ key, home: 'AAA', away: 'BBB', score: [0, 0], events: [], shots: [],
     players: { AAA: [{ providerId: 1, name: 'A', minutes: 90, goals: { total: 0 }, ...(age != null ? { age } : {}),
       ...(code ? { country: { code, name: code } } : {}) }], BBB: [] } });
