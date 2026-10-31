@@ -776,7 +776,7 @@ async function main() {
      來源檔由外部協作產生;adapter 會在載入時修正 team 欄(季末快照對轉隊的人是錯的)
      並用日期把每一筆對回賽程。這裡再核一次比分 —— 對不上就不出這份資料,
      寧可少一個區塊,也不要在頁面上放一組跟賽果矛盾的數字。 */
-  const goalsBySeason = {};
+  const goalsBySeason = {}, goalFull = {};
   for (const gs of GOAL_SEASONS) {
     const seasonMs = bySeason.get(gs) ?? (HISTORY_SEASONS.includes(gs) || gs === CURRENT_SEASON ? null : load(gs));
     if (!seasonMs) continue;
@@ -788,9 +788,12 @@ async function main() {
       rec.mismatches.slice(0, 3).forEach(m => console.log(`     ${m.date} ${m.home} ${m.real} ${m.away} → 推得 ${m.got}`));
       continue;
     }
-    goalsBySeason[gs] = g.records;
+    /* 全部出場補齊之後,上場分鐘與每 90 分才是真的(fullAppearances);沒有那份檔就照舊不列 */
+    goalsBySeason[gs] = g.appearances ? [...g.records, ...g.appearances] : g.records;
+    if (g.appearances) goalFull[gs] = true;
     console.log(`  進球明細 ${gs}:${g.records.length} 筆・比分核對 ${rec.ok}/${rec.checked} ✔`
-      + (g.repaired ? `・修正球員隊伍 ${g.repaired} 筆` : ''));
+      + (g.repaired ? `・修正球員隊伍 ${g.repaired} 筆` : '')
+      + (g.appearances ? `・全部出場補 ${g.appearances.length} 列(對不到賽程 ${g.appOrphan})` : '・沒有全部出場(上場分鐘不列)'));
   }
 
   // ── 交手紀錄(本季所有對戰組合) ────────────
@@ -1596,13 +1599,16 @@ async function main() {
      (而本季已踢 80 場),沒有分鐘也沒有先發替補。換來源前逐場比過那 10 場:45 / 45 人-場的進球助攻相同、進球 29 = 29、烏龍 1 = 1。
      球員身分照 verifiedCodeMap 接回 FPL 代碼(頭貼與名字跟著走),對不上的保留 FotMob 身分(前綴 fm:)。
      逐場統計沒有本季的時候才退回人工明細那一條。往季照舊走 FPL(那兩季的明細只收有進球或助攻的場次,所以沒有分鐘)。 */
-  const goalMatchKeys = {}, goalFull = {};
+  const goalMatchKeys = {};
   let goalSource = null;
   {
     const curFm = Object.values(fotmobStats?.matches ?? {}).filter(m => m.season === CURRENT_SEASON);
     if (curFm.length && !goalsBySeason[CURRENT_SEASON]) {
       const r = goalRowsFromMatchStats(curFm);
-      const idm = verifiedCodeMap(r.rows, players, { matchOne: nameMatchOne });
+      /* 這一隊已踢完、FotMob 還沒有的場數(比賽日兩邊不同批,核對改成區間;規則在 verifiedCodeMap) */
+      const covered = new Set(r.matchKeys), pending = {};
+      for (const m of curPlayed) if (!covered.has(`${m.home}|${m.away}`)) for (const t of [m.home, m.away]) pending[t] = (pending[t] ?? 0) + 1;
+      const idm = verifiedCodeMap(r.rows, players, { matchOne: nameMatchOne, pending });
       const rows = r.rows.map(x => {
         if (x.code == null) return x;
         const code = idm.map.get(`${x.team}|${x.code}`);
@@ -1613,7 +1619,7 @@ async function main() {
       goalMatchKeys[CURRENT_SEASON] = r.matchKeys;
       goalFull[CURRENT_SEASON] = true;
       goalSource = { season: CURRENT_SEASON, source: 'FotMob 逐場逐人統計', matches: r.matchKeys.length, excluded: r.excluded,
-        identity: { verified: idm.map.size, total: idm.total, why: idm.why } };
+        identity: { verified: idm.map.size, total: idm.total, why: idm.why, pendingTeams: Object.keys(pending).length } };
       console.log(`  英超本季進球表:FotMob 逐場 ${r.matchKeys.length} 場・對不回比分不收 ${r.excluded.length} 場・烏龍球 ${r.ownGoals}`
         + `・身分接回 FPL ${idm.map.size}/${idm.total} 人(沒接上的 ${JSON.stringify(idm.why)})`);
     } else {
@@ -1651,7 +1657,7 @@ async function main() {
   }
   await write('goals.json', {
     seasons: Object.keys(goalsOut),
-    note: '逐場進球與助攻;往季來自 FPL(只收有進球或助攻的場次,所以沒有上場分鐘)'
+    note: '逐場進球與助攻;往季來自 FPL(merged_gw,進球明細 + 全部出場)'
       + (goalSource ? `,本季來自 FotMob 逐場逐人統計(${goalSource.matches} 場,全部出場的分鐘與先發 / 替補)` : '')
       + '。不含單球進球方式;球隊層級的運動戰/角球/定位球季統計另由 Understat 提供。',
     ...(goalSource ? { current: goalSource } : {}),

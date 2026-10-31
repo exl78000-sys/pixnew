@@ -46,6 +46,7 @@ import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals, goalRowsFromMatchStats, verifiedCodeMap } from './lib/goals.mjs';
 import { matchOne as namesMatchOne } from './lib/names.mjs';
+import { extractAppearances } from './fetch-fpl-appearances.mjs';
 import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
 import { buildPlayerLogs } from './lib/matchstats.mjs';
 // 走查回測的實作抽到 lib,英超與西甲跑同一份 —— 複製一份會讓兩個聯賽的數字慢慢不能比
@@ -1175,6 +1176,17 @@ function checkGoalDetails(T) {
         rec.mismatches.slice(0, 3).map(m => `${m.date} ${m.home} ${m.real} ${m.away}→${m.got}`).join(' / ')],
       [`${season} 每一筆都對得回賽程`, g.orphan === 0, `${g.orphan} 筆對不到`],
     );
+    /* 全部出場(2026-10-31):補的列不混進 records(records 是「有進球或助攻的列」),每一列都對得回賽程,
+       同一人同一天不會跟明細重複;每隊每場上場人數在 11~18(五次換人 + 最多兩次腦震盪換人;17 人實際出現過) */
+    if (g.appearances) {
+      const dup = g.appearances.filter(a => g.records.some(r => r.code === a.code && r.date === a.date)).length;
+      const per = new Map();
+      for (const r of [...g.records, ...g.appearances]) { const k = `${r.date}|${r.team}`; per.set(k, (per.get(k) ?? 0) + 1); }
+      const bad = [...per].filter(([, n]) => n < 11 || n > 18);
+      cases.push([`${season} 全部出場:${g.appearances.length} 列不混進明細、不重複、每一列對得回賽程`,
+        g.appearances.every(a => a.g === 0 && a.a === 0 && a.og === 0) && dup === 0 && g.appOrphan === 0, `重複 ${dup}・對不到 ${g.appOrphan}`],
+        [`${season} 全部出場:每隊每場上場 11~18 人(${per.size} 個隊-場)`, bad.length === 0, bad.slice(0, 3).map(([k, n]) => `${k} ${n}`).join('、')]);
+    }
     // 烏龍球必須算給對手,不是算給踢進去的那一隊
     const og = g.records.filter(r => r.og > 0);
     if (og.length) {
@@ -1217,6 +1229,31 @@ function checkGoalDetails(T) {
     const twin = verifiedCodeMap([row('11', 'John Smith', 1, 45, true), row('44', 'John Smith', 1, 45, true)],
       [{ ...roster[0], current: { goals: 1, starts: 1, minutes: 90 } }], { matchOne: namesMatchOne, tol: 100 });
     cases.push(['身分接回:兩個 FotMob id 對到同一個代碼 → 兩個都不接', twin.map.size === 0, JSON.stringify([...twin.map])]);
+  }
+  /* 比賽日 FPL 累計比 FotMob 多幾場(不同批):那一隊落後 k 場時核對是區間,k = 0 時仍然要相等 */
+  {
+    const roster = [{ code: 'P1', name: 'Smith', fullName: 'John Smith', team: 'AAA', current: { goals: 2, starts: 2, minutes: 180 } }];
+    const rows = [{ team: 'AAA', opp: 'BBB', code: '11', name: 'John Smith', g: 1, a: 0, og: 0, min: 90, start: true }];
+    const lagging = verifiedCodeMap(rows, roster, { matchOne: namesMatchOne, pending: { AAA: 1 } });
+    const same = verifiedCodeMap(rows, roster, { matchOne: namesMatchOne });
+    const tooFar = verifiedCodeMap(rows, [{ ...roster[0], current: { goals: 3, starts: 3, minutes: 270 } }], { matchOne: namesMatchOne, pending: { AAA: 1 } });
+    cases.push(['身分接回:這一隊 FotMob 落後一場 → FPL 多一場的量也算對上', lagging.map.get('AAA|11') === 'P1', JSON.stringify(lagging.why)],
+      ['身分接回:沒有落後時仍然要相等', !same.map.has('AAA|11')],
+      ['身分接回:多出來的超過落後的場數 → 不接', !tooFar.map.has('AAA|11'), JSON.stringify(tooFar.why)]);
+  }
+  /* 英超往季的全部出場(fetch-fpl-appearances.mjs):對手 id 由已核對的明細反推,一個 id 兩種說法就整季不寫;
+     明細的每一列都要在出場列裡、分鐘與先發相同 */
+  {
+    const players = [{ id: '1', code: '501' }, { id: '2', code: '502' }];
+    const csvRow = (element, opp, date, min, starts, home = 'True') => ({ element, opponent_team: opp, kickoff_time: `${date}T15:00:00Z`, minutes: String(min), starts: String(starts), was_home: home, round: '1' });
+    const rows = [csvRow('1', '7', '2025-08-16', 90, 1), csvRow('2', '7', '2025-08-16', 20, 0), csvRow('1', '8', '2025-08-23', 0, 0, 'False'), csvRow('2', '8', '2025-08-23', 90, 1, 'False')];
+    const recs = [{ code: '501', date: '2025-08-16', opp: 'BBB', min: 90, start: true }, { code: '502', date: '2025-08-23', opp: 'CCC', min: 90, start: true }];
+    const ok = extractAppearances(rows, { players, goalRecords: recs });
+    cases.push(['全部出場:沒上場的列不收、對手 id 從明細反推', !ok.error && ok.rows.length === 3 && ok.rows.every(r => ['BBB', 'CCC'].includes(r[2])), JSON.stringify(ok)]);
+    const clash = extractAppearances(rows, { players, goalRecords: [...recs, { code: '502', date: '2025-08-16', opp: 'CCC', min: 20, start: false }] });
+    cases.push(['全部出場:同一個對手 id 有兩種說法 → 整季不寫', !!clash.error, clash.error ?? '']);
+    const off = extractAppearances(rows, { players, goalRecords: [{ ...recs[0], min: 89 }, recs[1]] });
+    cases.push(['全部出場:明細的分鐘跟出場列不同 → 整季不寫', !!off.error && /分鐘/.test(off.error), off.error ?? '']);
   }
   /* 逐場紀錄的姓名配對(2026-10-31):全名比不到時退回「姓 = 簡稱而且唯一」,但那會把 Juan Riquelme Angulo 對到 Nilson Angulo
      (同一場兩人都上場 → 一場兩列)。名字的首字母要對得上全名的某一個字,或互相包含(日本球員姓在前、Tino ↔ Valentino 都要放行)。 */

@@ -55,7 +55,28 @@ export function loadGoals({ root, season, matches }) {
     });
   }
 
-  return { season, source: raw._source ?? null, records, repaired, orphan, reported: raw._counts ?? null };
+  /* 全部出場(2026-10-31,`fetch-fpl-appearances.mjs` 從同一個 merged_gw.csv 抽的,有上場的每一列):
+     進球明細沒有的那幾場補成 g = a = og = 0 的列,上場分鐘與先發 / 替補才是「這一季的全部」。
+     另外回傳,不混進 records —— records 的語意是「有進球或助攻的列」,比分核對與測試都照那個語意讀。
+     隊伍照同一套「對手 + 主客 + 日期」反推(季末快照那條坑)。沒有這份檔就是 null,上場分鐘照舊不列。 */
+  let appearances = null, appOrphan = 0;
+  const afile = join(root, 'data', 'raw', 'fpl', `${season}-appearances.json`);
+  if (existsSync(afile)) {
+    const A = JSON.parse(readFileSync(afile, 'utf8'));
+    const col = Object.fromEntries((A._cols ?? []).map((k, i) => [k, i]));
+    const have = new Set(records.map(r => `${r.code}|${r.date}`));
+    appearances = [];
+    for (const x of A.rows ?? []) {
+      const code = String(x[col.code]), date = x[col.date], opp = x[col.opp], home = x[col.home];
+      const m = byDate.get(`${date}|${opp}|${home ? 'H' : 'A'}`) ?? byRound.get(`${x[col.round]}|${opp}|${home ? 'H' : 'A'}`);
+      if (!m) { appOrphan++; continue; }
+      if (have.has(`${code}|${m.date}`)) continue;
+      appearances.push({ code, team: home ? m.home : m.away, opp, home, round: m.round, date: m.date,
+        min: x[col.min], start: x[col.start], g: 0, a: 0, og: 0, pm: 0 });
+    }
+  }
+
+  return { season, source: raw._source ?? null, records, appearances, appOrphan, repaired, orphan, reported: raw._counts ?? null };
 }
 
 /* 比分核對:每場「我方球員進球 + 對手烏龍球」要等於實際比分。

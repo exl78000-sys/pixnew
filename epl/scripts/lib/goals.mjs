@@ -181,7 +181,10 @@ export function goalRowsFromMatchStats(matches) {
  * (加前綴,FotMob id 與 FPL 代碼都是六、七位數,不加會撞)。
  * 季中轉隊的人 FPL 累計含前東家的,核對一定不過 —— 那是對的結果(拿不準是誰就不認)。
  * tol 10 分鐘是量過的:2026-10-31 本機 456 人 × 隊,差 ≤ 5 分鐘 340 人、≤ 10 分鐘 349 人、≤ 20 分鐘 351 人。 */
-export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c => c.name } = {}) {
+/* `pending`:隊碼 → 這一隊已踢完、但 FotMob 還沒有的場數(比賽日 FPL 累計常常快幾場)。兩邊不是同一批時不能要求相等 ——
+   那幾場最多讓 FPL 多出:先發 k 場、分鐘 k × (90 + tol)、進球不會變少。k = 0 時就是相等(2026-10-31:比賽日 85 場對 80 場,
+   要求相等的話接上的人從 349 掉到 228,掉的全是那幾場還沒進 FotMob 的隊)。 */
+export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c => c.name, pending = {} } = {}) {
   const agg = new Map();
   for (const r of rows) {
     if (r.code == null) continue;
@@ -195,8 +198,12 @@ export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c =
     const pool = roster.filter(p => p.team === a.team);
     const p = matchOne(pool, a.name) ?? matchOne(pool, a.name, { nameOf });
     const c = p?.current ?? null;
-    const fail = !p ? 'nomatch' : !c ? 'nototal' : (c.goals ?? 0) !== a.g ? 'goals' : (c.starts ?? 0) !== a.starts ? 'starts'
-      : Math.abs((c.minutes ?? 0) - a.min) > tol ? 'minutes' : null;
+    const lag = pending[a.team] ?? 0;
+    const inRange = (fpl, fm, perGame) => fpl - fm >= -tol && fpl - fm <= lag * perGame + tol;
+    const fail = !p ? 'nomatch' : !c ? 'nototal'
+      : (lag ? (c.goals ?? 0) < a.g : (c.goals ?? 0) !== a.g) ? 'goals'
+      : (lag ? !((c.starts ?? 0) >= a.starts && (c.starts ?? 0) <= a.starts + lag) : (c.starts ?? 0) !== a.starts) ? 'starts'
+      : !inRange(c.minutes ?? 0, a.min, 90) ? 'minutes' : null;
     if (fail) { why[fail] = (why[fail] ?? 0) + 1; continue; }
     cand.set(k, String(p.code));
   }
