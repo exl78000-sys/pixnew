@@ -173,8 +173,8 @@ try {
       <div id="${id}tbl"></div>
       <div class="tiny dim" style="margin-top:8px">
         ${S.minKnown === false ? `這一季的來源是<b>逐球事件</b>,只記錄「哪一分鐘、誰進的」,
-          <b>沒有上場分鐘、也沒有先發或替補</b>。那三欄一律留「—」,
-          每 90 分鐘的換算也做不了 —— 補一個 0 進去會被讀成「沒上場卻進了球」。`
+          <b>沒有上場分鐘、也沒有先發或替補</b>,所以先發／替補、上場分鐘與每 90 分鐘那幾欄不列 ——
+          補一個 0 進去會被讀成「沒上場卻進了球」。`
         : `每 90 分鐘的分母是<b>上場分鐘</b>,不是出賽場次。上場不足 450 分鐘的不給這個數字 ——
           替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
         <br><b>這張表不把進球方式掛到個別球員。</b>逐球事件沒有這個 qualifier;
@@ -194,12 +194,15 @@ try {
       /* startG / min 是 null 的時候要印「—」而不是 0。
          `0 / 1` 會被讀成「先發沒進、替補進一球」,上場分鐘 0 會被讀成
          「他沒上場卻進了球」—— 兩個都是這個來源根本沒給的東西。 */
+      /* 來源沒有上場分鐘時(S.minKnown false)這四欄整欄都是「—」—— 不列,說明在表下(鐵則三;2026-10-31 全站掃描量到) */
+      ...(S.minKnown === false ? [] : [
       { key: 'start', label: '先發 / 替補', value: p => p.startG ?? -1, sortable: false, num: true,
         title: '這名球員的進球中,先發上場與替補上場各幾球',
         render: p => (p.g && p.startG != null ? `<span class="mono">${p.startG} <span class="dim">/</span> ${p.subG}</span>` : '—') },
       { key: 'min', label: '上場分鐘', value: p => p.min ?? -1, num: true, render: p => p.min ?? '—' },
       { key: 'g90', label: '進球 / 90', value: p => p.g90 ?? -1, num: true, render: p => p.g90 ?? '—' },
       { key: 'a90', label: '助攻 / 90', value: p => p.a90 ?? -1, num: true, render: p => p.a90 ?? '—' },
+      ]),
       ], { sortKey: 'g', desc: true })
       : '<div class="note">這一季還沒有進球,所以進球榜是空的 —— 不是資料缺漏。</div>';
   }
@@ -348,7 +351,10 @@ try {
         || (x.alias ?? []).includes(name))?.code ?? p.sportmonksTeam) === t.code));
   }
 
+  /* 年齡欄看**整個聯賽**有沒有人有年齡(德義法 Understat 不給,全聯賽都沒有 ——
+     整欄「—」比不放更糟,鐵則三);西甲有 SportMonks,缺的人才印「—」 */
   function squadColumns() {
+    const anyAge = players.some(p => p.age != null);
     const nameCell = extra => ({
       key: 'name', label: '球員', value: p => p.name,
       render: p => `${C.esc(p.name)}${p.squadNumber ? ` <span class="dim tiny">#${p.squadNumber}${C.numberSourceMark(p)}</span>` : ''}${extra(p)}`,
@@ -357,7 +363,7 @@ try {
       return [
         nameCell(p => (p.multiTeam ? ' <span class="pill warn tiny" title="上季效力過兩隊,數字是兩隊合計">跨隊</span>' : '')),
         { key: 'pos', label: '位置', value: p => ['GK', 'D', 'M', 'F'].indexOf(p.pos), render: p => p.posZh },
-        { key: 'age', label: '年齡', value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' },
+        ...(anyAge ? [{ key: 'age', label: '年齡', value: p => p.age ?? 0, num: true, render: p => p.age ?? '—' }] : []),
         { key: 'games', label: '場次', value: p => p.games ?? 0, num: true },
         { key: 'minutes', label: '分鐘', value: p => p.minutes ?? 0, num: true },
         { key: 'goals', label: '進球', value: p => p.goals ?? 0, num: true },

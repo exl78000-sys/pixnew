@@ -78,7 +78,9 @@ export function mountFixtureList({
       { key: 'away', label: '客隊', value: f => C.name(f.away), render: f => `${star(f.away)}${C.teamCell(f.away)}` },
       { key: 'prob', label: isCurrent ? '主 / 和 / 客' : '賽前機率', value: f => f.prediction?.home ?? 0, sortable: false,
         render: f => (f.prediction ? C.probBar(f.prediction) : '<span class="dim small">—</span>') },
-      { key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
+      /* 模型命中只有「已完賽而且留著賽前預測」的列才有內容。英冠德義法的已完賽場次不留預測(西甲只有少數),
+         那幾個聯賽這一欄**整欄都是「—」**(2026-10-31 全站掃描量到)—— 這一批列裡一場都沒有就不出欄(鐵則三) */
+      ...(!rows.some(f => f.played && f.prediction) ? [] : [{ key: 'hit', label: '模型', value: f => hitScore(f), sortable: false, fold: 2, title: '賽前機率最高的結果是否命中',
         render: f => {
           if (!f.played || !f.prediction) return '—';
           const p = f.prediction, act = f.fh > f.fa ? 'home' : f.fh < f.fa ? 'draw2' : 'draw';
@@ -87,7 +89,7 @@ export function mountFixtureList({
           return pick === real
             ? `<span class="pill accent tiny">命中 ${C.pct(p[real], 0)}</span>`
             : `<span class="pill tiny">失準 ${C.pct(p[real], 0)}</span>`;
-        } },
+        } }]),
       { key: 'over', label: '大 2.5', value: f => f.prediction?.over25 ?? 0, num: true, fold: 3,
         render: f => (f.prediction ? C.pct(f.prediction.over25, 0) : '—') },
       ...(!hasDifficulty ? [] : [{ key: 'diff', label: '難度', value: f => (f.difficulty ? f.difficulty.home + f.difficulty.away : 0), num: true, fold: 4,
