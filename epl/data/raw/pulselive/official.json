@@ -60828,7 +60828,7 @@
   "TOT|CRY": {
    "fixtureId": 129012,
    "kickoff": "2026-10-31T17:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -60837,9 +60837,31 @@
    "homeId": 21,
    "awayId": 6,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      117596,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      71623,
+      119072
+     ],
+     [
+      51364,
+      76216,
+      76614
+     ],
+     [
+      10443
+     ]
+    ],
     "xi": [
      {
       "id": 123998,
@@ -60873,7 +60895,7 @@
       "playerId": null,
       "name": "Mathys Tel",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -60882,7 +60904,7 @@
       "playerId": null,
       "name": "Archie Gray",
       "shirt": 14,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Central Midfielder",
       "captain": false
      },
@@ -60918,7 +60940,7 @@
       "playerId": null,
       "name": "Omar Marmoush",
       "shirt": 22,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Striker",
       "captain": false
      },
@@ -61026,9 +61048,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      13988
+     ],
+     [
+      50842,
+      54893,
+      147312
+     ],
+     [
+      50909,
+      69595,
+      49759,
+      24334
+     ],
+     [
+      24797,
+      109117
+     ],
+     [
+      20874
+     ]
+    ],
     "xi": [
      {
       "id": 54893,
@@ -61089,7 +61133,7 @@
       "playerId": null,
       "name": "Tyrick Mitchell",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -61107,7 +61151,7 @@
       "playerId": null,
       "name": "Yéremy Pino",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -61125,7 +61169,7 @@
       "playerId": null,
       "name": "Óscar Mingueza",
       "shirt": 30,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Central Defender",
       "captain": false
      }
@@ -61216,12 +61260,35 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 20874,
+      "team": 6,
+      "min": 13,
+      "label": "13'00",
+      "phase": "1",
+      "kindRaw": "R",
+      "kind": "紅牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "13'00"
   }
  },
- "fetchedAt": "2026-10-31T17:25:55.487Z"
+ "fetchedAt": "2026-10-31T17:44:00.338Z"
 }
