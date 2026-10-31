@@ -97,7 +97,8 @@ const ageAt = (birthDate, asOf) => {
 
 // 西班牙本土賽事使用 Europe/Madrid(夏 +02:00、冬 +01:00)。
 // DST 規則共用 lib/league-matches 那一份,不自己再寫。
-const madridKickoff = europeanKickoff({ summer: '+02:00', winter: '+01:00' });
+const MADRID = { summer: '+02:00', winter: '+01:00' };
+const madridKickoff = europeanKickoff(MADRID);
 
 // 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
 const IMG = { webDir: join(ROOT, 'web') };
@@ -203,7 +204,7 @@ async function main() {
      測試也分不出「依設計拒收」與「補比分壞了」。 */
   const scoreRefusals = [];
   const load = season => {
-    const { matches, backfill, fotmob } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff });
+    const { matches, backfill, fotmob } = laligaMatches(ROOT, season, { codeOf: T.codeOf, kickoffOf: madridKickoff, zone: MADRID });
     const line = backfillLine(season, backfill);
     const fmLine = fotmobBackfillLine(season, fotmob);
     if (fmLine) console.log(fmLine);

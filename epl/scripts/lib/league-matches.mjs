@@ -76,7 +76,7 @@ export function backfillScores(matches, csvText, codeOf, { div = 'SP1' } = {}) {
    社群靜態檔(openfootball、football-data.co.uk)更新慢好幾天,西甲 9/3、英冠 9/1–9/2 的比賽到 9/4 還是「未賽」。
    FotMob 完賽的場次在社群檔到之前先補上,標 `scoreProvisional`;兩邊都有的場次要一致 —— 對不上就整份不採用
    (跟 football-data 那條同一個規矩),而且印出來。只補**該賽季**(scores.json 是本季)。 */
-export function fotmobBackfill(matches, scores, { season } = {}) {
+export function fotmobBackfill(matches, scores, { season, zone = null } = {}) {
   if (!scores?.matches?.length || (season && scores.season !== season)) return null;
   const byKey = new Map(matches.filter(m => !m.stage).map(m => [`${m.home}|${m.away}`, m]));
   const dup = matches.filter(m => !m.stage).length !== byKey.size;
@@ -109,8 +109,14 @@ export function fotmobBackfill(matches, scores, { season } = {}) {
        openfootball 還是 10/25。這裡補成已完賽,build 接著「日期在基準日之後一律當未賽」又把它清掉 ——
        於是一場踢完的比賽顯示未賽,自我檢查兩條紅線擋了部署(#682、#683)。FotMob 說完賽的那一天就是比賽日。
        f.date 是 UTC 日期;歐洲聯賽要到當地凌晨開球才會差一天,不會發生。 */
-    if (f.date && f.date !== m.date) { m.date = f.date; if (f.utcTime) m.kickoff = f.utcTime; }
-    if (!m.kickoff && f.utcTime) m.kickoff = f.utcTime;
+    /* FotMob 的 utcTime 是 UTC(`…Z`),而這個聯賽其餘的開球時間是當地時間帶偏移(`+01:00` / `+02:00`)。
+       原本照抄 `Z` 進來,同一份賽程兩種寫法 —— 法甲「只出現柏林的兩種偏移」那條在 10-26(15:00Z)與 10-31(00:00Z)
+       兩次擋了部署,第一次沒追。呼叫端給了 zone 就換成當地時間;沒給的照舊(英超那幾條路本來就寫 Z)。
+       日期跟著換算後的當地日期走,不然深夜開球的場次日期會跟開球時間差一天。 */
+    const local = f.utcTime ? (zone ? europeanFromUtc(zone)(f.utcTime) : f.utcTime) : null;
+    const localDate = local && zone ? local.slice(0, 10) : f.date;
+    if (localDate && localDate !== m.date) { m.date = localDate; if (local) m.kickoff = local; }
+    if (!m.kickoff && local) m.kickoff = local;
   }
   return { duplicateKeys: false, filled: fills.length, checked, mismatches: [], fetchedAt: scores.fetchedAt };
 }
@@ -122,7 +128,7 @@ export function fotmobBackfillLine(season, r) {
 }
 
 export function leagueMatches(root, season, {
-  codeOf, kickoffOf, competition, rawDir, fillDir, div, fill = true, stageOf = null, fotmobDir = null,
+  codeOf, kickoffOf, competition, rawDir, fillDir, div, fill = true, stageOf = null, fotmobDir = null, zone = null,
 } = {}) {
   const matches = loadMatches({
     root, competition, season, codeOf, rawDir, ...(kickoffOf ? { kickoffOf } : {}),
@@ -147,7 +153,7 @@ export function leagueMatches(root, season, {
   if (fill && fotmobDir) {
     const sp = join(root, 'data', 'raw', fotmobDir, 'scores.json');
     if (existsSync(sp)) {
-      try { fotmob = fotmobBackfill(matches, JSON.parse(readFileSync(sp, 'utf8')), { season }); } catch { fotmob = null; }
+      try { fotmob = fotmobBackfill(matches, JSON.parse(readFileSync(sp, 'utf8')), { season, zone }); } catch { fotmob = null; }
     }
   }
   return { matches, backfill, fotmob };
@@ -171,6 +177,21 @@ export const europeanKickoff = ({ summer, winter }) => m => {
     || (month === 3 && day >= lastSunday(year, 3))
     || (month === 10 && day < lastSunday(year, 10));
   return `${m.date}T${m.time}:00${isSummer ? summer : winter}`;
+};
+
+/* 同一組偏移,從 **UTC 時刻**換成當地時間(FotMob 的 utcTime 走這裡)。歐盟的夏令時間在三月與十月的
+   最後一個週日 **01:00 UTC** 切換 —— 用 UTC 時刻判,邊界才準(上面那支只有當地日期可用,判的是整天)。
+   解不開就回 null,不編一個時間。 */
+export const europeanFromUtc = ({ summer, winter }) => iso => {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return null;
+  const y = new Date(t).getUTCFullYear();
+  const start = Date.UTC(y, 2, lastSunday(y, 3), 1), end = Date.UTC(y, 9, lastSunday(y, 10), 1);
+  const off = t >= start && t < end ? summer : winter;
+  const [, sign, hh, mm] = /^([+-])(\d{2}):(\d{2})$/.exec(off) ?? [];
+  if (!sign) return null;
+  const local = new Date(t + (sign === '-' ? -1 : 1) * (Number(hh) * 60 + Number(mm)) * 60000);
+  return `${local.toISOString().slice(0, 16)}:00${off}`;
 };
 
 // 把 backfill 報告印成一行。呼叫端一律要印 —— 補比分不能靜靜發生。

@@ -249,7 +249,7 @@ export async function buildLeague(L) {
        採用規矩跟英冠西甲同一份:FotMob 補的標暫定,兩邊都有的場次要逐場一致,
        對不上整份不採用而且記進 `scoreRefusals`(鐵則五)。 */
     const { matches, backfill, fotmob } = leagueMatches(ROOT, season, {
-      codeOf, kickoffOf: berlinKickoff,
+      codeOf, kickoffOf: berlinKickoff, zone: L.timezone,   // zone:FotMob 補的開球時間換成當地時間(不留 UTC 的 Z)
       competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: DIV,
       fotmobDir: L.fotmobDir,
       fill: hasFill(season),

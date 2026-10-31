@@ -1848,6 +1848,17 @@ async function checkSuspended() {
     { home: 'ALA', away: 'MAL', finished: true, cancelled: false, score: [1, 1], reason: 'FT', date: '2026-10-23', utcTime: '2026-10-23T19:00:00Z' },
   ] }, { season: '2026-27' });
   const by = k => ms.find(m => `${m.home}|${m.away}` === k);
+  /* 給了 zone:FotMob 的 UTC 換成當地時間(2026-10-31,法甲那條「柏林的兩種偏移」10-26 與 10-31 兩次擋部署的根因)。
+     一場沒有開球時間的補比分(15:00Z → 16:00+01:00)、一場改期到深夜(23:30Z 是當地隔天 00:30) */
+  const mz = [
+    { home: 'NAN', away: 'LYO', played: false, fh: null, fa: null, date: '2026-11-01', kickoff: null },
+    { home: 'PSG', away: 'OM', played: false, fh: null, fa: null, date: '2026-08-29', kickoff: null },
+  ];
+  fotmobBackfill(mz, { season: '2026-27', matches: [
+    { home: 'NAN', away: 'LYO', finished: true, cancelled: false, score: [0, 0], reason: 'FT', date: '2026-11-01', utcTime: '2026-11-01T15:00:00Z' },
+    { home: 'PSG', away: 'OM', finished: true, cancelled: false, score: [2, 0], reason: 'FT', date: '2026-08-30', utcTime: '2026-08-30T23:30:00Z' },
+  ] }, { season: '2026-27', zone: { summer: '+02:00', winter: '+01:00' } });
+  const bz = k => mz.find(m => `${m.home}|${m.away}` === k);
   const now = Date.parse('2026-10-19T12:00:00Z');
   const srcOf = f => readFileSync(join(ROOT, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
   const idx = srcOf('web/assets/js/page-index.js');
@@ -1859,6 +1870,13 @@ async function checkSuspended() {
     /* 2026-10-24 #682/#683:改期提前的比賽,主來源日期還在未來 → 補完又被「基準日之後當未賽」清掉 */
     ['改期的比賽補比分時日期與開球跟著 FotMob(ALA–MAL 10/25 → 10/23)',
       by('ALA|MAL').played && by('ALA|MAL').date === '2026-10-23' && by('ALA|MAL').kickoff === '2026-10-23T19:00:00Z', JSON.stringify(by('ALA|MAL'))],
+    ['給了 zone 時 FotMob 補的開球換成當地時間(不留 UTC 的 Z)',
+      bz('NAN|LYO').kickoff === '2026-11-01T16:00:00+01:00', JSON.stringify(bz('NAN|LYO'))],
+    ['深夜開球的日期跟著當地日期走(23:30Z = 當地隔天 01:30+02:00)',
+      bz('PSG|OM').kickoff === '2026-08-31T01:30:00+02:00' && bz('PSG|OM').date === '2026-08-31', JSON.stringify(bz('PSG|OM'))],
+    ['三支 build 補 FotMob 賽果時都給了 zone',
+      /zone: L\.timezone/.test(srcOf('scripts/lib/build-league.mjs')) && /zone: LONDON/.test(srcOf('scripts/build-championship.mjs'))
+        && /zone: MADRID/.test(srcOf('scripts/build-laliga.mjs'))],
     ['西甲 / 英冠 build 把未來場次清成未賽時,暫定旗標一起清',
       ['scripts/build-laliga.mjs', 'scripts/build-championship.mjs', 'scripts/lib/build-league.mjs'].every(f => /m\.date > AS_OF && m\.played\)[\s\S]{0,160}delete m\.scoreProvisional/.test(srcOf(f)))],
     ['scheduleState 對中止的比賽回 suspended(不是 awaiting)',

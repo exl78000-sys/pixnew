@@ -12,9 +12,9 @@ const COMPETITION = 'esp.1';
 const RAW_DIR = 'openfootball-la-liga';
 const FILL_DIR = 'football-data-couk-la-liga';
 
-export function laligaMatches(root, season, { codeOf, kickoffOf, fill = true } = {}) {
+export function laligaMatches(root, season, { codeOf, kickoffOf, fill = true, zone = null } = {}) {
   return leagueMatches(root, season, {
-    codeOf, kickoffOf, fill,
+    codeOf, kickoffOf, fill, zone,
     competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: 'SP1',
     fotmobDir: 'fotmob-la-liga',   // 第三來源:FotMob 賽果(暫定,逐場核對),2026-09-04
   });

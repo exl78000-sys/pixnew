@@ -89,7 +89,8 @@ const RUNS = Number(arg('runs') ?? 5000);
 /* 英格蘭是 Europe/London:夏令 BST(+01:00)、冬令 GMT(+00:00)。
    adapter 的預設 kickoffOf 固定補 +01:00 —— 那是給西歐用的,
    照用的話冬季場次會整批早一小時。DST 規則共用 lib 那一份,不自己再寫。 */
-const londonKickoff = europeanKickoff({ summer: '+01:00', winter: '+00:00' });
+const LONDON = { summer: '+01:00', winter: '+00:00' };
+const londonKickoff = europeanKickoff(LONDON);
 
 // 圖在寫檔前落成 assets/img/h/ 的獨立檔,產物只留路徑(2026-09-26,A2 + A3;理由在 lib/image-files.mjs)
 const IMG = { webDir: join(ROOT, 'web') };
@@ -187,7 +188,7 @@ async function main() {
   const scoreRefusals = [];
   const load = season => {
     const { matches, backfill, fotmob } = leagueMatches(ROOT, season, {
-      codeOf, kickoffOf: londonKickoff,
+      codeOf, kickoffOf: londonKickoff, zone: LONDON,   // zone:FotMob 補的開球時間換成當地時間(不留 UTC 的 Z)
       competition: COMPETITION, rawDir: RAW_DIR, fillDir: FILL_DIR, div: 'E1',
       fotmobDir: 'fotmob-championship',   // 第三來源:FotMob 賽果(暫定,逐場核對),2026-09-04
       /* 升級附加賽不是聯賽比賽:場地中立、單場定生死,而且只有四隊打。
