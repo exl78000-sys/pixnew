@@ -341,10 +341,41 @@ export function buildPlayerLogs(players, stats, { teamOf = p => p.team } = {}) {
           shots: p.shots?.total ?? null, shotsOn: p.shots?.on ?? null, keyPasses: p.passes?.key ?? null,
           xg: xg == null ? null : r2(xg), distance: ph?.distance ?? null, topSpeed: ph?.topSpeed == null ? null : r2(ph.topSpeed),
           sub: p.substitute === true,
+          /* 防守三項(2026-10-31,西甲的球員頁用;attachDefense 加總)。逐場 playerStats 給的就是這一場的次數 */
+          tackles: p.tackles?.total ?? null, interceptions: p.tackles?.interceptions ?? null, saves: p.goals?.saves ?? null,
         });
         rows++;
       }
     }
   }
   return { logs, rows, unmatched, players: Object.keys(logs).length };
+}
+
+/* 搶斷、攔截、撲救的整季合計(2026-10-31,西甲)。Understat 不給防守數字;FotMob 逐場統計有,
+   而 buildPlayerLogs 已經把每一場接到本站的球員代碼上 —— 這裡只是一季加起來。
+
+   **給之前要過一道獨立核對**:FotMob 這一季接到他的場次與分鐘,要跟 Understat 的整季出場與分鐘對得起來
+   (兩家各自記的):場次一樣多、分鐘差不超過 `tol`。實測西甲兩季場次一樣多的 858 人,分鐘差中位 6、最大 87
+   (補時的算法不同),所以 tol 取 90 —— 一場的量。對不上的分兩種,都不給:
+     · `games`:FotMob 少了幾場(那幾場的逐場檔沒抓到)或多了幾場 —— 加出來是少算或多算,不是這一季;
+     · `minutes`:場次一樣而分鐘差太多 —— 多半是接錯人。
+   沒有逐場列的人(`none`)也不給。給的話每一項都是**真的加總**,不外插、不補 0。 */
+export function attachDefense(players, logs, { tol = 90 } = {}) {
+  const count = {};
+  for (const p of players) {
+    const c = (count[p.season] ??= { published: 0, games: 0, minutes: 0, none: 0, total: 0 });
+    c.total++;
+    const rows = (logs?.[p.code] ?? []).filter(r => r.season === p.season);
+    if (!rows.length) { c.none++; continue; }
+    if (rows.length !== p.games) { c.games++; continue; }
+    const min = rows.reduce((a, r) => a + (r.min ?? 0), 0);
+    if (Math.abs(min - (p.minutes ?? 0)) > tol) { c.minutes++; continue; }
+    const sum = k => (rows.some(r => r[k] == null) ? null : rows.reduce((a, r) => a + r[k], 0));
+    /* 撲救只給門將:外場球員的 saves 是 null(上游沒給),加出來也是 null,但寫明比較不會被誤讀 */
+    p.defense = { tackles: sum('tackles'), interceptions: sum('interceptions'),
+      saves: rows.some(r => r.saves != null) && rows.every(r => r.saves != null) ? sum('saves') : null,
+      matches: rows.length, minutes: min };
+    c.published++;
+  }
+  return count;
 }

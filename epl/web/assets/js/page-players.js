@@ -32,8 +32,9 @@ async function updateXLeague(q) {
    還悄悄漂移(統一頁重構的動機就是這個);現在一份工廠、聯賽差異用參數注入:
    - statOf:FPL 的數字在 last/current 子物件(隨季別切換),西甲攤平在最上層
    - nameCell / teamCol:狀態徽章、跨隊標記這些聯賽特有的呈現
-   - afterId:聯賽特有欄(FPL 的出場數、西甲的 games) */
-function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
+   - afterId:聯賽特有欄(FPL 的出場數、西甲的 games)
+   - tail:接在最後的聯賽特有欄(西甲的搶斷 / 攔截 / 撲救,2026-10-31) */
+function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [] }) {
   const POS_ORDER = ['GK', 'DEF', 'MID', 'FWD', 'D', 'M', 'F'];
   /* fold:視窗放不下時收欄的優先序(數字越大越先收;規則在 core.js 的 foldPlan)。
      收的都是算得出來或次要的:背號、年齡、紅黃牌、進球參與(= 進球 + 助攻)、xGI(= xG + xA)、xGI/90。
@@ -59,6 +60,7 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [] }) {
     n('xg90', 'xG/90'), n('xa90', 'xA/90'), n('xgi90', 'xGI/90', { fold: 1 }),
     n('shots', '射門', { dash: true }), n('keyPasses', '關鍵傳球', { dash: true }),
     n('yellow', '黃牌', { dash: true, fold: 4 }), n('red', '紅牌', { dash: true, fold: 5 }),
+    ...tail,
   ];
 }
 
@@ -415,6 +417,9 @@ async function matchLogCard(code, league) {
    但仍保留資料來源的界線，沒有來源的進階欄位不自行推估。 */
 function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   const app = document.getElementById('app');
+  /* 這個渲染器西甲與德義法共用 —— 聯賽名一律從註冊表讀。2026-10-31 之前標題寫死「西甲球員」,
+     德甲、義甲、法甲的球員頁都印著西甲(「共用版面裡寫死聯賽的名字」那條坑又一次) */
+  const LZ = C.LEAGUES[C.league()]?.zh ?? '';
   const SEASONS = { current: leaders.seasons.current, last: leaders.seasons.last };
   // 本季剛開打時沒有人踢滿門檻,每 90 分鐘的榜會整片空 —— 那時預設看上季
   let season = leaders.currentQualified > 0 ? SEASONS.current : SEASONS.last;
@@ -467,6 +472,28 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
   })}${p.multiTeam ? ' <span class="pill warn tiny" title="本季效力過兩隊，數字是兩隊合計">跨隊</span>' : ''}`;
 
   const playerForPhoto = p => ({ ...p, team: currentTeamCode(p) });
+
+  /* 搶斷 / 攔截 / 撲救(西甲 2026-10-31 起):只有產物給了(leaders.defense)而且這一季真的有人有值才出欄 ——
+     整欄都是「—」的欄位比不放更糟。沒過核對的人印「—」、排在最後(哨兵配 render,不印 −1) */
+  const defenseCols = rows => {
+    if (!leaders.defense || !rows.some(p => p.defense)) return [];
+    const col = (k, label, fold) => ({ key: `def_${k}`, label, num: true, fold,
+      value: p => p.defense?.[k] ?? -1, render: p => p.defense?.[k] ?? '—' });
+    /* 收欄順序(數字越大越先收):排在全部既有欄之後 —— 進球參與、xGI、xGI/90 都是別欄算得出來的,
+       防守三項是這一頁唯一的來源。內容區約 1240px、23 欄時要收 9 欄(三個寬度量過都一樣),這樣排搶斷還看得到;
+       撲救只有門將有,三項裡最先收。讀者點收起的欄可以叫回來 */
+    return [col('tackles', '搶斷', 0.7), col('interceptions', '攔截', 0.8),
+      ...(rows.some(p => p.defense?.saves != null) ? [col('saves', '撲救', 0.9)] : [])];
+  };
+  /* 防守數據那一句(列表下方與球員詳情共用):涵蓋幾人、怎麼核對,照產物講 */
+  const defenseNote = () => {
+    const d = leaders.defense, c = d?.seasons?.[season];
+    if (!d || !c) return '';
+    return `搶斷、攔截與撲救是 ${C.esc(d.source)}:每一場接到本站球員,整季加起來;跟 ${C.esc(d.check)} 對過
+      (場次一樣多、分鐘差不超過 ${d.tolMinutes} 分鐘)才給 —— ${C.esc(season)} 給了 <b>${c.published}/${c.total}</b> 人,
+      其餘的印「—」(場次對不上 ${c.games} 人、分鐘對不上 ${c.minutes} 人、沒有逐場資料 ${c.none} 人)。
+      搶斷照 FotMob 的「Tackles」,上游沒寫是成功還是嘗試。`;
+  };
   const playerById = () => new Map(bySeason(season).map(p => [String(p.id), p]));
 
   /* 年齡來自 SportMonks 的出生日期,沒對上的人整批不在榜裡。
@@ -516,9 +543,10 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       nameCell: p => `<span class="player-cell">${C.playerPhoto(playerForPhoto(p), 28)}<span>${C.esc(p.name)}</span></span>`,
       teamCol: { key: 'team', label: '球隊', value: p => codeName(currentTeamCode(p)), left: true, render: teamCell },
       afterId: [{ key: 'games', label: '出場', value: p => p.games ?? 0, num: true }],
+      tail: defenseCols(bySeason(season)),   // 欄位跟著這一季,不跟著篩選結果(篩到沒人有值也不要整欄消失又出現)
     }), { sortKey: 'goals', desc: true, pageSize: 100, onRow: p => C.go('players', { code: p.id }) })   // 先畫 100 列(B5)
       + `<div class="tiny dim" style="margin-top:8px">共 ${rows.length} 人。點欄位標題可換排序。
-        <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。</div>`;
+        <span class="mono">xGI/90</span> 只在上場時間達 ${leaders.minMinutes} 分鐘時給出。${defenseNote()}</div>`;
   };
 
   const codes = [...new Set(players.flatMap(codesOf))].sort((a, b) => codeName(a).localeCompare(codeName(b), 'zh-Hant'));
@@ -526,13 +554,13 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     const cur = bySeason(season);
     app.innerHTML = `
     <div class="page-head">
-      <h1>西甲球員</h1>
+      <h1>${C.esc(LZ)}球員</h1>
       <p>${C.esc(season)} 的 ${cur.length} 名球員。數字是<b>整季彙總</b>,不是逐場 ——
          來源(Understat)給的就是這個粒度。每 90 分鐘的數字只在上場時間達
          ${leaders.minMinutes} 分鐘時給出,樣本太少的給了會誤導。</p>
       ${C.stampRow([
         C.stamp(`${C.esc(season)} 整季統計`, { iso: leaders.retrievedAt, kind: 'season', note: '來源:Understat' }),
-        C.stamp('百分位雷達', { kind: 'season', note: '只跟同季、同位置、達門檻的西甲球員比' }),
+        C.stamp('百分位雷達', { kind: 'season', note: `只跟同季、同位置、達門檻的${LZ}球員比` }),
       ])}
       <div class="note" style="margin-top:14px"><b>資料界線:</b>
         ${leaders.missing.map(C.esc).join('、')} 目前沒有可靠來源，詳細面板只顯示已取得欄位；
@@ -569,7 +597,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
           <option value="600" ${minMinutes === 600 ? 'selected' : ''}>600 分鐘以上</option>
           <option value="1800" ${minMinutes === 1800 ? 'selected' : ''}>1800 分鐘以上</option>
         </select>
-        <button class="btn" id="cmpBtn" type="button" disabled title="西甲目前沒有可核對的跨球員雷達資料">對比模式:不可用</button>
+        <button class="btn" id="cmpBtn" type="button" disabled title="${C.esc(LZ)}目前沒有可核對的跨球員雷達資料">對比模式:不可用</button>
         <span class="dim small" id="count">共 ${filteredRows().length} 人</span>
       </div>
       ${tableHtml()}
@@ -642,11 +670,18 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       line('終結超出期望', C.signed(stat.finishing, 2)),
       line('xG 串聯', value(stat.xGChain, 2)), line('xG 推進', value(stat.xGBuildup, 2)),
       line('xG 串聯/90', value(stat.chain90, 2)), line('xG 推進/90', value(stat.buildup90, 2)),
-      line('防守貢獻/90', '—'), line('門將撲救/90', '—'),
     ].join('');
+    /* 防守三項:有過核對才有(p.defense),沒有就整張卡不畫 —— 原本這裡印兩列永遠是「—」的欄位(鐵則三) */
+    const d = p.defense;
+    const per90 = v => (v == null || !d?.minutes ? '—' : C.fx(v / d.minutes * 90, 2));
+    const defense = d ? [
+      line('搶斷(每 90 分)', `${value(d.tackles)}(${per90(d.tackles)})`),
+      line('攔截(每 90 分)', `${value(d.interceptions)}(${per90(d.interceptions)})`),
+      ...(d.saves != null ? [line('撲救(每 90 分)', `${value(d.saves)}(${per90(d.saves)})`)] : []),
+    ].join('') : '';
     const radar = p.radar ? `<div class="card"><h3>能力雷達 <span class="dim tiny">${C.esc(season)}</span></h3>
       ${C.radar([{ name: p.name, color: C.team(primaryCode).colors?.[0] ?? '#00ff85', values: p.radar }], { size: 300 })}
-      <div class="tiny dim center">與同季、同位置且達 ${leaders.minMinutes} 分鐘門檻的西甲球員相比</div></div>` : '';
+      <div class="tiny dim center">與同季、同位置且達 ${leaders.minMinutes} 分鐘門檻的${C.esc(LZ)}球員相比</div></div>` : '';
     playerPage(`${C.playerPhoto(photoPlayer, 56)} ${C.esc(p.name)}`, `${teamLabel}・資料來源 ${SRC}`, `
       <div class="card"><div class="spread"><div>
         <div style="font-size:19px;font-weight:800">${C.esc(p.name)}</div>
@@ -654,11 +689,14 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
       </div><span class="pill info">${C.esc(p.season)}</span></div></div>
       <div class="card"><h3>基本資料</h3>${info}</div>
       <div class="card"><h3>表現數據</h3>${performance}</div>
-      <div class="card"><h3>進階數據</h3>${advanced}<div class="tiny dim" style="margin-top:8px">西甲目前沒有可靠的逐球員防守與門將統計，該欄位不以其他數字代替。</div></div>
+      <div class="card"><h3>進階數據</h3>${advanced}</div>
+      ${defense ? `<div class="card"><h3>防守</h3>${defense}<div class="tiny dim" style="margin-top:8px">${defenseNote()}
+        這一季 ${d.matches} 場、${d.minutes} 分鐘。</div></div>`
+        : leaders.defense ? `<div class="card"><h3>防守</h3><div class="tiny dim">${defenseNote()}這一位沒過核對,所以不給。</div></div>` : ''}
       ${radar}
       ${trackingCard(p, C.team(primaryCode))}
       <div class="tiny dim">球員編號 ${C.esc(p.id)}・原始生日保留於本地資料作追溯，介面統一顯示年齡。</div>
-      <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`, { code: p.code ?? p.id, league: 'es1' });
+      <div style="margin-top:10px">${primaryCode ? `<a href="${C.link('teams', { code: primaryCode })}">查看球隊完整剖析 →</a>` : ''}</div>`, { code: p.code ?? p.id, league: C.league() });
   }
   // 西甲球員頁也支援和英超相同的 ?code= 深連結。若指定球員屬於另一季，
   // 先切到該球員的資料季，再開詳細面板，避免連結落到空的預設季。

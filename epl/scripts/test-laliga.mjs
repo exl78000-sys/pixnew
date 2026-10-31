@@ -18,6 +18,7 @@ import { normaliseFotmobMatch, ADAPTER_VERSION, fotmobPos } from './lib/adapters
 import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef } from './lib/image-files.mjs';
 import { simZoneIssues } from './lib/sim-zones.mjs';
+import { attachDefense } from './lib/matchstats.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = season => JSON.parse(readFileSync(join(ROOT, 'data', 'raw', 'openfootball-la-liga', `${season}.json`), 'utf8'));
@@ -749,6 +750,51 @@ check('摘要漏掉大部分數字 → 擋下',
   const withRec = list.filter(c => c.currentSeasonRecord?.p);
   check('教練本季戰績由本站賽果計算,場數等於該隊本季已賽場數', withRec.length > 0 && withRec.every(c => c.currentSeasonRecord.p === playedOf(c.team)), `${withRec.length} 隊`);
   check('教練任期未知的戰績有標 tenureUnknown', withRec.every(c => c.currentSeasonRecord.tenureUnknown === true));
+}
+
+// ── 搶斷 / 攔截 / 撲救(2026-10-31):FotMob 逐場加總,跟 Understat 的出場與分鐘對過才給 ──
+{
+  const row = (season, min, t, i, sv = null) => ({ season, min, tackles: t, interceptions: i, saves: sv });
+  const players = [
+    { code: 'a', season: 'S', games: 2, minutes: 180 },   // 對得上
+    { code: 'b', season: 'S', games: 3, minutes: 270 },   // FotMob 少一場
+    { code: 'c', season: 'S', games: 2, minutes: 90 },    // 場次一樣、分鐘差 90 以上(接錯人)
+    { code: 'g', season: 'S', games: 1, minutes: 90 },    // 門將
+    { code: 'n', season: 'S', games: 1, minutes: 90 },    // 有一場的值是 null
+    { code: 'z', season: 'S', games: 1, minutes: 90 },    // 沒有逐場列
+    { code: 'a', season: 'T', games: 1, minutes: 90 },    // 同一人另一季:只算那一季的列
+  ];
+  const logs = { a: [row('S', 90, 3, 1), row('S', 85, 2, 0), row('T', 90, 5, 5)], b: [row('S', 90, 1, 1), row('S', 90, 1, 1)],
+    c: [row('S', 90, 1, 1), row('S', 95, 1, 1)], g: [row('S', 90, 0, 0, 4)], n: [row('S', 90, null, 2)] };
+  const c = attachDefense(players, logs);
+  const [a, b, cc, g, n, z, a2] = players;
+  check('防守:場次與分鐘對得上才給,值是逐場加總', a.defense?.tackles === 5 && a.defense?.interceptions === 1 && a.defense?.matches === 2 && a.defense?.minutes === 175, JSON.stringify(a.defense));
+  check('防守:FotMob 少一場的不給(加出來是少算)', !b.defense);
+  check('防守:場次一樣而分鐘差超過 90 的不給(多半是接錯人)', !cc.defense);
+  check('防守:撲救只在每一場都有值時給(門將),外場球員是 null 不是 0', g.defense?.saves === 4 && a.defense?.saves === null);
+  check('防守:有一場是 null 的那一項整項不給(湊不齊的和不是答案)', n.defense?.tackles === null && n.defense?.interceptions === 2);
+  check('防守:沒有逐場列的不給、另一季只算那一季', !z.defense && a2.defense?.tackles === 5);
+  check('防守:涵蓋數照實數', c.S.published === 3 && c.S.games === 1 && c.S.minutes === 1 && c.S.none === 1 && c.S.total === 6, JSON.stringify(c.S));
+
+  /* 產物:每一個給了的人都能從 player-logs 重算回來(場次、分鐘、三項加總),涵蓋數對得回 players.json */
+  const lp = join(ROOT, 'web', 'data', 'leagues', 'es1', 'player-logs.json');
+  if (existsSync(lp)) {
+    const L = JSON.parse(readFileSync(lp, 'utf8')).logs, P = out('players'), LD = out('leaders');
+    const bad = [];
+    for (const p of P.filter(x => x.defense)) {
+      const rows = (L[p.code] ?? []).filter(r => r.season === p.season);
+      const sum = k => rows.reduce((t, r) => t + (r[k] ?? 0), 0);
+      const min = sum('min');
+      if (rows.length !== p.games || Math.abs(min - p.minutes) > LD.defense.tolMinutes || p.defense.minutes !== min
+        || p.defense.tackles !== sum('tackles') || p.defense.interceptions !== sum('interceptions')) bad.push(`${p.name} ${p.season}`);
+    }
+    check('防守產物:每一個給了的人都從逐場紀錄重算得回來、也都過了場次與分鐘的核對', bad.length === 0, bad.slice(0, 4).join('、'));
+    const counts = Object.entries(LD.defense?.seasons ?? {}).filter(([s, c]) => c.published !== P.filter(x => x.season === s && x.defense).length);
+    check('防守產物:leaders.defense 的逐季涵蓋對得回 players.json', LD.defense && counts.length === 0, counts.map(([s]) => s).join('、'));
+    check('防守產物:有給就不准在「沒有」清單裡講沒有防守數據', !(LD.missing ?? []).some(x => /防守/.test(x)) === !!LD.defense);
+    const PL = out('players-list');
+    check('防守產物:球員列表帶著同一份(列表頁的欄位讀它)', PL.filter(x => x.defense).length === P.filter(x => x.defense).length);
+  }
 }
 
 if (process.exitCode) throw new Error('西甲球隊數據第二版自我檢查失敗');

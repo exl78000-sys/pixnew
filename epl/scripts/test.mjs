@@ -7497,6 +7497,15 @@ function checkUcl() {
     }
     ok(hits.length === 0, '共用版面的樣板字串沒有寫死聯賽名(要從 LEAGUES 註冊表讀)',
       hits.slice(0, 4).join(' / '));
+    /* 球員頁的 Understat 渲染器西甲與德義法共用,而它的標題是 `<h1>西甲球員</h1>` —— 聯賽名後面接的是字不是插值,
+       上面那條看不到;德甲、義甲、法甲的球員頁從上線起都印著「西甲球員」(2026-10-31 才發現)。
+       這一段整段不准出現任何聯賽的字面名(剝掉註解後),一律從註冊表讀 */
+    {
+      const pp = stripComments(readFileSync(join(W, 'assets', 'js', 'page-players.js'), 'utf8'));
+      const seg = pp.slice(pp.indexOf('function renderUnderstat'), pp.indexOf('function renderAggregate'));
+      const lit = NAMES.filter(n => seg.includes(n));
+      ok(seg.length > 1000 && lit.length === 0, '球員頁的 Understat 渲染器(西甲與德義法共用)不寫死聯賽名', lit.join('、'));
+    }
   }
 
   /* ── 跨聯賽 Elo 與歐冠賽前預測(2026-09-09 階段 C)──

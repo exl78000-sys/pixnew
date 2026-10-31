@@ -40,6 +40,8 @@ export function playersListFrom(players, { source }) {
       sportmonksTeam: p.sportmonksTeam ?? null, sportmonksId: p.sportmonksId ?? null,
       pos: p.pos ?? null, posZh: p.posZh ?? null, age: p.age ?? null, squadNumber: p.squadNumber ?? null, photo: p.photo ?? null,
       ...pick(p, US_STAT),
+      /* 搶斷 / 攔截 / 撲救(西甲 2026-10-31 起,FotMob 逐場加總、對過 Understat 才有;沒有就不放鍵) */
+      ...(p.defense ? { defense: p.defense } : {}),
     }));
   }
   if (source !== 'fpl') throw new Error(`playersListFrom:不認得的來源 ${source}(fpl / Understat / match-aggregate)`);

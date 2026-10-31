@@ -37,7 +37,7 @@ import { buildTeamProfiles } from './lib/team-profiles.mjs';   // 2026-10-02 搬
 import { loadInplayCurve } from './lib/inplay-tuning.mjs';
 import { fotmobMinute } from './lib/live-minute.mjs';
 import { buildProviderMatchReport, buildLiveProviderReport } from './lib/postmatch-report.mjs';
-import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, pairOf } from './lib/matchstats.mjs';
+import { loadFotmobMatchStats, toCanonicalDetail, attachPlayerTracking, buildPlayerLogs, attachDefense, pairOf } from './lib/matchstats.mjs';
 import { writeMatchArchive, idMapForArchive } from './lib/match-archive.mjs';
 import { externalizeImages } from './lib/image-files.mjs';
 import { overviewFrom } from './lib/overview.mjs';
@@ -1284,6 +1284,8 @@ async function main() {
         + (loanHit.unmatched.length > 5 ? ' …' : ''));
     }
   }
+  /* 搶斷 / 攔截 / 撲救(2026-10-31):FotMob 逐場加總,跟 Understat 的出場與分鐘對過才給(規則在 attachDefense) */
+  let defenseCount = null;
   if (fotmobStats.count) {
     const hit = attachPlayerTracking(playersOut, fotmobStats);
     if (hit.total) console.log(`  逐人跑動與熱區:${hit.matched}/${hit.total} 位配到球員主檔`);
@@ -1292,7 +1294,12 @@ async function main() {
       note: '每人每場一列;xg 是該場逐射門 xG 合計、distance 是追蹤資料(不是每場都有);只收有配到本站球員代碼的人。',
       players: logs.players, rows: logs.rows, logs: logs.logs });
     console.log(`  球員逐場紀錄:${logs.players} 人・${logs.rows} 人-場・配不到 ${logs.unmatched} 人-場`);
+    defenseCount = attachDefense(playersOut, logs.logs);
+    for (const [season, c] of Object.entries(defenseCount)) {
+      console.log(`  防守數據 ${season}:給 ${c.published}/${c.total} 人・場次對不上 ${c.games}・分鐘對不上 ${c.minutes}・沒有逐場列 ${c.none}`);
+    }
   }
+  const hasDefense = Object.values(defenseCount ?? {}).some(c => c.published > 0);
   await write('players', playersOut);
   // 跨聯賽統一層(lib/player-core.mjs):聯集 + null(西甲沒有身價與傷停 → null 不是 0)
   await write('players-core', coreFromUnderstat(playersOut));
@@ -1314,8 +1321,11 @@ async function main() {
       ...(Object.values(sportmonksBySeason).some(x => x.squadNumber > 0) ? [] : ['背號']),
       ...(Object.values(sportmonksBySeason).some(x => x.photo > 0) ? [] : ['頭貼']),
       ...(Object.values(sportmonksBySeason).some(x => x.dateOfBirth > 0) ? [] : ['出生日期與身價']),
-      '傷停與停賽', '防守數據(鏟球/攔截/撲救)',
+      '傷停與停賽',
+      ...(hasDefense ? [] : ['防守數據(鏟球/攔截/撲救)']),
     ],
+    /* 搶斷 / 攔截 / 撲救的涵蓋(逐季:給了幾人、為什麼沒給)。前端照它講,不寫死 */
+    ...(hasDefense ? { defense: { source: 'FotMob 逐場統計加總', check: 'Understat 的出場與分鐘', tolMinutes: 90, seasons: defenseCount } } : {}),
     sportmonks: sportmonksBySeason,
     note: 'Understat 提供整季彙總；SportMonks 補充可取得的球員身分欄位。每 90 分鐘僅在上場時間達門檻時給出。',
     current: playerSeasons[CURRENT_SEASON] ? buildLeaders(playerSeasons[CURRENT_SEASON].players) : null,
