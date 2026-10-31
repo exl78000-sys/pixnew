@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T13:02:03.906Z",
+ "fetchedAt": "2026-10-31T14:12:35.871Z",
  "teams": [
   {
    "code": "INT",
@@ -605,6 +605,66 @@
    ]
   },
   {
+   "code": "ATA",
+   "fotmobId": 8524,
+   "fotmobName": "Atalanta",
+   "fetchedAt": "2026-10-09T12:41:55.565Z",
+   "color": "#004ca6",
+   "teamColors": {
+    "darkMode": "#0D68B1",
+    "lightMode": "#004ca6",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "New Balance Arena",
+   "city": "Bergamo",
+   "location": [
+    "45.709236083",
+    "9.680693150"
+   ],
+   "capacity": 24950,
+   "surface": "Grass",
+   "opened": 1928,
+   "coachHistory": [
+    {
+     "id": 41757,
+     "name": "Ivan Jurić",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 7,
+     "loss": 2,
+     "pointsPerGame": 1.18,
+     "winPercentage": 0.18
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.7,
+     "winPercentage": 0.48
+    },
+    {
+     "id": 557567,
+     "name": "Maurizio Sarri",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 1.2,
+     "winPercentage": 0.4
+    }
+   ]
+  },
+  {
    "code": "BLG",
    "fotmobId": 9857,
    "fotmobName": "Bologna",
@@ -665,62 +725,62 @@
    ]
   },
   {
-   "code": "ATA",
-   "fotmobId": 8524,
-   "fotmobName": "Atalanta",
-   "fetchedAt": "2026-10-09T12:41:55.565Z",
-   "color": "#004ca6",
+   "code": "MZA",
+   "fotmobId": 6504,
+   "fotmobName": "Monza",
+   "fetchedAt": "2026-10-09T12:41:57.636Z",
+   "color": "#e10032",
    "teamColors": {
-    "darkMode": "#0D68B1",
-    "lightMode": "#004ca6",
+    "darkMode": "#e10032",
+    "lightMode": "#e10032",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "New Balance Arena",
-   "city": "Bergamo",
+   "venue": "U-Power Stadium",
+   "city": "Monza",
    "location": [
-    "45.709236083",
-    "9.680693150"
+    "45.583064491",
+    "9.308115542"
    ],
-   "capacity": 24950,
+   "capacity": 18568,
    "surface": "Grass",
-   "opened": 1928,
+   "opened": 1986,
    "coachHistory": [
+    {
+     "id": 30723,
+     "name": "Alessandro Nesta",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 2,
+     "draw": 9,
+     "loss": 20,
+     "pointsPerGame": 0.48,
+     "winPercentage": 0.06
+    },
+    {
+     "id": 39696,
+     "name": "Paolo Bianco",
+     "season": "2025/2026",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 22,
+     "draw": 10,
+     "loss": 6,
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
+    },
     {
      "id": 41757,
      "name": "Ivan Jurić",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 7,
-     "loss": 2,
-     "pointsPerGame": 1.18,
-     "winPercentage": 0.18
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.7,
-     "winPercentage": 0.48
-    },
-    {
-     "id": 557567,
-     "name": "Maurizio Sarri",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
-     "win": 2,
-     "draw": 0,
+     "win": 1,
+     "draw": 1,
      "loss": 3,
-     "pointsPerGame": 1.2,
-     "winPercentage": 0.4
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },
@@ -901,66 +961,6 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
-    }
-   ]
-  },
-  {
-   "code": "MZA",
-   "fotmobId": 6504,
-   "fotmobName": "Monza",
-   "fetchedAt": "2026-10-09T12:41:57.636Z",
-   "color": "#e10032",
-   "teamColors": {
-    "darkMode": "#e10032",
-    "lightMode": "#e10032",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "U-Power Stadium",
-   "city": "Monza",
-   "location": [
-    "45.583064491",
-    "9.308115542"
-   ],
-   "capacity": 18568,
-   "surface": "Grass",
-   "opened": 1986,
-   "coachHistory": [
-    {
-     "id": 30723,
-     "name": "Alessandro Nesta",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 2,
-     "draw": 9,
-     "loss": 20,
-     "pointsPerGame": 0.48,
-     "winPercentage": 0.06
-    },
-    {
-     "id": 39696,
-     "name": "Paolo Bianco",
-     "season": "2025/2026",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 22,
-     "draw": 10,
-     "loss": 6,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    },
-    {
-     "id": 41757,
-     "name": "Ivan Jurić",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
     }
    ]
   },
