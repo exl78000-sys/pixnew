@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-30T19:02:53.767Z",
+ "fetchedAt": "2026-10-31T01:22:53.340Z",
  "teams": [
   {
    "code": "FCB",
@@ -245,6 +245,66 @@
    ]
   },
   {
+   "code": "ELV",
+   "fotmobId": 8232,
+   "fotmobName": "Elversberg",
+   "fetchedAt": "2026-10-09T12:41:45.270Z",
+   "color": "#141414",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#141414",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "URSAPHARM-Arena an der Kaiserlinde",
+   "city": "Spiesen-Elversberg",
+   "location": [
+    "49.318814181",
+    "7.121704817"
+   ],
+   "capacity": 11150,
+   "surface": "Grass",
+   "opened": 1925,
+   "coachHistory": [
+    {
+     "id": 5136,
+     "name": "Horst Steffen",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 16,
+     "draw": 10,
+     "loss": 8,
+     "pointsPerGame": 1.71,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 94647,
+     "name": "Vincent Wagner",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 94647,
+     "name": "Vincent Wagner",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
    "code": "RBL",
    "fotmobId": 178475,
    "fotmobName": "RB Leipzig",
@@ -413,66 +473,6 @@
     {
      "id": 266042,
      "name": "Urs Fischer",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "ELV",
-   "fotmobId": 8232,
-   "fotmobName": "Elversberg",
-   "fetchedAt": "2026-10-09T12:41:45.270Z",
-   "color": "#141414",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#141414",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "URSAPHARM-Arena an der Kaiserlinde",
-   "city": "Spiesen-Elversberg",
-   "location": [
-    "49.318814181",
-    "7.121704817"
-   ],
-   "capacity": 11150,
-   "surface": "Grass",
-   "opened": 1925,
-   "coachHistory": [
-    {
-     "id": 5136,
-     "name": "Horst Steffen",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 16,
-     "draw": 10,
-     "loss": 8,
-     "pointsPerGame": 1.71,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 94647,
-     "name": "Vincent Wagner",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 94647,
-     "name": "Vincent Wagner",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
