@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T17:45:19.768Z",
+ "fetchedAt": "2026-10-31T20:01:18.372Z",
  "teams": [
   {
    "code": "PSG",
@@ -785,66 +785,6 @@
    ]
   },
   {
-   "code": "ANG",
-   "fotmobId": 8121,
-   "fotmobName": "Angers",
-   "fetchedAt": "2026-10-09T12:42:04.397Z",
-   "color": "#000000",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Raymond Kopa",
-   "city": "Angers",
-   "location": [
-    "47.460412695",
-    "-0.530776978"
-   ],
-   "capacity": 19000,
-   "surface": "Grass",
-   "opened": 1912,
-   "coachHistory": [
-    {
-     "id": 41334,
-     "name": "Alexandre Dujeux",
-     "season": "2024/2025",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 10,
-     "draw": 6,
-     "loss": 18,
-     "pointsPerGame": 1.06,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 41334,
-     "name": "Alexandre Dujeux",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 9,
-     "draw": 9,
-     "loss": 16,
-     "pointsPerGame": 1.06,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 2,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1.4,
-     "winPercentage": 0.4
-    }
-   ]
-  },
-  {
    "code": "LMA",
    "fotmobId": 8682,
    "fotmobName": "Le Mans",
@@ -901,6 +841,66 @@
      "loss": 2,
      "pointsPerGame": 2,
      "winPercentage": 0.58
+    }
+   ]
+  },
+  {
+   "code": "ANG",
+   "fotmobId": 8121,
+   "fotmobName": "Angers",
+   "fetchedAt": "2026-10-09T12:42:04.397Z",
+   "color": "#000000",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#000000",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Raymond Kopa",
+   "city": "Angers",
+   "location": [
+    "47.460412695",
+    "-0.530776978"
+   ],
+   "capacity": 19000,
+   "surface": "Grass",
+   "opened": 1912,
+   "coachHistory": [
+    {
+     "id": 41334,
+     "name": "Alexandre Dujeux",
+     "season": "2024/2025",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 10,
+     "draw": 6,
+     "loss": 18,
+     "pointsPerGame": 1.06,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 41334,
+     "name": "Alexandre Dujeux",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 9,
+     "draw": 9,
+     "loss": 16,
+     "pointsPerGame": 1.06,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 1141972,
+     "name": "Stéphane Gilli",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 2,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1.4,
+     "winPercentage": 0.4
     }
    ]
   },
