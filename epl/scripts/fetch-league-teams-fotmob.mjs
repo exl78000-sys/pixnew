@@ -38,9 +38,9 @@ const fotmobSeason = s => { const y = Number(s.slice(0, 4)); return `${y}/${y + 
 
 /* 從球隊頁只取要用的欄位。形狀以探測為準:`overview.venue.widget.{name,city,location}`、
    `overview.venue.statPairs` 是 [標題, 值] 的陣列(Capacity 是整數)、`details.teamColor` 是十六進位色。
-   隊色陣列原樣存。教練歷任**整份存**(2026-11-01):第一版存 `.slice(-3)`,以為最後三筆是最近的 ——
-   而上游的順序不是時間序:法甲 LMA 留下來的三筆停在 2023/24、KOE 與 BST 留下來的沒有現任,
-   現任教練一整季都在名單上卻沒有發布。一隊幾十筆,存整份比猜順序便宜。 */
+   隊色陣列原樣存。教練歷任**整份存**(2026-11-01):第一版存 `.slice(-3)`。上游是時間序(2026-11-01 整份抓回來看過),
+   最後三筆就是最近三筆,所以它沒有截掉現任 —— 但任期超過三筆的教練,上任季會被算晚(build 從紀錄往回找他的第一季)。
+   一隊 8~20 筆,存整份。 */
 export function pickTeamPage(j) {
   const v = j?.overview?.venue ?? {};
   const pair = k => (v.statPairs ?? []).find(p => p?.[0] === k)?.[1] ?? null;
@@ -77,12 +77,14 @@ export function latestLineupCoaches(dir) {
    德甲 BMG、義甲 PAR / VEN 在 10-09 抓頁之後換帥,新教練帶了三、四場還沒上站。
    重抓的條件:最新一場名單上的教練不在快取的教練紀錄裡,而且
    (a) 快取是那一場之前抓的(上游有機會已經記上他),或 (b) 快取是截短版(見 pickTeamPage)。
-   抓過之後仍然沒有他(停賽的代理教練就是這樣),快取的時間已晚於那一場,下次不再重抓 —— 不會每次部署都打。 */
+   抓過之後仍然沒有他(停賽的代理教練;KOE 的 Wagner、BST 的 Lachuer、LMA 的 Videira 整份紀錄裡都沒有),
+   記在 `coachMissing`,TTL 內不再為同一位重抓 —— 不然每踢一輪快取又比最新那場舊,每週重抓同幾頁。 */
 const normCoach = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]+/g, ' ').trim();
 export function coachRefetchReason(prev, latest) {
   if (!prev || !latest?.coach) return null;
   const hist = Array.isArray(prev.coachHistory) ? prev.coachHistory : [];
   if (hist.some(h => normCoach(h?.name) === normCoach(latest.coach))) return null;
+  if (prev.coachMissing && normCoach(prev.coachMissing) === normCoach(latest.coach)) return null;
   if (!prev.coachHistoryFull) return `名單是 ${latest.coach},快取的教練紀錄是截短版`;
   if (Date.parse(prev.fetchedAt) < Date.parse(latest.date)) return `名單是 ${latest.coach}(${latest.date.slice(0, 10)}),快取是那之前抓的`;
   return null;
@@ -112,7 +114,9 @@ export async function fetchLeagueTeams(key, { outDir = join(ROOT, 'data', 'raw',
     requests++;
     const p = await get(`${FM}/api/data/teams?id=${r.id}`);
     if (!p.j) { failed.push(`${r.name}(HTTP ${p.status})`); if (prev) teams.push(prev); continue; }
-    teams.push({ code, fotmobId: r.id, fotmobName: r.name, fetchedAt: new Date().toISOString(), ...pickTeamPage(p.j) });
+    const picked = pickTeamPage(p.j), lc = coachNow.get(code)?.coach;
+    const missing = lc && !(picked.coachHistory ?? []).some(h => normCoach(h?.name) === normCoach(lc)) ? lc : null;
+    teams.push({ code, fotmobId: r.id, fotmobName: r.name, fetchedAt: new Date().toISOString(), ...picked, ...(missing ? { coachMissing: missing } : {}) });
   }
   if (coachRefetch.length) log(`  ${L.zh}:教練紀錄過期,重抓 ${coachRefetch.length} 隊:${coachRefetch.join('、')}`);
   if (unknown.length) log(`  ⚠ ${L.zh}:對不上名冊的 FotMob 隊名(跳過,不編身分):${unknown.join('、')}`);

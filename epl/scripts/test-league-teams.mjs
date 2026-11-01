@@ -44,7 +44,7 @@ check('不在名冊的隊不送;缺值與格式不對的欄位不填(不填 null
 check('pickTeamPage 只取要用的欄位(容量取 statPairs 的 Capacity)',
   JSON.stringify(pickTeamPage({ details: { teamColor: '#010E80' }, overview: { venue: { widget: { name: 'V', city: 'C', location: ['1', '2'] }, statPairs: [['Surface', 'Grass'], ['Capacity', 75817], ['Opened', 1926]] } } }))
   === JSON.stringify({ color: '#010E80', teamColors: null, venue: 'V', city: 'C', location: ['1', '2'], capacity: 75817, surface: 'Grass', opened: 1926, coachHistory: null, coachHistoryFull: true }));
-/* 教練歷任整份存(2026-11-01):上游的順序不是時間序,`.slice(-3)` 讓 LMA 只留下 2023/24 的三筆 */
+/* 教練歷任整份存(2026-11-01):截成三筆的話,帶隊超過三筆的教練上任季會被算晚 */
 {
   const hist = [{ name: 'Patrick Videira', season: '2026/2027' }, ...Array.from({ length: 5 }, (_, i) => ({ name: `X${i}`, season: `202${i}/202${i + 1}` }))];
   check('pickTeamPage 存整份教練歷任(不截短;現任排在最前也留得住)', pickTeamPage({ overview: { coachHistory: hist } }).coachHistory.length === 6);
@@ -58,6 +58,9 @@ check('pickTeamPage 只取要用的欄位(容量取 statPairs 的 Capacity)',
   check('名單教練不在、快取是那一場之前抓的 → 重抓', /之前抓的/.test(coachRefetchReason(page('2026-10-09T00:00:00Z', true, ['Eugen Polański']), latest) ?? ''));
   check('名單教練不在、快取是截短版 → 重抓', /截短/.test(coachRefetchReason(page('2026-10-30T00:00:00Z', false, ['Eugen Polański']), latest) ?? ''));
   check('名單教練不在、但快取是那一場之後抓的完整版(停賽的代理教練)→ 不再重抓', coachRefetchReason(page('2026-10-30T00:00:00Z', true, ['Vincent Kompany']), { coach: 'Aaron Danks', date: '2026-10-25T13:30:00Z' }) === null);
+  check('同一位已經查過一次沒有(coachMissing)→ 不再為他重抓(不然每踢一輪重抓一次)',
+    coachRefetchReason({ ...page('2026-11-01T00:00:00Z', true, ['Lukas Kwasniok']), coachMissing: 'Rene Wagner' }, { coach: 'Rene Wagner', date: '2026-11-08T00:00:00Z' }) === null);
+  check('coachMissing 是別人時照樣重抓', /之前抓的/.test(coachRefetchReason({ ...page('2026-11-01T00:00:00Z', true, ['Lukas Kwasniok']), coachMissing: 'Rene Wagner' }, { coach: 'Someone Else', date: '2026-11-08T00:00:00Z' }) ?? ''));
   check('重音不算不同人(Rene / René)', coachRefetchReason(page('2026-10-09T00:00:00Z', true, ['René Wagner']), { coach: 'Rene Wagner', date: '2026-10-24T00:00:00Z' }) === null);
   const d = mkdtempSync(join(tmpdir(), 'epl-coach-'));
   writeFileSync(join(d, '2026-27-game-details.json'), JSON.stringify({ matches: {
@@ -111,11 +114,18 @@ try {
   /* 接線:TTL 內、但快取比那一隊最新一場名單還舊而且沒有那位教練 → 只重抓那一隊(倉庫裡義甲的逐場 raw 有 INT 的名單才驗) */
   if (latestLineupCoaches(join(ROOT, 'data', 'raw', 'fotmob-serie-a')).has('INT')) {
     const fp = join(dir, 'it1.json'), c = JSON.parse(readFileSync(fp, 'utf8'));
-    for (const t of c.teams) if (t.code === 'INT') t.fetchedAt = '2026-07-01T00:00:00.000Z';
+    for (const t of c.teams) if (t.code === 'INT') { t.fetchedAt = '2026-07-01T00:00:00.000Z'; delete t.coachMissing; }   // 舊快取沒有這個欄位
     writeFileSync(fp, JSON.stringify(c));
     const n2 = calls.length;
     await fetchLeagueTeams('it1', { ...quiet, ttlDays: 100000 });
     check('教練紀錄過期的那一隊在 TTL 內也重抓,其餘不動', calls.length - n2 === 2 && calls.at(-1).endsWith('id=8636'), `${calls.length - n2} 個請求`);
+    const c2 = JSON.parse(readFileSync(fp, 'utf8')), int2 = c2.teams.find(t => t.code === 'INT');
+    check('重抓回來仍然沒有他 → 記成 coachMissing', Boolean(int2.coachMissing));
+    int2.fetchedAt = '2026-07-01T00:00:00.000Z';
+    writeFileSync(fp, JSON.stringify(c2));
+    const n3 = calls.length;
+    await fetchLeagueTeams('it1', { ...quiet, ttlDays: 100000 });
+    check('記過 coachMissing 的那一隊不再為同一位重抓', calls.length - n3 === 1, `${calls.length - n3} 個請求`);
   }
   failId = 8636; // 只有國際米蘭那一頁失敗,尤文圖斯照常
   await fetchLeagueTeams('it1', { ...quiet, force: true });
