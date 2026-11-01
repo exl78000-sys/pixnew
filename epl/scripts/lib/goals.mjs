@@ -5,6 +5,7 @@
 // 球隊整季的進球情境另由 Understat 快取進入 tactics.json,不在這裡重複聚合。
 import { round } from './util.mjs';
 import { lineupRole } from './lineup-role.mjs';
+import { webNameFinder, leadingNameFinder } from './names.mjs';
 
 /* 一支球隊在一個賽季的進球剖面。
    records 已經過 adapter 修正與比分核對,這裡只做彙總,不再驗證。 */
@@ -180,11 +181,16 @@ export function goalRowsFromMatchStats(matches) {
  * 一個 FotMob id 對到兩個代碼、或兩個 id 對到同一個代碼的都不採用。對不上的人回 null,呼叫端保留 FotMob 的身分
  * (加前綴,FotMob id 與 FPL 代碼都是六、七位數,不加會撞)。
  * 季中轉隊的人 FPL 累計含前東家的,核對一定不過 —— 那是對的結果(拿不準是誰就不認)。
+ * 姓名的第三道是簡稱退路(lib/names.mjs 的 webNameFinder):FotMob 給短名(「Emiliano Buendía」),FPL 全名多掛了第二個姓
+ * (「Emiliano Buendía Stati」「Dominic Solanke-Mitchell」),前兩道都比不到。2026-11-01 量到 78 個沒接上的人裡大半是這一種。
+ * `elsewhere(name, team)`:**暑假轉隊**的人在 FPL 名冊裡還掛著舊東家(Konsa:FPL 寫 AVL,FotMob 與英超官方正式名單都是 ARS,
+ * 本季 551 分鐘兩邊一分不差)。同一隊的名冊找不到人、而另一個獨立來源(呼叫端給:官方正式名單)說這個名字確實替這一隊上過場,
+ * 才去整份名冊找 —— 姓名在整份名冊裡要唯一,後面的進球 / 先發 / 分鐘核對照舊。接上的列在 `moved`,呼叫端照實印出來。
  * tol 10 分鐘是量過的:2026-10-31 本機 456 人 × 隊,差 ≤ 5 分鐘 340 人、≤ 10 分鐘 349 人、≤ 20 分鐘 351 人。 */
 /* `pending`:隊碼 → 這一隊已踢完、但 FotMob 還沒有的場數(比賽日 FPL 累計常常快幾場)。兩邊不是同一批時不能要求相等 ——
    那幾場最多讓 FPL 多出:先發 k 場、分鐘 k × (90 + tol)、進球不會變少。k = 0 時就是相等(2026-10-31:比賽日 85 場對 80 場,
    要求相等的話接上的人從 349 掉到 228,掉的全是那幾場還沒進 FotMob 的隊)。 */
-export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c => c.name, pending = {} } = {}) {
+export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c => c.name, pending = {}, elsewhere = null } = {}) {
   const agg = new Map();
   for (const r of rows) {
     if (r.code == null) continue;
@@ -193,10 +199,14 @@ export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c =
     a.g += r.g; a.min += r.min ?? 0; if (r.start === true) a.starts++;
     agg.set(k, a);
   }
-  const cand = new Map(), why = {};
+  const cand = new Map(), why = {}, movedBy = new Map(), failOf = new Map();
+  const find = (pool, name) => matchOne(pool, name) ?? matchOne(pool, name, { nameOf }) ?? webNameFinder(pool)(name) ?? leadingNameFinder(pool)(name);
   for (const [k, a] of agg) {
-    const pool = roster.filter(p => p.team === a.team);
-    const p = matchOne(pool, a.name) ?? matchOne(pool, a.name, { nameOf });
+    let p = find(roster.filter(p => p.team === a.team), a.name);
+    if (!p && elsewhere?.(a.name, a.team)) {
+      const q = find(roster, a.name);
+      if (q && q.team !== a.team) { p = q; movedBy.set(k, { fid: a.fid, name: a.name, team: a.team, fplTeam: q.team }); }
+    }
     const c = p?.current ?? null;
     const lag = pending[a.team] ?? 0;
     const inRange = (fpl, fm, perGame) => fpl - fm >= -tol && fpl - fm <= lag * perGame + tol;
@@ -204,12 +214,30 @@ export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c =
       : (lag ? (c.goals ?? 0) < a.g : (c.goals ?? 0) !== a.g) ? 'goals'
       : (lag ? !((c.starts ?? 0) >= a.starts && (c.starts ?? 0) <= a.starts + lag) : (c.starts ?? 0) !== a.starts) ? 'starts'
       : !inRange(c.minutes ?? 0, a.min, 90) ? 'minutes' : null;
-    if (fail) { why[fail] = (why[fail] ?? 0) + 1; continue; }
+    if (fail) { why[fail] = (why[fail] ?? 0) + 1; failOf.set(k, fail); continue; }
     cand.set(k, String(p.code));
   }
   const byCode = new Map();
   for (const [k, code] of cand) byCode.set(code, [...(byCode.get(code) ?? []), k]);
   const out = new Map();
-  for (const [code, ks] of byCode) if (ks.length === 1) out.set(ks[0], code); else why.shared = (why.shared ?? 0) + ks.length;
-  return { map: out, total: agg.size, why };
+  /* 一個代碼只能是一個人:對到它的列要全部是同一個 FotMob id(同一人在兩隊各有一列算一個人) */
+  for (const [code, ks] of byCode) {
+    if (new Set(ks.map(k => agg.get(k).fid)).size === 1) for (const k of ks) out.set(k, code);
+    else why.shared = (why.shared ?? 0) + ks.length;
+  }
+  /* 同一個 FotMob 球員 id 在另一隊已經核對接上的,這一隊的列也是同一個人(季中轉隊:Ndiaye 開季兩場在 EVE、之後在 MCI,
+     FPL 的累計是兩隊合起來的,逐隊核對只會過其中一邊)。id 是供應商的「人」,不是名字,不會對錯人;一個 id 對到兩個代碼的不補。 */
+  const codeByFid = new Map();
+  for (const [k, code] of out) { const fid = agg.get(k).fid; codeByFid.set(fid, codeByFid.has(fid) && codeByFid.get(fid) !== code ? null : code); }
+  let sameId = 0;
+  for (const [k, a] of agg) {
+    if (out.has(k)) continue;
+    const code = codeByFid.get(a.fid);
+    if (!code) continue;
+    out.set(k, code); sameId++;
+    const f = failOf.get(k);
+    if (f && !--why[f]) delete why[f];
+  }
+  const moved = [...movedBy].filter(([k]) => out.has(k)).map(([k, m]) => ({ ...m, code: out.get(k) }));
+  return { map: out, total: agg.size, why, moved, sameId };
 }

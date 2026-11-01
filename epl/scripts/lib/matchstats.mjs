@@ -14,7 +14,7 @@
  */
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { matchOne, normName } from './names.mjs';
+import { matchOne, webNameFinder } from './names.mjs';
 import { markSubstitutes } from './lineup-role.mjs';
 
 const r2 = n => Math.round(n * 100) / 100;
@@ -261,29 +261,7 @@ export function toCanonicalDetail(m, { verified = false } = {}) {
    先走 lib/names.mjs 的 matchOne(姓氏 + 名字首字母,配不出唯一就 null),再一道「姓氏 = 簡稱且隊裡唯一」的退路
    (「David Raya」↔「Raya」)。配不到就不掛 —— 配錯人比不掛糟。回傳配對統計給 build 印出來。
    模擬遊玩的側寫(scripts/game/lib/profile.mjs)也走這一個函式,不要再抄一份。 */
-/* 簡稱退路:FPL 的簡稱(web_name)常常只有姓(「Raya」),全名比不到時拿 FotMob 名字的最後一個字比簡稱。
-   **只看「姓相同而且唯一」會對錯人**(2026-10-31 量到:Sunderland 的「Juan Riquelme Angulo」被對到「Nilson Angulo」,
-   同一場裡 Nilson 本人也在,於是他在那一場有兩列)—— 這正是 CLAUDE.md 租借核對器那條坑。所以名字有兩個字以上時,
-   名字的首字母還要對得上名冊全名(規則在 okGiven)。attachPlayerTracking 與 buildPlayerLogs 共用這一支。 */
-function webNameFinder(squad) {
-  return name => {
-    const parts = normName(name).split(/\s+/).filter(Boolean);
-    const last = parts.at(-1), first = parts[0]?.[0];
-    if (!last) return null;
-    const given = parts[0];
-    const okGiven = p => {
-      if (parts.length < 2) return true;
-      const toks = normName(p.fullName ?? '').split(/\s+/).filter(Boolean);
-      /* 首字母比「全名任何一個字」:日本球員名冊是姓在前(Endo Wataru ↔ Wataru Endo);
-         或其中一個名字包含另一個(暱稱:Tino ↔ Valentino Livramento)。2026-10-31 量過:這兩條放回
-         Endo、Mitoma、Tanaka、Livramento 四人共 87 人-場,擋下的只剩 Juan Riquelme Angulo ↔ Nilson Angulo。 */
-      return toks.some(t => t[0] === first) || toks.some(t => t.length >= 3 && (given.startsWith(t) || given.endsWith(t)));
-    };
-    const hits = squad.filter(p => normName(p.name) === last && okGiven(p));
-    return hits.length === 1 ? hits[0] : null;
-  };
-}
-
+/* 簡稱退路(webNameFinder)在 lib/names.mjs —— 英超本季進球表的身分接回(goals.mjs 的 verifiedCodeMap)也用它,只有一份。 */
 export function attachPlayerTracking(players, stats, { teamOf = p => p.team } = {}) {
   let matched = 0, total = 0;
   const byTeam = new Map();

@@ -54,7 +54,7 @@ import { buildFormIndex, recentForm, formSummary, formDelta, TUNED } from './lib
 import { teamAvailability } from './lib/availability.mjs';
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { buildGoals, goalRowsFromMatchStats, verifiedCodeMap } from './lib/goals.mjs';
-import { matchOne as nameMatchOne } from './lib/names.mjs';
+import { matchOne as nameMatchOne, normName } from './lib/names.mjs';
 import { shirtsFromOfficial, shirtsFromManual, backfillSquadNumbers } from './lib/squadnumbers.mjs';
 import { numberProfile, traditionVsData, formationFromLineups } from './lib/knowledge.mjs';
 import { round } from './lib/util.mjs';
@@ -1608,7 +1608,17 @@ async function main() {
       /* 這一隊已踢完、FotMob 還沒有的場數(比賽日兩邊不同批,核對改成區間;規則在 verifiedCodeMap) */
       const covered = new Set(r.matchKeys), pending = {};
       for (const m of curPlayed) if (!covered.has(`${m.home}|${m.away}`)) for (const t of [m.home, m.away]) pending[t] = (pending[t] ?? 0) + 1;
-      const idm = verifiedCodeMap(r.rows, players, { matchOne: nameMatchOne, pending });
+      /* 暑假轉隊、FPL 名冊還掛舊東家的人(規則在 verifiedCodeMap 的 elsewhere):英超官方正式名單(pulselive,跟 FotMob 與 FPL 都獨立)
+         說這個名字替這一隊上過名單,才去整份名冊找。名單含板凳 —— 這裡問的是「他是不是這一隊的人」,不是上沒上場。 */
+      const offOn = new Set();
+      for (const [key, m] of Object.entries(offLineups?.matches ?? {})) {
+        const [h, a] = key.split('|');
+        for (const [side, t] of [['home', h], ['away', a]]) {
+          for (const q of [...(m?.[side]?.xi ?? []), ...(m?.[side]?.subs ?? [])]) if (q?.name) offOn.add(`${normName(q.name)}|${t}`);
+        }
+      }
+      const idm = verifiedCodeMap(r.rows, players, { matchOne: nameMatchOne, pending,
+        elsewhere: offOn.size ? (name, team) => offOn.has(`${normName(name)}|${team}`) : null });
       const rows = r.rows.map(x => {
         if (x.code == null) return x;
         const code = idm.map.get(`${x.team}|${x.code}`);
@@ -1619,9 +1629,13 @@ async function main() {
       goalMatchKeys[CURRENT_SEASON] = r.matchKeys;
       goalFull[CURRENT_SEASON] = true;
       goalSource = { season: CURRENT_SEASON, source: 'FotMob 逐場逐人統計', matches: r.matchKeys.length, excluded: r.excluded,
-        identity: { verified: idm.map.size, total: idm.total, why: idm.why, pendingTeams: Object.keys(pending).length } };
+        identity: { verified: idm.map.size, total: idm.total, why: idm.why, pendingTeams: Object.keys(pending).length,
+          moved: idm.moved.map(({ code, name, team, fplTeam }) => ({ code, name, team, fplTeam })) } };
       console.log(`  英超本季進球表:FotMob 逐場 ${r.matchKeys.length} 場・對不回比分不收 ${r.excluded.length} 場・烏龍球 ${r.ownGoals}`
-        + `・身分接回 FPL ${idm.map.size}/${idm.total} 人(沒接上的 ${JSON.stringify(idm.why)})`);
+        + `・身分接回 FPL ${idm.map.size}/${idm.total} 人(沒接上的 ${JSON.stringify(idm.why)})`
+        + (idm.moved.length ? `・FPL 名冊還掛舊東家、官方名單證實已轉隊的 ${idm.moved.length} 人` : '')
+        + (idm.sameId ? `・同一個 FotMob id 在另一隊已接上而補上的 ${idm.sameId} 列` : ''));
+      for (const x of idm.moved) console.log(`    ${x.name}:FPL 名冊 ${x.fplTeam}、FotMob 與官方名單 ${x.team}`);
     } else {
       const fmGoalsAll = fotmobGoals(ROOT);
       if (fmGoalsAll && !goalsBySeason[CURRENT_SEASON]) {

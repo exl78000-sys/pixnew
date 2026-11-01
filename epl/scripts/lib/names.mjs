@@ -66,3 +66,42 @@ export function matchOne(candidates, name, { nameOf, idOf } = {}) {
   }));
   return both.length === 1 ? both[0] : null;
 }
+
+/* 簡稱退路:FPL 的簡稱(web_name)常常只有姓(「Raya」),全名比不到時拿 FotMob 名字的最後一個字比簡稱。
+   **只看「姓相同而且唯一」會對錯人**(2026-10-31 量到:Sunderland 的「Juan Riquelme Angulo」被對到「Nilson Angulo」,
+   同一場裡 Nilson 本人也在,於是他在那一場有兩列)—— 這正是 CLAUDE.md 租借核對器那條坑。所以名字有兩個字以上時,
+   名字的首字母還要對得上名冊全名(規則在 okGiven)。matchstats.mjs 的 attachPlayerTracking、buildPlayerLogs 與 goals.mjs 的 verifiedCodeMap 共用這一支(2026-11-01 從 matchstats.mjs 搬來)。 */
+export function webNameFinder(squad) {
+  return name => {
+    const parts = normName(name).split(/\s+/).filter(Boolean);
+    const last = parts.at(-1), first = parts[0]?.[0];
+    if (!last) return null;
+    const given = parts[0];
+    const okGiven = p => {
+      if (parts.length < 2) return true;
+      const toks = normName(p.fullName ?? '').split(/\s+/).filter(Boolean);
+      /* 首字母比「全名任何一個字」:日本球員名冊是姓在前(Endo Wataru ↔ Wataru Endo);
+         或其中一個名字包含另一個(暱稱:Tino ↔ Valentino Livramento)。2026-10-31 量過:這兩條放回
+         Endo、Mitoma、Tanaka、Livramento 四人共 87 人-場,擋下的只剩 Juan Riquelme Angulo ↔ Nilson Angulo。 */
+      return toks.some(t => t[0] === first) || toks.some(t => t.length >= 3 && (given.startsWith(t) || given.endsWith(t)));
+    };
+    const hits = squad.filter(p => normName(p.name) === last && okGiven(p));
+    return hits.length === 1 ? hits[0] : null;
+  };
+}
+
+/* 全名開頭退路(2026-11-01,英超本季進球表的身分接回):FotMob 給的是球員常用的兩三個字(「Bruno Guimarães」「Alysson Edward」),
+   FPL 全名是護照上的整串(「Bruno Guimarães Rodriguez Moura」「Alysson Edward Franco da Rocha dos Santos」)—— 姓氏不是最後一個字,
+   matchOne 與簡稱退路都比不到。規則:FotMob 的每一個字**依序**是 FPL 全名開頭的那幾個字(不是任意子集合:「Ibrahim Sangaré」不會
+   因為有 Ibrahim 就對上「Ibrahim Mbaye」),而且隊裡唯一。拼法不同的(Yéremi ↔ Yéremy)不救 —— 那要猜。 */
+export function leadingNameFinder(squad) {
+  return name => {
+    const parts = normName(name).split(' ').filter(Boolean);
+    if (parts.length < 2) return null;
+    const hits = squad.filter(p => {
+      const toks = normName(p.fullName ?? '').split(' ').filter(Boolean);
+      return toks.length > parts.length && parts.every((t, i) => toks[i] === t);
+    });
+    return hits.length === 1 ? hits[0] : null;
+  };
+}

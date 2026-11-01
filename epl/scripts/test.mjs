@@ -1241,6 +1241,30 @@ function checkGoalDetails(T) {
       ['身分接回:沒有落後時仍然要相等', !same.map.has('AAA|11')],
       ['身分接回:多出來的超過落後的場數 → 不接', !tooFar.map.has('AAA|11'), JSON.stringify(tooFar.why)]);
   }
+  /* 身分接回的三條退路(2026-11-01):① 全名比不到(簡稱退路;FPL 全名多掛了姓的走全名開頭退路)② 暑假轉隊、FPL 名冊還掛舊東家 ——
+     只有另一個獨立來源(官方名單)證實他替這一隊上過名單才去整份名冊找 ③ 同一個 FotMob id 在另一隊已接上的列補上 */
+  {
+    const roster = [
+      { code: 'P1', name: 'Endo', fullName: 'Endo Wataru', team: 'AAA', current: { goals: 1, starts: 1, minutes: 90 } },
+      { code: 'P2', name: 'Bruno G.', fullName: 'Bruno Guimarães Rodriguez Moura', team: 'AAA', current: { goals: 0, starts: 1, minutes: 90 } },
+      { code: 'P3', name: 'Konsa', fullName: 'Ezri Konsa Ngoyo', team: 'OLD', current: { goals: 0, starts: 1, minutes: 90 } },
+      { code: 'P4', name: 'Ndiaye', fullName: 'Iliman Ndiaye', team: 'CCC', current: { goals: 0, starts: 2, minutes: 180 } },
+      { code: 'P5', name: 'Sangaré', fullName: 'Ibrahim Sangaré', team: 'AAA', current: { goals: 0, starts: 0, minutes: 10 } },
+    ];
+    const row = (team, code, name, g, min, start) => ({ team, opp: 'ZZZ', code, name, g, a: 0, og: 0, min, start });
+    const rows = [row('AAA', '1', 'Wataru Endo', 1, 90, true), row('AAA', '2', 'Bruno Guimarães', 0, 90, true),
+      row('AAA', '3', 'Ezri Konsa', 0, 90, true), row('AAA', '5', 'Ibrahim Mbaye', 0, 10, false),
+      row('CCC', '4', 'Iliman Ndiaye', 0, 90, true), row('CCC', '4', 'Iliman Ndiaye', 0, 90, true), row('DDD', '4', 'Iliman Ndiaye', 0, 90, true)];
+    const confirm = (name, team) => name === 'Ezri Konsa' && team === 'AAA';
+    const r = verifiedCodeMap(rows, roster, { matchOne: namesMatchOne, elsewhere: confirm });
+    const noConfirm = verifiedCodeMap(rows, roster, { matchOne: namesMatchOne });
+    cases.push(['身分接回:全名比不到 → 簡稱退路接上(Wataru Endo ↔ Endo / 名冊是姓在前的 Endo Wataru)', r.map.get('AAA|1') === 'P1', JSON.stringify([...r.map])],
+      ['身分接回:FotMob 名字是 FPL 全名的開頭 → 接上(Bruno Guimarães ↔ Bruno Guimarães Rodriguez Moura)', r.map.get('AAA|2') === 'P2'],
+      ['身分接回:只有名字的一部分相同不算(Ibrahim Mbaye ≠ Ibrahim Sangaré)', !r.map.has('AAA|5')],
+      ['身分接回:FPL 名冊還掛舊東家、官方名單證實已轉來 → 接上並列在 moved', r.map.get('AAA|3') === 'P3' && r.moved.length === 1 && r.moved[0].fplTeam === 'OLD', JSON.stringify(r.moved)],
+      ['身分接回:沒有獨立來源證實轉隊 → 不去別隊找', !noConfirm.map.has('AAA|3') && noConfirm.moved.length === 0],
+      ['身分接回:同一個 FotMob id 在另一隊已接上 → 這一隊的列也補上', r.map.get('DDD|4') === 'P4' && r.map.get('CCC|4') === 'P4' && r.sameId === 1, JSON.stringify([...r.map])]);
+  }
   /* 英超往季的全部出場(fetch-fpl-appearances.mjs):對手 id 由已核對的明細反推,一個 id 兩種說法就整季不寫;
      明細的每一列都要在出場列裡、分鐘與先發相同 */
   {
