@@ -71,6 +71,7 @@ import { preMatchBundle, postMatchBundle, generateReport, ReportCache, llmEnable
 import { loadPlayers, buildLeaders, attachRadar, normalisePlayerForSite, BOARDS, RADAR_AXES, MIN_MINUTES }
   from './adapters/understat-players.mjs';
 import { leagueKnowledge } from './knowledge.mjs';
+import { resolveLineupCoach } from './league-coach.mjs';
 
 
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
@@ -814,7 +815,8 @@ export async function buildLeague(L) {
   const coachRoster = (() => {
     const tf = join(ROOT, 'data', 'raw', 'fotmob-teams', `${L.key}.json`);
     const page = existsSync(tf) ? JSON.parse(readFileSync(tf, 'utf8')) : null;
-    const histOf = new Map((page?.teams ?? []).map(t => [t.code, t.coachHistory ?? []]));
+    const pageOf = new Map((page?.teams ?? []).map(t => [t.code, t]));
+    const curFm = CURRENT_SEASON.replace(/^(\d{4})-\d{2}$/, (_, y) => `${y}/${Number(y) + 1}`);   // 2026-27 → 2026/2027
     const same = (a, b) => normName(a) === normName(b);
     const played = [...lastMatches, ...curMatches].filter(m => m.played && m.fh != null);
     const withPpg = r => ({ ...r, pts: r.w * 3 + r.d, ppg: r.p ? round((r.w * 3 + r.d) / r.p, 2) : 0 });   // 跟英冠同一個算法
@@ -825,15 +827,13 @@ export async function buildLeague(L) {
         .filter(m => (m.home === code || m.away === code) && m.lineups?.[code]?.coach)
         .sort((a, b) => String(a.date).localeCompare(String(b.date)));
       if (!ms.length) { skipped.push(`${code}:沒有正式名單`); continue; }
-      const name = ms.at(-1).lineups[code].coach;
-      let i = ms.length - 1;
-      while (i > 0 && same(ms[i - 1].lineups[code].coach, name)) i--;
-      const fromStart = i === 0;
-      const hist = histOf.get(code) ?? [];
-      const mine = hist.filter(h => same(h.name, name));
-      if (!mine.length) { skipped.push(`${code}:名單是 ${name},球隊頁的逐季紀錄沒有他`); continue; }
+      const hist = pageOf.get(code)?.coachHistory ?? [];
+      const pick = resolveLineupCoach({ ms, code, page: pageOf.get(code), curSeason: curFm, same });
+      if (pick.skip) { skipped.push(`${code}:${pick.skip}`); continue; }
+      const { name, standIn, fromStart } = pick;
+      if (standIn) console.log(`  ${L.zh}教練 ${code}:${standIn.dates.join('、')} 由 ${standIn.names.join('、')} 坐鎮,球隊頁本季仍記 ${name} —— 列 ${name}`);
       let since = null, sincePrecision = null, sinceSeason = null;
-      if (!fromStart) { since = ms[i].date; sincePrecision = 'match'; }
+      if (!fromStart) { since = pick.run[0].date; sincePrecision = 'match'; }
       else {
         // 球隊頁的逐季紀錄:從最近一季往回,連續都是他的最早那一季
         const seasons = [...new Set(hist.map(h => h.season))].sort();
@@ -842,13 +842,19 @@ export async function buildLeague(L) {
         sinceSeason = seasons[k]?.replace('/', '-').replace(/-(\d{2})(\d{2})$/, '-$2') ?? null;   // 2024/2025 → 2024-25
         sincePrecision = 'season';
       }
-      const inTenure = m => (since ? m.date >= since : true) && (m.home === code || m.away === code);
+      const standInDay = new Set(standIn?.dates ?? []);
+      const inTenure = m => (since ? m.date >= since : true) && (m.home === code || m.away === code)
+        && !standInDay.has(String(m.date).slice(0, 10));
       const startSeason = since ? null : sinceSeason;
       const tenure = played.filter(m => inTenure(m) && (!startSeason || m.season >= startSeason));
       const lastTen = tenure.filter(m => m.season === LAST_SEASON), curTen = tenure.filter(m => m.season === CURRENT_SEASON);
       out.push({
         team: code, name, nat: null, since, sincePrecision, sinceSeason, caretaker: null,
-        fotmobDerived: true, lastMatch: ms.at(-1).date,
+        fotmobDerived: true, lastMatch: pick.lastMatch,
+        ...(standIn ? {
+          standIn,
+          note: `${standIn.dates.join('、')} 的正式名單上坐鎮的是 ${standIn.names.join('、')};FotMob 球隊頁在那之後抓的本季教練紀錄仍是 ${name},所以這裡列他。任內戰績不含那 ${standIn.dates.length} 場。`,
+        } : {}),
         seasonRecord: lastTen.length ? withPpg(teamRecord(lastTen, code)) : null,
         currentSeasonRecord: curTen.length ? withPpg(teamRecord(curTen, code)) : null,
         allRecord: tenure.length ? withPpg(teamRecord(tenure, code)) : null,

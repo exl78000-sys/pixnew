@@ -8,12 +8,13 @@
  * 做什麼:一個請求拿聯賽頁的隊 id(54 / 55 / 53 是 probe-new-leagues 逐隊證明過的),每隊一個請求拿球隊頁,
  * 只存要用的欄位(不存整份,一頁 200 KB)。隊名走名冊寬鬆對照,**對不上的印出來並跳過** —— 不編身分。
  * 場館資料幾乎不變,所以每隊快取 30 天(`--ttl-days=`),部署一天兩次不會每次打 56 個請求;`--force` 全抓。
+ * 例外是教練:最新一場名單上的教練不在快取裡,那一隊提早重抓(`coachRefetchReason`,一次換帥一個請求)。
  * 抓失敗保留上一份(逐隊),不整份覆寫(「抓取器整份覆寫」那條坑)。
  *
  *   node scripts/fetch-league-teams-fotmob.mjs --league=de1   (也可 it1 / fr1;不帶就三個都跑)
  *   寫 data/raw/fotmob-teams/{聯賽}.json(--out= 可改目錄,探測用)
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
@@ -22,9 +23,9 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'pl-war-room/1.0 (football analysis side project)';
 const FM = 'https://www.fotmob.com';
 export const LEAGUES = {
-  de1: { zh: '德甲', id: 54, ccode3: 'GER', teamFile: 'teams-bundesliga.json', meta: 'de1' },
-  it1: { zh: '義甲', id: 55, ccode3: 'ITA', teamFile: 'teams-serie-a.json', meta: 'it1' },
-  fr1: { zh: '法甲', id: 53, ccode3: 'FRA', teamFile: 'teams-ligue-1.json', meta: 'fr1' },
+  de1: { zh: '德甲', id: 54, ccode3: 'GER', teamFile: 'teams-bundesliga.json', meta: 'de1', matchDir: 'fotmob-bundesliga' },
+  it1: { zh: '義甲', id: 55, ccode3: 'ITA', teamFile: 'teams-serie-a.json', meta: 'it1', matchDir: 'fotmob-serie-a' },
+  fr1: { zh: '法甲', id: 53, ccode3: 'FRA', teamFile: 'teams-ligue-1.json', meta: 'fr1', matchDir: 'fotmob-ligue-1' },
 };
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
 const get = async url => {
@@ -37,7 +38,9 @@ const fotmobSeason = s => { const y = Number(s.slice(0, 4)); return `${y}/${y + 
 
 /* 從球隊頁只取要用的欄位。形狀以探測為準:`overview.venue.widget.{name,city,location}`、
    `overview.venue.statPairs` 是 [標題, 值] 的陣列(Capacity 是整數)、`details.teamColor` 是十六進位色。
-   教練歷任與隊色陣列的內容還沒讀過,原樣存(截短)等下游讀,不在這裡猜。 */
+   隊色陣列原樣存。教練歷任**整份存**(2026-11-01):第一版存 `.slice(-3)`,以為最後三筆是最近的 ——
+   而上游的順序不是時間序:法甲 LMA 留下來的三筆停在 2023/24、KOE 與 BST 留下來的沒有現任,
+   現任教練一整季都在名單上卻沒有發布。一隊幾十筆,存整份比猜順序便宜。 */
 export function pickTeamPage(j) {
   const v = j?.overview?.venue ?? {};
   const pair = k => (v.statPairs ?? []).find(p => p?.[0] === k)?.[1] ?? null;
@@ -47,8 +50,42 @@ export function pickTeamPage(j) {
     venue: v.widget?.name ?? null, city: v.widget?.city ?? null, location: v.widget?.location ?? null,
     capacity: Number.isFinite(Number(pair('Capacity'))) ? Number(pair('Capacity')) : null,
     surface: pair('Surface'), opened: pair('Opened'),
-    coachHistory: Array.isArray(j?.overview?.coachHistory) ? j.overview.coachHistory.slice(-3) : (j?.overview?.coachHistory ?? null),
+    coachHistory: j?.overview?.coachHistory ?? null,
+    coachHistoryFull: true,
   };
+}
+
+/* 每隊最新一場正式名單上的教練(讀 game:fetch 落地的 raw;部署裡它排在這支之前)。沒有 raw 回空 Map。 */
+export function latestLineupCoaches(dir) {
+  const out = new Map();
+  if (!existsSync(dir)) return out;
+  for (const f of readdirSync(dir).filter(f => /-game-details\.json$/.test(f))) {
+    let j;
+    try { j = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { continue; }
+    for (const m of Object.values(j?.matches ?? j ?? {})) {
+      for (const [code, l] of Object.entries(m?.lineups ?? {})) {
+        if (!l?.coach || !m.date) continue;
+        const prev = out.get(code);
+        if (!prev || String(m.date) > prev.date) out.set(code, { coach: l.coach, date: String(m.date) });
+      }
+    }
+  }
+  return out;
+}
+
+/* 快取還在 TTL 內,但教練要不要重抓那一頁(2026-11-01)。場館一年不變,教練一季可以換兩次 ——
+   德甲 BMG、義甲 PAR / VEN 在 10-09 抓頁之後換帥,新教練帶了三、四場還沒上站。
+   重抓的條件:最新一場名單上的教練不在快取的教練紀錄裡,而且
+   (a) 快取是那一場之前抓的(上游有機會已經記上他),或 (b) 快取是截短版(見 pickTeamPage)。
+   抓過之後仍然沒有他(停賽的代理教練就是這樣),快取的時間已晚於那一場,下次不再重抓 —— 不會每次部署都打。 */
+const normCoach = s => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]+/g, ' ').trim();
+export function coachRefetchReason(prev, latest) {
+  if (!prev || !latest?.coach) return null;
+  const hist = Array.isArray(prev.coachHistory) ? prev.coachHistory : [];
+  if (hist.some(h => normCoach(h?.name) === normCoach(latest.coach))) return null;
+  if (!prev.coachHistoryFull) return `名單是 ${latest.coach},快取的教練紀錄是截短版`;
+  if (Date.parse(prev.fetchedAt) < Date.parse(latest.date)) return `名單是 ${latest.coach}(${latest.date.slice(0, 10)}),快取是那之前抓的`;
+  return null;
 }
 
 export async function fetchLeagueTeams(key, { outDir = join(ROOT, 'data', 'raw', 'fotmob-teams'), ttlDays = 30, force = false, log = console.log } = {}) {
@@ -58,22 +95,26 @@ export async function fetchLeagueTeams(key, { outDir = join(ROOT, 'data', 'raw',
   const file = join(outDir, `${key}.json`);
   const old = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
   const oldBy = new Map((old?.teams ?? []).map(t => [t.code, t]));
+  const coachNow = latestLineupCoaches(join(ROOT, 'data', 'raw', L.matchDir));
   const lg = await get(`${FM}/api/data/leagues?id=${L.id}&ccode3=${L.ccode3}&season=${encodeURIComponent(fotmobSeason(meta.currentSeason))}`);
   const rows = lg.j?.table?.[0]?.data?.table?.all ?? lg.j?.table?.[0]?.data?.tables?.[0]?.table?.all ?? [];
   if (!rows.length) { log(`✗ ${L.zh}:聯賽頁 HTTP ${lg.status},沒有球隊列表,保留上一份`); return { requests: 1, kept: true }; }
-  const teams = [], unknown = [], failed = [];
+  const teams = [], unknown = [], failed = [], coachRefetch = [];
   let requests = 1;
   for (const r of rows) {
     const code = T.codeOf(r.name);
     if (!code) { unknown.push(r.name); continue; }
     const prev = oldBy.get(code);
     const fresh = prev && prev.fotmobId === r.id && Date.now() - Date.parse(prev.fetchedAt) < ttlDays * 864e5;
-    if (fresh && !force) { teams.push(prev); continue; }
+    const why = fresh && !force ? coachRefetchReason(prev, coachNow.get(code)) : null;
+    if (fresh && !force && !why) { teams.push(prev); continue; }
+    if (why) coachRefetch.push(`${code}:${why}`);
     requests++;
     const p = await get(`${FM}/api/data/teams?id=${r.id}`);
     if (!p.j) { failed.push(`${r.name}(HTTP ${p.status})`); if (prev) teams.push(prev); continue; }
     teams.push({ code, fotmobId: r.id, fotmobName: r.name, fetchedAt: new Date().toISOString(), ...pickTeamPage(p.j) });
   }
+  if (coachRefetch.length) log(`  ${L.zh}:教練紀錄過期,重抓 ${coachRefetch.length} 隊:${coachRefetch.join('、')}`);
   if (unknown.length) log(`  ⚠ ${L.zh}:對不上名冊的 FotMob 隊名(跳過,不編身分):${unknown.join('、')}`);
   if (failed.length) log(`  ⚠ ${L.zh}:球隊頁抓失敗(有上一份就保留):${failed.join('、')}`);
   if (!teams.length) { log(`✗ ${L.zh}:一支都沒對上,保留上一份`); return { requests, kept: true }; }
