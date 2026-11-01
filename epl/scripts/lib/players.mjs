@@ -169,6 +169,8 @@ export function buildPlayers({ current, last, currentTotals, teamMatches, season
       // 上季數據要掛在「上季效力的球隊」,不然轉會球員的成績會被算到新東家頭上
       lastTeam: prev?.team ?? null,
       transferred: !!prev && prev.team !== p.team,
+      /* 所屬球隊依英超官方正式名單改過的人(FPL 名冊還掛舊東家;lib/official-team-fix.mjs):畫面要講出來 */
+      ...(p.teamSource ? { teamSource: p.teamSource, fplTeam: p.fplTeam ?? null } : {}),
       pos: p.pos, posZh: POS_ZH[p.pos], price: p.price,
       squadNumber: p.squadNumber,
       // SportMonks 主要來源補入的穩定身分欄位；沒有快取時保留 null，

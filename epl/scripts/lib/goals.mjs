@@ -238,6 +238,7 @@ export function verifiedCodeMap(rows, roster, { tol = 10, matchOne, nameOf = c =
     const f = failOf.get(k);
     if (f && !--why[f]) delete why[f];
   }
-  const moved = [...movedBy].filter(([k]) => out.has(k)).map(([k, m]) => ({ ...m, code: out.get(k) }));
+  /* moved 只列**直接核對過**的(cand 裡的):用 id 補上的那幾列是季中轉隊的舊東家那一段,不是「名冊掛錯隊」 */
+  const moved = [...movedBy].filter(([k]) => cand.has(k) && out.has(k)).map(([k, m]) => ({ ...m, code: out.get(k) }));
   return { map: out, total: agg.size, why, moved, sameId };
 }

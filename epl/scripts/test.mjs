@@ -45,6 +45,7 @@ import { finalCacheIssues, fixtureScoreOf, goalsOf, minuteOf, shouldRefreshFinal
 import { loadGoals, reconcile } from './lib/adapters/fpl-goals.mjs';
 import { GOAL_SEASONS, LAST_SEASON } from './lib/sources.mjs';
 import { teamGoals, goalRowsFromMatchStats, verifiedCodeMap } from './lib/goals.mjs';
+import { officialTeamFix, applyTeamFix } from './lib/official-team-fix.mjs';
 import { matchOne as namesMatchOne } from './lib/names.mjs';
 import { extractAppearances } from './fetch-fpl-appearances.mjs';
 import { playedPrematch, prematchKey } from './lib/played-prematch.mjs';
@@ -108,6 +109,9 @@ async function checkInplayKickoff() {
   const htMin = V.liveMinute({ period: 'HT', minute: 45 }, new Date().toISOString());
   ok('liveMinute:資料源說中場就是中場(不從 45 往上推)', htMin.ht === true && V.minuteText(htMin) === '中場休息');
   ok('minuteText:一般分鐘照舊是「第 X 分鐘」', V.minuteText(V.liveMinute({ minute: 30 }, null)) === '第 30 分鐘');
+  /* C.pct 沒有值印「—」(2026-11-01:英超賽前快照沒有大 2.5 球,賽程表整排印 NaN%) */
+  ok('C.pct:沒有值(undefined / null / NaN)印「—」,有值照舊', V.pct(undefined) === '—' && V.pct(null) === '—' && V.pct(NaN) === '—'
+    && V.pct(0.4173, 0) === '42%' && V.pct(0) === '0.0%', [V.pct(undefined), V.pct(0)].join(' / '));
   const pages = ['page-analysis.js', 'page-live.js', 'page-overview.js'].map(f => [f, strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))]);
   const selfBuilt = pages.filter(([, src]) => /第 \$\{[^}]*disp\} 分鐘/.test(src) || /第 \$\{u\.live\.minute\} 分鐘/.test(src)).map(([f]) => f);
   ok('畫分鐘的三頁都走 C.minuteText,沒有人自己拼「第 X 分鐘」(中場會變成「第 中場 分鐘」)',
@@ -1264,6 +1268,56 @@ function checkGoalDetails(T) {
       ['身分接回:FPL 名冊還掛舊東家、官方名單證實已轉來 → 接上並列在 moved', r.map.get('AAA|3') === 'P3' && r.moved.length === 1 && r.moved[0].fplTeam === 'OLD', JSON.stringify(r.moved)],
       ['身分接回:沒有獨立來源證實轉隊 → 不去別隊找', !noConfirm.map.has('AAA|3') && noConfirm.moved.length === 0],
       ['身分接回:同一個 FotMob id 在另一隊已接上 → 這一隊的列也補上', r.map.get('DDD|4') === 'P4' && r.map.get('CCC|4') === 'P4' && r.sameId === 1, JSON.stringify([...r.map])]);
+  }
+  /* 所屬球隊以英超官方正式名單為準(2026-11-01,lib/official-team-fix.mjs):FPL 名冊的 team 欄對暑假轉隊的人還是舊東家。
+     只在「這一隊的名冊找不到這個名字、整份名冊唯一配得上的人掛在別隊、他在舊隊沒有更晚的官方出場」時改 */
+  {
+    const roster = [
+      { code: 'K', name: 'Konsa', fullName: 'Ezri Konsa Ngoyo', team: 'AVL', squadNumber: 4 },
+      { code: 'S', name: 'Saka', fullName: 'Bukayo Saka', team: 'ARS', squadNumber: 7 },
+      { code: 'N', name: 'Ndiaye', fullName: 'Iliman Ndiaye', team: 'EVE' },
+      { code: 'B', name: 'Back', fullName: 'Rhys Back', team: 'CHE' },
+      { code: 'J1', name: 'J.Smith', fullName: 'John Smith', team: 'LEE' },
+    ];
+    const m = (kickoff, home, away, h, a) => ({ kickoff, home: { xi: h.map(name => ({ name })), subs: [] }, away: { xi: a.map(name => ({ name })), subs: [] } });
+    const lineups = { matches: {
+      'ARS|CHE': m('2026-09-01T15:00:00Z', 'ARS', 'CHE', ['Ezri Konsa', 'Bukayo Saka'], ['Rhys Back']),
+      'EVE|MCI': m('2026-08-20T15:00:00Z', 'EVE', 'MCI', ['Iliman Ndiaye'], []),
+      'MCI|BUR': m('2026-09-10T15:00:00Z', 'MCI', 'BUR', ['Iliman Ndiaye'], []),
+      'CHE|ARS': m('2026-10-01T15:00:00Z', 'CHE', 'ARS', ['R. Back'], ['Bukayo Saka']),
+      'AVL|BHA': m('2026-09-05T15:00:00Z', 'AVL', 'BHA', [], ['Rhys Back']),
+      'TOT|NEW': m('2026-09-06T15:00:00Z', 'TOT', 'NEW', ['John Smith'], ['Unknown Kid', 'J. Smith']),
+    } };
+    const r = officialTeamFix(roster, lineups);
+    const fx = Object.fromEntries(r.fixes.map(f => [f.code, f]));
+    cases.push(['所屬球隊:這一隊名冊找不到、整份唯一的那個人掛在別隊 → 改成官方的隊', fx.K?.from === 'AVL' && fx.K?.to === 'ARS', JSON.stringify(r.fixes)],
+      ['所屬球隊:季中轉隊照官方最近一次出場的隊(Ndiaye EVE → MCI)', fx.N?.to === 'MCI'],
+      ['所屬球隊:名冊那一隊有更晚的官方出場 → 不改(「Rhys Back」9/5 在 BHA,「R. Back」10/1 又替 CHE 上場)', !fx.B && r.skipped.some(x => x.name === 'Rhys Back' && /更晚/.test(x.why)), JSON.stringify(r.skipped)],
+      ['所屬球隊:名字在名冊那一隊找得到 → 不改(Saka)', !fx.S],
+      ['所屬球隊:兩個官方名字配到同一個人 → 兩個都不改(John Smith 在 TOT、J. Smith 在 NEW)', !fx.J1 && r.skipped.some(x => /同一個人/.test(x.why)), JSON.stringify(r.skipped)],
+      ['所屬球隊:名冊裡沒有這個人 → 不改、記進 skipped', r.skipped.some(x => x.name === 'Unknown Kid')]);
+    const copy = roster.map(p => ({ ...p }));
+    applyTeamFix(copy, r.fixes);
+    const k = copy.find(p => p.code === 'K');
+    /* 規則 2:這一隊的名冊配得到(這裡走全名開頭退路),就不去整份名冊找 —— 整份名冊裡可能另有一個全名剛好一樣的人,
+       找下去會把**別隊的另一個人**搬過來 */
+    const r2 = officialTeamFix([
+      { code: 'G1', name: 'Bruno G.', fullName: 'Bruno Guimarães Rodriguez Moura', team: 'ARS' },
+      { code: 'G2', name: 'Guimarães', fullName: 'Bruno Guimarães', team: 'NEW' },
+    ], { matches: { 'ARS|CHE': m('2026-09-01T15:00:00Z', 'ARS', 'CHE', ['Bruno Guimarães'], []) } });
+    cases.push(['所屬球隊:這一隊的名冊配得到 → 不去整份名冊找(不會把 NEW 另一個同名的人搬到 ARS)', r2.fixes.length === 0, JSON.stringify(r2.fixes)]);
+    cases.push(['所屬球隊:套上之後 team 是官方的、fplTeam 留舊的、背號清掉(舊東家的號碼)', k.team === 'ARS' && k.fplTeam === 'AVL' && k.teamSource === 'official' && k.squadNumber === null, JSON.stringify(k)]);
+  }
+  /* 產物:改過的人在球員主檔帶 teamSource / fplTeam,meta 的清單跟它一致(畫面照 meta 講人數) */
+  {
+    const meta = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'meta.json'), 'utf8'));
+    const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'players.json'), 'utf8'));
+    const list = (pl.players ?? pl).filter(p => p.teamSource);
+    const fix = meta.playerTeamFix;
+    cases.push(['所屬球隊:meta.playerTeamFix 的人數 = 球員主檔帶 teamSource 的人數,而且每一個都真的換了隊',
+      fix && fix.count === list.length && list.every(p => p.teamSource === 'official' && p.fplTeam && p.fplTeam !== p.team)
+        && list.every(p => fix.players.some(f => f.code === String(p.code) && f.to === p.team && f.from === p.fplTeam)),
+      `meta ${fix?.count} / 主檔 ${list.length}`]);
   }
   /* 英超往季的全部出場(fetch-fpl-appearances.mjs):對手 id 由已核對的明細反推,一個 id 兩種說法就整季不寫;
      明細的每一列都要在出場列裡、分鐘與先發相同 */

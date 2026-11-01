@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6cff8a5f';
+import * as C from './core.js?v=7ac058b1';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -179,7 +179,7 @@ try {
           替補上場十分鐘進一球換算成每 90 分鐘九球,那是誤導不是資訊。`}
         ${goals.current?.season === season ? `<br>這一季來自 FotMob 逐場逐人統計(${goals.current.matches} 場,每一場球員進球加對手烏龍球對得回比分才收)。
           球員身分接回本站名冊 ${goals.current.identity.verified} / ${goals.current.identity.total} 人 —— 進球、先發與上場分鐘都要跟 FPL 的本季累計對得上才接。
-          ${goals.current.identity.moved?.length ? `其中 ${goals.current.identity.moved.length} 人 FPL 名冊還掛著舊東家,英超官方正式名單證實他已在這一隊上名單,才照官方接上。` : ''}
+          ${meta.playerTeamFix?.count ? `全站有 ${meta.playerTeamFix.count} 人的所屬球隊依英超官方正式名單改過(FPL 名冊還掛著舊東家),身分照改過的名冊接。` : ''}
           沒接上的人(多半是 FPL 名冊裡找不到這個人,或名字寫法不同)照 FotMob 的名字列出、沒有頭貼。` : ''}
         <br><b>這張表不把進球方式掛到個別球員。</b>逐球事件沒有這個 qualifier;
         球隊層級的運動戰、角球與任意球加總來自 Understat,列在戰術區。

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6cff8a5f';
+import * as C from './core.js?v=7ac058b1';
 
 const app = document.getElementById('app');
 
@@ -290,6 +290,7 @@ try {
         </div>
         ${p.news ? `<div class="note" style="margin-top:10px">${C.esc(p.news)}</div>` : ''}
         ${p.transferred ? `<div class="note info" style="margin-top:10px">上季效力 ${C.name(p.lastTeam)},本季已加盟 ${t.en};下方數據為在原隊的表現。</div>` : ''}
+        ${p.teamSource === 'official' ? `<div class="note info" style="margin-top:10px">本季所屬球隊依<b>英超官方正式名單</b>:FPL 名冊仍把他列在 ${C.esc(C.name(p.fplTeam))},官方正式名單本季把他列在 ${t.en}。</div>` : ''}
         ${p.isNewFace ? '<div class="note info" style="margin-top:10px">上季沒有英超出場紀錄(新援、新秀或長期缺陣),沒有可比較的數據。</div>' : ''}
       </div>
 

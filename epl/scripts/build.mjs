@@ -24,6 +24,7 @@ import { projectXI } from './lib/lineup.mjs';
 import { buildClassifier, rolePools, roleFormation, phaseShapes, countRoles, standardShape } from './lib/roles.mjs';
 import { buildCoaches } from './lib/coaches.mjs';
 import { officialFormations, officialLineups, officialManagers, attachCodes } from './lib/adapters/pulselive.mjs';
+import { officialTeamFix, applyTeamFix } from './lib/official-team-fix.mjs';
 import { summariseSeason, CUPS_ATTRIBUTION } from './lib/cups.mjs';
 import { loadUclSeasons, uclTeamAssets, uclIdentitySources, uclPhotos } from './lib/ucl.mjs';
 import { uclStandings } from './lib/ucl-standings.mjs';
@@ -335,6 +336,10 @@ async function main() {
   // 只填空欄位，不覆蓋當季主要來源。
   const fplCurPrimary = enrich(fplCurRaw, sportmonksCur, CURRENT_SEASON);
   const fplCur = enrich(fplCurPrimary, sportmonksLast, `${LAST_SEASON} 備援`, { fillMissing: true });
+  /* 所屬球隊以英超官方正式名單為準(2026-11-01,使用者決定;規則在 lib/official-team-fix.mjs):FPL 名冊的 team 欄
+     對暑假轉隊的人還是舊東家。要在 buildPlayers 之前改 —— 球員主檔、轉會旗標、戰術頁的名單、逐場紀錄的配對都讀這一欄。 */
+  const teamFix = officialTeamFix(fplCur.players, officialLineups(ROOT));
+  applyTeamFix(fplCur.players, teamFix.fixes);
   const diff = loadDifficulty(ROOT, T.codeOf, fplCur.teamById);
 
   // 上一完整賽季的進球情境。這份靜態快取由 npm run setpieces 低頻率、
@@ -359,6 +364,15 @@ async function main() {
     ? aggregateSeason(seasonStore.rounds)
     : { totals: new Map(), teamMatches: new Map() };
 
+  /* 獨立核對:FPL 自己的逐場資料(season-gws,依逐場名單記隊伍)最近一次把他記在哪一隊。跟官方名單是兩個來源;
+     不一致的印出來(不撤銷 —— 決定是以官方為準,這一行是讓人看得到兩邊有沒有分歧)。 */
+  if (teamFix.fixes.length) {
+    const disagree = teamFix.fixes.filter(f => currentTotals.get(String(f.code))?.team && currentTotals.get(String(f.code)).team !== f.to);
+    const checked = teamFix.fixes.filter(f => currentTotals.get(String(f.code))?.team).length;
+    console.log(`  球員所屬球隊:FPL 名冊還掛舊東家、依英超官方正式名單改的 ${teamFix.fixes.length} 人`
+      + `(FPL 逐場資料核對 ${checked} 人,${disagree.length ? `不一致 ${disagree.length} 人:${disagree.map(f => f.name).join('、')}` : '全部一致'})`);
+    for (const f of teamFix.fixes) console.log(`    ${f.name}:FPL 名冊 ${f.from} → 官方 ${f.to}(官方名單 ${f.games} 場)`);
+  }
   // 賽季長度由實際賽果推,不要寫死 38 場 —— 之後接盃賽才不會算錯
   const lastSeasonMatches = seasonLength(lastMatches);
   const { players, poolSizes, currentPoolSizes } = buildPlayers({
@@ -1044,6 +1058,10 @@ async function main() {
     // 交手紀錄涵蓋的賽季 —— 比訓練窗長(見 sources.mjs),頁面上要照實說幾季
     h2hSeasons,
     sources: ATTRIBUTION,
+    /* 所屬球隊依英超官方正式名單改過的人(FPL 名冊還掛舊東家;lib/official-team-fix.mjs)。
+       球員頁與球隊頁的說明照這一份講,畫面不寫死人數 */
+    playerTeamFix: { source: '英超官方正式名單', count: teamFix.fixes.length,
+      players: teamFix.fixes.map(({ code, name, from, to, games }) => ({ code: String(code), name, from, to, games })) },
     model: {
       type: 'Dixon-Coles Poisson + Elo(取平均)',
       /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */

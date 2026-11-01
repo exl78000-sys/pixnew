@@ -668,7 +668,9 @@ export function numberSourceMark(p) {
 }
 
 /* ── 格式 ───────────────────────────── */
-export const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
+/* 沒有值(null / undefined / NaN)印「—」不印「NaN%」(2026-11-01:英超已完賽場次的賽前快照只存勝平負與 xG,
+   沒有大 2.5 球,賽程表與首頁那一欄整排印 NaN%)。缺值本來就該在畫面上看得出是缺值,不是一個像答案的字串。 */
+export const pct = (v, d = 1) => (v == null || !Number.isFinite(Number(v)) ? '—' : `${(v * 100).toFixed(d)}%`);
 export const fx = (v, d = 2) => (v === null || v === undefined || Number.isNaN(v) ? '—' : Number(v).toFixed(d));
 export const signed = (v, d = 1) => (v > 0 ? '+' : '') + fx(v, d);
 export const dateZh = s => (s ? `${s.slice(5, 7)}/${s.slice(8, 10)}` : '—');
