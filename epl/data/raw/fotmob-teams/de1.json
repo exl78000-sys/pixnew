@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-01T13:57:40.496Z",
+ "fetchedAt": "2026-11-01T17:48:18.464Z",
  "teams": [
   {
    "code": "FCB",
@@ -594,6 +594,66 @@
    ]
   },
   {
+   "code": "SGE",
+   "fotmobId": 9810,
+   "fotmobName": "Eintracht Frankfurt",
+   "fetchedAt": "2026-10-09T12:41:47.452Z",
+   "color": "#000000",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000000",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Deutsche Bank Park",
+   "city": "Frankfurt am Main",
+   "location": [
+    "50.068577360",
+    "8.645448312"
+   ],
+   "capacity": 60100,
+   "surface": "Grass",
+   "opened": 2005,
+   "coachHistory": [
+    {
+     "id": 571661,
+     "name": "Dennis Schmitt",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 0,
+     "loss": 2,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 37920,
+     "name": "Albert Riera",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 4,
+     "draw": 5,
+     "loss": 5,
+     "pointsPerGame": 1.21,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 7484,
+     "name": "Adolf Hütter",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
    "code": "M05",
    "fotmobId": 9905,
    "fotmobName": "Mainz 05",
@@ -822,126 +882,6 @@
     {
      "id": 601384,
      "name": "Christian Ilzer",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "SCP",
-   "fotmobId": 8460,
-   "fotmobName": "Paderborn",
-   "fetchedAt": "2026-10-09T12:41:48.242Z",
-   "color": "#004A99",
-   "teamColors": {
-    "darkMode": "#004A99",
-    "lightMode": "#004A99",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Home Deluxe Arena",
-   "city": "Paderborn",
-   "location": [
-    "51.730769438",
-    "8.711031675"
-   ],
-   "capacity": 15306,
-   "surface": "Grass",
-   "opened": 2008,
-   "coachHistory": [
-    {
-     "id": 1130966,
-     "name": "Lukas Kwasniok",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 15,
-     "draw": 10,
-     "loss": 9,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "HSV",
-   "fotmobId": 9790,
-   "fotmobName": "Hamburger SV",
-   "fetchedAt": "2026-10-09T12:41:50.681Z",
-   "color": "#005AAA",
-   "teamColors": {
-    "darkMode": "#1d63b4",
-    "lightMode": "#005AAA",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Volksparkstadion",
-   "city": "Hamburg",
-   "location": [
-    "53.587134005",
-    "9.898579717"
-   ],
-   "capacity": 57000,
-   "surface": "Grass",
-   "opened": 1998,
-   "coachHistory": [
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 11,
-     "draw": 6,
-     "loss": 4,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 11,
-     "loss": 14,
-     "pointsPerGame": 1.12,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -1195,121 +1135,121 @@
    "coachHistoryFull": true
   },
   {
-   "code": "SGE",
-   "fotmobId": 9810,
-   "fotmobName": "Eintracht Frankfurt",
-   "fetchedAt": "2026-10-09T12:41:47.452Z",
-   "color": "#000000",
+   "code": "SCP",
+   "fotmobId": 8460,
+   "fotmobName": "Paderborn",
+   "fetchedAt": "2026-10-09T12:41:48.242Z",
+   "color": "#004A99",
    "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000000",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Deutsche Bank Park",
-   "city": "Frankfurt am Main",
-   "location": [
-    "50.068577360",
-    "8.645448312"
-   ],
-   "capacity": 60100,
-   "surface": "Grass",
-   "opened": 2005,
-   "coachHistory": [
-    {
-     "id": 571661,
-     "name": "Dennis Schmitt",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 0,
-     "loss": 2,
-     "pointsPerGame": 0,
-     "winPercentage": 0
-    },
-    {
-     "id": 37920,
-     "name": "Albert Riera",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 4,
-     "draw": 5,
-     "loss": 5,
-     "pointsPerGame": 1.21,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 7484,
-     "name": "Adolf Hütter",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "S04",
-   "fotmobId": 10189,
-   "fotmobName": "Schalke 04",
-   "fetchedAt": "2026-10-09T12:41:47.826Z",
-   "color": "#083890",
-   "teamColors": {
-    "darkMode": "#0942ad",
-    "lightMode": "#083890",
+    "darkMode": "#004A99",
+    "lightMode": "#004A99",
     "fontDarkMode": "rgba(255, 255, 255, 1.0)",
     "fontLightMode": "rgba(255, 255, 255, 1.0)"
    },
-   "venue": "VELTINS-Arena",
-   "city": "Gelsenkirchen",
+   "venue": "Home Deluxe Arena",
+   "city": "Paderborn",
    "location": [
-    "51.554580973",
-    "7.067384720"
+    "51.730769438",
+    "8.711031675"
    ],
-   "capacity": 62278,
+   "capacity": 15306,
    "surface": "Grass",
-   "opened": 2001,
+   "opened": 2008,
    "coachHistory": [
     {
-     "id": 1682834,
-     "name": "Jakob Fimpel",
+     "id": 1130966,
+     "name": "Lukas Kwasniok",
      "season": "2024/2025",
      "leagueId": 146,
      "leagueName": "2. Bundesliga",
+     "win": 15,
+     "draw": 10,
+     "loss": 9,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
      "win": 1,
      "draw": 1,
      "loss": 2,
      "pointsPerGame": 1,
      "winPercentage": 0.25
-    },
+    }
+   ]
+  },
+  {
+   "code": "HSV",
+   "fotmobId": 9790,
+   "fotmobName": "Hamburger SV",
+   "fetchedAt": "2026-10-09T12:41:50.681Z",
+   "color": "#005AAA",
+   "teamColors": {
+    "darkMode": "#1d63b4",
+    "lightMode": "#005AAA",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Volksparkstadion",
+   "city": "Hamburg",
+   "location": [
+    "53.587134005",
+    "9.898579717"
+   ],
+   "capacity": 57000,
+   "surface": "Grass",
+   "opened": 1998,
+   "coachHistory": [
     {
-     "id": 7528,
-     "name": "Miron Muslić",
-     "season": "2025/2026",
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2024/2025",
      "leagueId": 146,
      "leagueName": "2. Bundesliga",
-     "win": 21,
-     "draw": 7,
-     "loss": 6,
-     "pointsPerGame": 2.06,
-     "winPercentage": 0.62
+     "win": 11,
+     "draw": 6,
+     "loss": 4,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
     },
     {
-     "id": 7528,
-     "name": "Miron Muslić",
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 11,
+     "loss": 14,
+     "pointsPerGame": 1.12,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
      "win": 1,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 1.25,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
      "winPercentage": 0.25
     }
    ]
@@ -1371,6 +1311,66 @@
      "loss": 3,
      "pointsPerGame": 0.25,
      "winPercentage": 0
+    }
+   ]
+  },
+  {
+   "code": "S04",
+   "fotmobId": 10189,
+   "fotmobName": "Schalke 04",
+   "fetchedAt": "2026-10-09T12:41:47.826Z",
+   "color": "#083890",
+   "teamColors": {
+    "darkMode": "#0942ad",
+    "lightMode": "#083890",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "VELTINS-Arena",
+   "city": "Gelsenkirchen",
+   "location": [
+    "51.554580973",
+    "7.067384720"
+   ],
+   "capacity": 62278,
+   "surface": "Grass",
+   "opened": 2001,
+   "coachHistory": [
+    {
+     "id": 1682834,
+     "name": "Jakob Fimpel",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 1,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 7528,
+     "name": "Miron Muslić",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 21,
+     "draw": 7,
+     "loss": 6,
+     "pointsPerGame": 2.06,
+     "winPercentage": 0.62
+    },
+    {
+     "id": 7528,
+     "name": "Miron Muslić",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.25
     }
    ]
   },
