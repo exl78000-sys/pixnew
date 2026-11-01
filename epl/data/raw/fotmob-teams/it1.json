@@ -2,68 +2,8 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-10-31T17:27:29.873Z",
+ "fetchedAt": "2026-10-31T22:31:11.724Z",
  "teams": [
-  {
-   "code": "INT",
-   "fotmobId": 8636,
-   "fotmobName": "Inter",
-   "fetchedAt": "2026-10-09T12:41:51.633Z",
-   "color": "#010E80",
-   "teamColors": {
-    "darkMode": "#0039d0",
-    "lightMode": "#010E80",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Meazza",
-   "city": "Milano",
-   "location": [
-    "45.478083998",
-    "9.123979211"
-   ],
-   "capacity": 75817,
-   "surface": "Grass",
-   "opened": 1926,
-   "coachHistory": [
-    {
-     "id": 25590,
-     "name": "Simone Inzaghi",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 24,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 2.13,
-     "winPercentage": 0.63
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 27,
-     "draw": 6,
-     "loss": 5,
-     "pointsPerGame": 2.29,
-     "winPercentage": 0.71
-    },
-    {
-     "id": 27692,
-     "name": "Cristian Chivu",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 4,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.6,
-     "winPercentage": 0.8
-    }
-   ]
-  },
   {
    "code": "LAZ",
    "fotmobId": 8543,
@@ -113,6 +53,66 @@
     {
      "id": 30721,
      "name": "Gennaro Gattuso",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 4,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.6,
+     "winPercentage": 0.8
+    }
+   ]
+  },
+  {
+   "code": "INT",
+   "fotmobId": 8636,
+   "fotmobName": "Inter",
+   "fetchedAt": "2026-10-09T12:41:51.633Z",
+   "color": "#010E80",
+   "teamColors": {
+    "darkMode": "#0039d0",
+    "lightMode": "#010E80",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Meazza",
+   "city": "Milano",
+   "location": [
+    "45.478083998",
+    "9.123979211"
+   ],
+   "capacity": 75817,
+   "surface": "Grass",
+   "opened": 1926,
+   "coachHistory": [
+    {
+     "id": 25590,
+     "name": "Simone Inzaghi",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 24,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 2.13,
+     "winPercentage": 0.63
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 27,
+     "draw": 6,
+     "loss": 5,
+     "pointsPerGame": 2.29,
+     "winPercentage": 0.71
+    },
+    {
+     "id": 27692,
+     "name": "Cristian Chivu",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
@@ -185,66 +185,6 @@
    ]
   },
   {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-10-09T12:41:54.778Z",
-   "color": "#005ea9",
-   "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
-   "location": [
-    "45.813856655",
-    "9.072376192"
-   ],
-   "capacity": 13602,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    }
-   ]
-  },
-  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -300,6 +240,66 @@
      "draw": 2,
      "loss": 0,
      "pointsPerGame": 2.2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-10-09T12:41:54.778Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
      "winPercentage": 0.6
     }
    ]
@@ -1025,66 +1025,6 @@
    ]
   },
   {
-   "code": "UDI",
-   "fotmobId": 8600,
-   "fotmobName": "Udinese",
-   "fetchedAt": "2026-10-09T12:41:56.348Z",
-   "color": "#101010",
-   "teamColors": {
-    "darkMode": "#ffffff",
-    "lightMode": "#101010",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Bluenergy Stadium",
-   "city": "Udine",
-   "location": [
-    "46.081644302",
-    "13.200062513"
-   ],
-   "capacity": 25952,
-   "surface": "Grass",
-   "opened": 1976,
-   "coachHistory": [
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 12,
-     "draw": 8,
-     "loss": 18,
-     "pointsPerGame": 1.16,
-     "winPercentage": 0.32
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 14,
-     "draw": 8,
-     "loss": 16,
-     "pointsPerGame": 1.32,
-     "winPercentage": 0.37
-    },
-    {
-     "id": 812065,
-     "name": "Kosta Runjaić",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
    "code": "PAR",
    "fotmobId": 10167,
    "fotmobName": "Parma",
@@ -1133,6 +1073,66 @@
     {
      "id": 1776681,
      "name": "Carlos Cuesta",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
+    }
+   ]
+  },
+  {
+   "code": "UDI",
+   "fotmobId": 8600,
+   "fotmobName": "Udinese",
+   "fetchedAt": "2026-10-09T12:41:56.348Z",
+   "color": "#101010",
+   "teamColors": {
+    "darkMode": "#ffffff",
+    "lightMode": "#101010",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Bluenergy Stadium",
+   "city": "Udine",
+   "location": [
+    "46.081644302",
+    "13.200062513"
+   ],
+   "capacity": 25952,
+   "surface": "Grass",
+   "opened": 1976,
+   "coachHistory": [
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 12,
+     "draw": 8,
+     "loss": 18,
+     "pointsPerGame": 1.16,
+     "winPercentage": 0.32
+    },
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 14,
+     "draw": 8,
+     "loss": 16,
+     "pointsPerGame": 1.32,
+     "winPercentage": 0.37
+    },
+    {
+     "id": 812065,
+     "name": "Kosta Runjaić",
      "season": "2026/2027",
      "leagueId": 55,
      "leagueName": "Serie A",
