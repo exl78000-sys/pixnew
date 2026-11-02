@@ -1,5 +1,5 @@
 {
- "builtAt": "2026-11-02T05:07:28.892Z",
+ "builtAt": "2026-11-02T21:45:11.689Z",
  "method": "檢查點 c = 1..90(時鐘走到 c:00)的即時勝率,逐場平均 RPS;場為獨立樣本",
  "tuneSeason": "2025-26",
  "validSeasons": [
@@ -53,33 +53,33 @@
      "mismatch": 0
     },
     "es1": {
-     "walked": 99,
+     "walked": 108,
      "used": 97,
-     "noEvents": 1,
+     "noEvents": 10,
      "mismatch": 1
     },
     "en2": {
-     "walked": 144,
+     "walked": 156,
      "used": 144,
-     "noEvents": 0,
+     "noEvents": 12,
      "mismatch": 0
     },
     "de1": {
-     "walked": 63,
+     "walked": 72,
      "used": 63,
-     "noEvents": 0,
+     "noEvents": 9,
      "mismatch": 0
     },
     "it1": {
-     "walked": 90,
+     "walked": 98,
      "used": 90,
-     "noEvents": 0,
+     "noEvents": 8,
      "mismatch": 0
     },
     "fr1": {
-     "walked": 72,
+     "walked": 80,
      "used": 71,
-     "noEvents": 1,
+     "noEvents": 9,
      "mismatch": 0
     }
    }
