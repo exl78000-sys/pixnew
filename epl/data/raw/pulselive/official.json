@@ -62969,8 +62969,8 @@
   "NEW|EVE": {
    "fixtureId": 129011,
    "kickoff": "2026-11-02T20:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 0,
     "away": 1
@@ -63442,6 +63442,42 @@
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
+     },
+     {
+      "person": 19888,
+      "team": 23,
+      "min": 90,
+      "label": "90+6'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 19888,
+      "team": 23,
+      "min": 90,
+      "label": "90+8'00",
+      "phase": "2",
+      "kindRaw": "YR",
+      "kind": "兩黃罰下"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 5220,
+      "team": 23,
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
      }
     ],
     "subs": [
@@ -63552,15 +63588,45 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 302900,
+      "team": 23,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68637,
+      "team": 23,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 118442,
+      "team": 7,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -63578,11 +63644,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+9'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "85'00"
+   "clock": "90+9'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-02T22:01:44.013Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-11-02T21:43:54.979Z"
+ "fetchedAt": "2026-11-02T22:40:10.483Z"
 }
