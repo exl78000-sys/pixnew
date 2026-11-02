@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-01T18:59:58.062Z",
+ "fetchedAt": "2026-11-02T05:07:42.362Z",
  "teams": [
   {
    "code": "LAZ",
@@ -365,6 +365,66 @@
    ]
   },
   {
+   "code": "JUV",
+   "fotmobId": 9885,
+   "fotmobName": "Juventus",
+   "fetchedAt": "2026-10-09T12:41:54.759Z",
+   "color": "#000001",
+   "teamColors": {
+    "darkMode": "#FFFFFF",
+    "lightMode": "#000001",
+    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Allianz Stadium",
+   "city": "Torino",
+   "location": [
+    "45.109527284",
+    "7.641302313"
+   ],
+   "capacity": 41689,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 41959,
+     "name": "Massimo Brambilla",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 1,
+     "draw": 0,
+     "loss": 0,
+     "pointsPerGame": 3,
+     "winPercentage": 1
+    },
+    {
+     "id": 78584,
+     "name": "Luciano Spalletti",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 15,
+     "draw": 9,
+     "loss": 5,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
+    },
+    {
+     "id": 78584,
+     "name": "Luciano Spalletti",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    }
+   ]
+  },
+  {
    "code": "NAP",
    "fotmobId": 9875,
    "fotmobName": "Napoli",
@@ -662,66 +722,6 @@
      "loss": 0,
      "pointsPerGame": 1,
      "winPercentage": 0
-    }
-   ]
-  },
-  {
-   "code": "JUV",
-   "fotmobId": 9885,
-   "fotmobName": "Juventus",
-   "fetchedAt": "2026-10-09T12:41:54.759Z",
-   "color": "#000001",
-   "teamColors": {
-    "darkMode": "#FFFFFF",
-    "lightMode": "#000001",
-    "fontDarkMode": "rgba(29, 29, 29, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Allianz Stadium",
-   "city": "Torino",
-   "location": [
-    "45.109527284",
-    "7.641302313"
-   ],
-   "capacity": 41689,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 41959,
-     "name": "Massimo Brambilla",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 1,
-     "draw": 0,
-     "loss": 0,
-     "pointsPerGame": 3,
-     "winPercentage": 1
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 15,
-     "draw": 9,
-     "loss": 5,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 78584,
-     "name": "Luciano Spalletti",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
     }
    ]
   },
