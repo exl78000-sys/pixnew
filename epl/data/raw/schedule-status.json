@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-11-04T05:15:06.598Z",
+ "fetchedAt": "2026-11-04T19:30:59.408Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-11-04T05:15:06.598Z",
+   "fetchedAt": "2026-11-04T19:30:59.408Z",
    "count": 380,
    "matches": [
     {
@@ -1223,14 +1223,6 @@
      "matchday": 16
     },
     {
-     "fdId": 560694,
-     "home": "NFO",
-     "away": "EVE",
-     "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
-     "matchday": 16
-    },
-    {
      "fdId": 560696,
      "home": "MCI",
      "away": "HUL",
@@ -1258,6 +1250,14 @@
      "fdId": 560693,
      "home": "BHA",
      "away": "IPS",
+     "utcDate": "2026-12-20T14:00:00Z",
+     "status": "TIMED",
+     "matchday": 16
+    },
+    {
+     "fdId": 560694,
+     "home": "NFO",
+     "away": "EVE",
      "utcDate": "2026-12-20T14:00:00Z",
      "status": "TIMED",
      "matchday": 16
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-11-04T05:15:06.598Z",
+   "fetchedAt": "2026-11-04T19:30:59.408Z",
    "count": 552,
    "matches": [
     {
@@ -8389,6 +8389,16 @@
    "from": "2026-12-19T15:00:00Z",
    "to": "2026-12-21T20:00:00Z",
    "detectedAt": "2026-10-20T16:31:38.635Z"
+  },
+  {
+   "league": "pl",
+   "kind": "rescheduled",
+   "fdId": 560694,
+   "home": "NFO",
+   "away": "EVE",
+   "from": "2026-12-19T15:00:00Z",
+   "to": "2026-12-20T14:00:00Z",
+   "detectedAt": "2026-11-04T19:30:59.408Z"
   }
  ]
 }
