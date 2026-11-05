@@ -28,5 +28,11 @@ export function loadTeams(root, { file = 'teams.json' } = {}) {
   }
   const codeOf = name =>
     (byOf.get(name) || byFpl.get(name) || byCode.get(name) || byLoose.get(loose(name)))?.code ?? null;
-  return { list: raw.teams, byCode, byOf, byFpl, codeOf, looseKey: loose, updated: raw._updated };
+  /* football-data.co.uk 的隊名 → 隊碼(2026-11-05)。上游**同一季同一隊會寫兩種**:英冠 2026-27 的 E1
+     13 列寫 "Sheffield United"、11-03 Preston 那一列寫 "Sheffield Utd" —— 那一列的牌、賠率、比分核對靜靜掉了,
+     寬鬆對照也橋不過去(Utd 不是標點)。另一種寫法列在 `fdAlias`,**只給這個來源用**(不進 alias:alias 也餵 codeOf,
+     別的來源用不到它)。以前 build / backtest / test 各自拼一份 fd 對照,這裡收成一份,加別名只要改名冊。 */
+  const byFd = new Map();
+  for (const t of raw.teams) for (const n of [t.fd, ...(t.fdAlias ?? [])]) if (n) byFd.set(n, t.code);
+  return { list: raw.teams, byCode, byOf, byFpl, byFd, codeOf, looseKey: loose, updated: raw._updated };
 }

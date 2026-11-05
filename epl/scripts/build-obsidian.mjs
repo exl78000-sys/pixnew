@@ -2248,7 +2248,7 @@ function buildUclBoards(s) {
     title: '歐冠 ' + s.label + ' 球員榜',
     intro: agg
       ? [Y.note, `由本站逐場資料累計(FotMob 逐場詳情,${Y.reconciled}/${Y.matches} 場的球員進球對回 football-data 的比分才計入`
-        + `${Y.excluded?.length ? `,${Y.excluded.length} 場對不上不計` : ''};xG 只算射門圖完整的 ${Y.xgComplete} 場)・${s.leaderPool} 人。`]
+        + `${Y.excluded?.length ? `,${Y.excluded.length} 場對不上不計` : ''}${Y.pending?.length ? `;已完賽另有 ${Y.pending.length} 場的逐場資料還沒抓到,下一次部署補` : ''};xG 只算射門圖完整的 ${Y.xgComplete} 場)・${s.leaderPool} 人。`]
       : [`來源 FotMob・${s.leaderPool} 人母體・已與另一來源逐場核對比分後才採用。`],
     boards: s.leaders.map(b => ({
       title: b.zh, sub: `母體 ${b.pool} 人`,

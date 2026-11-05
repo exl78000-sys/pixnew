@@ -592,7 +592,14 @@ export async function loadUclSeasons(root, sources) {
           s.leaders = leadersFromAggregate(agg);
           s.leaderPool = agg.players.length;
           s.squads = squadsFromAggregate(agg);
-          s.playerLayer = { source: 'match-aggregate', matches: agg.matches, reconciled: agg.reconciled, xgComplete: agg.xgComplete, excluded: agg.excluded,
+          /* 已完賽而逐場資料還沒到的那幾場(2026-11-05):比賽夜隔天早上的部署常碰到 —— FotMob 的逐場詳情晚一點才齊,
+             或那一場被抓取器退回。照實講幾場、哪幾場,畫面與測試才分得出「還沒到」與「管線壞了」;
+             不列出來的話,讀者看到「65/65 場」會以為已完賽的全在裡面。 */
+          const have = new Set(Object.keys(pl.pstore?.matches ?? {}));
+          const pending = all.filter(m => m.played === true && Array.isArray(m.final))
+            .map(m => ({ key: `${m.home?.id}|${m.away?.id}|${String(m.kickoff ?? '').slice(0, 10)}`, kickoff: m.kickoff ?? null }))
+            .filter(m => !have.has(m.key));
+          s.playerLayer = { source: 'match-aggregate', matches: agg.matches, reconciled: agg.reconciled, xgComplete: agg.xgComplete, excluded: agg.excluded, pending,
             note: '本季沒有 FotMob 賽季總表交付檔;球員層由本站每次部署抓的逐場資料累計,每一場的球員進球(含烏龍球記給對方)都對回 football-data 的比分才計入。' };
         }
       }

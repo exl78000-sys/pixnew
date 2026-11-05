@@ -85,7 +85,7 @@ export function testLeague(L) {
 
     /* 漏一支球隊 = 那一季少算一批比賽,而畫面上完全看不出來(英冠踩過:14 支靜靜對不上)。 */
     const ofMap = new Map(T.list.map(t => [t.of, t.code]));
-    const fdMap = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code]));
+    const fdMap = T.byFd;
     const missing = [];
     for (const s of SEASONS) {
       for (const m of ofRaw(s).matches) for (const n of [m.team1, m.team2]) if (!ofMap.has(n)) missing.push(`${s} of:${n}`);
@@ -107,7 +107,7 @@ export function testLeague(L) {
        runner 上跑 `de1:fetch` 才會有。所以這裡只驗「有的那幾季全對」,
        並且要求 meta 把哪幾季有、哪幾季沒有照實記下來。 */
     const ofMap = new Map(T.list.map(t => [t.of, t.code]));
-    const fdMap = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code]));
+    const fdMap = T.byFd;
     let compared = 0; const bad = [];
     for (const s of SEASONS) {
       if (!hasFd(s)) continue;

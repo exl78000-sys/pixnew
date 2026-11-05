@@ -6999,6 +6999,15 @@ async function checkUclDetails() {
       '盃賽是同一支抓取器的第五、六組參數(不另寫一支)');
     ok(/const byPair = LG\.cup \? null : await leagueIndex/.test(fetcher),
       '盃賽不打賽程端點(matchId 在賽程快取裡就有,少一個請求也少一次隊名對照的風險)');
+    /* 歐冠的賽果從 raw 讀(2026-11-05):web/data/ucl.json 是上一次 build 的產物,而部署裡抓取排在 build 之前 ——
+       讀它的話歐冠比賽夜的隔天早上看不到昨晚那幾場,「累計涵蓋已完賽的每一場」紅、部署被擋(11-04、11-05)。 */
+    {
+      const f = fetcher.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const body = f.slice(f.indexOf('async function uclResults('), f.indexOf('\n}\n', f.indexOf('async function uclResults(')));
+      ok(/loadUclSeasons\(ROOT, await uclIdentitySources\(ROOT\)\)/.test(body),
+        '歐冠逐場抓取器的賽果走 build 同一支 loadUclSeasons(讀 data/raw/football-data,不讀上一次 build 的產物)');
+      ok(!/'web', 'data', 'ucl\.json'/.test(f), '歐冠逐場抓取器不讀 web/data/ucl.json');
+    }
 
     // 前端:入口條件是「有報告」,報告卡片用共用的那一份,而且不自己長出「賽前分析」
     const strip2 = x => x.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
@@ -8205,7 +8214,17 @@ function checkUcl() {
       const L = s2.playerLayer;
       ok(L.source === 'match-aggregate' && L.reconciled === L.matches - L.excluded.length && L.reconciled > 0,
         `${s2.label}:逐場累計的球員層每一場都對回比分,對不上的列在 excluded`, `${L.reconciled}/${L.matches},excluded ${L.excluded.length}`);
-      ok(L.reconciled === s2.played || L.matches === s2.played, `${s2.label}:累計涵蓋已完賽的每一場`, `${L.matches} vs 已完賽 ${s2.played}`);
+      /* 涵蓋(2026-11-05 改):已完賽而沒有逐場資料的場次由 lib 列在 pending。開賽 48 小時內的只回報 ——
+         比賽夜隔天早上的部署,FotMob 的逐場詳情還沒齊是上游時差,不是本站算錯(「上游時差寫成 CI 紅線」那條坑;
+         11-04、11-05 兩個早上就是這樣擋掉部署的)。超過 48 小時還沒補到才是管線壞了,那才紅。
+         另守帳目:涵蓋的 + 還沒到的 = 已完賽,一場都不能不見。 */
+      const pend = L.pending ?? [];
+      const nowMs = Date.parse(JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'meta.json'), 'utf8')).generatedAt ?? '') || Date.now();   // 以建置時間為準,不是跑測試的那一刻
+      const stale = pend.filter(p => !(Date.parse(p.kickoff ?? '') > nowMs - 48 * 3600e3));
+      ok(L.matches + pend.length === s2.played, `${s2.label}:已完賽的每一場不是累計了、就是列在 pending(帳目對得起來)`,
+        `累計 ${L.matches} + 還沒到 ${pend.length} vs 已完賽 ${s2.played}`);
+      ok(stale.length === 0, `${s2.label}:已完賽超過 48 小時的場次都有逐場資料`, stale.slice(0, 5).map(p => p.key).join('、'));
+      if (pend.length) console.log(`  · ${s2.label}:${pend.length} 場已完賽、逐場資料還沒到(48 小時內,只回報):${pend.map(p => p.key).join('、')}`);
       ok(Object.keys(s2.squads?.teams ?? {}).length === s2.teamsTotal, `${s2.label}:36 隊都有逐隊陣容`, String(Object.keys(s2.squads?.teams ?? {}).length));
       ok(/average/.test(s2.squads?.statMeta?.rating ?? '') && /total/.test(s2.squads?.statMeta?.shots_total ?? ''), `${s2.label}:累計版的欄位標題把單位講清楚(評分是逐場平均、射門是總數)`);
     }

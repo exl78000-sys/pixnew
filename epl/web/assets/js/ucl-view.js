@@ -559,7 +559,7 @@ function leaderBoards(season) {
   return `
     <div class="section"><h2>球員榜</h2>
       <span class="hint">${season.playerLayer?.source === 'match-aggregate'
-        ? `由本站逐場資料累計(FotMob 逐場詳情,${season.playerLayer.reconciled}/${season.playerLayer.matches} 場的球員進球對回 football-data 的比分才計入${season.playerLayer.excluded?.length ? `,${season.playerLayer.excluded.length} 場對不上不計` : ''};xG 只算射門圖完整的 ${season.playerLayer.xgComplete} 場)・${season.leaderPool} 人`
+        ? `由本站逐場資料累計(FotMob 逐場詳情,${season.playerLayer.reconciled}/${season.playerLayer.matches} 場的球員進球對回 football-data 的比分才計入${season.playerLayer.excluded?.length ? `,${season.playerLayer.excluded.length} 場對不上不計` : ''}${season.playerLayer.pending?.length ? `;已完賽另有 ${season.playerLayer.pending.length} 場的逐場資料還沒抓到,下一次部署補` : ''};xG 只算射門圖完整的 ${season.playerLayer.xgComplete} 場)・${season.leaderPool} 人`
         : `來源 FotMob・${season.leaderPool} 人母體・已與另一來源逐場核對比分後才採用`}</span></div>
     ${/* **g2 不是 g3**(2026-09-21,接頭貼那一輪量出來的)。g3 是 minmax(250px,1fr),
          在 1240px 的版面排**四張**、每張只有 256px —— 而一列要塞名次、頭貼、球員名、

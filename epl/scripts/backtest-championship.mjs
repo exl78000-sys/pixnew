@@ -22,8 +22,7 @@ const r = runLeagueBacktest({
   /* E1 的隊名是簡稱,跟 openfootball 的全名對不上。**不走寬鬆比對** ——
      用名冊裡逐隊列出來的 fd 欄(對照怎麼配出來的見那份檔案的 _note)。 */
   codeOf: T => {
-    const byFd = new Map(T.list.map(t => [t.fd, t.code]));
-    return name => byFd.get(name) ?? T.codeOf(name);
+    return name => T.byFd.get(name) ?? T.codeOf(name);
   },
   stageOf: m => (m.round == null ? '升級附加賽' : null),
   trainCandidates: ['2023-24', '2024-25'],

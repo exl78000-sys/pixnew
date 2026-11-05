@@ -193,7 +193,7 @@ export async function buildLeague(L) {
      Inter / Verona、Paris SG / St Etienne …),跟 openfootball 的全名對不上。
      **不走 loadTeams 的寬鬆比對** —— 那條路徑會把 FC 前後綴一起吃掉,本站在盃賽頁被它咬過兩次。
      這裡用名冊的 fd 欄逐隊精確對照(名字怎麼來的見 teams-bundesliga.json 的 _note)。 */
-  const byFd = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code]));
+  const byFd = T.byFd;
   const codeOf = name => byFd.get(name) ?? T.codeOf(name);
 
   /* 隊徽走 `npm run de1:crests`(football-logos 的靜態檔,跟英超西甲同一支抓取器),

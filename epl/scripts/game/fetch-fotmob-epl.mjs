@@ -39,6 +39,7 @@ import { pairOf, isShootoutShot } from '../lib/matchstats.mjs';
 import { rekeyByPair } from '../lib/pair-rekey.mjs';
 import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
 import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
+import { loadUclSeasons, uclIdentitySources } from '../lib/ucl.mjs';
 import { cupResultsOf, readCupStore } from '../lib/cup-details.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
@@ -85,12 +86,12 @@ const LEAGUES = {
   /* 歐冠(2026-09-12):同一支抓取器,三個不同點 ——
      ① 聯賽 id 42 是 `probe-ucl-matchdetails.mjs` 走 FotMob 的 allLeagues 目錄用名字找到的,不是猜的;
         ccode3 不帶(國際賽事沒有國家)。
-     ② 賽果來源是 `web/data/ucl.json`(football-data.org,獨立供應商),不是 results.json;
+     ② 賽果來源是 football-data.org(獨立供應商)的 raw(`data/raw/football-data/ucl-*.json`,走 build 同一支 loadUclSeasons),不是 results.json;
         隊伍身分是 football-data 的 team id 字串(36 隊裡本站只有 8~11 支有隊碼,不替其餘造一個)。
      ③ FotMob id ↔ fd id 的橋用 `lib/adapters/fotmob-ucl.mjs` 的 bridgeTeams(互為第一名才配),
         而且要跟人工核過的 `ucl-team-ids.json` 一致(有交集的那幾隊);不一致的那隊整隊不抓。
      不抓熱區圖(那是模擬遊玩用的,歐冠沒有遊戲),所以一場一個請求。 */
-  ucl: { id: 42, ccode3: null, dir: UCL_RAW_DIR, teamFile: null, results: null, ucl: ['web', 'data', 'ucl.json'], verify: false, heat: false },
+  ucl: { id: 42, ccode3: null, dir: UCL_RAW_DIR, teamFile: null, results: null, ucl: ['data', 'raw', 'football-data', 'ucl-*.json'], verify: false, heat: false },
   /* 英格蘭盃賽(2026-09-13):同一支抓取器,跟前五組的差別有三個 ——
      ① **不打賽程端點。** 賽程與賽果來自倉庫裡的 `data/raw/fotmob-cups/{盃賽}.json`
         (`cups:fetch` 每次部署都在更新),而那份每一場本來就帶 FotMob 的比賽 id ——
@@ -210,10 +211,15 @@ async function cupResults() {
   return store ? cupResultsOf(store) : null;
 }
 
-/* 歐冠的「賽果」:ucl.json 裡可用賽季的所有場次(聯賽階段 + 淘汰賽),形狀跟 results.json 一樣。
-   轉換在 lib/ucl-details.mjs(build 那邊讀 raw 也用同一份,兩邊才對得起來)。 */
+/* 歐冠的「賽果」:可用賽季的所有場次(聯賽階段 + 淘汰賽),形狀跟 results.json 一樣。
+   轉換在 lib/ucl-details.mjs(build 那邊讀 raw 也用同一份,兩邊才對得起來)。
+   **讀 raw,不讀 web/data/ucl.json**(2026-11-05):那份是上一次 build 的產物,而部署裡這一步排在 build 之前 ——
+   歐冠比賽夜的隔天早上,`npm run ucl` 已經把昨晚的賽果抓進 raw,這裡卻照舊讀到前一晚的產物
+   (「已完賽 54」而 build 數到 72),昨晚那幾場一場都不去抓,npm test 的「累計涵蓋已完賽的每一場」
+   就紅、部署被擋(11-04、11-05 兩個早上)。改走 build 自己的那一條(loadUclSeasons 讀 data/raw/football-data/),
+   產物本來就是它的輸出,兩邊同步時結果逐字元相同。 */
 async function uclResults() {
-  const ucl = await read(join(ROOT, ...LG.ucl));
+  const ucl = await loadUclSeasons(ROOT, await uclIdentitySources(ROOT));
   const seasons = (ucl?.seasons ?? []).filter(s => s.availability === 'available');
   return seasons.length ? seasons.flatMap(uclResultsOf) : null;
 }

@@ -132,7 +132,7 @@ async function main() {
      本站在盃賽頁上被它咬過兩次。這裡有一張逐隊列出來的精確表(名冊的 fd 欄),
      對照怎麼來的見 data/manual/teams-championship.json 的 _note:
      不是用名字相似度,是用「比賽日期+比分」的指紋配出來的。 */
-  const byFd = new Map(T.list.map(t => [t.fd, t.code]));
+  const byFd = T.byFd;
   const codeOf = name => byFd.get(name) ?? T.codeOf(name);
 
   // 隊徽:19 支在盃賽那份、5 支在英超那份,英冠自己不需要再抓一次

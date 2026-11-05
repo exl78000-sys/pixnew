@@ -52,6 +52,13 @@ const table = out('table'), results = out('results'), sim = out('sim');
   check('隊碼唯一', new Set(codes).size === codes.length);
   check('openfootball 隊名唯一', new Set(T.list.map(t => t.of)).size === T.list.length);
   check('football-data.co.uk 簡稱唯一', new Set(T.list.map(t => t.fd)).size === T.list.length);
+  /* fdAlias(2026-11-05):上游同一季把 Sheffield United 寫成兩種。別名不可以撞到別隊 ——
+     撞了的話 byFd 後寫的蓋掉先寫的,一整隊的比賽靜靜掛到另一隊。 */
+  {
+    const names = T.list.flatMap(t => [t.fd, ...(t.fdAlias ?? [])]);
+    check('football-data.co.uk 的簡稱加別名仍然唯一(別名不撞別隊)', new Set(names).size === names.length && T.byFd.size === names.length);
+    check('上游的另一種寫法對得回同一隊(Sheffield Utd → SHU)', T.byFd.get('Sheffield Utd') === 'SHU' && T.byFd.get('Sheffield United') === 'SHU');
+  }
 
   /* 隊碼跟英超名冊共用的那幾支,必須是**同一支球隊**。
      不同球隊撞同一個碼的話,盃賽與歐冠那些跨聯賽的頁面會把兩隊資料混在一起。 */
@@ -64,7 +71,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
     clash.map(t => `${t.code} ${t.of}`).join('、'));
 
   const ofMap = new Map(T.list.map(t => [t.of, t.code]));
-  const fdMap = new Map(T.list.map(t => [t.fd, t.code]));
+  const fdMap = T.byFd;
   const missing = [];
   for (const s of SEASONS) {
     for (const m of ofRaw(s).matches) {
@@ -86,7 +93,7 @@ const table = out('table'), results = out('results'), sim = out('sim');
 // ── 2. 兩份來源逐場核對(鐵則五:外部資料要有獨立來源) ──────
 {
   const T2 = loadTeams(ROOT, { file: 'teams-championship.json' });
-  const byFd = new Map(T2.list.map(t => [t.fd, t.code]));
+  const byFd = T2.byFd;
   const codeOf = n => byFd.get(n) ?? T2.codeOf(n);
   const ofMap = new Map(T2.list.map(t => [t.of, t.code]));
   const season = '2025-26';

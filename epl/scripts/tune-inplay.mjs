@@ -35,7 +35,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TUNE_SEASON = '2025-26';
 
 /* 六個聯賽的載入設定跟各自的回測腳本一樣(隊名對照、補比分的備援、附加賽不算)。 */
-const byFd = T => { const m = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code])); return n => m.get(n) ?? T.codeOf(n); };
+const byFd = T => n => T.byFd.get(n) ?? T.codeOf(n);
 const LEAGUES = [
   { key: 'pl', fm: 'fotmob-epl' },
   { key: 'es1', fm: 'fotmob-la-liga', teamFile: 'teams-la-liga.json', competition: 'esp.1', rawDir: 'openfootball-la-liga', fillDir: 'football-data-couk-la-liga', div: 'SP1' },

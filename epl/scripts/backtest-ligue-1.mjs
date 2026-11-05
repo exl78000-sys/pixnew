@@ -22,8 +22,7 @@ const r = runLeagueBacktest({
   /* football-data.co.uk 的隊名是簡稱,跟 openfootball 的全名對不上。
      **不走寬鬆比對** —— 用名冊裡逐隊列出來的 fd 欄(名字怎麼來的見那份檔案的 _note)。 */
   codeOf: T => {
-    const byFd = new Map(T.list.filter(t => t.fd).map(t => [t.fd, t.code]));
-    return name => byFd.get(name) ?? T.codeOf(name);
+    return name => T.byFd.get(name) ?? T.codeOf(name);
   },
   trainCandidates: ['2023-24', '2024-25'],
   testSeason: '2025-26',
