@@ -62,11 +62,19 @@ jobs:
         run: npm run probe:pulselive-stats
         continue-on-error: true
 
-      # **這是 latest job 的最後一步。** 英冠的傷停與停賽:FotMob `matchDetails` 有沒有缺陣名單(2026-10-31;
+      # 英冠的傷停與停賽:FotMob `matchDetails` 有沒有缺陣名單(2026-10-31;
       # 2 個請求、唯讀:下一場未賽 + 最近一場已完賽,都從倉庫的賽程挑)。只看鍵名像缺陣的欄位與它的形狀,不印姓名。
       - name: 英冠缺陣名單(FotMob matchDetails 有沒有傷停 / 停賽)
         working-directory: epl
         run: npm run probe:unavailable
+        continue-on-error: true
+
+      # **這是 latest job 的最後一步。** Understat 兩個端點從 2026-11-02 起每次部署都失敗
+      # (getPlayersStats 11-04 起 HTTP 405、getTeamData 回 HTML)。四個請求、唯讀:兩個端點回什麼,
+      # 以及聯賽頁與球隊頁的 HTML 裡提到哪些像 API 的路徑(端點換名字的話找得到新名字)。只印結構。
+      - name: Understat 端點(11-02 起 405 / 回 HTML)
+        working-directory: epl
+        run: npm run probe:understat-endpoints
         continue-on-error: true
 
   all:
