@@ -40,6 +40,7 @@ import { rekeyByPair } from '../lib/pair-rekey.mjs';
 import { bridgeTeams } from '../lib/adapters/fotmob-ucl.mjs';
 import { uclResultsOf, UCL_RAW_DIR } from '../lib/ucl-details.mjs';
 import { loadUclSeasons, uclIdentitySources } from '../lib/ucl.mjs';
+import { markFinishedFromFixtures } from '../lib/fresh-played.mjs';
 import { cupResultsOf, readCupStore } from '../lib/cup-details.mjs';
 import { API as PL_API, PL_HEADERS } from '../lib/pulselive.mjs';
 
@@ -386,13 +387,22 @@ async function verify(store, results, n, teams) {
 
 async function main() {
   const teams = LG.teamFile ? loadTeams(ROOT, { file: LG.teamFile }) : null;
-  const results = LG.results ? await read(join(ROOT, ...LG.results)) : LG.cup ? await cupResults() : await uclResults();
+  let results = LG.results ? await read(join(ROOT, ...LG.results)) : LG.cup ? await cupResults() : await uclResults();
   if (!Array.isArray(results)) {
     console.log(`✗ 讀不到 ${LG.cup ? `data/raw/fotmob-cups/${LG.cup}.json(先跑 cups:fetch)` : (LG.results ?? LG.ucl).join('/')}`);
     return;
   }
   const seasons = seasonsOf(results);
   const season = arg('season') ?? seasons[seasons.length - 1];
+  /* 六個聯賽的 results.json 是上一次 build 的產物 —— 2026-10-30 起倉庫裡那幾份不再更新,
+     抓取器從那天起看不到新踢完的場次。用這一次部署抓到的 FotMob 賽程快取補上(理由與撞鍵規則在 lib/fresh-played.mjs)。 */
+  if (LG.results) {
+    const fresh = markFinishedFromFixtures(results, await read(join(DIR, 'scores.json')),
+      { season, today: new Date().toISOString().slice(0, 10) });
+    if (fresh.marked.length) console.log(`  產物還沒有、FotMob 賽程說已完賽:${fresh.marked.length} 場,一起列進待補`);
+    for (const x of fresh.skipped) console.log(`  ⚠ ${x.key}:${x.reason} —— 不補,等產物跟上`);
+    results = fresh.results;
+  }
   const played = results.filter(r => r.season === season && r.played && r.date <= new Date().toISOString().slice(0, 10));
   await mkdir(DIR, { recursive: true });
   const STORE = join(DIR, `${season}-game-details.json`);
@@ -433,9 +443,13 @@ async function main() {
     /* 盃賽:matchId 已經在 results 裡(賽程快取帶的),所以**整段賽程端點跳過** ——
        少一個請求,也少一次「帶 season 參數回最新那季」與隊名對照的風險(兩條都踩過)。 */
     const byPair = LG.cup ? null : await leagueIndex(results, season, store, teams);
-    if (!LG.cup && !byPair) return;
-    await fetchPending(pending, { byPair, store, pstore, season, label, teams, STORE, PSTORE });
+    if (LG.cup || byPair) await fetchPending(pending, { byPair, store, pstore, season, label, teams, STORE, PSTORE });
   } else console.log(pending.length ? `  本次上限 ${limit} 個請求,不抓(待補 ${pending.length} 場留到下一次)` : '  沒有待補場次。');
+  /* 這一輪看到了、但沒有處理的(請求上限、或賽程端點抓不到)—— 每輪整份重寫(2026-11-05)。
+     npm test 用它分辨「抓取器看到了、這一輪沒輪到」與「抓取器根本沒看到」:後者才是 10-28 起那一週的病,
+     前者是上游或配額,只回報、不擋部署。不寫進 attempts:那會改到重試的節奏。 */
+  store.deferred = Object.fromEntries(pending.map(f => pairOf(f)).filter(k => !store.matches[k] && !store.attempts[k])
+    .map(k => [k, LG.cup || verifyN > 0 || limit <= 0 ? '本次沒有處理' : '本次沒有處理(請求上限或賽程端點抓不到)']));
 
   store.updatedAt = new Date().toISOString();
   store.extractVersion = EXTRACT_VERSION;

@@ -69,7 +69,7 @@ async function getMatch(matchId) {
 
 async function main() {
   console.log('\n▶ 西甲賽後資料(FotMob)');
-  const fixtures = await read(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'));
+  let fixtures = await read(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'));
   /* 逐場資料優先(每次部署都在更新);沒有的話才退回陣容快取(舊的手動那份,留著當備援)。
      兩份的鍵都是「主隊碼|客隊碼」,值裡都有 matchId。 */
   const details = await read(GAME_DETAILS);
@@ -96,6 +96,23 @@ async function main() {
      第三種是自動的 —— 快取存的是轉換後的結果,對映修好之後舊資料不會跟著變,
      而「記得手動 --force」不是機制。受每次請求上限節制,不會一次全打。 */
   const stale = key => (store.matches[key]?.adapterVersion ?? 0) !== ADAPTER_VERSION;
+  /* fixtures.json 是上一次 build 的產物 —— 2026-10-30 起倉庫裡那份停在 10-28,之後踢完的場次在它裡面都還是「未賽」,
+     這支從那天起一場都沒抓(2026-11-05 查到,跟 game:fetch 同一個病,見 lib/fresh-played.mjs)。
+     game:fetch 在這一步之前、這一次部署裡剛抓的逐場資料說踢完了,就照它算已完賽,比分也取它的
+     (它存的比分在抓的時候對過 FotMob 賽程;獨立的核對仍在 build-laliga 的 buildProviderMatchReport)。 */
+  const freshScore = new Map();
+  for (const m of Object.values(details?.matches ?? {})) {
+    if (m.season === SEASON && Array.isArray(m.score) && m.score.length === 2) freshScore.set(`${m.home}|${m.away}`, m.score);
+  }
+  let freshlyPlayed = 0;
+  fixtures = fixtures.map(f => {
+    if (f.played) return f;
+    const sc = freshScore.get(`${f.home}|${f.away}`);
+    if (!sc) return f;
+    freshlyPlayed++;
+    return { ...f, played: true, fh: sc[0], fa: sc[1] };
+  });
+  if (freshlyPlayed) console.log(`  產物還沒有、逐場資料說已完賽:${freshlyPlayed} 場,一起列進待補`);
   const pending = fixtures.filter(f => {
     const key = `${f.home}|${f.away}`;
     return f.played && byKey.get(key)?.matchId && (force || !store.matches[key] || stale(key));

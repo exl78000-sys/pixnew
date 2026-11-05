@@ -7008,6 +7008,88 @@ async function checkUclDetails() {
         '歐冠逐場抓取器的賽果走 build 同一支 loadUclSeasons(讀 data/raw/football-data,不讀上一次 build 的產物)');
       ok(!/'web', 'data', 'ucl\.json'/.test(f), '歐冠逐場抓取器不讀 web/data/ucl.json');
     }
+    /* 六個聯賽:抓取器的「已完賽」用這一次部署的 FotMob 賽程快取補(2026-11-05;產物從 10-28 起不再更新,
+       抓取器整整一週看不到新場次)。規則在 lib/fresh-played.mjs,這裡守規則本身與「真的有接上」。 */
+    {
+      const { markFinishedFromFixtures: mark } = await import('./lib/fresh-played.mjs');
+      const res = [{ season: '2026-27', home: 'AAA', away: 'BBB', played: true, fh: 1, fa: 0, date: '2026-10-01' }];
+      const fx = (home, away, date, extra = {}) => ({ home, away, date, finished: true, cancelled: false, score: [2, 1], ...extra });
+      const sc = { season: '2026-27', matches: [
+        fx('AAA', 'BBB', '2026-10-01'),                       // 產物已經有 → 不補
+        fx('CCC', 'DDD', '2026-11-01'),                       // 產物沒有、已完賽 → 補
+        fx('EEE', 'FFF', '2026-11-09'),                       // 還沒到 today → 不補
+        fx('GGG', 'HHH', '2026-11-01', { finished: false }), // 沒踢完 → 不補
+        fx('III', 'JJJ', '2026-11-01', { cancelled: true }), // 取消 → 不補
+        fx('KKK', 'LLL', '2026-05-10'), fx('KKK', 'LLL', '2026-05-20'),   // 同一組主客兩場(附加賽)→ 分不出,不補
+      ] };
+      const o = mark(res, sc, { season: '2026-27', today: '2026-11-05' });
+      ok(o.marked.length === 1 && o.marked[0].key === 'CCC|DDD' && o.results.length === 2
+        && o.results[1].played && o.results[1].fh === 2 && o.results[1].playedFrom === 'fotmob-fixtures',
+        '抓取器補列:只補「FotMob 已完賽、產物沒有」的那一場,比分取 FotMob、標出處', JSON.stringify(o.marked));
+      ok(o.skipped.length === 1 && o.skipped[0].key === 'KKK|LLL', '同一組主客 FotMob 有兩場已完賽(附加賽撞鍵)→ 不補、記在 skipped');
+      ok(mark(res, { ...sc, season: '2025-26' }, { season: '2026-27', today: '2026-11-05' }).results === res, '賽程快取不是同一季 → 原樣不動');
+      const f = fetcher.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      ok(/if \(LG\.results\) \{[\s\S]{0,200}markFinishedFromFixtures\(results, await read\(join\(DIR, 'scores\.json'\)\)/.test(f),
+        '六個聯賽的逐場抓取器把這一次部署的 FotMob 賽程快取接進「已完賽」(不是只讀上一次的產物)');
+      {
+        const lf = readFileSync(join(ROOT, 'scripts', 'fetch-laliga-fotmob.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+        ok(/fixtures = fixtures\.map\(f => \{\s*if \(f\.played\) return f;\s*const sc = freshScore\.get/.test(lf) && lf.indexOf('fixtures = fixtures.map') < lf.indexOf('const pending = fixtures.filter'),
+          '西甲賽後抓取器:產物還是「未賽」而這一次部署的逐場資料說踢完的,照逐場資料算已完賽(在挑待補之前)');
+      }
+      /* 比賽夜迴圈的進場判斷:開球時間用 FotMob 賽程快取覆蓋(倉庫裡的 fixtures.json 停在 10-28,西甲 11 月 30 場沒有開球時間)。 */
+      {
+        const { withFreshKickoffs: wk } = await import('./lib/fresh-played.mjs');
+        const fxs = [
+          { home: 'AAA', away: 'BBB', date: '2026-11-07', kickoff: null, played: false },
+          { home: 'CCC', away: 'DDD', date: '2026-11-07', kickoff: '2026-11-07T12:00:00Z', played: false },
+          { home: 'EEE', away: 'FFF', date: '2026-05-10', kickoff: null, played: false, pair: 'EEE|FFF|2026-05-10' },
+          { home: 'GGG', away: 'HHH', date: '2026-11-07', kickoff: null, played: false },
+        ];
+        const sc = { matches: [
+          { home: 'AAA', away: 'BBB', utcTime: '2026-11-07T20:00:00Z', date: '2026-11-07', finished: false },
+          { home: 'CCC', away: 'DDD', utcTime: '2026-11-07T15:00:00Z', date: '2026-11-07', finished: true },
+          { home: 'EEE', away: 'FFF', utcTime: '2026-05-10T14:00:00Z', date: '2026-05-10' }, { home: 'EEE', away: 'FFF', utcTime: '2026-01-10T14:00:00Z', date: '2026-01-10' },
+          { home: 'GGG', away: 'HHH', utcTime: '2026-05-10T14:00:00Z', date: '2026-05-10' }, { home: 'GGG', away: 'HHH', utcTime: '2026-01-10T14:00:00Z', date: '2026-01-10' },
+        ] };
+        const o = wk(fxs, sc).fixtures;
+        ok(o[0].kickoff === '2026-11-07T20:00:00Z' && o[1].kickoff === '2026-11-07T15:00:00Z' && o[1].played === true,
+          '進場判斷的開球時間:產物沒有的補上、改了的換掉、踢完的標已完賽(來源是部署回寫的 FotMob 賽程快取)');
+        ok(o[2].kickoff === '2026-05-10T14:00:00Z' && o[3].kickoff === null,
+          '進場判斷的開球時間:附加賽照同一天配,一組主客有兩場而沒有日期可配的不碰');
+        const { liveWindow } = await import('./live-window.mjs');
+        for (const [lg, dir] of [['pl', 'fotmob-epl'], ['es1', 'fotmob-la-liga'], ['en2', 'fotmob-championship'], ['de1', 'fotmob-bundesliga'], ['it1', 'fotmob-serie-a'], ['fr1', 'fotmob-ligue-1']]) {
+          const sp = join(ROOT, 'data', 'raw', dir, 'scores.json');
+          if (!existsSync(sp)) continue;
+          const scj = JSON.parse(readFileSync(sp, 'utf8'));
+          const cnt = new Map();
+          for (const m of scj.matches ?? []) cnt.set(`${m.home}|${m.away}`, (cnt.get(`${m.home}|${m.away}`) ?? 0) + 1);
+          const next = (scj.matches ?? []).filter(m => !m.finished && !m.cancelled && m.utcTime && cnt.get(`${m.home}|${m.away}`) === 1
+            && Date.parse(m.utcTime) > Date.parse(scj.fetchedAt ?? '')).sort((a, b) => a.utcTime.localeCompare(b.utcTime))[0];
+          if (!next) continue;
+          const w = liveWindow(Date.parse(next.utcTime) + 10 * 60e3, lg);
+          ok(w.active === true, `${lg}:FotMob 賽程快取裡的下一場(${next.date} ${next.home}–${next.away})開賽 10 分鐘時,比賽夜迴圈會進場`, w.reason);
+        }
+      }
+      /* 真資料守門:FotMob 說踢完超過 48 小時、逐場快取既沒有它也**從來沒試過**它 → 抓取器根本沒看到那一場(就是 10-28 起那一週)。
+         試過而退回的(例如日期不一致)只回報 —— 那是另一件事,不是這一條要守的。時間以賽程快取抓的時間為準,不是跑測試的那一刻。 */
+      for (const [lg, dir] of [['pl', 'fotmob-epl'], ['es1', 'fotmob-la-liga'], ['en2', 'fotmob-championship'], ['de1', 'fotmob-bundesliga'], ['it1', 'fotmob-serie-a'], ['fr1', 'fotmob-ligue-1']]) {
+        const sp = join(ROOT, 'data', 'raw', dir, 'scores.json');
+        if (!existsSync(sp)) continue;
+        const scj = JSON.parse(readFileSync(sp, 'utf8'));
+        const gp = join(ROOT, 'data', 'raw', dir, `${scj.season}-game-details.json`);
+        if (!existsSync(gp)) continue;
+        const store = JSON.parse(readFileSync(gp, 'utf8'));
+        const ref = Date.parse(scj.fetchedAt ?? '');
+        const keys = new Set([...Object.keys(store.matches ?? {}), ...Object.keys(store.attempts ?? {}), ...Object.keys(store.deferred ?? {})]);
+        const hasKey = m => keys.has(`${m.home}|${m.away}`) || keys.has(`${m.home}|${m.away}|${m.date}`);
+        const old = (scj.matches ?? []).filter(m => m.finished && !m.cancelled && Date.parse(m.utcTime ?? m.date) < ref - 48 * 3600e3);
+        const never = old.filter(m => !hasKey(m));
+        const tried = Object.keys(store.attempts ?? {}).length;
+        const deferred = Object.keys(store.deferred ?? {}).length;
+        ok(never.length === 0, `${lg}:FotMob 說踢完超過 48 小時的場次,逐場抓取器都看過(有快取、試過、或這一輪排隊中)`,
+          `${never.length} / ${old.length} 場從沒看過:${never.slice(0, 4).map(m => `${m.date} ${m.home}–${m.away}`).join('、')}${tried ? `;另有 ${tried} 場試過退回(只回報)` : ''}${deferred ? `;${deferred} 場這一輪沒輪到(只回報)` : ''}`);
+      }
+    }
 
     // 前端:入口條件是「有報告」,報告卡片用共用的那一份,而且不自己長出「賽前分析」
     const strip2 = x => x.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');

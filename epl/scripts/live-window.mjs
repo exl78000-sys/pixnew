@@ -15,6 +15,7 @@
 //   2. 下一場多久後開賽?              → 還早就不進場;快到了就先睡到開賽前再輪詢
 //   3. 都沒有?                        → 直接結束,不浪費(使用者要的「沒比賽就不用頻繁」)
 import { readFileSync, existsSync, appendFileSync, readdirSync } from 'node:fs';
+import { withFreshKickoffs } from './lib/fresh-played.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -110,19 +111,19 @@ export function decideWindow({ now, fixtures, live = null }) {
    「沒有即時來源」不等於「不該進場」:英冠德義法都沒有 FPL 形狀的 live.json,
    但它們的比分來自 FotMob 賽程端點,而那要**有人在比賽夜去打**才會更新。 */
 const LEAGUES = {
-  pl: { fixtures: ['web', 'data', 'fixtures.json'], live: ['data', 'raw', 'live.json'] },
+  pl: { fixtures: ['web', 'data', 'fixtures.json'], live: ['data', 'raw', 'live.json'], scores: 'fotmob-epl' },
   es1: {
     fixtures: ['web', 'data', 'leagues', 'es1', 'fixtures.json'],
-    live: ['data', 'raw', 'sportmonks-la-liga', 'live.json'],
+    live: ['data', 'raw', 'sportmonks-la-liga', 'live.json'], scores: 'fotmob-la-liga',
   },
   /* 英冠(2026-09-04):比分來源是 FotMob 賽程端點,沒有 FPL 形狀的 live.json,進場與否純用開賽時間推 */
-  en2: { fixtures: ['web', 'data', 'leagues', 'en2', 'fixtures.json'], live: null },
+  en2: { fixtures: ['web', 'data', 'leagues', 'en2', 'fixtures.json'], live: null, scores: 'fotmob-championship' },
   /* 德義法(2026-09-16):跟英冠同一種 —— FotMob 賽程端點供比分,沒有 live.json,純用開賽時間推。
      不在這裡的話 `liveWindow` 回「不認得的聯賽」,比賽夜的迴圈**根本不會為它們進場**,
      比分要等 12 小時一次的部署 —— 那就等於沒有「當晚就有比分」這件事。 */
-  de1: { fixtures: ['web', 'data', 'leagues', 'de1', 'fixtures.json'], live: null },
-  it1: { fixtures: ['web', 'data', 'leagues', 'it1', 'fixtures.json'], live: null },
-  fr1: { fixtures: ['web', 'data', 'leagues', 'fr1', 'fixtures.json'], live: null },
+  de1: { fixtures: ['web', 'data', 'leagues', 'de1', 'fixtures.json'], live: null, scores: 'fotmob-bundesliga' },
+  it1: { fixtures: ['web', 'data', 'leagues', 'it1', 'fixtures.json'], live: null, scores: 'fotmob-serie-a' },
+  fr1: { fixtures: ['web', 'data', 'leagues', 'fr1', 'fixtures.json'], live: null, scores: 'fotmob-ligue-1' },
 };
 
 /* 英格蘭盃賽的場次也算「有比賽在踢」(2026-09-08)。
@@ -191,7 +192,13 @@ export function liveWindow(now = Date.now(), league = 'pl') {
   if (!cfg) return { active: false, reason: `不認得的聯賽:${league}`, sleepSec: 0 };
   const fx = join(ROOT, ...cfg.fixtures);
   if (!existsSync(fx)) return { active: false, reason: '找不到賽程資料', sleepSec: 0 };
-  const fixtures = JSON.parse(readFileSync(fx, 'utf8'));
+  let fixtures = JSON.parse(readFileSync(fx, 'utf8'));
+  /* fixtures.json 是上一次 build 的產物,倉庫裡那份 2026-10-30 起不再更新 —— 之後才公布的開球時間它都沒有
+     (西甲 11 月 30 場全缺)。開球時間與「踢完了沒」改用部署回寫的 FotMob 賽程快取覆蓋(lib/fresh-played.mjs)。 */
+  const sp = cfg.scores ? join(ROOT, 'data', 'raw', cfg.scores, 'scores.json') : null;
+  if (sp && existsSync(sp)) {
+    try { fixtures = withFreshKickoffs(fixtures, JSON.parse(readFileSync(sp, 'utf8'))).fixtures; } catch { /* 快取壞了就照產物 */ }
+  }
 
   let live = null;
   const rawLive = cfg.live ? join(ROOT, ...cfg.live) : null;
