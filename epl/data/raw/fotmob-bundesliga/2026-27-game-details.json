@@ -114615,9 +114615,1611 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-05T12:38:52.784Z",
    "heat": null
+  },
+  "HSV|BMG": {
+   "key": "HSV|BMG",
+   "season": "2026-27",
+   "date": "2026-11-06",
+   "matchId": "5881218",
+   "home": "HSV",
+   "away": "BMG",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "HSV": {
+     "possession": 62,
+     "shots": 18,
+     "shotsOn": 9,
+     "shotsOff": 7,
+     "blockedShots": 2,
+     "blocksMade": 3,
+     "corners": 5,
+     "offsides": 1,
+     "fouls": 6,
+     "saves": 4,
+     "passes": 553,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.29
+    },
+    "BMG": {
+     "possession": 38,
+     "shots": 19,
+     "shotsOn": 6,
+     "shotsOff": 11,
+     "blockedShots": 2,
+     "blocksMade": 2,
+     "corners": 3,
+     "offsides": 1,
+     "fouls": 16,
+     "saves": 6,
+     "passes": 334,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.41
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "HSV": {
+     "touches_opp_box": 35,
+     "big_chance": 5,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 10,
+     "shots_outside_box": 8,
+     "expected_goals_open_play": 1.76,
+     "expected_goals_set_play": 0.53,
+     "expected_goals_non_penalty": 2.29,
+     "expected_goals_on_target": 3.05,
+     "own_half_passes": 236,
+     "opposition_half_passes": 227,
+     "long_balls_accurate": 25,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 7,
+     "player_throws": 22,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 10,
+     "clearances": 19,
+     "duel_won": 61,
+     "ground_duels_won": 38,
+     "ground_duels_won_pct": 58,
+     "aerials_won": 23,
+     "aerials_won_pct": 64,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    },
+    "BMG": {
+     "touches_opp_box": 28,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 9,
+     "shots_outside_box": 10,
+     "expected_goals_open_play": 2.24,
+     "expected_goals_set_play": 0.16,
+     "expected_goals_non_penalty": 2.41,
+     "expected_goals_on_target": 1.35,
+     "own_half_passes": 136,
+     "opposition_half_passes": 111,
+     "long_balls_accurate": 23,
+     "long_balls_accurate_pct": 39,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 38,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 7,
+     "clearances": 34,
+     "duel_won": 41,
+     "ground_duels_won": 28,
+     "ground_duels_won_pct": 42,
+     "aerials_won": 13,
+     "aerials_won_pct": 36,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 35,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     62,
+     38
+    ],
+    "h1": [
+     58,
+     42
+    ],
+    "h2": [
+     66,
+     34
+    ]
+   },
+   "events": [
+    {
+     "minute": 11,
+     "extra": null,
+     "team": "HSV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Miro Muheim"
+    },
+    {
+     "minute": 38,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ko Itakura"
+    },
+    {
+     "minute": 44,
+     "extra": null,
+     "team": "BMG",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Joseph Scally"
+    },
+    {
+     "minute": 49,
+     "extra": null,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Ko Itakura"
+    },
+    {
+     "minute": 56,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kevin Diks"
+    },
+    {
+     "minute": 60,
+     "extra": null,
+     "team": "HSV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Shafiq Nandja"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "HSV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alexander Røssing"
+    },
+    {
+     "minute": 63,
+     "extra": 0,
+     "team": "HSV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Terem Moffi"
+    },
+    {
+     "minute": 70,
+     "extra": null,
+     "team": "HSV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Albert Grønbæk"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "HSV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kofi Amoako"
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "HSV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Yussuf Poulsen"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jens Castrop"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Franck Honorat"
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BMG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Isac Lidberg"
+    },
+    {
+     "minute": 89,
+     "extra": 0,
+     "team": "HSV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jason Dean Bissi Mouelle"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "BMG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jens Castrop"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "HSV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Warmed Omari"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "BMG",
+     "player": "Shuto Machino",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.087,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.6,
+     "y": 26.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "BMG",
+     "player": "Fabio Chiarodia",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 26.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "HSV",
+     "player": "Patson Daka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.59,
+     "xgot": 0.818,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 39.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BMG",
+     "player": "Lukas Ullrich",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.4,
+     "y": 41.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "HSV",
+     "player": "Miro Muheim",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.027,
+     "xgot": 0.163,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.3,
+     "y": 41.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "HSV",
+     "player": "Zakaria El Ouahdi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.152,
+     "xgot": 0.267,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 23.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "BMG",
+     "player": "Wael Mohya",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.044,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.2,
+     "y": 45.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "BMG",
+     "player": "Joseph Scally",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 25.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BMG",
+     "player": "Robin Hack",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 21.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "BMG",
+     "player": "Ko Itakura",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.8,
+     "y": 36.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "BMG",
+     "player": "Zento Uno",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0.11,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.2,
+     "y": 16.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 35.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "HSV",
+     "player": "Miro Muheim",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.9,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BMG",
+     "player": "Robin Hack",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0.045,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 48.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "HSV",
+     "player": "Miro Muheim",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 88.3,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "HSV",
+     "player": "David Møller Wolfe",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.084,
+     "xgot": 0.27,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 33.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.341,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 55.2,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "HSV",
+     "player": "Albert Grønbæk",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.142,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.9,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 43,
+     "extra": null,
+     "team": "HSV",
+     "player": "David Møller Wolfe",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.191,
+     "xgot": 0.228,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.9,
+     "y": 44,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "BMG",
+     "player": "Robin Hack",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.227,
+     "xgot": 0.861,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 35.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "BMG",
+     "player": "Joseph Scally",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 28.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "HSV",
+     "player": "Miro Muheim",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 22.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "HSV",
+     "player": "Zakaria El Ouahdi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 20,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "HSV",
+     "player": "Patson Daka",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.4,
+     "y": 37.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.3,
+     "y": 36,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "HSV",
+     "player": "Shafiq Nandja",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.264,
+     "xgot": 0.488,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.2,
+     "y": 28.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "BMG",
+     "player": "Joseph Scally",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.466,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.3,
+     "y": 32.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "HSV",
+     "player": "Albert Grønbæk",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0.263,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.4,
+     "y": 34.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "HSV",
+     "player": "Patson Daka",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.26,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 34.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "HSV",
+     "player": "Patson Daka",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.154,
+     "xgot": 0.532,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.111,
+     "xgot": 0.08,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 33.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BMG",
+     "player": "Zento Uno",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.082,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 31.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 80,
+     "extra": null,
+     "team": "BMG",
+     "player": "Wael Mohya",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.224,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.3,
+     "y": 39.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "HSV",
+     "player": "Alexander Røssing",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0.022,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.2,
+     "y": 46.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "HSV",
+     "player": "Kofi Amoako",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.056,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 31.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "HSV",
+     "player": "Zakaria El Ouahdi",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82,
+     "y": 26.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "BMG",
+     "player": "Florian Neuhaus",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.397,
+     "xgot": 0.258,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     -11
+    ],
+    [
+     3,
+     -8
+    ],
+    [
+     4,
+     -19
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     6,
+     11
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     -16
+    ],
+    [
+     9,
+     -27
+    ],
+    [
+     10,
+     -3
+    ],
+    [
+     11,
+     3
+    ],
+    [
+     12,
+     8
+    ],
+    [
+     13,
+     0
+    ],
+    [
+     14,
+     -5
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     17,
+     3
+    ],
+    [
+     18,
+     -14
+    ],
+    [
+     19,
+     -46
+    ],
+    [
+     20,
+     -100
+    ],
+    [
+     21,
+     -100
+    ],
+    [
+     22,
+     -100
+    ],
+    [
+     23,
+     -30
+    ],
+    [
+     24,
+     19
+    ],
+    [
+     25,
+     8
+    ],
+    [
+     26,
+     0
+    ],
+    [
+     27,
+     -5
+    ],
+    [
+     28,
+     -11
+    ],
+    [
+     29,
+     5
+    ],
+    [
+     30,
+     16
+    ],
+    [
+     31,
+     22
+    ],
+    [
+     32,
+     -33
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     0
+    ],
+    [
+     35,
+     60
+    ],
+    [
+     36,
+     92
+    ],
+    [
+     37,
+     71
+    ],
+    [
+     38,
+     60
+    ],
+    [
+     39,
+     11
+    ],
+    [
+     40,
+     16
+    ],
+    [
+     41,
+     5
+    ],
+    [
+     42,
+     5
+    ],
+    [
+     43,
+     16
+    ],
+    [
+     44,
+     0
+    ],
+    [
+     45,
+     5
+    ],
+    [
+     45.5,
+     30
+    ],
+    [
+     46,
+     3
+    ],
+    [
+     47,
+     14
+    ],
+    [
+     48,
+     14
+    ],
+    [
+     49,
+     3
+    ],
+    [
+     50,
+     -3
+    ],
+    [
+     51,
+     -8
+    ],
+    [
+     52,
+     19
+    ],
+    [
+     53,
+     14
+    ],
+    [
+     54,
+     24
+    ],
+    [
+     55,
+     -3
+    ],
+    [
+     56,
+     71
+    ],
+    [
+     57,
+     38
+    ],
+    [
+     58,
+     52
+    ],
+    [
+     59,
+     49
+    ],
+    [
+     60,
+     76
+    ],
+    [
+     61,
+     71
+    ],
+    [
+     62,
+     49
+    ],
+    [
+     63,
+     49
+    ],
+    [
+     64,
+     100
+    ],
+    [
+     65,
+     98
+    ],
+    [
+     66,
+     27
+    ],
+    [
+     67,
+     -54
+    ],
+    [
+     68,
+     -65
+    ],
+    [
+     69,
+     -5
+    ],
+    [
+     70,
+     8
+    ],
+    [
+     71,
+     8
+    ],
+    [
+     72,
+     19
+    ],
+    [
+     73,
+     -3
+    ],
+    [
+     74,
+     -14
+    ],
+    [
+     75,
+     73
+    ],
+    [
+     76,
+     81
+    ],
+    [
+     77,
+     100
+    ],
+    [
+     78,
+     65
+    ],
+    [
+     79,
+     43
+    ],
+    [
+     80,
+     -100
+    ],
+    [
+     81,
+     -100
+    ],
+    [
+     82,
+     -65
+    ],
+    [
+     83,
+     60
+    ],
+    [
+     84,
+     68
+    ],
+    [
+     85,
+     41
+    ],
+    [
+     86,
+     14
+    ],
+    [
+     87,
+     22
+    ],
+    [
+     88,
+     -33
+    ],
+    [
+     89,
+     -27
+    ],
+    [
+     90,
+     -60
+    ],
+    [
+     90.5,
+     11
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "HSV": {
+     "team": "HSV",
+     "formation": "3-5-2",
+     "coach": "Merlin Polzin",
+     "xi": [
+      {
+       "name": "Daniel Heuer Fernandes",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Shafiq Nandja",
+       "shirt": 43,
+       "pos": "D"
+      },
+      {
+       "name": "Sebastiaan Bornauw",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Warmed Omari",
+       "shirt": 17,
+       "pos": "D"
+      },
+      {
+       "name": "Zakaria El Ouahdi",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Martin Adeline",
+       "shirt": 5,
+       "pos": "M"
+      },
+      {
+       "name": "Albert Sambi Lokonga",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Miro Muheim",
+       "shirt": 28,
+       "pos": "M"
+      },
+      {
+       "name": "David Møller Wolfe",
+       "shirt": 3,
+       "pos": "M"
+      },
+      {
+       "name": "Patson Daka",
+       "shirt": 27,
+       "pos": "F"
+      },
+      {
+       "name": "Albert Grønbæk",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Alexander Røssing",
+       "shirt": 38,
+       "pos": "?"
+      },
+      {
+       "name": "Terem Moffi",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Kofi Amoako",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Yussuf Poulsen",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Jason Dean Bissi Mouelle",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Sander Tangvik",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Jordan Torunarigha",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Louis Lemke",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Otto Stange",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    },
+    "BMG": {
+     "team": "BMG",
+     "formation": "3-4-2-1",
+     "coach": "Alexander Blessin",
+     "xi": [
+      {
+       "name": "Daniel Batz",
+       "shirt": 33,
+       "pos": "G"
+      },
+      {
+       "name": "Ko Itakura",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Philipp Sander",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Fabio Chiarodia",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Joseph Scally",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Zento Uno",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Florian Neuhaus",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Lukas Ullrich",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Robin Hack",
+       "shirt": 25,
+       "pos": "M"
+      },
+      {
+       "name": "Wael Mohya",
+       "shirt": 36,
+       "pos": "M"
+      },
+      {
+       "name": "Shuto Machino",
+       "shirt": 18,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Kevin Diks",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Jens Castrop",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Franck Honorat",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Isac Lidberg",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Jan Olschowsky",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "David Herold",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Yukhym Konoplya",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Kevin Stöger",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Mathieu Nguefack",
+       "shirt": 34,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 52,
+      "center": 22,
+      "right": 26
+     },
+     "firstHalf": {
+      "left": 51,
+      "center": 21,
+      "right": 28
+     },
+     "secondHalf": {
+      "left": 52,
+      "center": 23,
+      "right": 25
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 31,
+      "right": 33
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 28,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 35,
+      "center": 34,
+      "right": 31
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-06T22:29:26.939Z",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-11-06T19:05:05.246Z",
+ "updatedAt": "2026-11-06T22:29:26.942Z",
  "deferred": {}
 }

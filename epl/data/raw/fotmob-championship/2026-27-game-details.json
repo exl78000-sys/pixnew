@@ -262108,9 +262108,1397 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-05T12:38:44.324Z",
    "heat": null
+  },
+  "DER|BOL": {
+   "key": "DER|BOL",
+   "season": "2026-27",
+   "date": "2026-11-06",
+   "matchId": "5836927",
+   "home": "DER",
+   "away": "BOL",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "DER": {
+     "possession": 30,
+     "shots": 9,
+     "shotsOn": 5,
+     "shotsOff": 3,
+     "blockedShots": 1,
+     "blocksMade": 6,
+     "corners": 4,
+     "offsides": 4,
+     "fouls": 12,
+     "saves": 5,
+     "passes": 232,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.55
+    },
+    "BOL": {
+     "possession": 70,
+     "shots": 17,
+     "shotsOn": 6,
+     "shotsOff": 5,
+     "blockedShots": 6,
+     "blocksMade": 1,
+     "corners": 6,
+     "offsides": 1,
+     "fouls": 9,
+     "saves": 2,
+     "passes": 553,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.69
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "DER": {
+     "touches_opp_box": 19,
+     "big_chance": 4,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 8,
+     "shots_outside_box": 1,
+     "expected_goals_open_play": 1.25,
+     "expected_goals_set_play": 0.3,
+     "expected_goals_non_penalty": 1.55,
+     "expected_goals_on_target": 2.5,
+     "own_half_passes": 83,
+     "opposition_half_passes": 77,
+     "long_balls_accurate": 16,
+     "long_balls_accurate_pct": 32,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 20,
+     "player_throws": 16,
+     "matchstats.headers.tackles": 17,
+     "interceptions": 15,
+     "clearances": 27,
+     "duel_won": 49,
+     "ground_duels_won": 27,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 22,
+     "aerials_won_pct": 63,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 25,
+     "red_cards": 0
+    },
+    "BOL": {
+     "touches_opp_box": 23,
+     "big_chance": 5,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 10,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 1.38,
+     "expected_goals_set_play": 0.31,
+     "expected_goals_non_penalty": 1.69,
+     "expected_goals_on_target": 2.1,
+     "own_half_passes": 227,
+     "opposition_half_passes": 257,
+     "long_balls_accurate": 27,
+     "long_balls_accurate_pct": 59,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 19,
+     "player_throws": 27,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 10,
+     "clearances": 21,
+     "duel_won": 44,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 13,
+     "aerials_won_pct": 37,
+     "dribbles_succeeded": 3,
+     "dribbles_succeeded_pct": 23,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     30,
+     70
+    ],
+    "h1": [
+     37,
+     63
+    ],
+    "h2": [
+     22,
+     78
+    ]
+   },
+   "events": [
+    {
+     "minute": 42,
+     "extra": null,
+     "team": "BOL",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Rúben Rodrigues"
+    },
+    {
+     "minute": 46,
+     "extra": null,
+     "team": "DER",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Ryan Nyambe"
+    },
+    {
+     "minute": 49,
+     "extra": null,
+     "team": "DER",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Jack Robinson"
+    },
+    {
+     "minute": 62,
+     "extra": null,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Luca Stephenson"
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kyliane Dong"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Atsuki Ito"
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Samuel Iling-Junior"
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Alex Mowatt"
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Thelonius Bair"
+    },
+    {
+     "minute": 90,
+     "extra": 2,
+     "team": "BOL",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Max Matthew Lott"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lars-Jørgen Salvesen"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "DER",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Oscar Fraulo"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "DER",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Rhian Brewster"
+    },
+    {
+     "minute": 90,
+     "extra": 4,
+     "team": "DER",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Rhian Brewster"
+    },
+    {
+     "minute": 90,
+     "extra": 5,
+     "team": "BOL",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Gaizka Larrazabal"
+    }
+   ],
+   "shots": [
+    {
+     "min": 9,
+     "extra": null,
+     "team": "DER",
+     "player": "Carlton Morris",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.038,
+     "xgot": 0.023,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 36.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 13,
+     "extra": null,
+     "team": "BOL",
+     "player": "Xavier Simons",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.115,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 37,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "BOL",
+     "player": "Max Conway",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 48.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "BOL",
+     "player": "Thierry Gale",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 41.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 32,
+     "extra": null,
+     "team": "BOL",
+     "player": "Thierry Gale",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 49,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "BOL",
+     "player": "Chris Forino-Joseph",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.124,
+     "xgot": 0.197,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 27.4,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 33,
+     "extra": null,
+     "team": "BOL",
+     "player": "Akin Famewo",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.7,
+     "y": 23.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "BOL",
+     "player": "Luca Stephenson",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.029,
+     "xgot": 0.311,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.7,
+     "y": 29,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "BOL",
+     "player": "Thierry Gale",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.051,
+     "xgot": 0.133,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "Goal",
+     "situation": "FastBreak",
+     "xg": 0.205,
+     "xgot": 0.611,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 30.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "DER",
+     "player": "Mohammed Fuseini",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.334,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 37.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "DER",
+     "player": "Ryan Nyambe",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.312,
+     "xgot": 0.97,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.8,
+     "y": 29.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "DER",
+     "player": "Jack Robinson",
+     "type": "Goal",
+     "situation": "SetPiece",
+     "xg": 0.165,
+     "xgot": 0.412,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 52,
+     "extra": null,
+     "team": "BOL",
+     "player": "Gaizka Larrazabal",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.431,
+     "xgot": 0.446,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 31.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "DER",
+     "player": "Mohammed Fuseini",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.2,
+     "xgot": 0.196,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 34.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "DER",
+     "player": "Shane Duffy",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 32.7,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "BOL",
+     "player": "Gaizka Larrazabal",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.2,
+     "y": 20.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BOL",
+     "player": "Rúben Rodrigues",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.082,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "BOL",
+     "player": "Sam Dalby",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.228,
+     "xgot": 0.406,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 31.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "BOL",
+     "player": "Gaizka Larrazabal",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.3,
+     "y": 36,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "BOL",
+     "player": "Chris Forino-Joseph",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.7,
+     "y": 26.5,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "DER",
+     "player": "Alex Mowatt",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.6,
+     "y": 37.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 84,
+     "extra": null,
+     "team": "BOL",
+     "player": "Thelonius Bair",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.166,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.4,
+     "y": 39.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 85,
+     "extra": null,
+     "team": "BOL",
+     "player": "Samuel Iling-Junior",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.1,
+     "y": 30.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "DER",
+     "player": "Bobby Clark",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.073,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 40.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 4,
+     "team": "DER",
+     "player": "Rhian Brewster",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.328,
+     "xgot": 0.896,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 41.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     16
+    ],
+    [
+     5,
+     49
+    ],
+    [
+     6,
+     38
+    ],
+    [
+     7,
+     16
+    ],
+    [
+     8,
+     -16
+    ],
+    [
+     9,
+     11
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     11,
+     16
+    ],
+    [
+     12,
+     -68
+    ],
+    [
+     13,
+     -68
+    ],
+    [
+     14,
+     -62
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     16,
+     -5
+    ],
+    [
+     17,
+     -8
+    ],
+    [
+     18,
+     -8
+    ],
+    [
+     19,
+     11
+    ],
+    [
+     20,
+     8
+    ],
+    [
+     21,
+     3
+    ],
+    [
+     22,
+     -11
+    ],
+    [
+     23,
+     -5
+    ],
+    [
+     24,
+     -33
+    ],
+    [
+     25,
+     -33
+    ],
+    [
+     26,
+     -38
+    ],
+    [
+     27,
+     -11
+    ],
+    [
+     28,
+     -11
+    ],
+    [
+     29,
+     -5
+    ],
+    [
+     30,
+     -19
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     -22
+    ],
+    [
+     33,
+     -73
+    ],
+    [
+     34,
+     -57
+    ],
+    [
+     35,
+     19
+    ],
+    [
+     36,
+     90
+    ],
+    [
+     37,
+     49
+    ],
+    [
+     38,
+     -27
+    ],
+    [
+     39,
+     -43
+    ],
+    [
+     40,
+     -54
+    ],
+    [
+     41,
+     -38
+    ],
+    [
+     42,
+     -57
+    ],
+    [
+     43,
+     -41
+    ],
+    [
+     44,
+     -35
+    ],
+    [
+     45,
+     -19
+    ],
+    [
+     45.5,
+     -19
+    ],
+    [
+     46,
+     81
+    ],
+    [
+     47,
+     79
+    ],
+    [
+     48,
+     79
+    ],
+    [
+     49,
+     100
+    ],
+    [
+     50,
+     100
+    ],
+    [
+     51,
+     90
+    ],
+    [
+     52,
+     -81
+    ],
+    [
+     53,
+     -22
+    ],
+    [
+     54,
+     100
+    ],
+    [
+     55,
+     100
+    ],
+    [
+     56,
+     100
+    ],
+    [
+     57,
+     -11
+    ],
+    [
+     58,
+     -33
+    ],
+    [
+     59,
+     -22
+    ],
+    [
+     60,
+     -38
+    ],
+    [
+     61,
+     -60
+    ],
+    [
+     62,
+     -57
+    ],
+    [
+     63,
+     -46
+    ],
+    [
+     64,
+     -3
+    ],
+    [
+     65,
+     3
+    ],
+    [
+     66,
+     8
+    ],
+    [
+     67,
+     -3
+    ],
+    [
+     68,
+     -22
+    ],
+    [
+     69,
+     -33
+    ],
+    [
+     70,
+     -100
+    ],
+    [
+     71,
+     -95
+    ],
+    [
+     72,
+     -84
+    ],
+    [
+     73,
+     5
+    ],
+    [
+     74,
+     -5
+    ],
+    [
+     75,
+     -11
+    ],
+    [
+     76,
+     -22
+    ],
+    [
+     77,
+     -16
+    ],
+    [
+     78,
+     -27
+    ],
+    [
+     79,
+     -52
+    ],
+    [
+     80,
+     -52
+    ],
+    [
+     81,
+     -35
+    ],
+    [
+     82,
+     -11
+    ],
+    [
+     83,
+     5
+    ],
+    [
+     84,
+     -100
+    ],
+    [
+     85,
+     -100
+    ],
+    [
+     86,
+     -100
+    ],
+    [
+     87,
+     -87
+    ],
+    [
+     88,
+     0
+    ],
+    [
+     89,
+     49
+    ],
+    [
+     90,
+     43
+    ],
+    [
+     90.5,
+     14
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "DER": {
+     "team": "DER",
+     "formation": "4-2-3-1",
+     "coach": "John Eustace",
+     "xi": [
+      {
+       "name": "Jacob Widell Zetterström",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Ryan Nyambe",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Shane Duffy",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Dion Sanderson",
+       "shirt": 28,
+       "pos": "D"
+      },
+      {
+       "name": "Jack Robinson",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Lewis Travis",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "David Ozoh",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Rhian Brewster",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Bobby Clark",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Mohammed Fuseini",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Carlton Morris",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Alex Mowatt",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Oscar Fraulo",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Lars-Jørgen Salvesen",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Vickers",
+       "shirt": 31,
+       "pos": "?"
+      },
+      {
+       "name": "Max Johnston",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Rio Canoville",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "Isaac Gordon",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Filip Bilbija",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Corey Blackett-Taylor",
+       "shirt": 33,
+       "pos": "?"
+      }
+     ]
+    },
+    "BOL": {
+     "team": "BOL",
+     "formation": "4-2-3-1",
+     "coach": "Steven Schumacher",
+     "xi": [
+      {
+       "name": "Jack Bonham",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Luca Stephenson",
+       "shirt": 27,
+       "pos": "D"
+      },
+      {
+       "name": "Chris Forino-Joseph",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Akin Famewo",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Max Conway",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Xavier Simons",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Josh Sheehan",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Gaizka Larrazabal",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Rúben Rodrigues",
+       "shirt": 20,
+       "pos": "M"
+      },
+      {
+       "name": "Thierry Gale",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Sam Dalby",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Kyliane Dong",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Atsuki Ito",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Samuel Iling-Junior",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Thelonius Bair",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Max Matthew Lott",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "David Harrington",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Ben Davies",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Lewis Brunt",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "David Watson",
+       "shirt": 12,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 47,
+      "center": 25,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 57,
+      "center": 18,
+      "right": 25
+     },
+     "secondHalf": {
+      "left": 32,
+      "center": 36,
+      "right": 32
+     }
+    },
+    "away": {
+     "total": {
+      "left": 38,
+      "center": 24,
+      "right": 38
+     },
+     "firstHalf": {
+      "left": 34,
+      "center": 22,
+      "right": 44
+     },
+     "secondHalf": {
+      "left": 39,
+      "center": 25,
+      "right": 36
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-06T22:29:24.825Z",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-11-06T19:05:05.057Z",
+ "updatedAt": "2026-11-06T22:29:24.827Z",
  "deferred": {}
 }

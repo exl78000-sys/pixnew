@@ -108,7 +108,7 @@
    "officialId": 17072
   }
  },
- "managersFetchedAt": "2026-11-05T19:41:40.937Z",
+ "managersFetchedAt": "2026-11-06T19:43:14.586Z",
  "matches": {
   "CRY|MCI": {
    "fixtureId": 128937,
@@ -63665,25 +63665,47 @@
   "EVE|COV": {
    "fixtureId": 129016,
    "kickoff": "2026-11-06T20:00:00.000Z",
-   "status": "U",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
-    "home": null,
-    "away": null
+    "home": 3,
+    "away": 1
    },
    "homeId": 7,
    "awayId": 5,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4640
+     ],
+     [
+      128411,
+      8143,
+      66318,
+      24983
+     ],
+     [
+      134286,
+      23841
+     ],
+     [
+      112917,
+      14706,
+      118442
+     ],
+     [
+      143922
+     ]
+    ],
     "xi": [
      {
       "id": 112917,
       "playerId": null,
       "name": "Tyler Dibling",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -63710,7 +63732,7 @@
       "playerId": null,
       "name": "Tyrique George",
       "shirt": 19,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -63728,7 +63750,7 @@
       "playerId": null,
       "name": "Merlin Röhl",
       "shirt": 34,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Attacking Midfielder",
       "captain": false
      },
@@ -63863,9 +63885,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      55556
+     ],
+     [
+      75413,
+      128136,
+      22043,
+      10438
+     ],
+     [
+      337310,
+      118036
+     ],
+     [
+      122134,
+      66304,
+      51730
+     ],
+     [
+      15340
+     ]
+    ],
     "xi": [
      {
       "id": 66304,
@@ -63926,7 +63970,7 @@
       "playerId": null,
       "name": "Yann Gboho",
       "shirt": 34,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -64051,14 +64095,299 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "A",
+     "person": 51730,
+     "assist": null,
+     "team": 5,
+     "min": 52,
+     "label": "52'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 143922,
+     "assist": 24983,
+     "team": 7,
+     "min": 56,
+     "label": "56'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 143922,
+     "assist": null,
+     "team": 7,
+     "min": 61,
+     "label": "61'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 14706,
+     "assist": 143922,
+     "team": 7,
+     "min": 81,
+     "label": "81'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 3,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
-    "subs": [],
-    "periods": []
+    "cards": [
+     {
+      "person": 337310,
+      "team": 5,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 66318,
+      "team": 7,
+      "min": 88,
+      "label": "88'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 112589,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 128411,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49374,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 112917,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 19694,
+      "team": 5,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51730,
+      "team": 5,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 25375,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 134286,
+      "team": 7,
+      "min": 73,
+      "label": "73'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 8650,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 118036,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 20361,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66304,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 74964,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 122134,
+      "team": 5,
+      "min": 86,
+      "label": "86'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 337821,
+      "team": 5,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 15340,
+      "team": 5,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 4333,
+      "team": 7,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66318,
+      "team": 7,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 133612,
+      "team": 7,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 118442,
+      "team": 7,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+7'00",
+      "phase": "2"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "90+7'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-06T21:56:57.931Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-11-06T19:05:32.042Z"
+ "fetchedAt": "2026-11-06T22:29:38.978Z"
 }

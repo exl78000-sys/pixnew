@@ -2,7 +2,7 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-06T19:06:31.368Z",
+ "fetchedAt": "2026-11-06T22:31:16.447Z",
  "teams": [
   {
    "code": "FCB",
@@ -590,6 +590,66 @@
      "loss": 1,
      "pointsPerGame": 1.75,
      "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "HSV",
+   "fotmobId": 9790,
+   "fotmobName": "Hamburger SV",
+   "fetchedAt": "2026-10-09T12:41:50.681Z",
+   "color": "#005AAA",
+   "teamColors": {
+    "darkMode": "#1d63b4",
+    "lightMode": "#005AAA",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Volksparkstadion",
+   "city": "Hamburg",
+   "location": [
+    "53.587134005",
+    "9.898579717"
+   ],
+   "capacity": 57000,
+   "surface": "Grass",
+   "opened": 1998,
+   "coachHistory": [
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 11,
+     "draw": 6,
+     "loss": 4,
+     "pointsPerGame": 1.86,
+     "winPercentage": 0.52
+    },
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 11,
+     "loss": 14,
+     "pointsPerGame": 1.12,
+     "winPercentage": 0.26
+    },
+    {
+     "id": 1611908,
+     "name": "Merlin Polzin",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0.75,
+     "winPercentage": 0.25
     }
    ]
   },
@@ -1190,66 +1250,6 @@
      "draw": 1,
      "loss": 2,
      "pointsPerGame": 1,
-     "winPercentage": 0.25
-    }
-   ]
-  },
-  {
-   "code": "HSV",
-   "fotmobId": 9790,
-   "fotmobName": "Hamburger SV",
-   "fetchedAt": "2026-10-09T12:41:50.681Z",
-   "color": "#005AAA",
-   "teamColors": {
-    "darkMode": "#1d63b4",
-    "lightMode": "#005AAA",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Volksparkstadion",
-   "city": "Hamburg",
-   "location": [
-    "53.587134005",
-    "9.898579717"
-   ],
-   "capacity": 57000,
-   "surface": "Grass",
-   "opened": 1998,
-   "coachHistory": [
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 11,
-     "draw": 6,
-     "loss": 4,
-     "pointsPerGame": 1.86,
-     "winPercentage": 0.52
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 11,
-     "loss": 14,
-     "pointsPerGame": 1.12,
-     "winPercentage": 0.26
-    },
-    {
-     "id": 1611908,
-     "name": "Merlin Polzin",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0.75,
      "winPercentage": 0.25
     }
    ]
