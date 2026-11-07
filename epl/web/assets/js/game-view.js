@@ -1,7 +1,7 @@
 import * as C from './core.js?v=e883428c';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=b835ac67';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=239a9406';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=c2c95a40';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -188,6 +188,8 @@ export async function renderGame(app) {
       if (e.type === 'full') disp.finished = true;
       const L = disp.lineup[e.side];
       if (!L) return;
+      if (e.type === 'keeperSwap') L.gk = e.player;
+      if (e.type === 'sub' && L.gk === e.off) L.gk = null;   // 代守門的人被換下:換上來的人接手他的角色(GK)
       if (e.type === 'sub') { L.on = L.on.map(c => (c === e.off ? e.on : c)); L.bench = L.bench.filter(c => c !== e.on); L.off.push(e.off); L.subs++; }
       if (e.type === 'card') {
         if (e.card === 'yellow') L.yellows.set(e.player, (L.yellows.get(e.player) ?? 0) + 1);
@@ -418,7 +420,8 @@ export async function renderGame(app) {
         case 'save': return `${m} <span class="dim">${t} ${who} 的射門被撲出</span>`;
         case 'block': return `${m} <span class="dim">${who}${e.gk ? '(門將)擋出' : ' 封阻'}</span>`;
         case 'corner': return `${m} ${t} 角球`;
-        case 'card': return `${m} ${e.card === 'red' ? '🟥' : '🟨'} ${t} ${who}${e.card === 'red' ? ' 兩黃罰下' : ' 黃牌'}`;
+        case 'card': return `${m} ${e.card === 'red' ? '🟥' : '🟨'} ${t} ${who}${e.card === 'red' ? (e.direct ? ' 直接紅牌' : ' 兩黃罰下') : ' 黃牌'}`;
+        case 'keeperSwap': return `${m} 🧤 ${t} 門將被罰下,${who} 去守門(要換替補門將上來,照一般換人)`;
         case 'sub': return `${m} 🔁 ${t} ${who} 換 ${C.esc(e.offName ?? '')}`;
         /* 排隊的換人到了死球卻換不了(那個人在等的時候被罰下了)—— 不講的話你按過的換人就靜靜消失 */
         case 'subVoid': return `${m} <span class="dim">${t} 排隊的換人取消了(${C.esc(playerName(e.side, e.off))} 已經不在場上)</span>`;
@@ -506,7 +509,7 @@ export async function renderGame(app) {
           拿來對的是射門那一瞬間的站位(StatsBomb 開放資料):最近的防守者站在射手與球門之間的,
           真實約五成、這裡約四分之一;球的路上有人,真實約五成、這裡一成多。
           剩下的差距還沒有拆清楚,已知不同的一項是射門的方式:真實有四成多是接到球就射,這裡的射門一律要先控住球。
-          <b>還沒做的</b>:直接紅牌(只做兩黃)—— 沒做就不列,不放空欄位。</div>`;
+          紅牌含<b>直接紅牌</b>(每次犯規照聯盟真實比率抽${profile.league_?.reds?.direct ? `,英超約每 ${Math.round(1 / (profile.league_.reds.direct * 2))} 場一張` : ''})與兩黃罰下;門將被罰下的話由場上離球門最近的人代守門,要換替補門將照一般換人。</div>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。
        讀的是 disp,不是 match.state() —— 完場之後兩者相同,但規矩只有一條才不會有人抄錯。 */
@@ -546,7 +549,7 @@ export async function renderGame(app) {
         const L = disp.lineup[sd], sq = squadOf(sd);
         const btn = (c, where) => {
           const p = sq.get(c); const y = L.yellows.get(c);
-          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${subPick[sd]?.[where] === c ? ' primary' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}">${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${p?.role ?? p?.pos ?? ''}</span>${y ? ' 🟨' : ''}</button>`;
+          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${subPick[sd]?.[where] === c ? ' primary' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}">${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${L.gk === c ? '代守門' : (p?.role ?? p?.pos ?? '')}</span>${y ? ' 🟨' : ''}</button>`;
         };
         const reds = L.off.length - L.subs;
         /* 換人規則的現況由引擎給(subStatus),畫面不自己數 —— 自己數的話排隊中的那幾個就對不上 */
@@ -688,7 +691,7 @@ export async function renderGame(app) {
       <div class="note" style="margin-top:12px"><b>這張圖哪些是真的。</b>
         <ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:4px">
           <li><b>真資料</b>:名單、背號、角色、陣型選項、<b>逐人最高速度</b>(FotMob,當成跑速上限)、
-            兩隊的跑動節奏、事件率(射門 / 角球 / 犯規 / 黃牌 / 越位)、控球分布、壓迫強度
+            兩隊的跑動節奏、事件率(射門 / 角球 / 犯規 / 黃牌 / 越位;直接紅牌照聯盟真實比率,每次犯規抽一次)、控球分布、壓迫強度
             (每 100 次對手傳球的抄截 + 攔截),以及進球的錨 λ(站上對這一場的預測)。</li>
           <li><b>從模擬長出來的</b>:每一腳傳球、射門、角球、界外球、越位、犯規與牌 ——
             不是抽出來的,是球跟人在場上互動的結果。射門的離門距離與禁區內比例,
@@ -704,7 +707,7 @@ export async function renderGame(app) {
           <li><b>補時比真實的短</b>,不是 bug:這裡死球只等一兩秒,補時照這一半實際死掉的時間補回去。</li>
           <li><b>進球情境</b>只分運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼;
             直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。</li>
-          <li><b>還沒做的</b>:直接紅牌(只做兩黃)、受傷;
+          <li><b>還沒做的</b>:受傷;
             戰術的寬度 / 節奏(引擎接得動,但量下去方向不對或幅度離譜,所以還沒掛上來)。
             <b>刻意不做</b>:自動換人(換人是玩家的決定)。沒做的一律不放欄位。</li>
           <li><b>跟真實管線只有一條關係</b>:沒有任何改動時,N 場的平均進球回得到站上的 λ

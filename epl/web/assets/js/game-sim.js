@@ -2038,6 +2038,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* 換人規則的狀態:每隊用了幾次機會、上一次機會是在哪一個死球(deadSeq)、排隊中的換人。
        deadSeq 每進一次死球 +1 —— 同一個死球裡的換人算同一次機會。atBreak:中場休息(換人不佔機會)。 */
     subWindows: { home: 0, away: 0 }, subWindowSeq: { home: -1, away: -1 }, subQueue: { home: [], away: [] },
+    /* 每一次犯規吃直接紅牌的機率 = 真實的直接紅牌(每隊每場,FotMob 事件,側寫 league_.reds.direct)÷ 每隊每場犯規。
+       側寫沒有這一欄(舊的側寫)就是 0 —— 不編一個數字;那時候只會有兩黃罰下。 */
+    redPerFoul: (profile.league_?.reds?.direct ?? 0) > 0 && FOUL_LG > 0 ? profile.league_.reds.direct / FOUL_LG : 0,
     deadSeq: 0, atBreak: false,
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
@@ -4155,6 +4158,38 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.tackles++; st.tacklesBy[by.side]++;
   }
 
+  /* 這一次犯規給不給牌(2026-11-07 起含直接紅牌)。**只抽一個亂數**:
+       u < ypf          → 黃牌(跟以前一模一樣,所以沒有直接紅牌的比賽黃牌一張都不變)
+       u ≥ 1 − redPerFoul → 直接紅牌(真實比率:側寫的 league_.reds.direct 每隊每場 ÷ 每隊每場犯規)
+     兩段不重疊(ypf ≈ 0.17、redPerFoul ≈ 0.004),而且亂數消耗跟以前一樣 —— 不會讓整條亂數序列錯開。 */
+  function cardFor(by) {
+    const u = rng();
+    if (u >= 1 - st.redPerFoul) {
+      st.cards[by.side]++;
+      emit({ type: 'card', side: by.side, player: by.code, name: by.name, card: 'red', direct: true });
+      sendOff(by);
+    } else if (u < sideOf(by.side).ypf) {
+      by.yellow = (by.yellow ?? 0) + 1;
+      const red = by.yellow >= 2;
+      st.cards[by.side]++;
+      emit({ type: 'card', side: by.side, player: by.code, name: by.name, card: red ? 'red' : 'yellow' });
+      if (red) sendOff(by);
+    }
+  }
+  /* 罰下。紅牌之後那一隊少一個人是**真的少**(`p.off = true`),陣型自己會被拉開。
+     **門將被罰下**:離自家球門最近的場上球員去守門(角色改成 GK、球門球與撲救由他做)——
+     真實球隊多半會換上替補門將,但換人在這裡是玩家的決定(刻意不做自動換人),所以先由場上的人頂;
+     玩家要換替補門將上來就照一般換人(換上來的人接手被換下那個人的角色)。 */
+  function sendOff(p) {
+    const s = sideOf(p.side);
+    p.off = true; st.reds[p.side]++;
+    if (s.gk === p) {
+      const gx = s.att > 0 ? 0 : PITCH_W;
+      const cand = s.players.filter(q => !q.off);
+      const nu = cand.reduce((b, q) => (!b || Math.abs(q.x - gx) < Math.abs(b.x - gx) ? q : b), null);
+      if (nu) { nu.role = 'GK'; s.gk = nu; emit({ type: 'keeperSwap', side: p.side, player: nu.code, name: nu.name }); }
+    }
+  }
   /* 犯規:對方獲得自由球。牌照真實比率抽 —— 每次犯規 `yellowPerFoul` 機率吃黃,
      同一個人第二張黃就是紅、離場。紅牌之後那一隊少一個人是**真的少**(`p.off = true`),
      所以陣型會自己被拉開,不必另外寫「少一人要怎麼站」。 */
@@ -4162,13 +4197,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const other = by.side === 'home' ? 'away' : 'home';
     st.fouls[by.side]++;
     const px = cl(victim.x, 3, PITCH_W - 3), py = cl(victim.y, 3, PITCH_H - 3);
-    if (rng() < sideOf(by.side).ypf) {
-      by.yellow = (by.yellow ?? 0) + 1;
-      const red = by.yellow >= 2;
-      st.cards[by.side]++;
-      emit({ type: 'card', side: by.side, player: by.code, name: by.name, card: red ? 'red' : 'yellow' });
-      if (red) { by.off = true; st.reds[by.side]++; }
-    }
+    cardFor(by);
     closeChain('foul', victim.x);
     emit({ type: 'foul', side: by.side, player: by.code, name: by.name });
     deadBall({ kind: 'freekick', side: other, taker: pickNearest(sideOf(other), px, py, true),
@@ -4184,13 +4213,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const s = sideOf(side);
     st.fouls[by.side]++;
     // 禁區內的犯規照樣可能吃牌(規則跟一般犯規同一條,不另外訂一個機率)
-    if (rng() < sideOf(by.side).ypf) {
-      by.yellow = (by.yellow ?? 0) + 1;
-      const red = by.yellow >= 2;
-      st.cards[by.side]++;
-      emit({ type: 'card', side: by.side, player: by.code, name: by.name, card: red ? 'red' : 'yellow' });
-      if (red) { by.off = true; st.reds[by.side]++; }
-    }
+    cardFor(by);
     emit({ type: 'foul', side: by.side, player: by.code, name: by.name, inBox: true });
     closeChain('penalty', ball.x);
     const on = s.players.filter(p => !p.off && p.role !== 'GK');

@@ -318,6 +318,24 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
   const goalMins = fm.flatMap(m => m.events.filter(e => e.type === 'Goal').map(e => e.minute + (e.extra ?? 0) * 0));
   const cardEv = fm.flatMap(m => m.events.filter(e => e.type === 'Card'));
   const goalEv = fm.flatMap(m => m.events.filter(e => e.type === 'Goal'));
+  /* 紅牌拆成「直接紅牌」與「兩黃」(2026-11-07,模擬遊玩接直接紅牌用)。FotMob 的事件只寫 'Red Card',沒有分;
+     同一場、同一隊、同一個人在紅牌之前已經吃過黃牌 → 兩黃,否則直接紅牌。
+     界線:吃過黃牌的人後來又吃**直接**紅牌(少見)會被算成兩黃 —— 所以 direct 是下限、secondYellow 是上限。
+     單位是**每隊每場**(引擎是逐隊抽的),不是每場。 */
+  const redSplit = (() => {
+    let direct = 0, second = 0;
+    for (const m of fm) {
+      const booked = new Set();
+      const cards = m.events.filter(e => e.type === 'Card').sort((a, b) => (a.minute + (a.extra ?? 0) / 100) - (b.minute + (b.extra ?? 0) / 100));
+      for (const e of cards) {
+        const id = `${e.team}|${e.player}`;
+        if (/Yellow/.test(e.detail ?? '')) booked.add(id);
+        else if (/Red/.test(e.detail ?? '')) { if (booked.has(id)) second++; else direct++; }
+      }
+    }
+    const tg = fm.length * 2;
+    return tg ? { direct: r3(direct / tg), secondYellow: r3(second / tg), directN: direct, secondN: second, teamGames: tg } : {};
+  })();
   const blockedShare = (() => {
     const ts = fm.flatMap(m => Object.values(m.teamStats)).filter(s => s.shots != null && s.blockedShots != null);
     const shots = ts.reduce((a, s) => a + s.shots, 0);
@@ -448,7 +466,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       cardMinutes: { hist5: hist(cardEv.map(e => e.minute), 5), n: cardEv.length },
       subs: { countHist: hist(subCountByTeamMatch, 1, 5), minuteHist5: hist(subsOn.map(e => e.minute), 5), n: subsOn.length,
         offPos, offN },
-      reds: { perMatch: fm.length ? r3(cardEv.filter(e => e.detail === 'Red Card').length / fm.length) : null, n: fm.length },
+      reds: { perMatch: fm.length ? r3(cardEv.filter(e => e.detail === 'Red Card').length / fm.length) : null, n: fm.length, ...redSplit },
       blockedShare,
       ownGoalShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Own Goal').length / goalEv.length) : null,
       penaltyShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Penalty').length / goalEv.length) : null,

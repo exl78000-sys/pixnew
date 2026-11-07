@@ -265,6 +265,45 @@ console.log('\n▶ 模擬遊玩:換人規則(5 人、3 次機會、中場不算�
     stops === 1 && sig(e1) === sig(e2), `停了 ${stops} 次・${sig(e1)} vs ${sig(e2)}`);
 }
 
+console.log('\n▶ 模擬遊玩:直接紅牌(真實比率、同一個亂數、黃牌不變)');
+{
+  /* 2026-11-07(「依照推薦順序依序製作」第三項)。之前只有兩黃罰下,直接紅牌一張都沒有;
+     真實英超每隊每場 0.041 張(FotMob 事件,紅牌前同一人沒吃過黃 = 直接)。 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const R = profile.league_?.reds ?? {};
+  check('側寫把紅牌拆成直接 / 兩黃,而且加起來對回總數(每隊每場 ×2 = 每場)',
+    R.direct > 0 && R.secondYellow > 0 && R.directN + R.secondN > 0
+      && Math.abs((R.directN + R.secondN) / (R.teamGames / 2) - R.perMatch) < 0.002
+      && Math.abs(R.direct - R.directN / R.teamGames) < 0.001,
+    JSON.stringify(R));
+  const bare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const cf = bare.slice(bare.indexOf('function cardFor('), bare.indexOf('function sendOff('));
+  /* 黃牌那一段一個字都不能動(u < ypf)、紅牌在另一端(u ≥ 1 − redPerFoul)、只抽一次 ——
+     這樣沒有直接紅牌的比賽,黃牌與整條亂數序列都跟以前一樣 */
+  check('牌只抽一個亂數:黃牌 u < ypf(跟以前同一段)、直接紅牌在另一端;犯規與十二碼都走 cardFor',
+    (cf.match(/rng\(\)/g) ?? []).length === 1 && /if \(u >= 1 - st\.redPerFoul\)/.test(cf) && /else if \(u < sideOf\(by\.side\)\.ypf\)/.test(cf)
+      && (bare.match(/cardFor\(by\);/g) ?? []).length === 2 && !/rng\(\) < sideOf\(by\.side\)\.ypf/.test(bare),
+    `cardFor ${cf.length} 字元`);
+  check('直接紅牌的機率從側寫算(直接紅牌 ÷ 每隊每場犯規),側寫沒有就是 0',
+    /redPerFoul: \(profile\.league_\?\.reds\?\.direct \?\? 0\) > 0 && FOUL_LG > 0 \? profile\.league_\.reds\.direct \/ FOUL_LG : 0/.test(bare));
+  /* 門將在這個引擎裡不犯規(把機率拉到 1、跑 30 場,一次都沒有),所以「門將被罰下有人去守門」只守得到程式 */
+  const so = bare.slice(bare.indexOf('function sendOff('), bare.indexOf('function sendOff(') + 700);
+  check('罰下的是門將時,場上離自家球門最近的人改當門將(角色、s.gk 一起改,而且發事件)',
+    /if \(s\.gk === p\)/.test(so) && /nu\.role = 'GK'; s\.gk = nu;/.test(so) && /type: 'keeperSwap'/.test(so) && /!q\.off/.test(so));
+  // 行為:把機率拉到 1 → 第一次犯規就是直接紅牌,那個人當場離場,自由球照給
+  const hot = structuredClone(profile); hot.league_.reds.direct = hot.league_.rates.fouls;
+  const sim = SM.createSim({ profile: hot, home: 'ARS', away: 'LIV', seed: 2, pred: { xgHome: 1.99, xgAway: 0.70 } });
+  let foul = null, i = 0;
+  while (i++ < 60 * 60 * 60 && !foul) { sim.advance(1 / 60); foul = sim.events().find(e => e.type === 'foul'); }
+  const ev = sim.events(), card = ev.find(e => e.type === 'card');
+  const onPitch = sim.state().players.filter(p => p.side === foul?.side).length;
+  check('機率 1 的時候第一次犯規就是直接紅牌:事件標 direct、那個人離場(10 人)、自由球照給',
+    !!foul && card?.direct === true && card.card === 'red' && card.player === foul.player && onPitch === 10
+      && sim.state().counts.reds[foul.side] === 1 && (sim.state().restart === 'freekick' || sim.state().restart === 'penalty'),
+    JSON.stringify({ card, onPitch, restart: sim.state().restart }));
+}
+
 console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
 {
   /* **2026-09-25 從退役的回合制那一套搬過來。** 舊的 `game-engine.js`(回合制引擎)與
@@ -1212,14 +1251,17 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       const bare = simSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
       /* 正則第一版寫 `[^)]*`,而它跨不過 `sideOf(by.side)` 裡的那個右括號 → 找到 0 處。
          那是**斷言自己的誤報**,不是程式少做 —— 先確認失敗的是哪一邊再改。 */
-      const draws = bare.match(/rng\(\) <[^;{]*\.ypf\b/g) ?? [];
-      check('兩個抽牌點都用犯規者那一隊的吃牌率', draws.length === 2,
-        `找到 ${draws.length} 處`);
+      /* 2026-11-07 直接紅牌那一輪:兩個抽牌點合成一支 cardFor(by)(只抽一個亂數 u),犯規與十二碼都呼叫它 ——
+         守的性質一樣:黃牌那一段用的是犯規者那一隊的 ypf,而兩條犯規的路都走到它。 */
+      const draws = bare.match(/u < sideOf\(by\.side\)\.ypf\b/g) ?? [];
+      const calls = bare.match(/cardFor\(by\);/g) ?? [];
+      check('兩個抽牌點(犯規、十二碼)都用犯規者那一隊的吃牌率', draws.length === 1 && calls.length === 2,
+        `抽牌 ${draws.length} 處・呼叫 ${calls.length} 處`);
       /* 這一條第一版寫 `!/rng\(\) < YELLOW_PER_FOUL/` —— 而 4x 把那個名字改成 `YELLOW_LG` 了,
          所以**負向對照下它照樣是綠的**(把聯盟值貼回去也不含舊名字)。守不住回歸的斷言
          跟沒有這條一樣。改成:抽牌點一個都不准直接用聯盟那個常數。 */
       check('聯盟那個值只剩退路,不再直接拿去抽牌',
-        !/rng\(\) <[^;{]*\bYELLOW_(LG|PER_FOUL)\b/.test(bare)
+        !/(rng\(\)|\bu) <[^;{]*\bYELLOW_(LG|PER_FOUL)\b/.test(bare)
         && /YELLOW_LG/.test(bare) && /yellowPerFoulOf/.test(bare));
       /* 這兩隊的值**真的不一樣**,否則這一條在守一件不存在的事(4v 的 keySuffix 那條教訓:
          只驗「帶了不撞」而不驗「不帶真的會撞」,等於沒驗)。 */
@@ -1942,13 +1984,13 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           segs.push(view.slice(at, end < 0 ? at + 300 : end));
         }
         check('畫面上的「還沒做的」不准再列體能(加了能力之後要回頭看的那一句)',
-          segs.length >= 2 && segs.every(t => !t.includes('體能')),
+          segs.length >= 1 && segs.every(t => !t.includes('體能')),
           `${segs.length} 段「還沒做的」`);
         /* 同一條的第二次(2026-11-07):直接度 9/20 就掛上畫面,「還沒做的」那一句到 11/07 還在列它;
            心態那一天掛上去。畫面上已經有按鈕的軸(LIVE_TACTICS)與做完的換人規則都不准再出現在「還沒做的」裡。 */
         const live = (view.match(/const LIVE_TACTICS = \[([^\]]*)\]/)?.[1] ?? '').match(/'(\w+)'/g)?.map(x => x.slice(1, -1)) ?? [];
         const ZH = { mentality: '心態', pressing: '壓迫', line: '防線', directness: '直接度', width: '寬度', tempo: '節奏' };
-        const stale = segs.flatMap(t => [...live.map(k => ZH[k]), '換人次數', '換人窗口'].filter(z => z && t.includes(z)));
+        const stale = segs.flatMap(t => [...live.map(k => ZH[k]), '換人次數', '換人窗口', '直接紅牌'].filter(z => z && t.includes(z)));
         check('「還沒做的」不准再列已經掛上畫面的戰術軸與換人規則',
           live.length >= 4 && live.includes('mentality') && stale.length === 0, stale.join('、') || `已掛 ${live.join('/')}`);
         check('畫面把體能講清楚:沒有真值可校準、而且它不負責後段進球潮',

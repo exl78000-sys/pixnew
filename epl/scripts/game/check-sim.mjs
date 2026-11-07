@@ -555,8 +555,13 @@ line('每場傳球 / 抄截', `${mean(rows.map(r => r.st.counts.passes)).toFixed
   line('整場長度', `${mean(rows.map(r => r.st.t / 60)).toFixed(1)} 分`,
     `上半補時 ${mean(rows.map(r => r.sim.events().find(e => e.type === 'half')?.extra ?? 0)).toFixed(1)} 分・下半 ${mean(rows.map(r => r.st.added)).toFixed(1)} 分`);
   line('每場犯規', mean(rows.map(r => r.st.counts.fouls.home + r.st.counts.fouls.away)).toFixed(1), `真實 ${realF.toFixed(1)}`);
+  /* 紅牌的真實值從側寫讀(2026-11-07 之前這裡寫死「0.10」):直接紅牌與兩黃分開,單位換成每場(兩隊)。 */
+  const RD = profile.league_?.reds ?? {};
+  const directOf = r => r.sim.events().filter(e => e.type === 'card' && e.card === 'red' && e.direct).length;
   line('每場黃牌 / 紅牌', `${mean(rows.map(r => r.st.counts.cards.home + r.st.counts.cards.away)).toFixed(2)} / ${mean(rows.map(r => r.st.counts.reds.home + r.st.counts.reds.away)).toFixed(2)}`,
-    `真實 ${realY.toFixed(2)} / 0.10`);
+    `真實 ${realY.toFixed(2)} / ${RD.direct != null ? ((RD.direct + RD.secondYellow) * 2).toFixed(2) : '—'}`);
+  line('每場直接紅牌 / 兩黃', `${mean(rows.map(directOf)).toFixed(3)} / ${mean(rows.map(r => r.st.counts.reds.home + r.st.counts.reds.away - directOf(r))).toFixed(3)}`,
+    RD.direct != null ? `真實 ${(RD.direct * 2).toFixed(3)} / ${(RD.secondYellow * 2).toFixed(3)}(FotMob ${RD.teamGames / 2} 場;紅牌前同一人吃過黃 = 兩黃)・稀有事件,${rows.length} 場驗不出差異,只回報` : '側寫沒有拆分');
   line('控球串(賽後解讀吃這個)', mean(rows.map(r => r.sim.chains().length)).toFixed(0));
   /* 控球(2026-09-17,階段 2c)。目標值**跟引擎要**(`possTarget`),不在這裡自己算一份 ——
      兩邊各寫一份式子的話,改了引擎那邊的推法,這支檢查會拿舊式子去判它。
