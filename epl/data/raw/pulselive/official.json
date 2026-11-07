@@ -64391,10 +64391,10 @@
   "LEE|TOT": {
    "fixtureId": 129019,
    "kickoff": "2026-11-07T12:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 9,
@@ -64819,7 +64819,21 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 33162,
+     "assist": null,
+     "team": 9,
+     "min": 79,
+     "label": "79'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [
      {
@@ -64854,6 +64868,24 @@
       "team": 21,
       "min": 51,
       "label": "51'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 33162,
+      "team": 9,
+      "min": 80,
+      "label": "80'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 71623,
+      "team": 21,
+      "min": 88,
+      "label": "88'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -64949,15 +64981,99 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 13961,
+      "team": 9,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 126426,
+      "team": 9,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 33162,
+      "team": 9,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14807,
+      "team": 9,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 134791,
+      "team": 21,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 51364,
+      "team": 21,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 115255,
+      "team": 9,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14897,
+      "team": 9,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 13796,
+      "team": 9,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14608,
+      "team": 9,
+      "min": 90,
+      "label": "90+3'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -64975,10 +65091,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "72'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-07T14:30:01.160Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "FUL|NEW": {
    "fixtureId": 129017,
@@ -65775,5 +65904,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-07T14:04:45.940Z"
+ "fetchedAt": "2026-11-07T14:59:27.978Z"
 }
