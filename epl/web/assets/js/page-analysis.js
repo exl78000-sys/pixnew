@@ -1,4 +1,4 @@
-import * as C from './core.js?v=c742eada';
+import * as C from './core.js?v=65f83e48';
 
 const app = document.getElementById('app');
 
@@ -964,7 +964,7 @@ try {
         <div class="tiny dim" style="margin-top:10px">這些是<b>依球隊名自動比對</b>出來的外電 ——
           轉會、傷停、教練里程碑的報導也會提到同樣的球隊,所以<b>不保證是在講這一場</b>。
           標「兩隊都提到」的是兩隊名字都出現、而且日期在開球前後兩天內,最可能與本場有關。
-          完整清單見<a href="${C.link('news')}">動態頁</a>(可依球隊篩選)。</div>
+          完整清單見<a href="${C.anchorLink('index', 'news')}">比賽頁的動態</a>(可依球隊篩選)。</div>
       </div>`;
   }
 

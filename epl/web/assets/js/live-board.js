@@ -1,6 +1,6 @@
-import * as C from './core.js?v=c742eada';
+import * as C from './core.js?v=65f83e48';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=7a948e6d';
+import { mountSimTable } from './sim-table.js?v=1d7da60b';
 
 /* 聯賽頁的「比賽現況」與積分榜(2026-11-07,使用者:「聯賽跟實時戰況如何簡化合併?」→「併成一頁」)。
 
@@ -39,6 +39,12 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
 
   function renderPage() {
     const scrollY = window.scrollY;   // 每 30 秒重畫一次,不要把正在往下看賽程表的人捲回去
+    /* 重畫的那一刻先把高度撐住(2026-11-07,動態併進比賽頁時量到的):積分榜是 C.table 在 microtask 裡畫的,
+       innerHTML 換掉的瞬間這一塊從 1264px 縮成 368px,頁面變短、捲動位置被夾到 1201,下面那一行 scrollTo 再捲回去之後,
+       表格長回來又被瀏覽器的捲動錨定往下推 896px —— 正在看賽程表或動態的人每 30 秒被甩一次。
+       撐住舊高度到下一幀(表格已經畫完),高度沒變就什麼都不會動。 */
+    const prevH = el.offsetHeight;
+    if (prevH) el.style.minHeight = `${prevH}px`;
     const matches = live.available ? live.matches : [];
     /* 產物沒帶 fixtureId / round 的(西甲的 FotMob 比分快照第一版就沒帶),用賽程對回來:
        同一季同主客只有一場。對不到的才退回抽屜(href="#")。重播模式是別季的比賽,不對。 */
@@ -312,6 +318,7 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
       x.onclick = e => { e.preventDefault(); openReport(matches.find(m => m.key === x.dataset.match)); };
     });
     window.scrollTo(0, scrollY);
+    requestAnimationFrame(() => { el.style.minHeight = ''; });
   }
 
   /* ── 卡片 ─────────────────────────── */

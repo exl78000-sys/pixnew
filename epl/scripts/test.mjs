@@ -182,7 +182,7 @@ async function checkInplayKickoff() {
   ok('單場頁把 kick 傳進勝率曲線', /C\.probCurve\(rec\.pts, \{[^}]*kick: rec\.kick/.test(pa));
 
   // ⑦ 模型頁:那一節的數字全部從 kickoff 讀,結論也跟著資料(不寫死「沒有更準」)
-  const pm = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8'));
+  const pm = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'model-view.js'), 'utf8'));
   const kn = pm.slice(pm.indexOf('function kickoffNote('), pm.indexOf('function inplayCalibSection('));
   ok('模型頁的開球那一節讀 kickoff、結論看 passed(),不寫死數字', kn.length > 100 && /T\.kickoff/.test(kn) && /passed\(A\.validation\)/.test(kn)
     && !/\d+\.\d+ 個(百分點|標準誤)/.test(kn) && /\$\{kickoffNote\(T\)\}/.test(pm));
@@ -3929,7 +3929,7 @@ async function checkDataGap() {
         ['校準:樣本不足要明講(verdict=insufficient、門檻 30 場)',
           r.verdict === 'insufficient' && r.minMatches === 30, ''],
         ['校準:build 產出資料集、模型頁有量測節與不足警語', (() => {
-          const pm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8');
+          const pm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'model-view.js'), 'utf8');
           const b = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
           /* 2026-09-25 起即時勝率改過一次(時間曲線,走 tune:inplay 另外驗收的那條路),
              所以這一節的提示不能再寫「只量不改模型」—— 它自己仍然只量(本季比賽中記下來的點),
@@ -4678,7 +4678,7 @@ async function checkDataGap() {
         ['外電對隊:三支 build 都接上、前端篩選吃 teams 陣列', (() => {
           const builds = ['build.mjs', 'build-laliga.mjs', 'build-championship.mjs']
             .map(f => readFileSync(join(ROOT, 'scripts', f), 'utf8'));
-          const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+          const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
           return builds.every(b => /tagNewsTeams\(/.test(b))
             && /teamsOf\(n\)\.includes\(t\)/.test(pg) && /news\.flatMap\(teamsOf\)/.test(pg);
         })(), ''],
@@ -4715,7 +4715,7 @@ async function checkDataGap() {
     })()],
     ['外電譯文:譯者身分照實標(人工 vs 機器不可混為一談)', (() => {
       const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
-      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
       const ana = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
       return /translatedByHuman/.test(lib)
         && /把機器翻譯講成人工翻譯是說謊/.test(lib)
@@ -4744,7 +4744,7 @@ async function checkDataGap() {
     })()],
     ['外電翻譯:譯文附在原文旁,不取代原文(機器翻譯要能對照)', (() => {
       const lib = readFileSync(join(ROOT, 'scripts', 'lib', 'news-zh.mjs'), 'utf8');
-      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
       return /titleZh/.test(lib) && /translatedBy/.test(lib)
         && /機器翻譯/.test(pg) && !/titleZh[^\n]*取代/.test(lib);
     })()],
@@ -4764,7 +4764,7 @@ async function checkDataGap() {
     })()],
     ['外部網址進 href 之前一定要過 safeUrl(esc 擋不住 javascript: scheme)', (() => {
       const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
-      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
       const teams = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       // 外部來源:RSS 的 link、人工交付的 source、Understat 的 sourceUrl
       const risky = /href="\$\{C\.esc\((?!C\.safeUrl)[^)]*(link|source|sourceUrl)[^)]*\)\}"/;
@@ -6457,17 +6457,19 @@ function checkAssetStamps() {
          ① 「聯賽」那一格亮(here 是賽事、index 那一項 isHere);② 亮的分頁是對的那一格;③ 不屬於聯賽的頁(總覽、盃賽、足球知識)沒有分頁 */
       const tabOf = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.ltab ? (st.ltab.label ?? st.ltab.page) : null; };
       const lit = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.here?.key === 'comp' && st.here.items.some(it => it.page === 'index' && st.isHere(it)); };
-      /* 動態、模型、知識 2026-11-07 也搬進來(讀的都是目前聯賽的資料);探索頁不帶 view 時是知識,也算在聯賽底下;
-         模擬遊玩(explore:duel)與「我的」那一頁不在聯賽底下 */
-      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players,動態,模型,知識'
-        && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽'
+      /* 動態、模型、知識 2026-11-07 也搬進來(讀的都是目前聯賽的資料);同一天再併:動態併進「比賽」(news.html 轉址 → also)、
+         模型與知識合成「說明」(model.html,知識是 ?view=knowledge;knowledge.html 轉址 → also)。
+         探索頁現在只剩模擬遊玩(不帶 view 也是它),不在聯賽底下;「我的」那一頁也不在 */
+      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players,說明'
+        && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽' && tabOf('news') === '比賽'
         && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'teams' && tabOf('players') === 'players'
-        && tabOf('news') === '動態' && tabOf('model') === '模型' && tabOf('explore', 'knowledge') === '知識' && tabOf('explore', null) === '知識'
-        && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'duel') === null && tabOf('predict') === null
-        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis', 'news', 'model'].every(pg => lit(pg)) && lit('explore', 'knowledge')
-        && !lit('overview') && !lit('cups') && !lit('explore', 'duel') && !lit('predict')
-        && ['es1', 'en2', 'de1', 'it1', 'fr1'].every(lg => NV.navState('news', null, lg).ltabs.length === 6),
-        '球隊、戰術、球員、動態、模型、知識是聯賽頁的分頁(戰術亮「球隊」):站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 模擬遊玩 / 我的沒有分頁');
+        && tabOf('model') === '說明' && tabOf('model', 'knowledge') === '說明' && tabOf('knowledge') === '說明'
+        && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'duel') === null && tabOf('explore', null) === null
+        && tabOf('explore', 'knowledge') === null && tabOf('predict') === null
+        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis', 'news', 'model', 'knowledge'].every(pg => lit(pg)) && lit('model', 'knowledge')
+        && !lit('overview') && !lit('cups') && !lit('explore', 'duel') && !lit('explore') && !lit('predict')
+        && ['es1', 'en2', 'de1', 'it1', 'fr1'].every(lg => NV.navState('model', null, lg).ltabs.length === 4),
+        '比賽(含動態)、球隊(含戰術)、球員、說明(模型 + 知識)是聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 模擬遊玩 / 我的沒有分頁');
       const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
       ok(/const lgbar = ltab/.test(navFn) && /\$\{sub\}\$\{lgbar\}<\/header>/.test(navFn)
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
@@ -6482,9 +6484,36 @@ function checkAssetStamps() {
       /* 舊的實時戰況網址(書籤、外部連結)不能斷:live.html 轉到聯賽頁的 #live,而聯賽頁真的有那個錨點、而且掛著比賽現況 */
       const lvRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       const ixRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
-      ok(/location\.replace\(`\$\{C\.link\('index'\)\}#live`\)/.test(lvRaw) && !/C\.load\(/.test(lvRaw)
+      /* 2026-11-07 起走 anchorLink:單檔版的 hash 是路由,不能再接 #live(那樣路由讀到的頁是「index#live」) */
+      ok(/location\.replace\(C\.anchorLink\('index', 'live'\)\)/.test(lvRaw) && !/C\.load\(/.test(lvRaw)
         && /id="live"/.test(ixRaw) && /id="liveBoard"/.test(ixRaw) && /mountLiveBoard\(document\.getElementById\('liveBoard'\)/.test(ixRaw),
         '實時戰況的舊網址轉到聯賽頁 #live(保留聯賽參數),聯賽頁有那個錨點並掛著比賽現況');
+    }
+    {
+      /* 動態併進比賽頁、模型與知識合成「說明」(2026-11-07,使用者選了建議二 + 建議三)。舊網址一個都不能斷:
+         ① news.html 轉到比賽頁的動態區(anchorLink —— 分頁版 #news、單檔版 ?at=news),比賽頁的摺疊區有那個 id、
+            掛著完整的動態(news-view),第二段畫完才捲過去、摺疊先打開;
+         ② knowledge.html 與 explore.html?view=knowledge 轉到 model.html?view=knowledge;
+         ③ model.html 是兩個分頁的宿主,兩個 render 都畫進內層容器(直接寫 #app 會把分頁列蓋掉);
+         ④ 站內沒有人再連到 news.html(連過去會多轉一次址)。 */
+      const js = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+      const noC = t => t.replace(/\/\*[\s\S]*?\*\//g, '');
+      const pn = noC(js('page-news.js')), ix = js('page-index.js'), pm = noC(js('page-model.js'));
+      const pk = noC(js('page-knowledge.js')), pe = noC(js('page-explore.js')), core = js('core.js');
+      ok(/location\.replace\(C\.anchorLink\('index', 'news'\)\)/.test(pn) && !/C\.load\(/.test(pn)
+        && /<details class="card fold-card" id="news"/.test(ix) && /renderNewsView\(document\.getElementById\('newsBody'\)/.test(ix)
+        && /const at = C\.anchorTarget\(\)/.test(ix) && /target\.tagName === 'DETAILS'\) target\.open = true/.test(ix)
+        && /export const anchorLink = \(page, anchor, params = \{\}\) =>\s*\(BUNDLE \? link\(page, \{ \.\.\.params, at: anchor \}\)/.test(core),
+        '動態的舊網址轉到比賽頁的動態區(單檔版用 ?at=),那裡掛著完整的動態、摺疊會自己打開');
+      ok(/location\.replace\(C\.link\('model', \{ view: 'knowledge' \}\)\)/.test(pk)
+        && /C\.qs\('view'\) === 'knowledge'\) location\.replace\(C\.link\('model', \{ view: 'knowledge' \}\)\)/.test(pe)
+        && !/renderKnowledge/.test(pe)
+        && /key: 'model'[^\n]*render: renderModelView/.test(pm) && /key: 'knowledge'[^\n]*render: renderKnowledge/.test(pm)
+        && /<div id="docBody">/.test(pm) && /await v\.render\(body\)/.test(pm) && !/app\.innerHTML[^\n]*\n[^\n]*renderModelView\(app\)/.test(pm),
+        '說明頁是模型驗證與足球知識兩個分頁的宿主;足球知識的兩個舊網址都轉到這裡');
+      const linkers = readdirSync(join(ROOT, 'web', 'assets', 'js')).filter(f => f.endsWith('.js') && f !== 'core.js')
+        .filter(f => /C\.link\('news'/.test(noC(js(f))));
+      ok(linkers.length === 0, '站內沒有連結還指向 news.html(連過去只會多轉一次址)', linkers.join('、'));
     }
     const keys = allPl.sections.flatMap(x => x.items.map(it => it.page + (it.view ? ':' + it.view : '')));
     ok(new Set(keys).size === keys.length, '同一頁(含 view)不會出現在兩個地方', keys.join(' '));
@@ -6492,7 +6521,7 @@ function checkAssetStamps() {
     const lost = [...new Set(secPages)].filter(pg => !NV.navState(pg, null, 'pl').here);
     ok(lost.length === 0, '每一個導覽上的頁都找得到自己的區', lost.join('、'));
     ok(NV.navState('analysis', null, 'pl').here?.key === 'comp' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
-      && NV.navState('explore', null, 'pl').here?.key === 'comp' && NV.navState('explore', 'duel', 'pl').here?.key === 'mine'
+      && NV.navState('explore', null, 'pl').here?.key === 'mine' && NV.navState('explore', 'duel', 'pl').here?.key === 'mine'
       && NV.navState('predict', null, 'pl').here?.key === 'mine' && NV.navState('model', null, 'de1').here?.key === 'comp',
       '不在導覽上的頁與探索的分頁各自亮對的區');
     {
@@ -6560,7 +6589,7 @@ function checkAssetStamps() {
     /* 動態頁頁首(2026-10-14):判斷看資料本身(全是外部 RSS 就講外電版),不看有沒有球員層 ——
        英冠與德義法有了球員層之後,原本那條條件讓它們全掉進英超的「FPL 官方欄位…上季 380 場」。 */
     {
-      const pn = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+      const pn = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
       ok(!/capabilities\?\.players === false/.test(pn) && pn.includes('news.every(n => n.link && n.source)'),
         '動態頁頁首看資料本身(全是外部 RSS 才講外電版),不看有沒有球員層');
     }
@@ -6673,7 +6702,7 @@ function checkCuratedNews() {
       codeOf: n => ({ 'barça': '81', 'feyenoord': '675' })[String(n).toLowerCase()] ?? null };
     ok(checkScores(st, { codeOf: () => null, fixturesOf: c => (c === 'ucl' ? uclCtx.fixtures : null), codeOfFor: c => (c === 'ucl' ? uclCtx.codeOf : null) }).state === 'verified',
       '歐冠的比分用自己那一把隊名解析(football-data id)核對得到');
-    const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-news.js'), 'utf8');
+    const news = readFileSync(join(ROOT, 'web', 'assets', 'js', 'news-view.js'), 'utf8');
     ok(/curator\?\.kind === 'ai'/.test(news) && /AI 整理摘要/.test(news) && /沒有讀全文/.test(news),
       '前端:AI 整理的標「AI 整理摘要」並講清楚沒有讀全文;人整理的照舊');
     for (const [lg, path] of [['pl', join(ROOT, 'web', 'data', 'news.json')], ['es1', join(ROOT, 'web', 'data', 'leagues', 'es1', 'news.json')]]) {
@@ -6821,7 +6850,7 @@ function checkCuratedNews() {
         `${lg}:meta 帶的尾端斷檔跟用建置日算出來的一致`,
         `meta ${JSON.stringify(got)} vs 算 ${JSON.stringify(want)}`);
     }
-    const newsSrc = readFileSync(join(W, 'page-news.js'), 'utf8');
+    const newsSrc = readFileSync(join(W, 'news-view.js'), 'utf8');
     ok(/meta\.curatedNews/.test(newsSrc) && /斷檔|沒有人整理/.test(newsSrc),
       '動態頁真的把涵蓋範圍與斷檔印出來(鐵則四)');
     ok(/trailingGap/.test(newsSrc) && /還沒收到/.test(newsSrc),
@@ -8341,7 +8370,7 @@ function checkUcl() {
      而且最後一句還寫死著「本站目前只做聯賽」,那句在階段 C 之後就是假的。
      這一組守著:講了、資料從產物來、而且三個聯賽都看得到。 */
   {
-    const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-model.js'), 'utf8');
+    const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'model-view.js'), 'utf8');
     ok(/跨聯賽評分|歐冠/.test(src), '模型頁講到歐冠那個模型');
     /* **一律從 pl 讀**:這是跨聯賽的產物,英冠沒有自己的一份。
        寫成 C.league() 的話整節會從英冠的模型頁靜靜消失(不報錯)。 */
@@ -9116,11 +9145,11 @@ async function checkFollow() {
 
   /* 三、六個消費端都走共用的那一份。自己再寫一份 localStorage 讀取的話,
      鍵改了、形狀改了就會有一個地方悄悄過期(姓名配對那條坑的形狀)。 */
-  for (const f of ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js',
+  for (const f of ['page-teams.js', 'page-index.js', 'live-board.js', 'news-view.js',
     'sim-table.js', 'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']) {
     ok(/from '\.\/follow\.js/.test(src(f)), `${f} 從 follow.js 拿關注狀態`);
   }
-  const others = ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js', 'sim-table.js',
+  const others = ['page-teams.js', 'page-index.js', 'live-board.js', 'news-view.js', 'sim-table.js',
     'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']
     .filter(f => /warroom:follow/.test(strip(src(f))));
   ok(others.length === 0, '沒有人自己再讀一次 localStorage 的鍵', others.join('、'));
@@ -9139,7 +9168,7 @@ async function checkFollow() {
   /* 四、**聯賽頁一律帶聯賽,只有盃賽頁可以不分聯賽。**
      盃賽裡的 BUR 就是 Burnley 這間俱樂部,他今年在哪一級無關;
      但聯賽頁用 followedAnywhere 的話,關注英冠的 Burnley 會標到英超那一支身上。 */
-  const anywhereUsers = ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js',
+  const anywhereUsers = ['page-teams.js', 'page-index.js', 'live-board.js', 'news-view.js',
     'sim-table.js', 'fixture-list.js', 'follow-view.js', 'predict-view.js']
     .filter(f => /followedAnywhere/.test(strip(src(f))));
   ok(anywhereUsers.length === 0, '只有盃賽頁用不分聯賽的查法', anywhereUsers.join('、'));
@@ -9159,7 +9188,7 @@ async function checkFollow() {
      藏起來的話讀者會漏掉自己的隊的新聞,而畫面上看不出少了東西(鐵則四)。
      **也不准改成用隊名關鍵字去撈** —— United / City 會把 Leeds、Sheffield、
      Newcastle 混在一起(「對錯人比對不到糟得多」)。 */
-  const newsSrc = strip(src('page-news.js'));
+  const newsSrc = strip(src('news-view.js'));
   ok(/untagged/.test(newsSrc), '動態把沒有球隊標記的收成一區');
   ok(/teamsOf\(n\)\.length === 0/.test(newsSrc), '「沒有標記」看的是產物的欄位,不是關鍵字比對');
 

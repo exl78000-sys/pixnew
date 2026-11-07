@@ -65,6 +65,9 @@ async function main() {
   'tactics-view',
   /* 國家隊(2026-11-07 國家隊頁併進盃賽頁時抽出來的,做法同 ucl-view),page-cups 引用它 */
   'intl-view',
+  /* 動態(2026-11-07 動態頁併進比賽頁時抽出來的)與模型驗證(同一天模型驗證與足球知識合成「說明」頁時抽出來的);
+     news-view 引用 follow,排在它後面 */
+  'news-view', 'model-view',
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩 2026-09-16 起跑連續時間引擎:`game-sim` 是引擎、`game-live` 是它跟畫面之間的轉接層、
      `game-pitch` 畫球場、`game-view` 是版面 —— 照相依順序排(共用模組引用共用模組)。

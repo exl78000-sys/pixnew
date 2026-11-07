@@ -1,4 +1,4 @@
-import * as C from './core.js?v=c742eada';
+import * as C from './core.js?v=65f83e48';
 
 
 /* 足球知識頁。
@@ -14,7 +14,7 @@ import * as C from './core.js?v=c742eada';
  * 那反而是這一頁最有價值的部分。
  */
 /* 這一頁併進「探索」單頁(2026-09-03)。內容抽成 render 函式,
-   由 page-explore.js 以頁內分頁呼叫 —— 跟歐冠併進盃賽時同一個做法
+   由 page-explore.js 以頁內分頁呼叫(2026-11-07 起改由「說明」頁 page-model.js 呼叫) —— 跟歐冠併進盃賽時同一個做法
    (`ucl-view.js`)。`app` 由呼叫端給,不再自己抓 #app。 */
 export async function renderKnowledge(app) {
   try {

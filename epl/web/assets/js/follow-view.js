@@ -19,7 +19,7 @@
 
    3. **關注名單存在瀏覽器這件事要寫在畫面上**,而且給匯出/匯入 ——
       不要讓人以為它存在雲端(鐵則四,跟「我的預測」同一套)。 */
-import * as C from './core.js?v=c742eada';
+import * as C from './core.js?v=65f83e48';
 /* **具名 import 要寫在同一行。** 單檔版的打包是用單行正則把 import 拆掉的,
    跨行的話拆不掉 → 攤平之後還留著一個 import 陳述句 → 整份單檔版死掉。
    bundle.mjs 的守門會擋下來(「單檔版裡還有沒拆掉的 import」),不會靜靜過關。 */
@@ -191,7 +191,7 @@ function teamCard(pool, code, extraFixtures) {
         : '<div class="tiny dim" style="margin-top:12px">目前沒有傷停或停賽回報。</div>'}
 
     ${news.length ? `<div class="section" style="margin-top:12px"><h3 style="margin:0;font-size:14px">這支球隊的動態</h3>
-        <span class="hint"><a href="${C.link('news', { league: pool.lg })}">全部 →</a></span></div>
+        <span class="hint"><a href="${C.anchorLink('index', 'news', { league: pool.lg })}">全部 →</a></span></div>
       ${news.map(n => `<div class="stat-line"><span class="small">
         <span class="pill tiny">${fvEsc(n.cat)}</span> ${fvEsc(n.title)}</span>
         <span class="tiny dim mono">${C.dateZh(n.date)}</span></div>`).join('')}` : ''}

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=c742eada';
+import * as C from './core.js?v=65f83e48';
 
 /* 戰術那幾段(2026-11-07 起畫在球隊頁的總覽裡;使用者:「球隊跟戰術 整合合一 不是分兩個子頁」)。
    原本是獨立的 page-tactics.js,現在只匯出區塊,由 page-teams.js 依組畫在卡片與總表下面;

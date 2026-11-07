@@ -627,6 +627,8 @@ tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
 }
 .analysis-switch .analysis-tab { flex: 1 1 120px; }
 .analysis-panel { scroll-margin-top: 120px; }
+/* 比賽頁的錨點(news.html / live.html 轉過來的):頂列加聯賽分頁約 100px,不留這一段的話標題被蓋在列底下 */
+#news, #live { scroll-margin-top: 116px; }
 .analysis-panel[hidden] { display: none !important; }
 .post-report-grid > .card { margin-top: 16px; }
 

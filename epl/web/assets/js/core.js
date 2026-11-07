@@ -212,6 +212,12 @@ export function link(page, params = {}) {
   return BUNDLE ? `#${page}${q ? '?' + q : ''}` : `${page}.html${q ? '?' + q : ''}`;
 }
 export const go = (page, params) => { location.href = link(page, params); };
+/* 連到某一頁裡的某一區(2026-11-07,動態併進比賽頁時加的)。分頁版是一般的 #錨點;
+   單檔版的 hash 本身就是路由(#index?league=…),再接一個 #news 會讓路由讀到「index#news」這一頁 ——
+   所以單檔版改帶 ?at=news。讀的那一邊一律用 anchorTarget(),不要自己看 location.hash。 */
+export const anchorLink = (page, anchor, params = {}) =>
+  (BUNDLE ? link(page, { ...params, at: anchor }) : `${link(page, params)}#${anchor}`);
+export const anchorTarget = () => (BUNDLE ? qs('at') : (location.hash.slice(1) || null));
 
 export const qs = k => {
   if (BUNDLE) {
@@ -951,17 +957,18 @@ const SECTIONS = [
 /* 聯賽分頁:站在其中任何一頁時,賽事子列的「聯賽」格亮、下面畫這一排。also 是不在分頁上、但屬於那一格的頁
    (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。 */
 const LEAGUE_TABS = [
-  { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures'] },
+  /* news:動態 2026-11-07 併進比賽頁(news.html 只剩轉址),站在轉址那一瞬間亮「比賽」 */
+  { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures', 'news'] },
   { page: 'teams', also: ['coaches', 'tactics'] },   // 戰術 2026-11-07 併進球隊頁(tactics.html 只剩轉址),站在那一頁時亮「球隊」
   { page: 'players' },   // 含「全部聯賽」(?scope=all,原本的球員搜尋 2026-11-07 併進來)
-  /* 動態、模型驗證、足球知識 2026-11-07 從「更多」搬進來:三頁讀的都是目前聯賽的資料,放在聯賽底下讀者才看得出它跟著聯賽變;
-     換聯賽時停在同一分頁(pickTarget 帶 view)。足球知識是探索頁的 knowledge view(模擬遊玩那個 view 在「我的」)。 */
-  { page: 'news', label: '動態' },
-  { page: 'model', label: '模型' },
-  { page: 'explore', view: 'knowledge', label: '知識' },
+  /* 動態、模型驗證、足球知識 2026-11-07 從「更多」搬進來:三頁讀的都是目前聯賽的資料,放在聯賽底下讀者才看得出它跟著聯賽變。
+     同一天再併(使用者選了「建議二 + 建議三」):動態併進「比賽」頁底的摺疊區(上面 also 的 news);
+     模型驗證與足球知識合成一格「說明」—— model.html 是宿主,頁內兩個分頁(?view=knowledge 是知識)。
+     knowledge 放 also:舊的 knowledge.html 轉址那一瞬間亮這一格。換聯賽時停在同一分頁、同一個 view(pickTarget)。 */
+  { page: 'model', label: '說明', also: ['knowledge'] },
 ];
-// 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
-const EXPLORE_DEFAULT_VIEW = 'knowledge';
+// 探索頁現在只剩模擬遊玩(足球知識 2026-11-07 搬去「說明」)—— 不帶 view 時就是它,導覽列要亮「我的 → 模擬遊玩」
+const EXPLORE_DEFAULT_VIEW = 'duel';
 /* 五區的小圖示(只在手機底部列畫)。線條圖、吃 currentColor,不引入圖示庫。 */
 const NAV_ICON = {
   grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
@@ -998,7 +1005,7 @@ const PAGES = [
   ['tactics', '戰術'],
   ['players', '球員'],
   ['news', '動態'],
-  ['model', '模型驗證'],
+  ['model', '說明'],   // 模型驗證 + 足球知識(2026-11-07 合成一頁,頁內分頁)
   /* 盃賽移去 SITE_PAGES(跨聯賽那一組)了 —— 兩邊都放的話導覽列會出現兩個。
      原本「西甲不顯示英格蘭盃賽」的決定由新的形式取代:單一「盃賽」入口,
      預設分頁是歐冠(西甲讀者要的),英格蘭那兩個是清楚標示的頁內分頁。 */
@@ -1046,12 +1053,14 @@ export function nav() {
   const isLeagueItem = it => it.page === 'index';
   const pickTarget = k => {
     const t = ltab && ltab.page !== 'index' && (!LEAGUES[k].open || LEAGUES[k].open.includes(ltab.page)) ? ltab : null;
-    return t ? link(t.page, { league: k, ...(t.view ? { view: t.view } : {}) }) : link('index', { league: k });
+    /* 分頁本身沒定 view、而目前就站在那一頁的話,帶著目前的 view 走(說明頁的「足球知識」換聯賽後還是足球知識) */
+    const vw = t?.view ?? (t && t.page === here ? qs('view') : null);
+    return t ? link(t.page, { league: k, ...(vw ? { view: vw } : {}) }) : link('index', { league: k });
   };
   /* 清單掛在 body(position: fixed),不放在任何一條列裡:頂列有 backdrop-filter(會變成 fixed 的定位基準)、
      底部列在螢幕最下面(清單要往上開)、手機的子列是橫捲 + mask(放在裡面會被裁掉)。位置由下面的 JS 依按下的那顆按鈕擺。 */
   const leagueList = `<div class="league-list" id="leagueList" role="menu" hidden>${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
-      `<a role="menuitem" href="${pickTarget(k)}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
+      `<a role="menuitem" data-lg="${k}" href="${pickTarget(k)}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
         BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
           ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div>`;
   const pickBtn = (it, inner) => `<button type="button" class="league-pick${isHere(it) ? ' on' : ''}" aria-haspopup="menu" aria-expanded="false" aria-controls="leagueList" aria-label="聯賽:${L.zh}(切換聯賽)"${isHere(it) ? ' aria-current="page"' : ''}>${inner}</button>`;
@@ -1087,6 +1096,12 @@ export function nav() {
   /* 手機的底部列(桌機 display:none):跟頂列同一組格子 —— 總覽、聯賽(切換鈕)、盃賽、更多。
      單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的(含清單),不會疊兩條。 */
   document.querySelector('.bottombar')?.remove();
+  /* 清單的連結在打開那一刻重算:頁內分頁會用 replaceState 改 ?view=(說明頁的「足球知識」),
+     而清單是 nav() 當下畫的 —— 不重算的話,在足球知識換聯賽會回到模型驗證。點擊監聽只註冊一次(globalThis 守著),
+     所以它呼叫的是「最近一次 nav() 留下的」這一支,單檔版換頁後也是對的那一頁。 */
+  globalThis.__leagueHrefs = () => {
+    for (const a of document.querySelectorAll('#leagueList a[data-lg]')) a.setAttribute('href', pickTarget(a.dataset.lg));
+  };
   document.getElementById('leagueList')?.remove();
   const bottomItem = it => (isLeagueItem(it)
     ? pickBtn(it, `${icon(it.icon)}<span>${esc(L.zh)}</span>`)
@@ -1108,6 +1123,7 @@ export function nav() {
       const list = document.getElementById('leagueList');
       if (btn && list) {
         if (!list.hidden) return close();
+        globalThis.__leagueHrefs?.();
         const b = btn.getBoundingClientRect();
         list.hidden = false;
         if (btn.closest('.bottombar')) { list.style.top = 'auto'; list.style.bottom = `${innerHeight - b.top + 6}px`; }

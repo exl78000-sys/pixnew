@@ -1,7 +1,8 @@
-import * as C from './core.js?v=c742eada';
-import { mountFixtureList } from './fixture-list.js?v=8f045393';
+import * as C from './core.js?v=65f83e48';
+import { mountFixtureList } from './fixture-list.js?v=f19c4593';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
-import { mountLiveBoard } from './live-board.js?v=ee50c057';
+import { mountLiveBoard } from './live-board.js?v=f11a808c';
+import { renderNewsView } from './news-view.js?v=73bb35d8';
 
 const app = document.getElementById('app');
 
@@ -100,9 +101,11 @@ try {
         跟英冠同一個做法。這裡只負責畫,一行都不知道是哪個聯賽。 */''}
   ${/* 動態、資料界線、模型說明收進頁底的摺疊(2026-11-07 合併時):
         它們是「想知道才打開」的東西,常駐的話手機上要捲過三張卡才到頁尾 —— 標題留著,一點就開。 */''}
-  <details class="card fold-card" style="margin-top:20px">
-    <summary><h2>最新動態</h2><span class="hint">傷停、轉會與外電・<a href="${C.link('news')}">看全部動態 →</a></span></summary>
-    <div id="news" style="margin-top:8px">${'<div class="skel line"></div>'.repeat(4)}</div>
+  ${/* 動態(2026-11-07 起是完整的那一份,原本的動態頁併進來;news-view.js):類別、球隊、只看我的球隊照舊,
+        一次畫 12 則、「再顯示」往下加。仍然收在摺疊裡 —— 它是想看才打開的東西;news.html 轉址過來時自動打開。 */''}
+  <details class="card fold-card" id="news" style="margin-top:20px">
+    <summary><h2>動態</h2><span class="hint" id="newsHint">傷停、轉會與外電</span></summary>
+    <div id="newsBody" style="margin-top:8px">${'<div class="skel line"></div>'.repeat(4)}</div>
   </details>
 
   ${meta.boundaries?.length ? `<details class="card fold-card" style="margin-top:12px">
@@ -144,21 +147,14 @@ try {
   /* 比賽現況與積分榜(原實時戰況頁):輪詢、先畫再覆蓋、走鐘都在 live-board.js 裡 */
   mountLiveBoard(document.getElementById('liveBoard'), { meta, fixtures, table, sim, teams, analysis, live });
 
-  /* 動態 */
-  // 賽前預告在開賽倒數與單場分析裡,這裡只放真正的動態
-  const newsRows = news.filter(n => n.cat !== '賽前').slice(0, 7);
-  document.getElementById('news').innerHTML = newsRows.length
-    ? newsRows.map(n => `
-    <div style="padding:7px 0;border-bottom:1px solid var(--line-soft)">
-      <div class="row" style="gap:7px">
-        <span class="pill ${n.cat === '傷停' || n.cat === '禁賽' ? 'bad' : n.cat === '賽前' ? 'info' : 'accent'}">${C.esc(n.cat)}</span>
-        ${n.link
-          ? `<a class="small" href="${C.esc(n.link)}" target="_blank" rel="noopener"><b>${C.esc(n.title)}</b></a>`
-          : `<b class="small">${C.esc(n.title)}</b>`}
-      </div>
-      <div class="tiny muted" style="margin-top:2px">${C.esc(n.body).slice(0, 96)}${n.source ? `<span class="dim">・${C.esc(n.source)}</span>` : ''}</div>
-    </div>`).join('')
-    : '<div class="small dim">目前沒有動態。</div>';
+  /* 動態(完整那一份,原動態頁) */
+  renderNewsView(document.getElementById('newsBody'), { meta, news });
+  {
+    const by = {};
+    for (const n of news) by[n.cat] = (by[n.cat] ?? 0) + 1;
+    const top = Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([c, k]) => `${C.esc(c)} ${k}`).join('・');
+    document.getElementById('newsHint').innerHTML = news.length ? `共 ${news.length} 則・${top}` : '目前沒有動態';
+  }
 
   document.getElementById('myTeams').innerHTML = myTeamsCard();
 
@@ -196,5 +192,24 @@ try {
   });
 
   /* 上季積分榜搬到球隊頁了(2026-09-03)—— 這裡不再渲染。 */
+
+  /* 從轉址來的(news.html → #news、live.html → #live):頁面是分兩段畫的,瀏覽器自己的錨點捲動發生在第一段,
+     那時下面的區塊還是骨架、高度不對 —— 所以第二段畫完再捲一次。動態在摺疊裡,先打開。
+     單檔版的錨點是 ?at=(見 core 的 anchorLink)。 */
+  const at = C.anchorTarget();
+  const target = at && /^[a-z]+$/.test(at) ? document.getElementById(at) : null;
+  if (target) {
+    if (target.tagName === 'DETAILS') target.open = true;
+    /* 比賽現況與積分榜在這之後還會長(隊徽、即時快照覆蓋)—— 捲一次的話,實測動態區被推到視窗上方 900px 外。
+       所以版面還在變的頭幾秒,每變一次就再對齊一次;讀者自己動了(捲、點、按鍵)就放手,不跟他搶。 */
+    const pin = () => target.scrollIntoView({ block: 'start' });
+    pin();
+    const ro = new ResizeObserver(pin);
+    ro.observe(app);
+    const USER = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+    const stop = () => { ro.disconnect(); USER.forEach(ev => removeEventListener(ev, stop)); };
+    USER.forEach(ev => addEventListener(ev, stop, { passive: true }));
+    setTimeout(stop, 4000);
+  }
 
 } catch (err) { C.fail(err); }
