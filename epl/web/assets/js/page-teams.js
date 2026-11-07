@@ -1,6 +1,6 @@
-import * as C from './core.js?v=05fe8eff';
+import * as C from './core.js?v=bdef8b54';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
-import { tacticsGroups, tacticsStamps, tacticsBoundaries, mountTactics, tacticsColumns, coverageNote } from './tactics-view.js?v=6cce26ac';
+import { tacticsGroups, tacticsStamps, tacticsBoundaries, mountTactics, tacticsColumns, coverageNote } from './tactics-view.js?v=2d0ea01d';
 
 const app = document.getElementById('app');
 

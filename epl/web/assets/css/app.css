@@ -74,9 +74,9 @@ a:hover { text-decoration: underline; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .3px; font-size: 16px; color: var(--ink); }
 .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .brand small { font-weight: 500; color: var(--ink-3); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; }
-/* 聯賽切換(2026-11-07 起併進賽事子列的「聯賽」格;之前是品牌旁邊的下拉,更早是六顆常駐)。
-   按鈕長得跟子列其他分頁一樣,多一個 ▾;清單掛在 .subbar .inner(nav 外面,手機的橫捲 + mask 才不會把它裁掉),
-   位置由 core.js 依按鈕擺。 */
+/* 聯賽切換(2026-11-07 起就是「聯賽」那一格;同一天稍後賽事區攤平,那一格在頂列 / 手機的底部列。之前是品牌旁邊的下拉,更早是六顆常駐)。
+   按鈕長得跟其他分頁一樣,多一個 ▾;清單掛在 body(fixed):頂列有 backdrop-filter 會變成 fixed 的定位基準、
+   底部列的要往上開,放在哪一條列裡都不對。位置由 core.js 依按下的那顆按鈕擺。 */
 nav.tabs .league-pick { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: inherit;
   color: var(--ink-2); padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 600;
   border: 1px solid var(--line); background: #ffffff08; transition: .15s; }
@@ -85,7 +85,7 @@ nav.tabs .league-pick.on { color: #0b0710; background: var(--accent); border-col
 .league-pick .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
   border-top: 5px solid currentColor; opacity: .7; transition: transform .15s; }
 .league-pick[aria-expanded="true"] .caret { transform: rotate(180deg); }
-.league-list { position: absolute; top: calc(100% + 6px); left: 0; z-index: 45; min-width: 120px;
+.league-list { position: fixed; top: 0; left: 0; z-index: 45; min-width: 120px;
   display: grid; gap: 2px; padding: 6px; border: 1px solid var(--line); border-radius: 12px;
   background: var(--bg-2); box-shadow: 0 10px 30px #0008; }
 .league-list a { color: var(--ink-2); padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
@@ -222,6 +222,12 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
     min-height: 48px; border-radius: 10px; color: var(--ink-3); font-size: 11px; font-weight: 700; text-decoration: none; }
   .bottombar a.on { color: var(--accent); }
   .bottombar a.on svg { filter: drop-shadow(0 0 6px var(--accent)); }
+  /* 底部列的「聯賽」格是切換鈕(button),長相跟其他格一樣 */
+  .bottombar .league-pick { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    min-height: 48px; border-radius: 10px; color: var(--ink-3); font: inherit; font-size: 11px; font-weight: 700;
+    background: none; border: 0; padding: 0; cursor: pointer; }
+  .bottombar .league-pick.on, .bottombar .league-pick[aria-expanded="true"] { color: var(--accent); }
+  .bottombar .league-pick.on svg { filter: drop-shadow(0 0 6px var(--accent)); }
   /* 內容不能被底部列蓋住 */
   body { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
 

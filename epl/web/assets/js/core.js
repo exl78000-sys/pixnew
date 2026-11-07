@@ -930,12 +930,17 @@ const SITE_PAGES = [
    那幾頁都是「某一個聯賽的」東西,讀者先挑聯賽、再看這個聯賽的比賽 / 球隊 / 戰術 / 球員 —— 跟導覽的順序一致。
    頂列剩「賽事、更多」;站在聯賽的任何一頁(LEAGUE_TABS)時,「聯賽」那一格亮,下面多一排聯賽分頁。
    網址一個都沒改(teams.html、players.html… 照舊),舊書籤不斷。 */
+/* `flat`(2026-11-07,使用者:「把賽事裡三項 移出來至賽事位置」):這一區沒有自己的按鈕與子列,三格直接排在頂列
+   (桌機)/ 底部列(手機)原本「賽事」那個位置 —— 頂列從「賽事 更多」變成「總覽 聯賽 盃賽 更多」。
+   區還留著:它仍然是「這一頁屬於哪裡」的單位(navState 的 here、also)。
+   flat 的每一格自己帶 icon(底部列要畫)與 also(站在不在導覽上的頁時亮哪一格)。 */
 const SECTIONS = [
-  { key: 'comp', label: '賽事', icon: 'trophy',
-    /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
-    /* 實時戰況 2026-11-07 併進「聯賽」那一頁(live.html 只剩轉址),所以不在子列上;放在 also 讓轉址那一瞬間亮對的區 */
-    /* 國家隊 2026-11-07 併進盃賽頁(分頁 ?cup=intl),子列不再有它;intl.html 是轉址,放 also 讓那一瞬間亮對的區 */
-    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'cups' }],
+  { key: 'comp', label: '賽事', icon: 'trophy', flat: true,
+    /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口;盃賽在後 */
+    /* 實時戰況 2026-11-07 併進「聯賽」那一頁(live.html 只剩轉址),所以不在導覽上;放在 also 讓轉址那一瞬間亮對的區 */
+    /* 國家隊 2026-11-07 併進盃賽頁(分頁 ?cup=intl),導覽上不再有它;intl.html 是轉址,放 also 讓那一瞬間亮對的區 */
+    items: [{ page: 'overview', icon: 'grid' }, { page: 'index', label: '聯賽', icon: 'shield' },
+      { page: 'cups', icon: 'trophy', also: ['ucl', 'ucl-match', 'cup-match', 'intl'] }],
     also: ['live', 'analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match', 'intl'] },
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
@@ -952,6 +957,7 @@ const LEAGUE_TABS = [
 const EXPLORE_DEFAULT_VIEW = 'knowledge';
 /* 五區的小圖示(只在手機底部列畫)。線條圖、吃 currentColor,不引入圖示庫。 */
 const NAV_ICON = {
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
   shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/>',
@@ -968,7 +974,7 @@ export function navState(page = currentPage(), view = qs('view'), lg = league())
   const ltabs = LEAGUE_TABS.filter(t => allow(t.page));
   const ltab = ltabs.find(t => (t.page === page && (!t.view || t.view === v)) || t.also?.includes(page)) ?? null;
   // 站在聯賽的任何一頁 = 站在「聯賽」那一格(所以球隊頁、球員頁也亮賽事 → 聯賽)
-  const isHere = it => (it.page === page && (!it.view || it.view === v)) || (it.page === 'index' && !!ltab);
+  const isHere = it => (it.page === page && (!it.view || it.view === v)) || (it.page === 'index' && !!ltab) || !!it.also?.includes(page);
   const here = sections.find(s => s.items.some(isHere)) ?? sections.find(s => s.also.includes(page)) ?? null;
   return { sections, here, isHere, ltabs, ltab };
 }
@@ -1025,34 +1031,35 @@ export function nav() {
   const secLink = s => itemLink(s.items[0]);
   const icon = k => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_ICON[k] ?? ''}</svg>`;
 
-  // 頂列五區。目前那一區標成作用中;站在不在導覽上的頁(單場分析)時,它所屬的那一區亮
-  const top = sections.map(s =>
-    `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}"${s === hereSection ? ' aria-current="true"' : ''}>${s.label}</a>`).join('');
-  // 子列:目前那一區有兩頁以上才畫(只有一頁的區,子列只是把頂列那一格再印一次)
-  /* 聯賽切換併進「聯賽」那一格(2026-11-07,使用者:「聯賽選擇按鈕 整合進聯賽」,選了「只在聯賽格切換」):
-     品牌旁那顆下拉拿掉,賽事子列的「聯賽」格本身寫目前聯賽(「英超 ▾」),點開是六個聯賽、各連到那個聯賽的聯賽頁。
-     更多那一區沒有切換鈕 —— 選好的聯賽照舊帶在網址上,品牌也寫著目前是哪個聯賽(「西甲戰情室」)。
-     球隊 / 球員同一天稍後併進聯賽頁的分頁(LEAGUE_TABS),站在那裡時這一格也亮、換聯賽停在同一分頁。
-     清單**不放在子列的 nav 裡**:手機上子列是 overflow-x 捲動 + 右緣 mask,絕對定位的清單會被裁掉,
-     所以清單掛在 .subbar .inner(nav 外面),由 JS 依按鈕的位置擺。 */
-  const isLeagueItem = it => it.page === 'index' && hereSection?.key === 'comp';
-  /* 站在聯賽的某一分頁時,換聯賽停在同一分頁(球隊頁 → 那個聯賽的球隊頁;code / id 不帶,兩聯賽的隊碼與場次 id 不共用);
+  /* 聯賽切換就是「聯賽」那一格(2026-11-07,使用者:「聯賽選擇按鈕 整合進聯賽」,選了「只在聯賽格切換」):
+     那一格寫目前聯賽(「英超 ▾」),點開是六個聯賽。同一天稍後「賽事」那一區攤平到頂列(flat),
+     所以這顆按鈕長在頂列(桌機)與底部列(手機)—— 兩個位置都是「聯賽」那一格,清單只有一份。
+     站在聯賽的某一分頁時,換聯賽停在同一分頁(球隊頁 → 那個聯賽的球隊頁;code / id 不帶,兩聯賽的隊碼與場次 id 不共用);
      目標聯賽沒開那一頁、或站在聯賽以外的頁(總覽、盃賽),一律到那個聯賽的聯賽頁。 */
+  const isLeagueItem = it => it.page === 'index';
   const pickTarget = k => {
     const t = ltab && ltab.page !== 'index' && (!LEAGUES[k].open || LEAGUES[k].open.includes(ltab.page)) ? ltab : null;
     return t ? link(t.page, { league: k, ...(t.view ? { view: t.view } : {}) }) : link('index', { league: k });
   };
+  /* 清單掛在 body(position: fixed),不放在任何一條列裡:頂列有 backdrop-filter(會變成 fixed 的定位基準)、
+     底部列在螢幕最下面(清單要往上開)、手機的子列是橫捲 + mask(放在裡面會被裁掉)。位置由下面的 JS 依按下的那顆按鈕擺。 */
   const leagueList = `<div class="league-list" id="leagueList" role="menu" hidden>${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
       `<a role="menuitem" href="${pickTarget(k)}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
         BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
           ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div>`;
-  const subItem = it => isLeagueItem(it)
-    ? `<button type="button" class="league-pick${isHere(it) ? ' on' : ''}" aria-haspopup="menu" aria-expanded="false" aria-controls="leagueList" aria-label="聯賽:${L.zh}(切換聯賽)"${isHere(it) ? ' aria-current="page"' : ''}>${esc(L.zh)}<span class="caret" aria-hidden="true"></span></button>`
-    : `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`;
-  const sub = hereSection && hereSection.items.length > 1
+  const pickBtn = (it, inner) => `<button type="button" class="league-pick${isHere(it) ? ' on' : ''}" aria-haspopup="menu" aria-expanded="false" aria-controls="leagueList" aria-label="聯賽:${L.zh}(切換聯賽)"${isHere(it) ? ' aria-current="page"' : ''}>${inner}</button>`;
+  const flatItem = it => (isLeagueItem(it)
+    ? pickBtn(it, `${esc(L.zh)}<span class="caret" aria-hidden="true"></span>`)
+    : `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`);
+
+  // 頂列:攤平的那一區每一格直接排上來,其餘的區一格(更多)。站在不在導覽上的頁(單場分析)時,它所屬的那一格亮
+  const top = sections.map(s => (s.flat ? s.items.map(flatItem).join('')
+    : `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}"${s === hereSection ? ' aria-current="true"' : ''}>${s.label}</a>`)).join('');
+  // 子列:目前那一區有兩頁以上才畫(只有一頁的區,子列只是把頂列那一格再印一次);攤平的區沒有子列 —— 它的格子已經在頂列上
+  const sub = hereSection && !hereSection.flat && hereSection.items.length > 1
     ? `<div class="subbar"><div class="inner"><span class="sub-label">${hereSection.label}</span>
-        <nav class="tabs sub" aria-label="${hereSection.label}">${hereSection.items.map(subItem).join('')}</nav>
-        ${hereSection.items.some(isLeagueItem) ? leagueList : ''}
+        <nav class="tabs sub" aria-label="${hereSection.label}">${hereSection.items.map(it =>
+          `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`).join('')}</nav>
       </div></div>`
     : '';
   // 聯賽分頁那一排:只在站在聯賽的某一頁時畫,左邊標聯賽名(「這一排是英超的」)
@@ -1066,34 +1073,39 @@ export function nav() {
     : '';
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
-      ${/* 站名連到**總覽**(2026-09-30,使用者要求):五區之後總覽收在「賽事」裡要點兩下,而它是全站的入口 ——
-           品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁在「賽事」區的第二格(「聯賽」)。 */''}
+      ${/* 站名連到**總覽**(2026-09-30,使用者要求):品牌是每一頁都在同一個位置的那一個連結,給全站的入口最合適。 */''}
       <a class="brand" href="${link('overview')}" title="回總覽"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       <nav class="tabs sections" aria-label="主選單">${top}</nav>
     </div>${sub}${lgbar}</header>`);
-  /* 手機的底部五格(桌機 display:none)。單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的,不會疊兩條。 */
+  /* 手機的底部列(桌機 display:none):跟頂列同一組格子 —— 總覽、聯賽(切換鈕)、盃賽、更多。
+     單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的(含清單),不會疊兩條。 */
   document.querySelector('.bottombar')?.remove();
-  document.body.insertAdjacentHTML('beforeend', `<nav class="bottombar" aria-label="主選單">${sections.map(s =>
-    `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}">${icon(s.icon)}<span>${s.label}</span></a>`).join('')}</nav>`);
+  document.getElementById('leagueList')?.remove();
+  const bottomItem = it => (isLeagueItem(it)
+    ? pickBtn(it, `${icon(it.icon)}<span>${esc(L.zh)}</span>`)
+    : `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}">${icon(it.icon)}<span>${esc(itemLabel(it))}</span></a>`);
+  document.body.insertAdjacentHTML('beforeend', `<nav class="bottombar" aria-label="主選單">${sections.map(s => (s.flat ? s.items.map(bottomItem).join('')
+    : `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}">${icon(s.icon)}<span>${s.label}</span></a>`)).join('')}</nav>${
+      sections.some(s => s.items.some(isLeagueItem)) ? leagueList : ''}`);
 
   /* 聯賽格的下拉:點按鈕開關、點外面或按 Esc 收起。委派掛在 document 一次就好(單檔版每次換頁都重畫導覽列)。
-     清單在 nav 外面,打開時照按鈕的位置擺(相對 .subbar .inner);子列橫捲過的話位置也跟著按鈕。 */
+     清單是 body 底下的 fixed 元素,打開時照按下的那顆按鈕擺:頂列的往下開,底部列的往上開。 */
   if (!globalThis.__leaguePick) {
     globalThis.__leaguePick = true;
     const close = () => {
       const list = document.getElementById('leagueList');
-      if (list && !list.hidden) { list.hidden = true; document.querySelector('.league-pick')?.setAttribute('aria-expanded', 'false'); }
+      if (list && !list.hidden) { list.hidden = true; document.querySelectorAll('.league-pick').forEach(x => x.setAttribute('aria-expanded', 'false')); }
     };
     document.addEventListener('click', e => {
       const btn = e.target.closest?.('.league-pick');
       const list = document.getElementById('leagueList');
       if (btn && list) {
         if (!list.hidden) return close();
-        const inner = btn.closest('.inner');
-        const b = btn.getBoundingClientRect(), r = inner.getBoundingClientRect();
+        const b = btn.getBoundingClientRect();
         list.hidden = false;
-        list.style.top = `${b.bottom - r.top + 6}px`;
-        list.style.left = `${Math.max(0, Math.min(b.left - r.left, r.width - list.offsetWidth))}px`;
+        if (btn.closest('.bottombar')) { list.style.top = 'auto'; list.style.bottom = `${innerHeight - b.top + 6}px`; }
+        else { list.style.bottom = 'auto'; list.style.top = `${b.bottom + 6}px`; }
+        list.style.left = `${Math.max(8, Math.min(b.left, innerWidth - list.offsetWidth - 8))}px`;
         btn.setAttribute('aria-expanded', 'true');
         return;
       }

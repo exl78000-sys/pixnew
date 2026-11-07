@@ -4135,7 +4135,7 @@ async function checkDataGap() {
       return [
         /* 2026-09-30 方案 B:頂列五區 + 聯賽下拉;手機上五區搬到固定在底部的一列,頂列只剩品牌與下拉一行,
            子列是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽(量過)。 */
-        ['導覽是四區 + 子列(聯賽切換在賽事子列的「聯賽」格),手機另畫底部列',
+        ['導覽是頂列 + 子列(聯賽切換在「聯賽」那一格),手機另畫底部列',
           /<nav class="tabs sections"/.test(core) && /class="league-pick/.test(core)
           && /<nav class="bottombar"/.test(core) && /class="subbar"/.test(core)],
         /* 2026-11-07 使用者:「聯賽選擇按鈕 整合進聯賽」(選了「只在聯賽格切換」):品牌旁的下拉拿掉,
@@ -4143,18 +4143,40 @@ async function checkDataGap() {
            ① 品牌列不再有切換鈕;② 按鈕只長在賽事那一區的 index 格、清單項目連到 link('index', { league });
            ③ 清單掛在子列的 nav 外面(手機上 nav 是橫捲 + mask,清單放在裡面會被裁掉),而且 CSS 讓 hidden 真的藏得住
            (.league-list 是 display:grid,不補 [hidden] 那一行清單會永遠開著)。 */
-        ['聯賽切換併進賽事子列的「聯賽」格:品牌列沒有切換鈕、按鈕只在賽事區的聯賽格、清單連到各聯賽的聯賽頁、掛在 nav 外面',
+        /* 同一天稍後(使用者:「把賽事裡三項 移出來至賽事位置」)賽事區攤平:總覽、聯賽、盃賽直接排在頂列 / 底部列,
+           沒有「賽事」那一格也沒有它的子列。聯賽切換跟著那一格走,所以按鈕在頂列與底部列各一顆、清單只有一份。三件事一起守:
+           ① 品牌列的樣板裡沒有切換鈕;② 按鈕只長在 index 那一格(頂列與底部列都走 pickBtn)、清單項目連到 pickTarget;
+           ③ 清單掛在 body(fixed —— 頂列的 backdrop-filter 會變成 fixed 的定位基準、底部列要往上開),CSS 讓 hidden 藏得住。 */
+        ['聯賽切換就是「聯賽」那一格:品牌列沒有切換鈕、頂列與底部列的按鈕都走同一支、清單只有一份而且掛在 body',
           (() => {
             const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
             const head = navFn.slice(navFn.indexOf("insertAdjacentHTML('afterbegin'"), navFn.indexOf('</header>'));
-            const subTpl = navFn.slice(navFn.indexOf('const sub = hereSection'), navFn.indexOf("    : '';", navFn.indexOf('const sub = hereSection')));
             return !/league-menu|leagueMenu|league-pick/.test(head)
-              && /const isLeagueItem = it => it\.page === 'index' && hereSection\?\.key === 'comp'/.test(navFn)
+              && /const isLeagueItem = it => it\.page === 'index';/.test(navFn)
+              && /const flatItem = it => \(isLeagueItem\(it\)\s*\? pickBtn\(/.test(navFn)
+              && /const bottomItem = it => \(isLeagueItem\(it\)\s*\? pickBtn\(/.test(navFn)
               && /href="\$\{pickTarget\(k\)\}"/.test(navFn)
-              && /<\/nav>\s*\$\{hereSection\.items\.some\(isLeagueItem\) \? leagueList : ''\}/.test(subTpl)
+              && /<\/nav>\$\{\s*sections\.some\(s => s\.items\.some\(isLeagueItem\)\) \? leagueList : ''\}/.test(navFn)
+              && (navFn.match(/id="leagueList"/g) ?? []).length === 1
+              && /\.league-list \{ position: fixed;/.test(css)
               && /\.league-list\[hidden\] \{ display: none; \}/.test(css)
-              && /\.subbar \.inner \{[^}]*position: relative/.test(css)
               && !/leagueSwitchLink/.test(core);
+          })()],
+        ['賽事區攤平:頂列 / 底部列直接排它的格子,不畫「賽事」那一格也不畫它的子列',
+          (() => {
+            const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
+            return /const top = sections\.map\(s => \(s\.flat \? s\.items\.map\(flatItem\)/.test(navFn)
+              && /const sub = hereSection && !hereSection\.flat && hereSection\.items\.length > 1/.test(navFn)
+              && /sections\.map\(s => \(s\.flat \? s\.items\.map\(bottomItem\)/.test(navFn)
+              && NAV_CORE.navState('overview', null, 'pl').sections.find(s => s.key === 'comp')?.flat === true;
+          })()],
+        ['攤平的格子各自亮對:球隊 / 單場分析亮聯賽、盃賽單場 / 歐冠 / 國家隊轉址亮盃賽、總覽亮總覽',
+          (() => {
+            const lit = (pg, lg = 'pl') => { const st = NAV_CORE.navState(pg, null, lg);
+              return st.sections.find(s => s.flat)?.items.filter(st.isHere).map(it => it.page).join(); };
+            return lit('teams') === 'index' && lit('analysis') === 'index' && lit('players', 'de1') === 'index'
+              && ['cup-match', 'ucl-match', 'ucl', 'intl', 'cups'].every(p => lit(p) === 'cups')
+              && lit('overview') === 'overview' && lit('news') === '';
           })()],
         ['站名連到總覽(2026-09-30,使用者要求)',
           /<a class="brand" href="\$\{link\('overview'\)\}"/.test(core)],

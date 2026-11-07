@@ -1,7 +1,7 @@
-import * as C from './core.js?v=05fe8eff';
+import * as C from './core.js?v=bdef8b54';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=6914164d';
-import { renderIntlView } from './intl-view.js?v=1cd0dd13';
+import { renderUclView } from './ucl-view.js?v=6f8456b7';
+import { renderIntlView } from './intl-view.js?v=fb4306cc';
 
 const app = document.getElementById('app');
 
