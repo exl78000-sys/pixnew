@@ -64391,7 +64391,7 @@
   "LEE|TOT": {
    "fixtureId": 129019,
    "kickoff": "2026-11-07T12:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -64400,9 +64400,31 @@
    "homeId": 9,
    "awayId": 21,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      32280
+     ],
+     [
+      13515,
+      12337,
+      114504
+     ],
+     [
+      14608,
+      19731,
+      126426,
+      75543
+     ],
+     [
+      14897,
+      14807
+     ],
+     [
+      9576
+     ]
+    ],
     "xi": [
      {
       "id": 19731,
@@ -64418,7 +64440,7 @@
       "playerId": null,
       "name": "Sean Longstaff",
       "shirt": 8,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Central Midfielder",
       "captain": false
      },
@@ -64436,7 +64458,7 @@
       "playerId": null,
       "name": "Jayden Bogle",
       "shirt": 2,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -64472,7 +64494,7 @@
       "playerId": null,
       "name": "Gabriel Gudmundsson",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Left Full Back",
       "captain": false
      },
@@ -64589,9 +64611,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-3-3",
+    "formationRaw": "4-3-3",
+    "rows": [
+     [
+      123998
+     ],
+     [
+      32229,
+      76090,
+      75582,
+      10458
+     ],
+     [
+      71623,
+      119072,
+      117596
+     ],
+     [
+      51364,
+      76216,
+      76614
+     ]
+    ],
     "xi": [
      {
       "id": 123998,
@@ -64643,7 +64685,7 @@
       "playerId": null,
       "name": "Mohammed Kudus",
       "shirt": 20,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -64779,12 +64821,44 @@
    },
    "goals": [],
    "timeline": {
-    "cards": [],
+    "cards": [
+     {
+      "person": 75582,
+      "team": 21,
+      "min": 15,
+      "label": "15'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14897,
+      "team": 9,
+      "min": 22,
+      "label": "22'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "41'00"
   }
  },
- "fetchedAt": "2026-11-07T12:08:34.122Z"
+ "fetchedAt": "2026-11-07T13:11:23.792Z"
 }
