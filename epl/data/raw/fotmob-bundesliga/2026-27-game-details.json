@@ -122286,9 +122286,1553 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-07T16:56:21.126Z",
    "heat": null
+  },
+  "VFB|SVW": {
+   "key": "VFB|SVW",
+   "season": "2026-27",
+   "date": "2026-11-07",
+   "matchId": "5881223",
+   "home": "VFB",
+   "away": "SVW",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "VFB": {
+     "possession": 42,
+     "shots": 13,
+     "shotsOn": 5,
+     "shotsOff": 5,
+     "blockedShots": 3,
+     "blocksMade": 8,
+     "corners": 4,
+     "offsides": 0,
+     "fouls": 6,
+     "saves": 5,
+     "passes": 450,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.72
+    },
+    "SVW": {
+     "possession": 58,
+     "shots": 23,
+     "shotsOn": 5,
+     "shotsOff": 10,
+     "blockedShots": 8,
+     "blocksMade": 3,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 8,
+     "saves": 4,
+     "passes": 600,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.26
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "VFB": {
+     "touches_opp_box": 20,
+     "big_chance": 0,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 0,
+     "shots_woodwork": 1,
+     "shots_inside_box": 7,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.61,
+     "expected_goals_set_play": 0.11,
+     "expected_goals_non_penalty": 0.72,
+     "expected_goals_on_target": 1.53,
+     "own_half_passes": 137,
+     "opposition_half_passes": 225,
+     "long_balls_accurate": 14,
+     "long_balls_accurate_pct": 33,
+     "accurate_crosses": 5,
+     "accurate_crosses_pct": 42,
+     "player_throws": 22,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 11,
+     "clearances": 47,
+     "duel_won": 47,
+     "ground_duels_won": 28,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 19,
+     "aerials_won_pct": 53,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 33,
+     "red_cards": 0
+    },
+    "SVW": {
+     "touches_opp_box": 35,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 12,
+     "expected_goals_open_play": 0.96,
+     "expected_goals_set_play": 0.3,
+     "expected_goals_non_penalty": 1.26,
+     "expected_goals_on_target": 0.83,
+     "own_half_passes": 245,
+     "opposition_half_passes": 258,
+     "long_balls_accurate": 40,
+     "long_balls_accurate_pct": 63,
+     "accurate_crosses": 4,
+     "accurate_crosses_pct": 17,
+     "player_throws": 20,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 11,
+     "clearances": 18,
+     "duel_won": 43,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 49,
+     "aerials_won": 17,
+     "aerials_won_pct": 47,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 38,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     42,
+     58
+    ],
+    "h1": [
+     48,
+     52
+    ],
+    "h2": [
+     36,
+     64
+    ]
+   },
+   "events": [
+    {
+     "minute": 7,
+     "extra": null,
+     "team": "VFB",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Maximilian Mittelstädt"
+    },
+    {
+     "minute": 24,
+     "extra": null,
+     "team": "SVW",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Niclas Füllkrug"
+    },
+    {
+     "minute": 45,
+     "extra": null,
+     "team": "SVW",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Olivier Deman"
+    },
+    {
+     "minute": 53,
+     "extra": null,
+     "team": "SVW",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Marco Grüll"
+    },
+    {
+     "minute": 55,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Finn Jeltsch"
+    },
+    {
+     "minute": 64,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nikolas Nartey"
+    },
+    {
+     "minute": 65,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tiago Tomás"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "SVW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Justin Njinmah"
+    },
+    {
+     "minute": 67,
+     "extra": 0,
+     "team": "SVW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Chuki"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Atakan Karazor"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ermedin Demirović"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "SVW",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Cedric Itten"
+    }
+   ],
+   "shots": [
+    {
+     "min": 1,
+     "extra": null,
+     "team": "SVW",
+     "player": "Niclas Füllkrug",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.009,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 71.3,
+     "y": 28.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "VFB",
+     "player": "Bilal El Khannouss",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.5,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "VFB",
+     "player": "Maximilian Mittelstädt",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0.233,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 45.1,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 12,
+     "extra": null,
+     "team": "SVW",
+     "player": "Marco Grüll",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0.009,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 71,
+     "y": 44.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "VFB",
+     "player": "Bilal El Khannouss",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0.063,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 30.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "VFB",
+     "player": "Chris Führich",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.145,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 32.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "VFB",
+     "player": "Bilal El Khannouss",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0.573,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 32.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 29,
+     "extra": null,
+     "team": "VFB",
+     "player": "Jeff Chabot",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 38,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "SVW",
+     "player": "Youri Regeer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.1,
+     "y": 40.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "SVW",
+     "player": "Youri Regeer",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.096,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 28.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "SVW",
+     "player": "Youri Regeer",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.088,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 31.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "SVW",
+     "player": "Niclas Füllkrug",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86,
+     "y": 39.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 50,
+     "extra": null,
+     "team": "SVW",
+     "player": "Eren Dinkçi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.167,
+     "xgot": 0.1,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.2,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "SVW",
+     "player": "Youri Regeer",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.094,
+     "xgot": 0.113,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 28.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "SVW",
+     "player": "Eren Dinkçi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.074,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.2,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "SVW",
+     "player": "Niclas Füllkrug",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.2,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "SVW",
+     "player": "Marco Grüll",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 42.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 57,
+     "extra": null,
+     "team": "VFB",
+     "player": "Maximilian Mittelstädt",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.075,
+     "xgot": 0.637,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 38.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "VFB",
+     "player": "Jamie Leweling",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.008,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 20.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "SVW",
+     "player": "Marco Grüll",
+     "type": "Miss",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.033,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 49.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "SVW",
+     "player": "Youri Regeer",
+     "type": "AttemptSaved",
+     "situation": "ThrowInSetPiece",
+     "xg": 0.095,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.9,
+     "y": 38.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "SVW",
+     "player": "Niclas Füllkrug",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.059,
+     "xgot": 0.083,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 28,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "VFB",
+     "player": "Jamie Leweling",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.4,
+     "y": 33.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 62,
+     "extra": null,
+     "team": "SVW",
+     "player": "Marco Grüll",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.049,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 25.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "SVW",
+     "player": "Niclas Füllkrug",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 35.2,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "SVW",
+     "player": "Justin Njinmah",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.029,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.5,
+     "y": 48.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "SVW",
+     "player": "Arthur",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.9,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "VFB",
+     "player": "Chris Führich",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.6,
+     "y": 49.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 71,
+     "extra": null,
+     "team": "SVW",
+     "player": "Chuki",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 40.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "SVW",
+     "player": "Chuki",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 40.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "SVW",
+     "player": "Ludovit Reis",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0.41,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.8,
+     "y": 32.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "VFB",
+     "player": "Nikolas Nartey",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.078,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 25.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "VFB",
+     "player": "Deniz Undav",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.7,
+     "y": 37.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "VFB",
+     "player": "Maximilian Mittelstädt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.055,
+     "xgot": 0.019,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 33.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "SVW",
+     "player": "Marco Friedl",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.021,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.6,
+     "y": 28.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "SVW",
+     "player": "Olivier Deman",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0.12,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.5,
+     "y": 35.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -11
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     38
+    ],
+    [
+     5,
+     33
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     7,
+     3
+    ],
+    [
+     8,
+     3
+    ],
+    [
+     9,
+     24
+    ],
+    [
+     10,
+     22
+    ],
+    [
+     11,
+     11
+    ],
+    [
+     12,
+     5
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     14,
+     27
+    ],
+    [
+     15,
+     16
+    ],
+    [
+     16,
+     -5
+    ],
+    [
+     17,
+     3
+    ],
+    [
+     18,
+     35
+    ],
+    [
+     19,
+     41
+    ],
+    [
+     20,
+     43
+    ],
+    [
+     21,
+     49
+    ],
+    [
+     22,
+     65
+    ],
+    [
+     23,
+     92
+    ],
+    [
+     24,
+     54
+    ],
+    [
+     25,
+     49
+    ],
+    [
+     26,
+     35
+    ],
+    [
+     27,
+     52
+    ],
+    [
+     28,
+     46
+    ],
+    [
+     29,
+     35
+    ],
+    [
+     30,
+     33
+    ],
+    [
+     31,
+     22
+    ],
+    [
+     32,
+     24
+    ],
+    [
+     33,
+     3
+    ],
+    [
+     34,
+     8
+    ],
+    [
+     35,
+     -8
+    ],
+    [
+     36,
+     -11
+    ],
+    [
+     37,
+     -92
+    ],
+    [
+     38,
+     -95
+    ],
+    [
+     39,
+     -84
+    ],
+    [
+     40,
+     8
+    ],
+    [
+     41,
+     -11
+    ],
+    [
+     42,
+     -38
+    ],
+    [
+     43,
+     -5
+    ],
+    [
+     44,
+     0
+    ],
+    [
+     45,
+     33
+    ],
+    [
+     45.5,
+     0
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     -5
+    ],
+    [
+     48,
+     11
+    ],
+    [
+     49,
+     11
+    ],
+    [
+     50,
+     -33
+    ],
+    [
+     51,
+     -92
+    ],
+    [
+     52,
+     -100
+    ],
+    [
+     53,
+     -100
+    ],
+    [
+     54,
+     -100
+    ],
+    [
+     55,
+     -38
+    ],
+    [
+     56,
+     -16
+    ],
+    [
+     57,
+     49
+    ],
+    [
+     58,
+     43
+    ],
+    [
+     59,
+     71
+    ],
+    [
+     60,
+     -19
+    ],
+    [
+     61,
+     -52
+    ],
+    [
+     62,
+     -100
+    ],
+    [
+     63,
+     -65
+    ],
+    [
+     64,
+     -71
+    ],
+    [
+     65,
+     -38
+    ],
+    [
+     66,
+     -38
+    ],
+    [
+     67,
+     -22
+    ],
+    [
+     68,
+     -22
+    ],
+    [
+     69,
+     -33
+    ],
+    [
+     70,
+     -5
+    ],
+    [
+     71,
+     -81
+    ],
+    [
+     72,
+     -90
+    ],
+    [
+     73,
+     -68
+    ],
+    [
+     74,
+     -8
+    ],
+    [
+     75,
+     -43
+    ],
+    [
+     76,
+     -65
+    ],
+    [
+     77,
+     -49
+    ],
+    [
+     78,
+     60
+    ],
+    [
+     79,
+     54
+    ],
+    [
+     80,
+     22
+    ],
+    [
+     81,
+     5
+    ],
+    [
+     82,
+     27
+    ],
+    [
+     83,
+     49
+    ],
+    [
+     84,
+     0
+    ],
+    [
+     85,
+     -22
+    ],
+    [
+     86,
+     -38
+    ],
+    [
+     87,
+     -35
+    ],
+    [
+     88,
+     -41
+    ],
+    [
+     89,
+     -19
+    ],
+    [
+     90,
+     -49
+    ],
+    [
+     90.5,
+     -46
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "VFB": {
+     "team": "VFB",
+     "formation": "3-4-2-1",
+     "coach": "Sebastian Hoeneß",
+     "xi": [
+      {
+       "name": "Dennis Seimen",
+       "shirt": 41,
+       "pos": "G"
+      },
+      {
+       "name": "Luca Jaquez",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Jeff Chabot",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Ramon Hendriks",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jamie Leweling",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Grischa Prömel",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Yanik Spalt",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Maximilian Mittelstädt",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Bilal El Khannouss",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Chris Führich",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Deniz Undav",
+       "shirt": 26,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Finn Jeltsch",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Nikolas Nartey",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Tiago Tomás",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Atakan Karazor",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Ermedin Demirović",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Fabian Bredlow",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Ameen Al Dakhil",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenz Assignon",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Dženan Pejčinović",
+       "shirt": 17,
+       "pos": "?"
+      }
+     ]
+    },
+    "SVW": {
+     "team": "SVW",
+     "formation": "4-2-3-1",
+     "coach": "Daniel Thioune",
+     "xi": [
+      {
+       "name": "Karl Hein",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Arthur",
+       "shirt": 13,
+       "pos": "D"
+      },
+      {
+       "name": "Amos Pieper",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Marco Friedl",
+       "shirt": 32,
+       "pos": "D"
+      },
+      {
+       "name": "Olivier Deman",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Youri Regeer",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Senne Lynen",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Eren Dinkçi",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Ludovit Reis",
+       "shirt": 15,
+       "pos": "M"
+      },
+      {
+       "name": "Marco Grüll",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Niclas Füllkrug",
+       "shirt": 10,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Chuki",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Justin Njinmah",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Cedric Itten",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Alexander Schlager",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Mick Schmetgens",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Niklas Stark",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Oskar Wójcik",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Dariusz Stalmach",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Kenny Quetant",
+       "shirt": 19,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 42,
+      "center": 29,
+      "right": 29
+     },
+     "firstHalf": {
+      "left": 36,
+      "center": 32,
+      "right": 32
+     },
+     "secondHalf": {
+      "left": 49,
+      "center": 26,
+      "right": 25
+     }
+    },
+    "away": {
+     "total": {
+      "left": 31,
+      "center": 30,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 31,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 30,
+      "right": 40
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-07T19:30:50.822Z",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-11-07T18:29:58.159Z",
+ "updatedAt": "2026-11-07T19:30:50.824Z",
  "deferred": {}
 }
