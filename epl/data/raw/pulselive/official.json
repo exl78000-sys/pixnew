@@ -66515,18 +66515,40 @@
   "NFO|MCI": {
    "fixtureId": 129021,
    "kickoff": "2026-11-07T17:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
+    "home": 2,
     "away": 0
    },
    "homeId": 15,
    "awayId": 11,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "3-4-2-1",
+    "formationRaw": "3-4-2-1",
+    "rows": [
+     [
+      16723
+     ],
+     [
+      304238,
+      16035,
+      139648
+     ],
+     [
+      76353,
+      14238,
+      20335,
+      23811
+     ],
+     [
+      49270,
+      15259
+     ],
+     [
+      51813
+     ]
+    ],
     "xi": [
      {
       "id": 14238,
@@ -66542,7 +66564,7 @@
       "playerId": null,
       "name": "James McAtee",
       "shirt": 24,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre/Right Attacking Midfielder",
       "captain": false
      },
@@ -66587,7 +66609,7 @@
       "playerId": null,
       "name": "Morgan Gibbs-White",
       "shirt": 10,
-      "pos": "M",
+      "pos": "F",
       "posInfo": "Centre Central Midfielder",
       "captain": false
      },
@@ -66605,7 +66627,7 @@
       "playerId": null,
       "name": "Daniel Muñoz",
       "shirt": 27,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -66614,7 +66636,7 @@
       "playerId": null,
       "name": "Neco Williams",
       "shirt": 3,
-      "pos": "D",
+      "pos": "M",
       "posInfo": "Right Full Back",
       "captain": false
      },
@@ -66713,16 +66735,38 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      137371,
+      16431,
+      14569,
+      67178
+     ],
+     [
+      51593,
+      63741
+     ],
+     [
+      31936,
+      68150,
+      54156
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 54156,
       "playerId": null,
       "name": "Jérémy Doku",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -66731,7 +66775,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -66901,14 +66945,41 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 51813,
+     "assist": 20335,
+     "team": 15,
+     "min": 18,
+     "label": "18'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 0
+    }
+   ],
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "20'00"
   }
  },
- "fetchedAt": "2026-11-07T17:29:51.399Z"
+ "fetchedAt": "2026-11-07T17:52:46.609Z"
 }
