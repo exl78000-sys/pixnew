@@ -6364,13 +6364,17 @@ function checkAssetStamps() {
     const orphan = secPages.filter(p => !declared.includes(p));
     ok(orphan.length === 0, '五區裡的分頁都真的存在於 PAGES / SITE_PAGES', orphan.join('、'));
     const allPl = NV.navState('index', null, 'pl');
-    ok(allPl.sections.length === 5 && allPl.sections.map(x => x.label).join() === '比賽,球隊,球員,賽事,更多', '英超五區都在、順序固定');
+    /* 2026-11-07「比賽」區拿掉、聯賽首頁與實時戰況併進「賽事」(使用者要求)—— 頂列四區 */
+    ok(allPl.sections.length === 4 && allPl.sections.map(x => x.label).join() === '球隊,球員,賽事,更多', '英超四區都在、順序固定');
+    ok(NV.navState('index', null, 'pl').here?.items.map(it => it.label ?? it.page).join() === 'overview,聯賽,live,cups,intl'
+      && NV.navState('live', null, 'pl').here?.key === 'comp' && NV.navState('fixtures', null, 'pl').here?.key === 'comp',
+      '「賽事」區:總覽 → 聯賽(首頁)→ 實時戰況 → 盃賽 → 國家隊;賽程表與實時都亮賽事');
     const keys = allPl.sections.flatMap(x => x.items.map(it => it.page + (it.view ? ':' + it.view : '')));
     ok(new Set(keys).size === keys.length, '同一頁(含 view)不會出現在兩個地方', keys.join(' '));
-    // 每個導覽上的頁,站在那裡時都有一區亮;單場分析亮「比賽」、歐冠單場亮「賽事」
+    // 每個導覽上的頁,站在那裡時都有一區亮;單場分析與歐冠單場都亮「賽事」
     const lost = [...new Set(secPages)].filter(pg => !NV.navState(pg, null, 'pl').here);
     ok(lost.length === 0, '每一個導覽上的頁都找得到自己的區', lost.join('、'));
-    ok(NV.navState('analysis', null, 'pl').here?.key === 'match' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
+    ok(NV.navState('analysis', null, 'pl').here?.key === 'comp' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
       && NV.navState('explore', 'allplayers', 'pl').here?.key === 'player' && NV.navState('explore', null, 'pl').here?.key === 'more',
       '不在導覽上的頁與探索的三個分頁各自亮對的區');
     // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)

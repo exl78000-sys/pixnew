@@ -957,18 +957,21 @@ const SITE_PAGES = [
    - 網址一個都沒改:區只是把既有的頁分組。探索的三個分頁(知識 / 模擬 / 球員搜尋)各自掛進該去的區,
      連結帶 ?view=,explore.html 本身照舊是它們的宿主。
    - 某聯賽沒開的頁照舊不列(LEAGUES.open 過濾);一區一頁都沒開就整區不出現。
-   - `also`:不在導覽上、但屬於這一區的頁(單場分析屬於「比賽」、歐冠單場屬於「賽事」)—— 站在那裡時那一區要亮。
+   - `also`:不在導覽上、但屬於這一區的頁(單場分析、歐冠單場都屬於「賽事」)—— 站在那裡時那一區要亮。
    - PAGES / SITE_PAGES 還在,它們是**頁名登錄**(標籤、缺口頁、closedPage 用),不再決定導覽列長什麼樣。 */
+/* 「比賽」區拿掉、併進「賽事」(2026-11-07,使用者:「把比賽拿掉移至 賽事 聯賽 實時戰況」):那一區只有聯賽首頁與實時戰況兩頁,
+   而總覽(賽事區第一格)本來就是看比賽的地方 —— 即將到來、最近賽果都在那裡。頂列從五格變四格。
+   聯賽首頁在這一區標「聯賽」(它在別處的頁名仍是「英超首頁」);順序:總覽 → 聯賽 → 實時戰況 → 盃賽 → 國家隊。
+   單場分析與賽程表(also)跟著搬過來,站在那裡時亮「賽事」。 */
 const SECTIONS = [
-  { key: 'match', label: '比賽', icon: 'ball',
-    items: [{ page: 'index' }, { page: 'live' }], also: ['analysis', 'fixtures'] },
   { key: 'club', label: '球隊', icon: 'shield',
     items: [{ page: 'teams' }, { page: 'tactics' }], also: ['coaches'] },
   { key: 'player', label: '球員', icon: 'person',
     items: [{ page: 'players' }, { page: 'explore', view: 'allplayers', label: '球員搜尋' }], also: [] },
   { key: 'comp', label: '賽事', icon: 'trophy',
     /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
-    items: [{ page: 'overview' }, { page: 'cups' }, { page: 'intl' }], also: ['ucl', 'ucl-match', 'cup-match'] },
+    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'live' }, { page: 'cups' }, { page: 'intl' }],
+    also: ['analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match'] },
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
@@ -977,7 +980,6 @@ const SECTIONS = [
 const EXPLORE_DEFAULT_VIEW = 'knowledge';
 /* 五區的小圖示(只在手機底部列畫)。線條圖、吃 currentColor,不引入圖示庫。 */
 const NAV_ICON = {
-  ball: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5l4 2.9-1.5 4.7h-5L8 10.4z"/>',
   shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>',
   person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/>',
@@ -1068,7 +1070,7 @@ export function nav() {
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       ${/* 站名連到**總覽**(2026-09-30,使用者要求):五區之後總覽收在「賽事」裡要點兩下,而它是全站的入口 ——
-           品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁仍在「比賽」區的第一格。 */''}
+           品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁在「賽事」區的第二格(「聯賽」)。 */''}
       <a class="brand" href="${link('overview')}" title="回總覽"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       ${leagueMenu}
       <nav class="tabs sections" aria-label="主選單">${top}</nav>
