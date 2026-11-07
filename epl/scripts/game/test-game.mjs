@@ -354,7 +354,8 @@ console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
   for (let i = 0; i < N && !sim.state().over; i++) {
     /* 換人要**真的發生一次**才驗得到(連續引擎不自動換人,使用者 2026-09-20 的決定)。
        第 60 分換一次:主隊第一個外場球員換替補席第一個人。 */
-    if (!subbed && sim.state().t >= 60 * 60) {
+    /* 要在**活球**時按(2026-11-07 CI 紅過一次:側寫重建之後那一刻剛好是死球,換人當場生效 —— 那是對的,斷言錯了) */
+    if (!subbed && sim.state().t >= 60 * 60 && sim.state().phase !== 'dead') {
       const st0 = sim.state();
       const off = st0.players.find(p => p.side === 'home' && p.role !== 'GK')?.code;
       const on = sim.benchOf('home')[0]?.code;
