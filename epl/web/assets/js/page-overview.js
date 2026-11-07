@@ -22,12 +22,7 @@ try {
   C.nav();
   const entries = Object.keys(C.LEAGUES);
   app.innerHTML = `
-  <div class="page-head">
-    <h1>總覽</h1>
-    <p>本站目前有 ${entries.length} 個聯賽,加上跨聯賽的歐冠、英格蘭盃賽、國家隊與足球知識。
-       每個聯賽的模型各自訓練、各自回測,不互相借數字;做不到的那一層在下面各張卡上直說。</p>
-  </div>
-  <div class="grid g4">${['聯賽', '球隊', '已完賽', '盃賽'].map(l => kpi(l, '<span class="skel line" style="display:inline-block;width:3em;height:1em;margin:0"></span>', '載入中')).join('')}</div>
+  <div class="page-head"><h1>總覽</h1></div>
   <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・勾選存在這個瀏覽器</span></div>
   <div id="upcoming">${C.skel(4)}</div>
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
@@ -73,10 +68,6 @@ try {
 
   /* 下面這幾支是 function 宣告不是 const 箭頭:骨架那一段在它們的原始碼位置**之前**就會叫(各聯賽的卡片
      隨資料到齊先畫),const 會撞 TDZ,function 宣告在區塊內會提升。 */
-  function kpi(label, value, sub) {
-    return `<div class="kpi"><div class="label">${label}</div>
-    <div class="value">${value}</div><div class="sub">${sub}</div></div>`;
-  }
 
   /* 盃賽的比分在 cups-live.json 那份小檔(cups.json 要等下一次部署)。
 
@@ -109,8 +100,6 @@ try {
     + (c.seasons ?? []).reduce((m, s) => m + (s.total ?? 0), 0), 0);
   const uclSeasons = (shared.ucl?.seasons ?? []).filter(s => s.availability === 'available');
 
-  const totalTeams = leagues.reduce((n, x) => n + (x.data.meta.counts?.teams ?? 0), 0);
-  const totalPlayed = leagues.reduce((n, x) => n + x.data.fixtures.filter(f => f.played).length, 0);
 
   /* 這一頁的分頁清單。只列這個聯賽真的開放的頁 —— open 是 null 代表全開(英超)。 */
   function openPages(lg) {
@@ -680,22 +669,10 @@ try {
   const intlSoon = (intl?.fixtures ?? []).filter(f => f.state !== 'CANCELLED'
     && Date.parse(f.kickoff) > nowT && Date.parse(f.kickoff) <= nowT + 7 * 86400000);   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
   app.innerHTML = `
-  <div class="page-head">
-    <h1>總覽</h1>
-    <p>本站目前有 ${leagues.length} 個聯賽,加上跨聯賽的歐冠、英格蘭盃賽${intl ? '、國家隊' : ''}與足球知識。
-       每個聯賽的模型各自訓練、各自回測,不互相借數字;做不到的那一層在下面各張卡上直說。</p>
-    ${C.stampRow([
-      C.stamp('聯賽資料', { iso: leagues[0]?.data.meta.builtAt, kind: 'daily', note: '每次 build 重算' }),
-      shared.cups ? C.stamp('盃賽資料', { iso: shared.cups.retrievedAt, kind: 'manual', note: shared.cups.source }) : null,
-    ])}
-  </div>
-
-  <div class="grid g4">
-    ${kpi('聯賽', leagues.length, leagues.map(x => C.LEAGUES[x.lg].zh).join('、'))}
-    ${kpi('球隊', totalTeams, '本季各聯賽合計')}
-    ${kpi('已完賽', totalPlayed, '本季各聯賽合計')}
-    ${kpi('盃賽', cupList.length, cupList.map(c => C.esc(c.zh ?? c.en)).join('、') || '尚未接入')}
-  </div>
+  <div class="page-head"><h1>總覽</h1></div>
+  ${/* 頁首的介紹段、資料時效與四張數字卡拿掉了(2026-11-07,使用者:「這段可拿掉」)—— 聯賽數、球隊數、
+        已完賽場數在下面各聯賽的卡片上都有,介紹段講的事每張卡也各自直說。**資料時效不能跟著消失**(鐵則四):
+        搬到頁尾那一行。 */''}
 
   <div id="upcoming">${upcomingHtml()}</div>
 
@@ -753,7 +730,8 @@ try {
         <span class="tiny dim">${C.dateFull(n.date)}</span></div>`).join('')
     : '<div class="dim small">目前沒有動態資料。</div>'}</div>
 
-  <footer class="foot wrap">資料來源:${sources || '見各頁'}。
+  <footer class="foot wrap">聯賽資料建置於 ${C.esc(C.kickoffLocal(leagues[0]?.data.meta.builtAt))}${
+    shared.cups?.retrievedAt ? `・盃賽資料抓取於 ${C.esc(C.kickoffLocal(shared.cups.retrievedAt))}` : ''}。資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
   bindUpcoming();
   C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
