@@ -23,7 +23,7 @@ import * as C from './core.js?v=65f83e48';
 /* **具名 import 要寫在同一行。** 單檔版的打包是用單行正則把 import 拆掉的,
    跨行的話拆不掉 → 攤平之後還留著一個 import 陳述句 → 整份單檔版死掉。
    bundle.mjs 的守門會擋下來(「單檔版裡還有沒拆掉的 import」),不會靜靜過關。 */
-import { readFollows, writeFollows, followStar, bindFollowStars, SOFT_LIMIT, FOLLOW_STORAGE_NOTE } from './follow.js?v=02130043';
+import { readFollows, writeFollows, followStar, bindFollowStars, isFollowed, toggleFollow, SOFT_LIMIT, FOLLOW_STORAGE_NOTE } from './follow.js?v=02130043';
 
 /* 可以關注的聯賽 = 導覽列上有球隊頁的聯賽,**從註冊表算**(沒有 open 清單 = 全部開放,英超就是這樣)。
    原本是手寫的 ['pl', 'es1', 'en2'],註解寫著「有球隊頁的那三個」—— 德義法 9/15 有了球隊頁與 ☆ 之後
@@ -213,19 +213,34 @@ function unavailLine(U, code) {
     ${u.played ? '<div class="tiny dim">那一場已經踢完,這是當時的賽前狀態,不是現在的。</div>' : ''}`;
 }
 
-/* 球隊挑選器:可關注的聯賽的全部球隊,打勾就關注。 */
+/* 球隊挑選器(2026-11-07 改成摺疊 + 勾選,使用者:「球隊與預測想辦法合成一頁,選隊伍摺疊起來用勾選」)。
+   原本是六個聯賽、一百多顆 ☆ 整片攤開,球隊與預測合成一頁之後它會把預測推到很下面 ——
+   所以外層一個摺疊、每個聯賽再一個摺疊,摘要列直接寫「已選幾支」,不打開也看得到選了什麼。
+   勾選框比 ☆ 好認(一眼分得出勾了沒有),而且點的是整個標籤,手機上不用瞄準一顆小星星。
+   寫入走 follow.js 的 toggleFollow(跟 ☆ 同一份),外面點 ☆ 取消的話這裡重畫時勾選跟著變。 */
 function pickerHtml(pools) {
-  return pools.map(p => `<div style="margin-top:12px">
-    <div class="tiny dim" style="margin-bottom:6px">${C.compBadge(p.lg)} ${fvEsc(C.LEAGUES[p.lg]?.zh ?? p.lg)}
-      <span class="dim">(${(p.teams ?? []).length} 隊)</span></div>
-    <div class="row" style="gap:6px;flex-wrap:wrap">
-      ${(p.teams ?? []).slice().sort((a, b) => String(a.en).localeCompare(String(b.en)))
-        .map(t => `<span class="pickteam">${followStar(p.lg, t.code)}
-          <span class="small">${C.badge(t.code)} ${fvEsc(t.en ?? t.code)}</span></span>`).join('')}
-    </div></div>`).join('');
+  const lgs = pools.map(p => {
+    const teams = (p.teams ?? []).slice().sort((a, b) => String(a.en).localeCompare(String(b.en)));
+    const n = teams.filter(t => isFollowed(p.lg, t.code)).length;
+    return { p, teams, n };
+  });
+  const total = lgs.reduce((a, x) => a + x.n, 0);
+  return `<details class="card fold-card" data-fold="pick" id="fvPick" style="margin-top:12px">
+    <summary><h2>選球隊</h2><span class="hint">${total ? `已選 ${total} 支` : '還沒選'}・${pools.length} 個聯賽共
+      ${lgs.reduce((a, x) => a + x.teams.length, 0)} 支,點開勾選</span></summary>
+    ${lgs.map(({ p, teams, n }) => `<details class="pick-league" data-fold="lg:${fvEsc(p.lg)}">
+      <summary>${C.compBadge(p.lg)} <b class="small">${fvEsc(C.LEAGUES[p.lg]?.zh ?? p.lg)}</b>
+        <span class="tiny ${n ? 'accent-text' : 'dim'}">${n ? `已選 ${n} / ${teams.length}` : `${teams.length} 隊`}</span></summary>
+      <div class="pick-grid">
+        ${teams.map(t => `<label class="pickteam"><input type="checkbox" data-follow-cb="${fvEsc(p.lg)}|${fvEsc(t.code)}"
+          ${isFollowed(p.lg, t.code) ? 'checked' : ''}>
+          ${C.badge(t.code)}<span class="small">${fvEsc(t.en ?? t.code)}</span></label>`).join('')}
+      </div></details>`).join('')}
+    <div class="tiny dim" id="fvPickMsg" style="margin-top:8px">勾選就關注、取消勾選就移除,馬上存進這個瀏覽器。</div>
+  </details>`;
 }
 
-export async function renderFollowTeams(host) {
+export async function renderFollowTeams(host, { onChange = null } = {}) {
   host.innerHTML = '<div class="loading">載入資料中…</div>';
 
   /* 各聯賽的基本資料。**meta 先拿到才知道要不要去要 players-core** ——
@@ -293,6 +308,7 @@ export async function renderFollowTeams(host) {
   /* 盃賽與歐冠的場次晚一步併進來(見檔頭第 1 點)。先給一張空表,拿到再重畫。 */
   let extra = new Map();
 
+  let firstDraw = true;
   const draw = () => {
     const follows = readFollows().filter(f => FOLLOW_LEAGUES.includes(f.lg));
     const cards = follows.map(f => {
@@ -300,29 +316,35 @@ export async function renderFollowTeams(host) {
       return pool ? teamCard(pool, f.code, extra) : '';
     }).join('');
 
+    /* 重畫會把摺疊的開合與焦點洗掉 —— 勾一支就整個收起來、焦點跳回頁首的話,連勾三支要點開三次。
+       所以先記下哪些是開的、焦點在哪一個勾選框,畫完再放回去。
+       第一次畫:一支都沒關注的話外層先打開(不然「在下面打勾」那句話指著一個收起來的東西),各聯賽仍收著。 */
+    const open = new Set([...host.querySelectorAll('details[data-fold][open]')].map(d => d.dataset.fold));
+    if (firstDraw && !follows.length) open.add('pick');
+    firstDraw = false;
+    const focused = document.activeElement?.dataset?.followCb ?? null;
+
+    /* 挑選器排在卡片**上面**:勾一支就多一張卡,卡片在上面的話挑選器會被往下推,正在勾的那一格跑掉。 */
     host.innerHTML = `
-      <div class="card">
-        <div class="spread"><b>我的球隊</b>
-          <span class="tiny dim">${follows.length ? `關注 ${follows.length} 支` : '還沒有關注任何球隊'}</span></div>
-        <div class="tiny dim" style="margin-top:6px">${fvEsc(FOLLOW_STORAGE_NOTE)}</div>
-        ${follows.length > SOFT_LIMIT ? `<div class="note warn" style="margin-top:8px">
+      <div class="page-head" style="margin-bottom:0">
+        <h1>我的球隊</h1>
+        <p>${follows.length ? `關注 ${follows.length} 支。` : ''}${fvEsc(FOLLOW_STORAGE_NOTE)}</p>
+      </div>
+
+      ${pickerHtml(pools)}
+
+      ${follows.length > SOFT_LIMIT ? `<div class="note warn" style="margin-top:12px">
           你關注了 ${follows.length} 支。<b>關注太多等於沒有關注</b> ——
           積分榜、實時戰況與賽程上的重點標記會佈滿整頁,那正是這個功能想解決的事。
           底下這幾張卡照樣全列,只是提醒一下。</div>` : ''}
-      </div>
 
       ${follows.length ? cards : `<div class="note" style="margin-top:12px">
-        還沒有關注任何球隊。<b>在下面打勾</b>,或到任何一支球隊的頁面按標題旁邊的 ☆。
+        還沒有關注任何球隊。<b>在上面的「選球隊」打勾</b>,或到任何一支球隊的頁面按標題旁邊的 ☆。
         關注之後:首頁的積分榜會把你的球隊標出來、實時戰況會把你的比賽排到最上面、
-        動態可以只看你的球隊、賽程與盃賽的場次會加上 ★。</div>`}
+        動態可以只看你的球隊、賽程與盃賽的場次會加上 ★、下面「我的預測」的場次也會標 ★。</div>`}
 
-      <div class="section" style="margin-top:22px"><h2>選球隊</h2>
-        <span class="hint">${pools.length} 個聯賽共 ${pools.reduce((a, p) => a + (p.teams?.length ?? 0), 0)} 支・點 ☆ 加入、點 ★ 取消</span></div>
-      <div class="card">${pickerHtml(pools)}</div>
-
-      <div class="section" style="margin-top:22px"><h2>帶著走</h2>
-        <span class="hint">換裝置或換瀏覽器時用</span></div>
-      <div class="card">
+      <details class="card fold-card" data-fold="io" style="margin-top:12px">
+        <summary><h2>帶著走</h2><span class="hint">匯出 / 匯入關注名單,換裝置或換瀏覽器時用</span></summary>
         <div class="row" style="gap:8px;flex-wrap:wrap">
           <button class="btn" type="button" id="fvExport">匯出關注名單</button>
           <label class="btn" style="cursor:pointer">匯入<input type="file" id="fvImport" accept="application/json" hidden></label>
@@ -330,9 +352,12 @@ export async function renderFollowTeams(host) {
         </div>
         <div class="tiny dim" style="margin-top:8px" id="fvMsg">匯出的是一個小 JSON 檔,
           裡面只有「聯賽 + 隊碼」,沒有任何個人資料。</div>
-      </div>`;
+      </details>`;
 
+    for (const d of host.querySelectorAll('details[data-fold]')) if (open.has(d.dataset.fold)) d.open = true;
+    if (focused) host.querySelector(`[data-follow-cb="${CSS.escape(focused)}"]`)?.focus();
     C.startCountdowns();
+    onChange?.(follows);
   };
 
   draw();
@@ -353,6 +378,23 @@ export async function renderFollowTeams(host) {
       if (writeFollows([])) draw();
       else if (msg) msg.textContent = '這個瀏覽器不讓本站儲存資料,清不掉。';
     }
+  });
+  /* 勾選框:勾上的狀態跟存起來的不一樣才切(外面的 ☆ 可能已經改過了);寫不進去就把勾選退回去並講出來 ——
+     勾著卻沒存,是騙人(follow.js 的 toggleFollow 那段註解同一條)。 */
+  host.addEventListener('change', e => {
+    const cb = e.target.closest?.('[data-follow-cb]');
+    if (!cb) return;
+    const [lg, code] = String(cb.dataset.followCb).split('|');
+    if (!lg || !code || cb.checked === isFollowed(lg, code)) return;
+    const { saved } = toggleFollow(lg, code);
+    if (!saved) {
+      cb.checked = !cb.checked;
+      const msg = document.getElementById('fvPickMsg');
+      if (msg) { msg.textContent = '這個瀏覽器不讓本站儲存資料(無痕視窗或封鎖了網站資料),關注記不起來。'; msg.style.color = 'var(--loss)'; }
+      cb.closest('label')?.setAttribute('title', '這個瀏覽器不讓本站儲存資料,關注記不起來');
+      return;
+    }
+    draw();
   });
   host.addEventListener('change', async e => {
     if (e.target.id !== 'fvImport') return;

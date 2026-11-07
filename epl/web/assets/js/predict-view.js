@@ -176,12 +176,14 @@ export async function renderPredict(host) {
   /* 關注的球隊(2026-09-14)。**歐冠那個池子的鍵是 `c:XXX` / `u:123`,不是隊碼** ——
      所以先把前綴剝掉再比。純標記不是按鈕:這張卡是拿來填預測的,
      多一個可點的星號只會誤觸。 */
-  const star = id => {
-    const code = String(id ?? '').startsWith('c:') ? String(id).slice(2) : String(id ?? '');
-    return followedIn(state.lg === 'ucl' ? 'pl' : state.lg).has(code)
-      || (state.lg === 'ucl' && followedIn('es1').has(code))
-      ? '<span class="followstar on" title="你關注的球隊" aria-label="你關注的球隊">★</span>' : '';
-  };
+  /* 2026-11-07 起「我的球隊」跟這裡在同一頁:上面勾一支球隊,這裡的 ★ 要跟著變,
+     而整個重畫會洗掉還沒按儲存的輸入。所以 ★ 一律畫出來、沒關注就藏起來,
+     關注變了只切 display(refreshStars),不重畫。 */
+  const starOn = code => followedIn(state.lg === 'ucl' ? 'pl' : state.lg).has(code)
+    || (state.lg === 'ucl' && followedIn('es1').has(code));
+  const codeOf = id => (String(id ?? '').startsWith('c:') ? String(id).slice(2) : String(id ?? ''));
+  const star = id => `<span class="followstar on" data-pstar="${C.esc(codeOf(id))}" title="你關注的球隊" aria-label="你關注的球隊"${
+    starOn(codeOf(id)) ? '' : ' style="display:none"'}>★</span>`;
     const crest = code => {
       const c = cur().crestBy.get(code);
       return c ? `<img class="crest" src="${c}" alt="" width="22" height="22" onerror='${HIDE}'>` : '';
@@ -505,7 +507,13 @@ export async function renderPredict(host) {
     }
 
     render();
+    return {
+      refreshStars() {
+        for (const el of app.querySelectorAll('[data-pstar]')) el.style.display = starOn(el.dataset.pstar) ? '' : 'none';
+      },
+    };
   } catch (e) {
     app.innerHTML = `<div class="note warn">載入失敗:${C.esc(e.message)}</div>`;
+    return null;
   }
 }

@@ -617,6 +617,20 @@ tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
 .stat-line.fixline { flex-wrap: wrap; }
 .pickteam { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px 3px 4px;
   border: 1px solid var(--line); border-radius: 999px; }
+/* 選球隊(2026-11-07 起摺疊 + 勾選):每個聯賽一個小摺疊,裡面是一格一隊的勾選標籤。
+   整個標籤都是點擊範圍(手機上不用瞄準勾選框),勾上的那格用邊框與底色標出來。 */
+.pick-league { border-top: 1px solid var(--line); padding: 8px 0; }
+.pick-league:first-of-type { border-top: 0; }
+.pick-league > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pick-league > summary::-webkit-details-marker { display: none; }
+.pick-league > summary::after { content: '▸'; margin-left: auto; color: var(--ink-3); }
+.pick-league[open] > summary::after { content: '▾'; }
+.pick-league > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+.pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px; margin-top: 8px; }
+.pick-grid .pickteam { cursor: pointer; padding: 5px 9px 5px 6px; min-width: 0; }
+.pick-grid .pickteam .small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pick-grid .pickteam:has(input:checked) { border-color: #ffc53199; background: #ffc53114; }
+.pick-grid input[type="checkbox"] { accent-color: #ffc531; margin: 0; flex: none; }
 
 /* ── 單場分析:賽前 / 賽後 / 綜合 ─────────── */
 .analysis-switch {
@@ -629,6 +643,8 @@ tbody tr.followed td:first-child { box-shadow: inset 2px 0 0 #ffc531; }
 .analysis-panel { scroll-margin-top: 120px; }
 /* 比賽頁的錨點(news.html / live.html 轉過來的):頂列加聯賽分頁約 100px,不留這一段的話標題被蓋在列底下 */
 #news, #live { scroll-margin-top: 116px; }
+/* 「我的」那一頁的預測段(?view=predict 捲過來的):頂列加「我的」子列 */
+#minePredict { scroll-margin-top: 110px; }
 .analysis-panel[hidden] { display: none !important; }
 .post-report-grid > .card { margin-top: 16px; }
 

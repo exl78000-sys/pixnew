@@ -9252,6 +9252,27 @@ async function checkFollow() {
     '「換一台裝置就看不到」寫在畫面上');
   ok(/fvExport/.test(fvSrc) && /fvImport/.test(fvSrc), '有匯出與匯入');
 
+  /* 十之一、球隊與預測合成一頁(2026-11-07,使用者:「球隊與預測想辦法合成一頁,選隊伍摺疊起來用勾選」):
+     ① 「我的」那一頁沒有分頁,兩段各自一個容器、同時畫;② 選球隊是摺疊(外層一個、每個聯賽一個),
+     一隊一個勾選框,寫入走 follow.js 的 toggleFollow(跟 ☆ 同一份);重畫時摺疊開合要保留(不然勾一支就整個收起來);
+     ③ 球隊那一段變了,預測那一段只切 ★ 不重畫(重畫會洗掉還沒按儲存的比分)。 */
+  {
+    const pp = strip(src('page-predict.js')), pv = strip(src('predict-view.js'));
+    ok(!/C\.tabs\(/.test(pp) && /id="mineTeams"/.test(pp) && /id="minePredict"/.test(pp)
+      && /renderFollowTeams\(document\.getElementById\('mineTeams'\)/.test(pp)
+      && /renderPredict\(document\.getElementById\('minePredict'\)\)/.test(pp),
+      '「我的」是一頁:球隊與預測兩段各自一個容器,沒有分頁');
+    ok(/<details class="card fold-card" data-fold="pick"/.test(fvSrc) && /<details class="pick-league" data-fold="lg:/.test(fvSrc)
+      && /type="checkbox" data-follow-cb=/.test(fvSrc) && !/pickteam">\$\{followStar/.test(fvSrc)
+      && /toggleFollow\(lg, code\)/.test(fvSrc),
+      '選球隊是摺疊 + 勾選(外層與每個聯賽各一個摺疊),寫入走共用的 toggleFollow');
+    ok(/details\[data-fold\]\[open\]/.test(fvSrc) && /if \(open\.has\(d\.dataset\.fold\)\) d\.open = true/.test(fvSrc),
+      '重畫時保留摺疊的開合');
+    ok(/onChange: \(\) => predictCtl\?\.refreshStars\(\)/.test(pp) && /refreshStars\(\) \{/.test(pv)
+      && /data-pstar=/.test(pv) && /onChange\?\.\(follows\)/.test(fvSrc),
+      '關注變了,預測那一段只切 ★、不重畫');
+  }
+
   /* 十一、**主客用位置,不用符號**(使用者的決定,2026-09-15):主隊在左、客隊在右。
      驗的是**順序**不是字串:兩區各寫一套符號(藥丸 / vs / @)本來就要讀者記兩種,
      而位置化之後唯一會出錯的是「誰在左邊」—— 那是邏輯,掃原始碼守不住。 */
