@@ -64391,8 +64391,8 @@
   "LEE|TOT": {
    "fixtureId": 129019,
    "kickoff": "2026-11-07T12:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 0
@@ -65075,12 +65075,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -65097,10 +65091,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+3'00"
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-07T14:30:01.160Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "FUL|NEW": {
    "fixtureId": 129017,
@@ -65897,5 +65904,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-07T14:27:43.691Z"
+ "fetchedAt": "2026-11-07T14:30:01.583Z"
 }
