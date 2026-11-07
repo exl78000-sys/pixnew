@@ -942,9 +942,11 @@ const SECTIONS = [
     items: [{ page: 'overview', icon: 'grid' }, { page: 'index', label: '聯賽', icon: 'shield' },
       { page: 'cups', icon: 'trophy', also: ['ucl', 'ucl-match', 'cup-match', 'intl'] }],
     also: ['live', 'analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match', 'intl'] },
-  { key: 'more', label: '更多', icon: 'dots',
-    items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
-      { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
+  /* 「更多」改成「我的」(2026-11-07,使用者選了「建議一 + 建議二」):動態、模型驗證、足球知識讀的都是**目前聯賽**的資料
+     (news.json / 各聯賽的回測 / knowledge.json),搬進聯賽分頁(LEAGUE_TABS);剩下的兩頁都是「自己動手、存在自己瀏覽器」的東西 ——
+     我的球隊與預測、模擬遊玩 —— 所以這一區叫「我的」。 */
+  { key: 'mine', label: '我的', icon: 'person',
+    items: [{ page: 'predict', label: '球隊與預測' }, { page: 'explore', view: 'duel', label: '模擬遊玩' }], also: [] },
 ];
 /* 聯賽分頁:站在其中任何一頁時,賽事子列的「聯賽」格亮、下面畫這一排。also 是不在分頁上、但屬於那一格的頁
    (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。 */
@@ -952,6 +954,11 @@ const LEAGUE_TABS = [
   { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures'] },
   { page: 'teams', also: ['coaches', 'tactics'] },   // 戰術 2026-11-07 併進球隊頁(tactics.html 只剩轉址),站在那一頁時亮「球隊」
   { page: 'players' },   // 含「全部聯賽」(?scope=all,原本的球員搜尋 2026-11-07 併進來)
+  /* 動態、模型驗證、足球知識 2026-11-07 從「更多」搬進來:三頁讀的都是目前聯賽的資料,放在聯賽底下讀者才看得出它跟著聯賽變;
+     換聯賽時停在同一分頁(pickTarget 帶 view)。足球知識是探索頁的 knowledge view(模擬遊玩那個 view 在「我的」)。 */
+  { page: 'news', label: '動態' },
+  { page: 'model', label: '模型' },
+  { page: 'explore', view: 'knowledge', label: '知識' },
 ];
 // 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
 const EXPLORE_DEFAULT_VIEW = 'knowledge';

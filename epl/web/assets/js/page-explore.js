@@ -1,5 +1,5 @@
-import * as C from './core.js?v=bdef8b54';
-import { renderKnowledge } from './knowledge-view.js?v=20b5a4fc';
+import * as C from './core.js?v=c742eada';
+import { renderKnowledge } from './knowledge-view.js?v=98fd3934';
 /* 模擬遊玩那一支**不在這裡 import**(2026-09-26,B4):game-view → game-live → game-sim,引擎本身 314 KB,
    而知識與球員搜尋兩個分頁根本用不到 —— 原本三個分頁都揹著它(explore.html 的 modulepreload 也一起預載)。
    改成點到那個分頁才 `import()`(見 VIEWS)。stamp-assets 照樣給那個字面路徑戳,但 modulepreload 只收靜態 import;
@@ -30,7 +30,7 @@ const VIEWS = [
   { key: 'knowledge', zh: '足球知識', render: renderKnowledge },
   /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
      模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
-  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=24a4eb0b')).renderGame(body) },
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=8797b93c')).renderGame(body) },
 ];
 
 const app = document.getElementById('app');
@@ -45,7 +45,7 @@ try {
   let cur = VIEWS.some(v => v.key === asked) ? asked : VIEWS[0].key;
 
   /* 頁內那排三格拿掉了(2026-09-30,方案 B):三個分頁各自掛進導覽列該去的區 —— 球員搜尋在「球員」、
-     足球知識與模擬遊玩在「更多」—— 導覽的子列就是切換鈕,這裡再畫一排是同一件事印兩次,而且三格分屬兩區。 */
+     足球知識與模擬遊玩在「更多」(2026-11-07 起足球知識是聯賽分頁的「知識」、模擬遊玩在「我的」)—— 導覽的子列就是切換鈕,這裡再畫一排是同一件事印兩次,而且三格分屬兩區。 */
   app.innerHTML = `
     <div id="exploreBody"><div class="loading">載入資料中…</div></div>`;
 

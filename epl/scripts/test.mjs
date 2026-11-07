@@ -4172,11 +4172,11 @@ async function checkDataGap() {
           })()],
         ['攤平的格子各自亮對:球隊 / 單場分析亮聯賽、盃賽單場 / 歐冠 / 國家隊轉址亮盃賽、總覽亮總覽',
           (() => {
-            const lit = (pg, lg = 'pl') => { const st = NAV_CORE.navState(pg, null, lg);
+            const lit = (pg, lg = 'pl', view = null) => { const st = NAV_CORE.navState(pg, view, lg);
               return st.sections.find(s => s.flat)?.items.filter(st.isHere).map(it => it.page).join(); };
             return lit('teams') === 'index' && lit('analysis') === 'index' && lit('players', 'de1') === 'index'
               && ['cup-match', 'ucl-match', 'ucl', 'intl', 'cups'].every(p => lit(p) === 'cups')
-              && lit('overview') === 'overview' && lit('news') === '';
+              && lit('overview') === 'overview' && lit('news') === 'index' && lit('predict') === '' && lit('explore', 'pl', 'duel') === '';
           })()],
         ['站名連到總覽(2026-09-30,使用者要求)',
           /<a class="brand" href="\$\{link\('overview'\)\}"/.test(core)],
@@ -6448,19 +6448,26 @@ function checkAssetStamps() {
     ok(orphan.length === 0, '五區裡的分頁都真的存在於 PAGES / SITE_PAGES', orphan.join('、'));
     const allPl = NV.navState('index', null, 'pl');
     /* 2026-11-07「比賽」區拿掉、聯賽首頁與實時戰況併進「賽事」;同一天「球隊」「球員」也併進聯賽頁的分頁(使用者要求)—— 頂列兩區 */
-    ok(allPl.sections.length === 2 && allPl.sections.map(x => x.label).join() === '賽事,更多', '英超頂列兩區、順序固定');
+    /* 同一天稍後「更多」改成「我的」(動態、模型、知識搬進聯賽分頁),只剩球隊與預測、模擬遊玩 */
+    ok(allPl.sections.length === 2 && allPl.sections.map(x => x.label).join() === '賽事,我的'
+      && allPl.sections[1].items.map(it => it.page + (it.view ? ':' + it.view : '')).join() === 'predict,explore:duel',
+      '英超兩區(賽事攤平、我的)、順序固定;「我的」只有球隊與預測、模擬遊玩');
     {
       /* 聯賽分頁:比賽 / 球隊 / 球員(球員搜尋同一天併進球員頁的「全部聯賽」、戰術併進「球隊」,都不再是一格)。站在其中任何一頁(含 also:單場分析、賽程表、教練)時,
          ① 「聯賽」那一格亮(here 是賽事、index 那一項 isHere);② 亮的分頁是對的那一格;③ 不屬於聯賽的頁(總覽、盃賽、足球知識)沒有分頁 */
       const tabOf = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.ltab ? (st.ltab.label ?? st.ltab.page) : null; };
       const lit = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.here?.key === 'comp' && st.here.items.some(it => it.page === 'index' && st.isHere(it)); };
-      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players'
+      /* 動態、模型、知識 2026-11-07 也搬進來(讀的都是目前聯賽的資料);探索頁不帶 view 時是知識,也算在聯賽底下;
+         模擬遊玩(explore:duel)與「我的」那一頁不在聯賽底下 */
+      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players,動態,模型,知識'
         && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽'
         && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'teams' && tabOf('players') === 'players'
-        && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'knowledge') === null && tabOf('explore', null) === null
-        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis'].every(pg => lit(pg))
-        && !lit('overview') && !lit('cups') && !lit('explore', 'knowledge'),
-        '球隊、戰術、球員併進聯賽頁的分頁(戰術亮「球隊」):站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 足球知識沒有分頁');
+        && tabOf('news') === '動態' && tabOf('model') === '模型' && tabOf('explore', 'knowledge') === '知識' && tabOf('explore', null) === '知識'
+        && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'duel') === null && tabOf('predict') === null
+        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis', 'news', 'model'].every(pg => lit(pg)) && lit('explore', 'knowledge')
+        && !lit('overview') && !lit('cups') && !lit('explore', 'duel') && !lit('predict')
+        && ['es1', 'en2', 'de1', 'it1', 'fr1'].every(lg => NV.navState('news', null, lg).ltabs.length === 6),
+        '球隊、戰術、球員、動態、模型、知識是聯賽頁的分頁(戰術亮「球隊」):站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 模擬遊玩 / 我的沒有分頁');
       const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
       ok(/const lgbar = ltab/.test(navFn) && /\$\{sub\}\$\{lgbar\}<\/header>/.test(navFn)
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
@@ -6485,7 +6492,8 @@ function checkAssetStamps() {
     const lost = [...new Set(secPages)].filter(pg => !NV.navState(pg, null, 'pl').here);
     ok(lost.length === 0, '每一個導覽上的頁都找得到自己的區', lost.join('、'));
     ok(NV.navState('analysis', null, 'pl').here?.key === 'comp' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
-      && NV.navState('explore', null, 'pl').here?.key === 'more' && NV.navState('explore', 'duel', 'pl').here?.key === 'more',
+      && NV.navState('explore', null, 'pl').here?.key === 'comp' && NV.navState('explore', 'duel', 'pl').here?.key === 'mine'
+      && NV.navState('predict', null, 'pl').here?.key === 'mine' && NV.navState('model', null, 'de1').here?.key === 'comp',
       '不在導覽上的頁與探索的分頁各自亮對的區');
     {
       /* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」→「把全部聯賽球員 整合進 聯賽全部球員搜尋部分 可勾選要搜尋範圍」):
