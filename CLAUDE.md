@@ -59,7 +59,7 @@ build 逐季量三個數字,**涵蓋全部場次而且缺口等於烏龍球數**
 盃賽球員榜有三件事跟聯賽不同,畫面上都要講:低分級的場次供應商常常沒有逐人統計(足總盃 117 場裡只有 81 場有)、
 比分核對是**同一家供應商**的一致性檢查(盃賽賽果本身就是 FotMob)、評分榜的門檻要比聯賽高(淘汰制)。
 
-**國家隊 2026-09-24 起有一頁**(`intl.html`,導覽列跨聯賽那一組)。兩個來源分工不重疊:
+**國家隊 2026-09-24 起有一頁,2026-11-07 起是盃賽頁的「國家隊」分頁**(`cups.html?cup=intl`,畫面在 `intl-view.js`;`intl.html` 只剩轉址,`?team=` 照帶)。兩個來源分工不重疊:
 歷史賽果 martj42/international_results(raw.githubusercontent.com,**沙箱抓得到**,只收踢完的比賽)是評分池;
 賽程與這一窗的賽果來自 FotMob 八個賽事(`lib/adapters/fotmob-intl.mjs`)。賽事 id **用內容證明**
 (已完賽場次逐場對 martj42,`lib/intl.mjs` 的 `proofFromCheck`),名字不算數。勝率是國家隊 Elo,
@@ -631,7 +631,7 @@ page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list
 **德義法的教練來自 FotMob(2026-10-14 起,使用者同意單一來源)**:`lib/build-league.mjs` 的 coachRoster,最新一場正式名單 × 球隊頁逐季紀錄,
 兩邊都說是他才發布(`fotmobDerived`;判定在 `lib/league-coach.mjs`)。球隊頁的 `coachHistory` 整份存(上游是時間序;截成三筆會讓任期長的教練上任季算晚);名單教練不在快取裡,抓取器提早重抓那一隊,重抓後仍沒有他就記 `coachMissing`、TTL 內不再為他重抓;最後一場是代理教練時,球隊頁在那之後抓的才退回前一位。人工交付的那條路(verify-league-coaches)不再是必要條件。
 **租借核對器涵蓋六個聯賽**(2026-10-14):成員資格依當季選聯賽、Understat 原始名冊確認、聯賽標籤由本站推(`parentLeagueActual`)。
-**盃賽頁看 `LEAGUES[lg].cupsOnly`**:德義法是 'ucl',只列歐冠、導覽那一格叫「歐冠」。
+**盃賽頁看 `LEAGUES[lg].cupsOnly`**:德義法是 'ucl',不列英格蘭盃賽(分頁只有歐冠 + 國家隊);導覽那一格 2026-11-07 起一律叫「盃賽」。
 **teams.json 不帶 matchStats(2026-09-28 起,A8)。** FotMob 逐場統計的逐隊彙總在 `team-stats.json`(`lib/team-stats.mjs`,隊碼 → 彙總,沒資料的隊不留鍵),
 只有球隊頁**詳情**(?code=)`loadFrom` 後掛回 `t.matchStats`。teams.json 十幾頁在載,不要再把重欄位掛回去 —— `npm test` 守著。
 **fixtures.json 不帶比分機率格(2026-09-30 起,A9)。** `prediction.grid` / `postFit.grid` 在 `fixture-grids.json`(`lib/fixture-grids.mjs`,
@@ -661,7 +661,7 @@ stamp-assets 的 modulepreload 只收靜態 import(`staticImportsOf`);bundle.mjs
 而分頁版一切正常(加總覽頁時實際發生)。`npm test` 有一條守著:
 bundle 的清單要涵蓋 `web/` 底下每一個 `.html`。
 
-**導覽是兩區:賽事、更多(2026-09-30 起方案 B 的五區,2026-11-07 使用者要求拿掉「比賽」區、聯賽首頁與實時戰況併進「賽事」;同一天「球隊」「球員」也併進聯賽頁 —— 站在聯賽的任何一頁時導覽多一排聯賽分頁(`LEAGUE_TABS`:比賽、球隊、球員;戰術併進球隊頁 —— 球隊總覽一頁畫到底:卡片 → 各隊總表(上季戰績 + 戰術欄)→ 風格 / 陣型 / 定位球 / 比賽時段 → 教練,頁首跳轉鈕只捲動;戰術區塊在 `tactics-view.js`,`tactics.html` 只剩轉址;球員搜尋併進球員頁「全部球員」那一節的搜尋範圍勾選 —— 只勾本聯賽是本聯賽完整表,勾了別的聯賽換成跨聯賽合併表,`players.html?scope=all` 是全選),「聯賽」那一格亮,換聯賽停在同一分頁;同一天實時戰況再併進聯賽頁 —— `live-board.js` 掛在聯賽頁的「比賽現況」,`live.html` 只剩轉址到 `index.html#live`,賽事子列是總覽、聯賽、盃賽、國家隊)。** `core.js` 的 `SECTIONS` 決定導覽長什麼樣:賽事、更多,
+**導覽是兩區:賽事、更多(2026-09-30 起方案 B 的五區,2026-11-07 使用者要求拿掉「比賽」區、聯賽首頁與實時戰況併進「賽事」;同一天「球隊」「球員」也併進聯賽頁 —— 站在聯賽的任何一頁時導覽多一排聯賽分頁(`LEAGUE_TABS`:比賽、球隊、球員;戰術併進球隊頁 —— 球隊總覽一頁畫到底:卡片 → 各隊總表(上季戰績 + 戰術欄)→ 風格 / 陣型 / 定位球 / 比賽時段 → 教練,頁首跳轉鈕只捲動;戰術區塊在 `tactics-view.js`,`tactics.html` 只剩轉址;球員搜尋併進球員頁「全部球員」那一節的搜尋範圍勾選 —— 只勾本聯賽是本聯賽完整表,勾了別的聯賽換成跨聯賽合併表,`players.html?scope=all` 是全選),「聯賽」那一格亮,換聯賽停在同一分頁;同一天實時戰況再併進聯賽頁 —— `live-board.js` 掛在聯賽頁的「比賽現況」,`live.html` 只剩轉址到 `index.html#live`,賽事子列是總覽、聯賽、盃賽;同一天國家隊也併進盃賽頁的一個分頁 —— `intl-view.js`,`intl.html` 只剩轉址)。** `core.js` 的 `SECTIONS` 決定導覽長什麼樣:賽事、更多,
 每個聯賽同一組;頂列兩格 + 目前那一區的子列(兩頁以上才畫);**聯賽切換就是賽事子列的「聯賽」格**(2026-11-07 起,品牌旁的下拉拿掉;清單掛在子列 nav 外面,手機的橫捲才不會裁掉它);手機上兩區是固定在底部的一列。
 `SITE_PAGES` / `PAGES` 還在,但只是**頁名登錄**(標籤、缺口頁、closedPage 用)。加新頁:兩份登錄擇一放標籤,
 再放進 `SECTIONS` 的某一區(不在導覽上但屬於某區的頁放 `also`);探索的三個分頁用 `{ page: 'explore', view }`。

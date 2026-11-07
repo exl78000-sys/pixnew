@@ -263,6 +263,9 @@ export const COMPETITIONS = {
   ucl:    { zh: '歐冠',   short: 'UCL', bg: '#1e3a8a', fg: '#fff' },
   facup:  { zh: '足總盃', short: 'FA',  bg: '#c8102e', fg: '#fff' },
   eflcup: { zh: '聯賽盃', short: 'EFL', bg: '#0d9488', fg: '#fff' },
+  /* 國家隊(2026-11-07,盃賽頁的第四個分頁)。不是一個賽事而是八個(世界盃資格賽、國家聯賽…),所以不借任何一個的識別色,
+     用本站自己的石板灰 + NT(national teams);分頁上跟其他三格同一種長相。 */
+  intl:   { zh: '國家隊', short: 'NT',  bg: '#475569', fg: '#fff' },
 };
 /* label: true → 色塊後面接中文名;給字串 → 接那個字串;不給 → 只有色塊。
    沒登記的鍵**不編一個色塊**:有 label 就退回原本的文字 pill,沒有就空字串。 */
@@ -885,10 +888,11 @@ const SITE_PAGES = [
   /* 盃賽(歐冠 + 足總盃 + 聯賽盃)收成一頁、三個頁內分頁 —— 2026-08-29 併的。
      它是跨聯賽的:歐冠兩邊看到同一份,英格蘭盃賽的層級標籤也涵蓋英冠球隊。
      ucl.html 保留為轉址,舊連結不斷。 */
-  /* 只看歐冠的聯賽(德義法,LEAGUES[lg].cupsOnly)這一格叫「歐冠」—— 點進去只有歐冠,標籤寫「盃賽」是在說一件那一頁不做的事 */
-  ['cups', L => (L.cupsOnly ? '歐冠' : '盃賽')],
-  /* 國家隊(2026-09-24):賽程、賽果、本站的國家隊 Elo 與勝率。跟聯賽無關,所以在這一組。
-     資料是英超目錄那一份(data/intl.json),每個聯賽看到的都一樣。 */
+  /* 德義法(LEAGUES[lg].cupsOnly)以前這一格叫「歐冠」—— 那時點進去只有歐冠。2026-11-07 國家隊併進來之後,
+     每個聯賽的這一頁都至少有歐冠 + 國家隊兩個分頁,標籤一律「盃賽」(cupsOnly 仍然代表「不列英格蘭盃賽」)。 */
+  ['cups', '盃賽'],
+  /* 國家隊(2026-09-24):賽程、賽果、本站的國家隊 Elo 與勝率。資料是英超目錄那一份(data/intl.json)。
+     2026-11-07 併進盃賽頁的一個分頁(cups.html?cup=intl),intl.html 只剩轉址 —— 這一筆留著是頁名登錄(轉址那一瞬間的標題)。 */
   ['intl', '國家隊'],
   /* 探索(2026-09-03):足球知識、對戰模擬、球員搜尋收成一頁的三個頁內分頁。
      這三個都是跨聯賽的,原本各佔導覽列一格 —— 加上總覽、盃賽、我的預測,
@@ -930,8 +934,9 @@ const SECTIONS = [
   { key: 'comp', label: '賽事', icon: 'trophy',
     /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
     /* 實時戰況 2026-11-07 併進「聯賽」那一頁(live.html 只剩轉址),所以不在子列上;放在 also 讓轉址那一瞬間亮對的區 */
-    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'cups' }, { page: 'intl' }],
-    also: ['live', 'analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match'] },
+    /* 國家隊 2026-11-07 併進盃賽頁(分頁 ?cup=intl),子列不再有它;intl.html 是轉址,放 also 讓那一瞬間亮對的區 */
+    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'cups' }],
+    also: ['live', 'analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match', 'intl'] },
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },

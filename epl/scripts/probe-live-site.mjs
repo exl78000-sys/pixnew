@@ -17,7 +17,7 @@
  *       兩邊雜湊一樣的話,本機那次渲染就是站上這一份的渲染,不必在 runner 上再裝一次瀏覽器。
  *
  * 唯讀、零快取、**27 個請求**(meta / overview.html / page-overview.js / core.js / app.css /
- * intl.html / page-intl.js / intl.json / intl-teams.json / intl-flags.json /
+ * intl.html / intl-view.js / intl.json / intl-teams.json / intl-flags.json /
  * explore.html / game-sim.js / game/pl.json / model.html / inplay-tuning.json / prob-history.json /
  * 足總盃 5089921 的逐場檔 / 英冠 reports.json / 英冠附加賽決賽的往季逐場檔 / 英冠 tactics.json / core.js /
  * cups.html / ucl.html / page-cups.js / ucl-view.js / ucl-teams.json / ucl.json)。
@@ -77,12 +77,13 @@ async function main() {
   // ── 國家隊(2026-09-25):合併後第一次部署有沒有真的把那一頁供出來 ─────
   /* 部署 job 綠了只代表上傳成功;頁面、資料與它引用的 JS 三個都要在站上才算上線。
      放在歐冠那一段**前面** —— 歐冠那一段有好幾個 return,放後面的話那邊一出事這邊就沒跑。 */
+  /* 2026-11-07 起國家隊是盃賽頁的分頁:intl.html 只剩轉址,內容在 intl-view.js(page-cups.js 引用它) */
   const intlPage = await get('intl.html');
   const intlSrc = /["']((?:\.\/)?assets\/js\/page-intl\.js(?:\?v=[0-9a-f]{8})?)["']/.exec(intlPage.text)?.[1];
-  console.log(`  intl.html  HTTP ${intlPage.status}  ${intlPage.buf.length} bytes・引用 ${intlSrc ?? '✗ 找不到 page-intl.js'}`);
+  console.log(`  intl.html(轉址)  HTTP ${intlPage.status}  ${intlPage.buf.length} bytes・引用 ${intlSrc ?? '✗ 找不到 page-intl.js'}`);
   /* 2026-10-05:落後那一段讀產物的實際天數(lagBlock);字面值找不到就印 ✗ —— 站上還是寫死「7 天」的上一版 */
-  const intlJs = await get('assets/js/page-intl.js');
-  console.log(`  assets/js/page-intl.js  HTTP ${intlJs.status}  ${intlJs.buf.length} bytes  sha256:${sha(intlJs.buf)}`
+  const intlJs = await get('assets/js/intl-view.js');
+  console.log(`  assets/js/intl-view.js  HTTP ${intlJs.status}  ${intlJs.buf.length} bytes  sha256:${sha(intlJs.buf)}`
     + `・lagBlock ${/^function lagBlock\(/m.test(intlJs.text) ? '✓' : '✗'}・說明讀產物的天數 ${/落後 \$\{lg\.days\} 天/.test(intlJs.text) ? '✓' : '✗'}`);
   const intl = await get('data/intl.json');
   const I = jsonOf(intl);

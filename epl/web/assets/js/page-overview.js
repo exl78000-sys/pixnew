@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7de90160';
+import * as C from './core.js?v=05fe8eff';
 
 const app = document.getElementById('app');
 
@@ -282,7 +282,7 @@ try {
       rows.push({ kick: f.kickoff, comp: intlComps.get(f.comp)?.short ?? f.comp, compKey: `intl:${fam}`,
         home: C.intlSideName(f.home, intl.teams), away: C.intlSideName(f.away, intl.teams),
         hFlag: intlFlags?.[f.home?.key] ?? null, aFlag: intlFlags?.[f.away?.key] ?? null,
-        note: [f.roundZh, f.groupZh].filter(Boolean).join('・'), pending: false, live: null, link: C.link('intl') });
+        note: [f.roundZh, f.groupZh].filter(Boolean).join('・'), pending: false, live: null, link: C.link('cups', { cup: 'intl' }) });
     }
     /* **依時間排,不依字串排**:英超、盃賽與歐冠寫 `…Z`,另外五個聯賽寫 `…+02:00`,國家隊寫 `….000Z` ——
        字典序只在同一種寫法裡成立。之前這一行比字串,10/10 13:00Z 的義甲排在 14:00Z 的英超後面。 */
@@ -365,7 +365,7 @@ try {
         hFlag: intlFlags?.[r.home?.key] ?? null, aFlag: intlFlags?.[r.away?.key] ?? null,
         hs: r.final[0], as: r.final[1],
         tags: [...(r.awarded ? [{ t: '判決', title: '這場的比分是判決,不是踢出來的' }] : []), ...(c ? [{ t: c[0], title: c[1] }] : [])],
-        note: [r.roundZh, r.groupZh].filter(Boolean).join('・'), link: C.link('intl') });
+        note: [r.roundZh, r.groupZh].filter(Boolean).join('・'), link: C.link('cups', { cup: 'intl' }) });
     }
     return rows.sort((a, b) => Date.parse(b.kick) - Date.parse(a.kick));
   };
@@ -717,7 +717,7 @@ try {
         : '這一輪沒有勝率預測 —— 跨聯賽評分的驗收沒有通過,或已經沒有未賽的場次。'}</div></div>
 
     ${intl ? `<div class="card"><div class="spread"><h3 style="margin:0">國家隊</h3>
-      <a class="pill accent" href="${C.link('intl')}">開啟 →</a></div>
+      <a class="pill accent" href="${C.link('cups', { cup: 'intl' })}">開啟 →</a></div>
       <div class="tiny dim" style="margin-top:8px">${intl.comps.filter(c => c.status === 'ok').length} 個賽事・接下來 7 天 ${intlSoon.length} 場${
         intlSoon.length ? `(給勝率 ${intlSoon.filter(f => f.prob).length} 場)` : ''}</div>
       <div class="tiny dim" style="margin-top:6px">${intl.model.passed && intl.model.holdout

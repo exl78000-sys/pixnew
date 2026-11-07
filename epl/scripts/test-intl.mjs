@@ -209,7 +209,7 @@ console.log('\n▶ 國家隊:落後的代價量實際落後(建置日 − 評分
   }
 
   /* 說明文字:天數與判決一律從產物讀。lagBlock 在頁面裡(頁面載不進 Node),直接從原始碼取出來跑 —— 守的是行為,不是字串在不在 */
-  const pageSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8');
+  const pageSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'intl-view.js'), 'utf8');
   const i0 = pageSrc.indexOf('function lagBlock(');
   let depth = 0, i1 = -1;
   for (let i = pageSrc.indexOf('{', i0); i0 >= 0 && i < pageSrc.length; i++) {
@@ -218,7 +218,7 @@ console.log('\n▶ 國家隊:落後的代價量實際落後(建置日 − 評分
   }
   check('頁面有 lagBlock,而且取得出來', i0 >= 0 && i1 > i0);
   if (i1 > i0) {
-    const lagBlock = new Function('esc', `${pageSrc.slice(i0, i1)}\nreturn lagBlock;`)(s => String(s));
+    const lagBlock = new Function('intlEsc', `${pageSrc.slice(i0, i1)}\nreturn lagBlock;`)(s => String(s));
     const mkM = (days, passes) => ({ ratingsAsOf: '2026-08-26', lag: { days, passes, affected: { n: 3447, cost: 0.001, se: 0.0004, z: 2.7 } } });
     const hold = { gain: 0.0551 };
     const yes = lagBlock(mkM(40, true), hold), no = lagBlock(mkM(13, false), hold);
@@ -290,7 +290,7 @@ console.log('\n▶ 國家隊:評分的暫定更新(只進未賽場次的勝率�
       && off.fixtures.filter(f => f.prob).every(f => f.elo[0] === Math.round(base.get(f.home.key)) && f.elo[1] === Math.round(base.get(f.away.key)))
       && off.fixtures.every(f => f.prov.every(n => !n)));
   }
-  const pageSrc2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8');
+  const pageSrc2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'intl-view.js'), 'utf8');
   check('頁面在有暫定賽果時標「未核對」,而且天數與場數不寫死', /暫定賽果\(未核對\)/.test(pageSrc2) && !/含最近\s*\d+\s*場/.test(stripComments(pageSrc2)));
 }
 
@@ -465,13 +465,27 @@ console.log('\n▶ 國家隊:產物與頁面的約定');
 
   const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
   const site = /const SITE_PAGES = \[([\s\S]*?)\n\];/.exec(core)?.[1] ?? '';
-  check('導覽列跨聯賽那一組有國家隊', /\['intl', '國家隊'\]/.test(site));
+  check('國家隊仍登錄頁名(轉址那一瞬間的標題)', /\['intl', '國家隊'\]/.test(site));
+  /* 2026-11-07 國家隊併進盃賽頁的一個分頁(使用者:「國家隊 整合進杯賽」):導覽子列不再有它、盃賽頁的分頁有它、
+     intl.html 轉到 cups.html?cup=intl 而且帶著 ?team=(球隊頁的舊書籤不斷)。 */
+  const cupsPg = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8'));
+  const redirect = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8'));
+  const secComp = /key: 'comp'[\s\S]*?also: \[([^\]]*)\]/.exec(core);
+  check('賽事子列不再有國家隊一格,intl 放在 also(轉址那一瞬間亮賽事)',
+    !!secComp && !/page: 'intl'/.test(secComp[0].split('also:')[0]) && secComp[1].includes("'intl'"));
+  check('盃賽頁有國家隊分頁,畫面交給 intl-view 的 renderIntlView(帶 ?team=)',
+    /\{ key: 'intl', zh: '國家隊' \}/.test(cupsPg) && /import \{ renderIntlView \} from '\.\/intl-view\.js(\?v=[0-9a-f]{8})?'/.test(cupsPg)
+    && /renderIntlView\(compBody, \{ team: C\.qs\('team'\)/.test(cupsPg));
+  check('intl.html 轉到盃賽頁的國家隊分頁,帶著 team',
+    /location\.replace\(C\.link\('cups', \{ cup: 'intl', team: C\.qs\('team'\) \}\)\)/.test(redirect) && !/innerHTML/.test(redirect));
+  check('國家隊模組不畫頁首與導覽(那是盃賽頁的),也不自己抓 #app',
+    !/C\.nav\(\)|getElementById\('app'\)|<h1/.test(stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'intl-view.js'), 'utf8'))));
   /* 有 open 清單的聯賽要把它列進去 —— 導覽列的 open 過濾對 SITE_PAGES 也生效,
      不列的話從那個聯賽點過去,導覽列上就找不到這一頁(總覽那條註解講過) */
   const opens = [...core.matchAll(/open: \[([^\]]*)\]/g)].map(x => x[1]);
   check('每個有 open 清單的聯賽都開了國家隊', opens.length > 0 && opens.every(o => o.includes("'intl'")), `${opens.length} 份清單`);
   const bundle = readFileSync(join(ROOT, 'scripts', 'bundle.mjs'), 'utf8');
-  check('單檔版的頁面清單有國家隊', /const PAGES = \[[^\]]*'intl'/.test(bundle));
+  check('單檔版的頁面清單有國家隊(轉址)、共用模組清單有 intl-view', /const PAGES = \[[^\]]*'intl'/.test(bundle) && /'intl-view'/.test(bundle));
   const html = existsSync(join(ROOT, 'web', 'intl.html')) ? readFileSync(join(ROOT, 'web', 'intl.html'), 'utf8') : '';
   check('intl.html 載入 page-intl.js', /assets\/js\/page-intl\.js/.test(html));
 
@@ -485,14 +499,15 @@ console.log('\n▶ 國家隊:產物與頁面的約定');
   check('兩份國家隊 raw 都在回寫清單裡', /epl\/data\/raw\/intl\//.test(live) && /epl\/data\/raw\/fotmob-intl\//.test(live));
 
   /* 頁面不寫死「幾個賽事」:賽事數、樣本數、門檻都從產物讀(「只有一個」那句寫死在畫面上是本站的老坑) */
-  const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8'));
+  const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'intl-view.js'), 'utf8'));
   check('頁面沒有寫死賽事數與驗收數字', !/[八8] ?個賽事|4,?661|0\.0551/.test(page));
   /* 球隊頁的明細(七百 KB)只在點進某一隊時才載 —— 放在頁面最上面一起載的話,每一個打開國家隊頁的人都要多下載一次 */
   const loads = [...page.matchAll(/loadFrom\('pl', \[([^\]]*)\]\)/g)].map(x => x[1]);
   const teamFn = /async function renderTeam\([\s\S]*?\n}\n/.exec(page)?.[0] ?? '';
   check('intl-teams 只在球隊頁載', loads.filter(x => x.includes('intl-teams')).length === 1 && /loadFrom\('pl', \['intl-teams'\]\)/.test(teamFn),
     `${loads.length} 處 loadFrom`);
-  check('隊名連到球隊頁(C.link 帶 team)、頁面認得 ?team=', /C\.link\('intl', \{ team: key \}\)/.test(page) && /C\.qs\('team'\)/.test(page));
+  check('隊名連到球隊頁(盃賽頁的國家隊分頁帶 team)、模組收 team 參數', /C\.link\('cups', \{ cup: 'intl', team: key \}\)/.test(page)
+    && /export async function renderIntlView\(host, \{ team = null/.test(page));
   check('積分榜的顏色由產物的語氣決定,不用上游的色碼', !/#2AD572|#FF4646|#FFA72F|#FFD908/i.test(page) && /TONE\[/.test(page));
 }
 
@@ -640,7 +655,7 @@ console.log('\n▶ 國家隊:國旗(開源國旗集;屬地用宗主國的旗不�
     for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) if (flagDistance(pix[ks[i]], pix[ks[j]]) < FLAG_SAME) same.push(`${ks[i]}=${ks[j]}`);
     check('掛出去的國旗兩兩看起來不一樣', same.length === 0, same.slice(0, 4).join('、'));
   }
-  const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-intl.js'), 'utf8'));
+  const page = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'intl-view.js'), 'utf8'));
   check('頁面只用產物裡內嵌的國旗,不從外部網址載', !/flag-icons|raw\.githubusercontent|\.svg['"`]/.test(page) && /FLAGS\[key\]/.test(page));
   const ov = stripComments(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8'));
   /* 總覽頁不為了一張小卡多下載國旗(2026-09-25 的決定)。2026-09-26 起總覽的「即將到來」可以勾國家隊

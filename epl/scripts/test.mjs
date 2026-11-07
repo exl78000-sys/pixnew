@@ -6419,7 +6419,9 @@ function checkAssetStamps() {
     const declared = [...core.matchAll(/^  \['([\w-]+)',/gm)].map(m => m[1]);
     const secBlock = core.slice(core.indexOf('const SECTIONS = ['), core.indexOf('const EXPLORE_DEFAULT_VIEW'));
     const secPages = [...secBlock.matchAll(/page: '([\w-]+)'/g)].map(m => m[1]);
-    ok(secPages.length >= 12, `五區收了 ${secPages.length} 個分頁`);
+    /* 只守「掃得到東西」(正則沒失效)。原本寫 >= 12 —— 每併一頁(實時戰況、戰術、國家隊)就要回來改一次,
+       那是「數出現次數的斷言」那條坑;導覽該有哪幾格由下面逐區的斷言守 */
+    ok(secPages.length > 0, `導覽各區收了 ${secPages.length} 個分頁`);
     const orphan = secPages.filter(p => !declared.includes(p));
     ok(orphan.length === 0, '五區裡的分頁都真的存在於 PAGES / SITE_PAGES', orphan.join('、'));
     const allPl = NV.navState('index', null, 'pl');
@@ -6442,10 +6444,11 @@ function checkAssetStamps() {
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
         '聯賽分頁畫在導覽列裡;換聯賽時停在同一分頁(目標聯賽沒開那一頁才回聯賽頁),不帶 code');
     }
-    /* 同一天稍後實時戰況也併進聯賽頁(live.html 只剩轉址):子列四格,live 放 also 讓轉址那一瞬間亮對 */
-    ok(NV.navState('index', null, 'pl').here?.items.map(it => it.label ?? it.page).join() === 'overview,聯賽,cups,intl'
-      && NV.navState('live', null, 'pl').here?.key === 'comp' && NV.navState('fixtures', null, 'pl').here?.key === 'comp',
-      '「賽事」區:總覽 → 聯賽(含比賽現況)→ 盃賽 → 國家隊;轉址頁與賽程表都亮賽事');
+    /* 同一天稍後實時戰況也併進聯賽頁(live.html 只剩轉址),國家隊也併進盃賽頁(intl.html 只剩轉址):子列三格,
+       live 與 intl 放 also 讓轉址那一瞬間亮對 */
+    ok(['pl', 'de1'].every(lg => NV.navState('index', null, lg).here?.items.map(it => it.label ?? it.page).join() === 'overview,聯賽,cups')
+      && ['live', 'fixtures', 'intl'].every(p => NV.navState(p, null, 'pl').here?.key === 'comp'),
+      '「賽事」區:總覽 → 聯賽(含比賽現況)→ 盃賽(含國家隊);轉址頁與賽程表都亮賽事');
     {
       /* 舊的實時戰況網址(書籤、外部連結)不能斷:live.html 轉到聯賽頁的 #live,而聯賽頁真的有那個錨點、而且掛著比賽現況 */
       const lvRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
@@ -6533,12 +6536,14 @@ function checkAssetStamps() {
     }
     ok(NV.navState('overview', null, 'pl').here?.items?.[0]?.page === 'overview' && NV.navState('overview', null, 'de1').here?.items?.[0]?.page === 'overview',
       '「賽事」區第一格是總覽(2026-10-03,使用者要求;點「賽事」就到總覽)');
-    /* 德義法的盃賽頁只看歐冠(2026-10-02):open 有 cups、標記 cupsOnly、導覽那一格叫「歐冠」、頁面讀那個標記 */
+    /* 德義法的盃賽頁不列英格蘭盃賽(2026-10-02):open 有 cups、標記 cupsOnly、頁面讀那個標記。
+       導覽那一格 2026-11-07 起一律叫「盃賽」—— 國家隊併進來之後,德義法這一頁也有歐冠 + 國家隊兩個分頁,叫「歐冠」就不對了 */
     const ucl3 = ['de1', 'it1', 'fr1'];
     const cupsSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-cups.js'), 'utf8');
-    ok(ucl3.every(lg => NV.LEAGUES[lg].open.includes('cups') && NV.LEAGUES[lg].cupsOnly === 'ucl' && NV.pageLabel('cups', lg) === '歐冠')
-      && NV.pageLabel('cups', 'pl') === '盃賽' && /cupsOnly === 'ucl'/.test(cupsSrc) && /const list = uclOnly \? \[\]/.test(cupsSrc),
-      '德義法的盃賽頁只看歐冠、導覽那一格叫歐冠;英超照舊是盃賽');
+    ok(ucl3.every(lg => NV.LEAGUES[lg].open.includes('cups') && NV.LEAGUES[lg].cupsOnly === 'ucl' && NV.pageLabel('cups', lg) === '盃賽')
+      && NV.pageLabel('cups', 'pl') === '盃賽' && /cupsOnly === 'ucl'/.test(cupsSrc) && /const list = uclOnly \? \[\]/.test(cupsSrc)
+      && !/document\.title = document\.title\.replace\('盃賽', '歐冠'\)/.test(cupsSrc),
+      '德義法的盃賽頁不列英格蘭盃賽;導覽與頁首一律叫盃賽');
     // 五區裡的每一頁都要有對應的 html,否則導覽會連到 404
     const missingHtml = [...new Set(secPages)].filter(p => !existsSync(join(W, `${p}.html`)));
     ok(missingHtml.length === 0, '五區的每一頁都有對應的 html', missingHtml.join('、'));
@@ -9338,7 +9343,7 @@ async function checkUpcomingPicks() {
     && V.intlSideName({ name: '1A', key: null, tbd: true, label: 'A 組第 1 名' }, teams) === 'A 組第 1 名'
     && V.intlSideName({ name: 'Tahiti', key: null }, teams) === 'Tahiti' && V.intlSideName(null, teams) === '待定',
     'intlSideName:認得的印中文、字典裡沒有的印 key、還沒決定的印產物的說法、對不上的照印上游、沒有就是「待定」');
-  const intlSrc = strip(src('page-intl.js'));
+  const intlSrc = strip(src('intl-view.js'));
   ok(/const sideLabel = t => C\.intlSideName\(t, D\.teams\)/.test(intlSrc) && !/t\?\.tbd \? t\.label/.test(intlSrc),
     '國家隊頁的 sideLabel 走 core 那一支,沒有自己再寫一份');
   ok(/C\.intlSideName\(f\.home, intl\.teams\)/.test(ov) && /C\.intlSideName\(f\.away, intl\.teams\)/.test(ov),
@@ -9347,8 +9352,8 @@ async function checkUpcomingPicks() {
     && /intlFams\.map\(fam => \(\{ key: `intl:\$\{fam\.key\}`, label: fam\.zh, text: `國家隊・\$\{fam\.zh\}`, on: false, group: 'intl' \}\)\)/.test(ov),
     '國家隊一格一個家族(從產物的 families 長出來、有未賽場次才列),預設不勾');
   ok(/const intlOpen = f => f\.state !== 'CANCELLED'/.test(ov) && /if \(!intlOpen\(f\) \|\| !inWindow\(f\.kickoff\)\) continue;/.test(ov)
-    && /compKey: `intl:\$\{fam\}`/.test(ov) && /pending: false, live: null, link: C\.link\('intl'\)/.test(ov),
-    '國家隊的列:取消的不列、不印比分(一天兩次的快照不是即時)、點下去開國家隊頁');
+    && /compKey: `intl:\$\{fam\}`/.test(ov) && /pending: false, live: null, link: C\.link\('cups', \{ cup: 'intl' \}\)/.test(ov) && !/C\.link\('intl'/.test(ov),
+    '國家隊的列:取消的不列、不印比分(一天兩次的快照不是即時)、點下去開盃賽頁的國家隊分頁(不繞 intl.html 轉址)');
   /* 整組那一格**不另外存**:另外存的話會有「整組勾著而底下全沒勾」這種自己跟自己矛盾的組合 */
   ok(/g\.onchange = \(\) => setPicks\(\{ \.\.\.picks,\s*\.\.\.Object\.fromEntries\(upcomingComps\.filter\(c => c\.group === 'intl'\)\.map\(c => \[c\.key, g\.checked\]\)\) \}\)/.test(ov)
     && /g\.indeterminate = g\.dataset\.some === '1'/.test(ov) && !/\[?['"`]intl['"`]\]?\s*:\s*(true|false|g\.checked)/.test(ov),

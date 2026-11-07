@@ -1,6 +1,7 @@
-import * as C from './core.js?v=7de90160';
+import * as C from './core.js?v=05fe8eff';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=fe1f6b8a';
+import { renderUclView } from './ucl-view.js?v=6914164d';
+import { renderIntlView } from './intl-view.js?v=1cd0dd13';
 
 const app = document.getElementById('app');
 
@@ -8,6 +9,23 @@ const app = document.getElementById('app');
    **不要改回 C.badge(t.code) / C.name(t.code)** —— 那兩個查的是「目前聯賽」的名冊,
    站在西甲時 27 支英格蘭球隊一支都查不到,整張表變成灰色三字母代碼(實測 74 個)。 */
 let CUP_IDENT = { clubs: new Map(), crests: {} };
+
+/* 換分頁時把 ?cup= 寫進網址(重新整理停在同一個分頁),順手拿掉 ?team=(國家隊的球隊頁只屬於國家隊分頁)。
+   replaceState:上一頁回到上一個**頁面**,不是在分頁之間倒退。單檔版的網址本身是路由(#cups?…),照它的寫法改。 */
+function writeComp(key) {
+  try {
+    if (C.BUNDLE) {
+      const [pg, q] = (location.hash.slice(1) || 'cups').split('?');
+      const params = new URLSearchParams(q ?? '');
+      params.set('cup', key); params.delete('team');
+      history.replaceState(null, '', `#${pg}?${params}`);
+    } else {
+      const u = new URL(location.href);
+      u.searchParams.set('cup', key); u.searchParams.delete('team');
+      history.replaceState(null, '', u);
+    }
+  } catch { /* 網址寫不進去不影響內容 */ }
+}
 
 /* 盃賽頁。三件事跟聯賽頁不一樣,而且都會影響怎麼寫:
 
@@ -318,9 +336,10 @@ try {
      於是整頁的第一次繪製要等那個跨網域請求 —— 實測連不通時花 12.9 秒才 fallback,
      這 13 秒畫面上只有「載入資料中…」,而且**不會報錯**,看起來就像頁面壞了。
      改成:先畫,拿到再覆蓋(跟下面那個 60 秒輪詢走同一條路)。 */
+  // 即時比分只改盃賽的場次;站在國家隊分頁時不重畫(重畫會把國家隊的展開狀態收回去)
   const overlayLive = async () => {
     const fresh = await C.fetchCupsLive(cups);
-    if (C.applyCupsLive(cups, fresh) > 0) renderComp();
+    if (C.applyCupsLive(cups, fresh) > 0 && comp !== 'intl') renderComp();
   };
   C.registerTeams(clubs); C.registerTeams(teams);
   C.nav();
@@ -333,11 +352,14 @@ try {
   /* 德義法(LEAGUES[lg].cupsOnly === 'ucl'):只列歐冠 —— 英格蘭的足總盃與聯賽盃跟那些聯賽無關。
      list 清空之後,分頁、預設分頁、頁首、時效標籤、來源全部跟著它走,不另外各判一次。 */
   const uclOnly = C.LEAGUES[C.league()]?.cupsOnly === 'ucl';
-  if (uclOnly) document.title = document.title.replace('盃賽', '歐冠');   // 分頁標題跟頁首一致
   const list = uclOnly ? [] : (cups?.cups ?? []);
+  /* 國家隊排最後(2026-11-07 併進來,使用者:「國家隊 整合進杯賽」)。它不是盃賽,但跟歐冠、足總盃一樣是
+     「聯賽以外的比賽」;每個聯賽都有這一格(國家隊跟聯賽無關),所以德義法這一頁也不再只有歐冠 —— 頁首與導覽一律叫「盃賽」。
+     **預設分頁不考慮它**(C.defaultCup 只看盃賽):要看國家隊是讀者的選擇,總覽與舊的 intl.html 連結都帶 ?cup=intl。 */
   const COMPS = [
     { key: 'ucl', zh: '歐冠' },
     ...list.map(c => ({ key: c.key, zh: c.zh })),
+    { key: 'intl', zh: '國家隊' },
   ];
   let comp = COMPS.some(c => c.key === C.qs('cup')) ? C.qs('cup')
     : C.defaultCup(Date.now(), [
@@ -364,9 +386,9 @@ try {
     return [...seen.values()];
   })();
 
-  app.innerHTML = `
-  <div class="page-head">
-    <h1>${uclOnly ? '歐冠' : '盃賽'}</h1>
+  /* 頁首的說明、時效與頁尾來源講的是盃賽;國家隊分頁有自己的一套(intl-view 畫在分頁裡),
+     所以這兩塊放在 #compIntro / #compFoot,切到國家隊就收起來 —— 不然讀者在國家隊底下讀到的是歐冠的資料時效。 */
+  const cupIntro = `
     <p>${uclOnly
       ? `${C.esc(C.LEAGUES[C.league()].zh)}球隊參加的盃賽這裡只列歐冠(英格蘭的足總盃與聯賽盃跟${C.esc(C.LEAGUES[C.league()].zh)}無關,不列)。跟聯賽不一樣的地方都照實顯示:`
       : '歐冠、足總盃與聯賽盃收在同一頁。跟聯賽不一樣的地方都照實顯示:'}
@@ -379,14 +401,30 @@ try {
     ${C.stampRow([
       shared.ucl ? C.stamp('歐冠賽果', { iso: shared.ucl.retrievedAt, kind: 'daily', note: 'football-data.org + FotMob' }) : null,
       cups && !uclOnly ? C.stamp('英格蘭盃賽', { iso: cups.retrievedAt, kind: 'daily', note: `${cups.source ?? 'FotMob'}・${list.map(c => c.zh).join('與')}` }) : null,
-    ])}
+    ])}`;
+  app.innerHTML = `
+  <div class="page-head">
+    <h1>盃賽</h1>
+    <div id="compIntro"></div>
   </div>
-  ${COMPS.length > 1 ? C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' }) : ''}
+  ${C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' })}
   <div id="compBody"></div>
-  ${C.foot(meta, { sources: cupSources })}`;
+  <div id="compFoot"></div>`;
 
   const compBody = document.getElementById('compBody');
+  const compIntro = document.getElementById('compIntro');
+  const compFoot = document.getElementById('compFoot');
   const renderComp = () => {
+    const isIntl = comp === 'intl';
+    compIntro.innerHTML = isIntl ? '' : cupIntro;
+    compFoot.innerHTML = isIntl ? '' : C.foot(meta, { sources: cupSources });
+    if (isIntl) {
+      compBody.innerHTML = '<div class="loading">載入國家隊資料中…</div>';
+      renderIntlView(compBody, { team: C.qs('team'), alive: () => comp === 'intl' }).catch(err => {
+        compBody.innerHTML = `<div class="note">國家隊資料載入失敗:${C.esc(err?.message ?? String(err))}</div>`;
+      });
+      return;
+    }
     if (comp === 'ucl') {
       renderUclView(compBody, { meta, clubs, teams, ucl: shared.ucl, uclTeams: shared['ucl-teams'],
         uclPhotos: shared['ucl-photos']?.photos ?? null,
@@ -399,6 +437,7 @@ try {
     b.onclick = () => {
       comp = b.dataset.comp;
       document.querySelectorAll('[data-comp]').forEach(x => x.classList.toggle('on', x === b));
+      writeComp(comp);
       renderComp();
     };
   });
@@ -511,7 +550,7 @@ try {
     C.pageInterval(async () => {
       const fresh = await C.fetchCupsLive(cups);
       if (!fresh) return;
-      if (C.applyCupsLive(cups, fresh) > 0) renderComp();
+      if (C.applyCupsLive(cups, fresh) > 0 && comp !== 'intl') renderComp();
     }, 60000);
   }
 } catch (err) { C.fail(err); }
