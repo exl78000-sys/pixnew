@@ -68,6 +68,8 @@ import { readMatchReports } from './lib/match-archive.mjs';
 import { isImageRef, IMG_DIR } from './lib/image-files.mjs';
 import { PRELOAD_SCRIPT, PRELOAD_START, PRELOAD_END, preloadScriptFor } from './stamp-assets.mjs';
 import { readOfficialMatches } from './lib/official-files.mjs';
+import { overviewFrom } from './lib/overview.mjs';
+import { overviewSharedFrom, overviewSharedCounts, RECENT_DAYS } from './lib/overview-shared.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const TEST_SEASON = '2025-26';
@@ -5310,6 +5312,104 @@ async function checkDataGap() {
       }
       if (bad.length) console.log(`    ${bad.join(' / ')}`);
       return bad.length === 0;
+    })()],
+    /* ── 總覽左右兩欄:即將到來 | 最近賽果(2026-11-07)──
+       使用者:「即將到來比賽分左右邊 右邊顯示已完賽比分」。右邊那一欄的比分全部從摘要來,所以守三件事:
+       ① 摘要的形狀(單元):踢完的才帶比分、最近 RECENT_DAYS 天的才留、未賽的照舊、國家隊的賽果鍵不叫 results;
+       ② 摘要的比分跟來源逐場相同(資料):抄錯一個欄位(例如拿 ft90 / et 當比分)右邊就印錯,而畫面完全正常;
+       ③ 頁面:兩欄、右欄跟左欄同一套勾選、PK 平手看 pens 判贏家。 */
+    ['總覽摘要:踢完的帶比分、最近 RECENT_DAYS 天的才留、未賽照舊;聯賽摘要的暫定比分帶旗標', (() => {
+      const now = Date.parse('2026-11-01T12:00:00Z');
+      const d = days => new Date(now - days * 86400000).toISOString();
+      const cups = { cups: [{ key: 'eflcup', zh: '聯賽盃', seasons: [{ label: '2026-27', current: true, total: 4, rounds: [{ stage: 'R4', matches: [
+        { id: 'a', kickoff: d(-2), played: false, home: { name: 'A' }, away: { name: 'B' } },
+        { id: 'b', kickoff: d(3), played: true, final: [1, 1], pens: [5, 3], aet: true, ft90: [1, 1], home: { name: 'A' }, away: { name: 'B' } },
+        { id: 'c', kickoff: d(RECENT_DAYS + 2), played: true, final: [2, 0], home: { name: 'A' }, away: { name: 'B' } },
+        { id: 'e', kickoff: d(1), played: true, state: 'LIVE', liveScore: [1, 0], home: { name: 'A' }, away: { name: 'B' } },
+      ] }] }] }] };
+      const ucl = { seasons: [{ label: '2026-27', current: true, availability: 'available', rounds: [], leagueMatches: [
+        { id: 1, kickoff: d(2), played: true, final: [3, 2], home: { id: 9, code: 'ARS' }, away: { id: 8 } },
+        { id: 2, kickoff: d(-3), played: false, home: { id: 9, code: 'ARS' }, away: { id: 8 } }] }] };
+      const intl = { comps: [], families: [], model: {}, teams: {}, fixtures: [], results: [
+        { comp: 'friendly', kickoff: d(1), final: [0, 2], check: 'notYet', home: { key: 'X' }, away: { key: 'Y' } },
+        { comp: 'friendly', kickoff: d(RECENT_DAYS + 5), final: [1, 0], check: 'agree', home: { key: 'X' }, away: { key: 'Y' } }] };
+      const o = overviewSharedFrom({ cups, ucl, intl, now });
+      const ms = o.cups.cups[0].seasons[0].rounds[0].matches;
+      const lm = o.ucl.seasons[0].leagueMatches;
+      const n = overviewSharedCounts(o);
+      const lg = overviewFrom({ meta: {}, teams: [], news: [], live: null, fixtures: [
+        { id: 1, played: true, fh: 2, fa: 1 }, { id: 2, played: true, fh: 0, fa: 0, scoreProvisional: true },
+        { id: 3, played: false, fh: null, fa: null }, { id: 4, played: false, provisional: { fh: 1, fa: 1, source: 'SportMonks' } }] });
+      const [f1, f2, f3, f4] = lg.fixtures;
+      return ms.map(m => m.id).join() === 'a,b,e'
+        && ms[1].final.join() === '1,1' && ms[1].pens.join() === '5,3' && ms[1].aet === true && !('ft90' in ms[1])
+        && !('final' in ms[0]) && ms[2].liveScore.join() === '1,0'
+        && lm.length === 2 && lm[0].final.join() === '3,2' && !('final' in lm[1])
+        && o.intl.recent.length === 1 && o.intl.recent[0].check === 'notYet' && !/"results"/.test(JSON.stringify(o))
+        && n.cupPending === 2 && n.cupDone === 1 && n.uclPending === 1 && n.uclDone === 1 && n.intlRecent === 1
+        && f1.fh === 2 && f1.fa === 1 && !('scoreProvisional' in f1) && f2.scoreProvisional === true
+        && !('fh' in f3) && !('provisional' in f3) && f4.provisional.fh === 1 && !('fh' in f4);
+    })()],
+    ['總覽摘要的比分跟來源逐場相同(聯賽的 fh / fa、盃賽與歐冠的 final / pens、國家隊的 final)', (() => {
+      const D = join(ROOT, 'web', 'data');
+      const bad = [];
+      const dirs = [{ key: 'pl', dir: D }, ...readdirSync(join(D, 'leagues'), { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => ({ key: e.name, dir: join(D, 'leagues', e.name) }))];
+      for (const { key, dir } of dirs) {
+        const p = join(dir, 'overview.json');
+        if (!existsSync(p)) continue;   // 「沒有 overview.json」由上面那一條報
+        const src = new Map(JSON.parse(readFileSync(join(dir, 'fixtures.json'), 'utf8')).map(f => [f.id, f]));
+        const ov = JSON.parse(readFileSync(p, 'utf8')).fixtures ?? [];
+        const withScore = ov.filter(f => f.fh != null).length;
+        const srcScore = [...src.values()].filter(f => f.played && f.fh != null).length;
+        if (withScore !== srcScore) bad.push(`${key}:摘要有比分 ${withScore} 場 ≠ 來源已完賽 ${srcScore}`);
+        for (const f of ov) {
+          const s = src.get(f.id);
+          if (f.fh != null && (s?.fh !== f.fh || s?.fa !== f.fa)) bad.push(`${key} ${f.id}:${f.fh}-${f.fa} ≠ 來源 ${s?.fh}-${s?.fa}`);
+          if (!!f.scoreProvisional !== !!(s?.played && s?.scoreProvisional)) bad.push(`${key} ${f.id}:暫定旗標跟來源不同`);
+        }
+      }
+      const sp = join(D, 'overview-shared.json');
+      if (existsSync(sp)) {
+        const o = JSON.parse(readFileSync(sp, 'utf8'));
+        const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+        const cupSrc = new Map(JSON.parse(readFileSync(join(D, 'cups.json'), 'utf8')).cups.flatMap(c => c.seasons.flatMap(s =>
+          (s.rounds ?? []).flatMap(r => (r.matches ?? []).map(m => [`${c.key}|${m.id}`, m])))));
+        for (const c of o.cups?.cups ?? []) for (const s of c.seasons) for (const r of s.rounds ?? []) for (const m of r.matches ?? []) {
+          if (!m.final) continue;
+          const x = cupSrc.get(`${c.key}|${m.id}`);
+          if (!x || !same(x.final, m.final) || !same(Array.isArray(x.pens) ? x.pens : null, m.pens)) bad.push(`盃賽 ${m.id}:比分跟來源不同`);
+        }
+        const uclSrc = new Map(JSON.parse(readFileSync(join(D, 'ucl.json'), 'utf8')).seasons.filter(s => s.current)
+          .flatMap(s => [...(s.leagueMatches ?? []), ...(s.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))])
+          .map(m => [m.id, m]));
+        for (const s of o.ucl?.seasons ?? []) for (const m of [...(s.leagueMatches ?? []), ...(s.rounds ?? []).flatMap(r => (r.ties ?? []).flatMap(t => t.legs ?? []))]) {
+          if (!m.final) continue;
+          const x = uclSrc.get(m.id);
+          if (!x || !same(x.final, m.final) || !same(Array.isArray(x.pens) ? x.pens : null, m.pens)) bad.push(`歐冠 ${m.id}:比分跟來源不同`);
+        }
+        if (existsSync(join(D, 'intl.json'))) {
+          const res = JSON.parse(readFileSync(join(D, 'intl.json'), 'utf8')).results ?? [];
+          for (const r of o.intl?.recent ?? []) {
+            const x = res.find(y => y.kickoff === r.kickoff && y.home?.key === r.home?.key && y.away?.key === r.away?.key);
+            if (!x || !same(x.final, r.final) || x.check !== r.check) bad.push(`國家隊 ${r.kickoff}:比分或核對狀態跟來源不同`);
+          }
+        }
+      }
+      if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
+      return bad.length === 0;
+    })()],
+    ['總覽「即將到來」分左右兩欄:右欄是最近賽果,跟左欄同一套勾選,PK 平手看 pens 判贏家', (() => {
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      return /class="ov-split"/.test(ov) && /const buildRecent = \(\) =>/.test(ov)
+        && /buildRecent\(\)\.filter\(r => shown\.has\(r\.compKey\)\)|recentAllRows\.filter\(r => shown\.has\(r\.compKey\)\)/.test(ov)
+        // 盃賽與歐冠的比分只讀 final(分段欄位不是累計值)
+        && /hs: m\.final\[0\], as: m\.final\[1\]/.test(ov) && !/m\.(ft90|et)\[/.test(ov)
+        // 踢完的不留在左邊(即時快照說完場的、西甲掛著暫定終場比分的)
+        && /if \(m\?\.finished \|\| f\.provisional\) continue;/.test(ov)
+        && /r\.pens\[0\] > r\.pens\[1\]/.test(ov)
+        && /\.ov-split \{[^}]*grid-template-columns: minmax\(0, 3fr\) minmax\(0, 2fr\)/.test(css);
     })()],
     ['總覽只載 overview-shared.json,不再整載 cups / ucl / ucl-teams / ucl-elo / intl;總覽的 HTML 預載它', (() => {
       const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');

@@ -484,6 +484,35 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 .comp-picks-act button.btn.tiny { padding: 3px 10px; font-size: 11.5px; }
 .comp-picks .warn-text { color: var(--loss); flex-basis: 100%; }
 
+/* ── 總覽左右兩欄:即將到來 | 最近賽果(2026-11-07)──────
+   左邊是那張五欄的表(開球 / 倒數 / 賽事 / 對戰 / 輪次),要的寬度比較多,所以 3:2。
+   兩欄都要 min-width:0 —— grid item 的 min-width:auto 會讓表格把整欄撐開(球員頁踩過)。
+   1000px 以下疊成上下,即將到來在上。 */
+.ov-split { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 14px; align-items: start; }
+.ov-col { min-width: 0; }
+.ov-col > .card, .ov-col > .note { margin: 0; }
+@media (max-width: 1000px) { .ov-split { grid-template-columns: minmax(0, 1fr); } }
+.recent-list { margin-top: 6px; }
+.recent-day { font-size: 11.5px; color: var(--ink-3); letter-spacing: .04em; margin: 12px 0 4px; padding-bottom: 3px;
+  border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
+.recent-day:first-child { margin-top: 2px; }
+/* 一列:徽章 | 主隊(靠右)| 比分 | 客隊(靠左)。主客兩格等寬,比分永遠在同一條直線上,一欄掃下來好比 */
+.recent-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
+  padding: 6px 4px; border-radius: var(--radius-sm); color: var(--ink-2); text-decoration: none; font-size: 13px; }
+a.recent-row:hover { background: #ffffff08; color: var(--ink); }
+a.recent-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.recent-home, .recent-away { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.recent-home { justify-content: flex-end; text-align: right; }
+.recent-home .nm, .recent-away .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent-home.win, .recent-away.win { color: var(--ink); font-weight: 600; }
+.recent-row .crest { width: 18px; height: 18px; flex: none; }
+.recent-row .intl-flag { flex: none; }
+.recent-score { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 52px; }
+.recent-score b { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.recent-tags { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+.recent-tags .pill.tiny { font-size: 10px; padding: 0 5px; }
+.recent-comp .comp-badge { width: 20px; height: 20px; }
+
 /* ── 關注球隊(2026-09-14)─────────────────
    星號在六個地方出現(球隊頁、積分榜、賽程表、實時戰況、盃賽、我的球隊),
    所以只有這一份樣式 —— 各頁自己寫的話會慢慢長成六種大小。

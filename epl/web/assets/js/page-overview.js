@@ -231,6 +231,9 @@ try {
         if (f.played || !f.kickoff || !inWindow(f.kickoff)) continue;
         const h = tBy.get(f.home), a = tBy.get(f.away);
         const m = liveBy.get(`${f.home}|${f.away}`);
+        /* 踢完的移到右邊那一欄(2026-11-07):官方賽果還沒到、即時快照說完場的,與西甲掛著暫定終場比分的 ——
+           兩種都已經踢完,留在「即將到來」會讓同一場比賽一邊寫完場、一邊不在賽果裡。 */
+        if (m?.finished || f.provisional) continue;
         const live = m && (m.started || m.finished)
           ? { hs: m.hs ?? null, as: m.as ?? null, finished: m.finished === true,
               minute: m.finished ? null : C.minuteText(C.liveMinute(m, lv.fetchedAt)) }
@@ -295,6 +298,121 @@ try {
     /* **依時間排,不依字串排**:英超、盃賽與歐冠寫 `…Z`,另外五個聯賽寫 `…+02:00`,國家隊寫 `….000Z` ——
        字典序只在同一種寫法裡成立。之前這一行比字串,10/10 13:00Z 的義甲排在 14:00Z 的英超後面。 */
     return rows.sort((a, b) => Date.parse(a.kick) - Date.parse(b.kick));
+  };
+
+  /* 最近賽果(2026-11-07,使用者:「即將到來比賽分左右邊 右邊顯示已完賽比分」)。
+     跟左邊同一套勾選、同一套「本站認得的球隊」規則,窗是過去 7 天。比分從哪來,每一種都要講得出來:
+     - 聯賽:賽程上的比分(fh / fa,核對過的);FotMob 補的暫定比分標「暫定」(`scoreProvisional`);
+       西甲未賽列上掛著的終場比分(`provisional`)也是暫定;官方賽果還沒到、只有即時快照說完場的,
+       印快照的比分並標「即時比分」—— 不藏起來,也不假裝它已經核對過(鐵則四)。
+     - 盃賽 / 歐冠:最終比分只讀 `final`(分段欄位不是累計值,見 CLAUDE.md),延長與 PK 另外標 ——
+       只印 1:1 會把 PK 決出勝負的比賽講成和局。
+     - 國家隊:martj42 還沒收、或兩邊對不上的,標「待核對」/「來源不一致」(國家隊頁同一套說法)。 */
+  const buildRecent = () => {
+    const now = Date.now(), from = now - 7 * 86400000;
+    const inBack = k => { const t = Date.parse(k); return t >= from && t <= now; };
+    const rows = [];
+    for (const { lg, data } of leagues) {
+      const tBy = new Map((data.teams ?? []).map(t => [t.code, t]));
+      const lv = data.live;
+      const liveBy = new Map((lv?.available && !lv.demo ? lv.matches ?? [] : []).map(m => [`${m.home}|${m.away}`, m]));
+      for (const f of data.fixtures) {
+        // 沒有開球時間的(上游只給日期)拿當天中午湊一個排序用的時間,不印時間
+        const kick = f.kickoff ?? (f.date ? `${f.date}T12:00:00Z` : null);
+        if (!kick || !inBack(kick)) continue;
+        let hs = null, as = null, tag = null;
+        const m = liveBy.get(`${f.home}|${f.away}`);
+        if (f.played && f.fh != null) { hs = f.fh; as = f.fa; if (f.scoreProvisional) tag = { t: '暫定', title: 'FotMob 的比分;社群賽果檔還沒到,到了會逐場核對' }; }
+        else if (!f.played && f.provisional) { hs = f.provisional.fh; as = f.provisional.fa; tag = { t: '暫定', title: `暫定比分來自 ${f.provisional.source ?? '即時來源'};獨立賽果核對後才進積分榜` }; }
+        else if (!f.played && m?.finished && m.hs != null && m.as != null) {
+          hs = m.hs; as = m.as;
+          tag = { t: '即時比分', title: `即時快照說完場(${lv.fetchedAt ? C.kickoffLocal(lv.fetchedAt) : '時間不明'} 抓的);官方賽果還沒到` };
+        } else continue;
+        const h = tBy.get(f.home), a = tBy.get(f.away);
+        rows.push({ kick, noTime: !f.kickoff, comp: C.LEAGUES[lg].zh, compKey: lg,
+          home: h?.en ?? f.home, away: a?.en ?? f.away, hCrest: h?.crest ?? null, aCrest: a?.crest ?? null,
+          hs, as, tags: tag ? [tag] : [], note: `第 ${f.round} 輪`,
+          link: C.link('analysis', { id: f.id, league: lg }) });
+      }
+    }
+    const extra = m => [
+      m.awarded ? { t: '判決', title: '這場的比分是判決,不是踢出來的' } : null,
+      Array.isArray(m.pens) ? { t: `PK ${m.pens[0]}:${m.pens[1]}`, title: '延長後平手,以十二碼決勝' } : (m.aet ? { t: '延長', title: '打了延長賽' } : null),
+    ].filter(Boolean);
+    const known = new Set(leagues.flatMap(({ data }) =>
+      (data.teams ?? []).flatMap(t => [t.en, t.of].filter(Boolean).map(x => x.toLowerCase()))));
+    const covered = s => s && (s.code || known.has(String(s.name ?? '').toLowerCase()));
+    for (const cup of cupList) {
+      const season = (cup.seasons ?? []).find(s => s.current);
+      for (const r of season?.rounds ?? []) for (const m of r.matches ?? []) {
+        if (!m.played || !Array.isArray(m.final) || !m.kickoff || !inBack(m.kickoff)) continue;
+        if (!covered(m.home) && !covered(m.away)) continue;
+        rows.push({ kick: m.kickoff, noTime: m.kickoff.endsWith('T00:00:00Z'), comp: cup.zh ?? cup.en, compKey: cup.key,
+          home: C.cupName(m.home, cupIdent), away: C.cupName(m.away, cupIdent),
+          hCrest: C.cupCrest(m.home, cupIdent), aCrest: C.cupCrest(m.away, cupIdent),
+          hs: m.final[0], as: m.final[1], pens: Array.isArray(m.pens) ? m.pens : null, tags: extra(m), note: m.stage ?? '', link: C.link('cups', { cup: cup.key }) });
+      }
+    }
+    const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
+    const uclKnown = new Map((shared['ucl-teams']?.teams ?? []).map(t => [t.code, t]));
+    const uclExternal = new Map((shared['ucl-teams']?.external ?? []).map(t => [t.id, t.crest]));
+    const uclCrest = side => (side?.code ? uclKnown.get(side.code)?.crest : uclExternal.get(side?.id)) ?? null;
+    for (const m of C.uclSeasonMatches(uclSeason)) {
+      if (!m.played || !Array.isArray(m.final) || !m.kickoff || !inBack(m.kickoff)) continue;
+      if (!m.home?.code && !m.away?.code) continue;
+      rows.push({ kick: m.kickoff, comp: '歐冠', compKey: 'ucl',
+        home: m.home?.name ?? '?', away: m.away?.name ?? '?', hCrest: uclCrest(m.home), aCrest: uclCrest(m.away),
+        hs: m.final[0], as: m.final[1], pens: Array.isArray(m.pens) ? m.pens : null, tags: extra(m), note: uclNote(m, uclSeason),
+        link: m.id != null ? C.link('ucl-match', { id: m.id }) : C.link('cups', { cup: 'ucl' }) });
+    }
+    const CHECK = { notYet: ['待核對', '獨立來源(martj42)還沒收錄這一場'], unmatched: ['待核對', '獨立來源(martj42)沒有收這一場'],
+      noKey: ['待核對', '隊名還沒對上獨立來源'], mismatch: ['來源不一致', '兩個來源的比分對不上;這裡印的是 FotMob 的'] };
+    for (const r of intl?.recent ?? []) {
+      const fam = intlFamOf(r.comp);
+      if (!fam || !inBack(r.kickoff)) continue;
+      const c = CHECK[r.check];
+      rows.push({ kick: r.kickoff, comp: intlComps.get(r.comp)?.short ?? r.comp, compKey: `intl:${fam}`,
+        home: C.intlSideName(r.home, intl.teams), away: C.intlSideName(r.away, intl.teams),
+        hFlag: intlFlags?.[r.home?.key] ?? null, aFlag: intlFlags?.[r.away?.key] ?? null,
+        hs: r.final[0], as: r.final[1],
+        tags: [...(r.awarded ? [{ t: '判決', title: '這場的比分是判決,不是踢出來的' }] : []), ...(c ? [{ t: c[0], title: c[1] }] : [])],
+        note: [r.roundZh, r.groupZh].filter(Boolean).join('・'), link: C.link('intl') });
+    }
+    return rows.sort((a, b) => Date.parse(b.kick) - Date.parse(a.kick));
+  };
+
+  /* 右邊那一欄:依**讀者所在時區的日期**分組,新的在上面。一列一場:賽事徽章、主隊、比分、客隊,
+     標記(暫定 / 即時比分 / PK / 延長 / 待核對)放比分底下。不用 C.table:半欄寬塞五欄會整張橫捲,
+     而這一欄只有一個問題要回答 ——「誰贏了、幾比幾」。先畫 RECENT_FIRST 列,其餘按一下才展開。 */
+  const RECENT_FIRST = 20;
+  let recentAll = false;
+  const localDay = iso => { const d = new Date(iso);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const dayLabel = iso => new Date(iso).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', weekday: 'short' });
+  const recentHtml = (recent, offN) => {
+    if (!recent.length) {
+      return `<div class="dim small">勾選的賽事最近 7 天沒有踢完的比賽${offN ? `(沒勾的賽事另有 ${offN} 場)` : ''}。</div>`;
+    }
+    const list = recentAll ? recent : recent.slice(0, RECENT_FIRST);
+    const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="18" height="18" alt="">` : '');
+    const flag = f => (f ? `<img class="intl-flag" src="${f}" alt="" width="18" height="14">` : '');
+    let out = '', day = null;
+    for (const r of list) {
+      const d = localDay(r.kick);
+      if (d !== day) { day = d; out += `<div class="recent-day">${C.esc(dayLabel(r.kick))}</div>`; }
+      // 誰贏了:比分,平手時看 PK(1:1 PK 5:3 的主隊是贏家,不能兩邊都不粗體)
+      const hw = r.hs > r.as || (r.hs === r.as && !!r.pens && r.pens[0] > r.pens[1]);
+      const aw = r.as > r.hs || (r.hs === r.as && !!r.pens && r.pens[1] > r.pens[0]);
+      const tags = r.tags.map(t => `<span class="pill tiny${t.t === '來源不一致' ? ' bad' : t.t.startsWith('PK') || t.t === '延長' ? '' : ' warn'}" title="${C.esc(t.title)}">${C.esc(t.t)}</span>`).join('');
+      const body = `<span class="recent-comp" title="${C.esc(`${r.comp}${r.note ? `・${r.note}` : ''}`)}">${C.compBadge(r.compKey)}</span>
+        <span class="recent-home${hw ? ' win' : ''}"><span class="nm" title="${C.esc(r.home)}">${C.esc(r.home)}</span>${flag(r.hFlag)}${img(r.hCrest)}</span>
+        <span class="recent-score"><b class="mono">${r.hs} : ${r.as}</b>${tags ? `<span class="recent-tags">${tags}</span>` : ''}</span>
+        <span class="recent-away${aw ? ' win' : ''}">${img(r.aCrest)}${flag(r.aFlag)}<span class="nm" title="${C.esc(r.away)}">${C.esc(r.away)}</span></span>`;
+      out += r.link ? `<a class="recent-row" href="${r.link}">${body}</a>` : `<div class="recent-row">${body}</div>`;
+    }
+    const rest = recent.length - list.length;
+    return `${out}${rest > 0 ? `<div style="margin-top:8px"><button class="btn tiny" type="button" data-recent-all>再顯示 ${rest} 場</button></div>` : ''}
+      ${offN ? `<div class="tiny dim" style="margin-top:8px">沒勾的賽事另有 ${offN} 場。</div>` : ''}`;
   };
 
   /* 窗外的下一批:窗裡沒有那個賽事時,讀者會以為它沒接上 —— 所以用一行摘要講
@@ -397,6 +515,8 @@ try {
   // 每次 render() 重算:覆蓋(盃賽小檔、聯賽 raw feed)改的是資料,表要跟著資料重畫
   const upcomingHtml = () => { const all = buildUpcoming();
     const shown = shownNow();
+    const recentAllRows = buildRecent();
+    const recent = recentAllRows.filter(r => shown.has(r.compKey));
     const upcoming = all.filter(u => shown.has(u.compKey));
     const beyond = beyondOf(new Set(upcoming.map(u => u.compKey)), shown);
     const partial = shown.size < upcomingComps.length;
@@ -405,12 +525,21 @@ try {
       .map(c => [compText(c), all.filter(u => u.compKey === c.key).length]).filter(([, n]) => n > 0);
     const offLine = offIn.length
       ? `沒勾的賽事另有 ${offIn.reduce((t, [, n]) => t + n, 0)} 場(${offIn.map(([l, n]) => `${C.esc(l)} ${n}`).join('、')})。` : '';
+    /* 左右兩欄(2026-11-07,使用者:「即將到來比賽分左右邊 右邊顯示已完賽比分」):左邊未來 7 天,右邊最近 7 天踢完的。
+       勾選列在兩欄上面,兩欄共用;窄螢幕疊成上下(即將到來在上)。 */
     return `
-  <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・勾選存在這個瀏覽器</span></div>
+  <div class="section"><h2>即將到來</h2><span class="hint">左:未來 7 天・右:最近 7 天賽果・勾選存在這個瀏覽器</span></div>
   ${upcomingComps.length ? picksHtml(all, shown) : ''}
   ${upcomingComps.length && !shown.size ? `<div class="note"><b>沒有勾選任何賽事。</b>按上面的「全選」,或勾你要看的那幾個${
       all.length ? `(這 7 天一共 ${all.length} 場)` : ''}。</div>`
-  : upcoming.length ? `<div class="card">${C.table(upcoming, [
+  : `<div class="ov-split"><div class="ov-col">${upcomingLeft(all, upcoming, beyond, offLine, partial)}</div>
+    <div class="ov-col"><div class="card recent-card"><div class="spread"><h3 style="margin:0">最近賽果</h3>
+      <span class="tiny dim">最近 7 天・${recent.length} 場</span></div>
+      <div class="recent-list">${recentHtml(recent, recentAllRows.length - recent.length)}</div>
+      <div class="tiny dim" style="margin-top:10px">聯賽場次點進去是賽後報告;盃賽開盃賽頁、歐冠開單場頁、國家隊開國家隊頁。
+        「暫定」與「即時比分」是還沒經過獨立賽果核對的比分,核對通過後才進積分榜與模型。</div></div></div></div>`}`; };
+
+  const upcomingLeft = (all, upcoming, beyond, offLine, partial) => (upcoming.length ? `<div class="card">${C.table(upcoming, [
     // 排序值是時間不是字串(三種寫法混著,字典序會排錯 —— 見 buildUpcoming 最後那一行)
     { key: 'kick', label: '開球(台北)', value: u => Date.parse(u.kick),
       render: u => (u.pending
@@ -454,7 +583,7 @@ try {
       ? `${partial ? '' : '本站涵蓋的賽事'}接下來是 —— ${beyond.map(C.esc).join(';')}。`
       : (partial ? '而且勾選的賽事,下一場都還沒公布日期。' : '而且每個賽事的下一場都還沒公布日期。')}
     <div class="tiny dim" style="margin-top:6px">場次的日期來自賽程資料源;<b>沒有場次不等於資料沒更新</b> ——
-      國際賽週、盃賽的輪次之間都會出現這種空窗。改期而上游還沒給新日期的場次不算在上面那幾批裡。</div></div>`}`; };
+      國際賽週、盃賽的輪次之間都會出現這種空窗。改期而上游還沒給新日期的場次不算在上面那幾批裡。</div></div>`);
 
   /* 最新動態:每個聯賽各取前幾則再依日期合併。
      只取一部分是因為這是總覽 —— 完整的在各聯賽的動態頁。 */
@@ -482,6 +611,8 @@ try {
   const bindUpcoming = () => {
     const box = document.getElementById('upcoming');
     if (!box) return;
+    const more = box.querySelector('[data-recent-all]');
+    if (more) more.onclick = () => { recentAll = true; drawUpcoming(); };
     box.querySelectorAll('[data-upcoming-comp]').forEach(el => {
       el.onchange = () => setPicks({ ...picks, [el.dataset.upcomingComp]: el.checked });
     });

@@ -2,7 +2,7 @@
 
    為什麼:總覽要畫六個聯賽的卡片與「即將到來」那張表,以前每個聯賽各載 teams + fixtures + news + live
    四份完整產物 —— 正式站量到解壓後 5.4 MB、6 秒還是一行「載入資料中…」,而這一頁用到的欄位不到 5%:
-   賽程只要 id / 輪次 / 日期 / 開球 / 主客 / 已賽(預測、盤口、隊色、難度全用不到),名冊只要隊碼 / 隊名 / 隊徽,
+   賽程只要 id / 輪次 / 日期 / 開球 / 主客 / 已賽 / 比分(預測、盤口、隊色、難度全用不到),名冊只要隊碼 / 隊名 / 隊徽,
    動態只要前 4 則,即時快照只要比分與分鐘(advanced / sides 每場 64 KB 一個都不要)。
    build 在寫完那幾份之後,從**寫出去的那一份**(不是別的變數)抽這一份,所以跟各自的產物永遠一致。
 
@@ -28,9 +28,17 @@ export function overviewFrom({ meta, teams, fixtures, news, live }) {
     /* colors 與 elo 是單場頁(2026-09-27 起也讀這一份當名冊)要的:隊色給徽章與雷達、Elo 給賽前對比。都很小。 */
     teams: teams.map(t => ({ code: t.code, en: t.en, zh: t.zh ?? null, of: t.of ?? null, crest: t.crest ?? null,
       colors: t.colors ?? null, elo: t.elo ?? null })),
+    /* 已完賽的比分(2026-11-07,使用者:「即將到來比賽分左右邊 右邊顯示已完賽比分」)。
+       只在有值時寫,沒踢的場次一個鍵都不多;暫定比分(FotMob 補的、社群賽果檔還沒到)要帶旗標,
+       右邊那一欄才講得出「暫定」—— 不帶的話它看起來跟核對過的比分一模一樣。
+       西甲的 `provisional` 是**還沒進積分榜**的終場比分(未賽列上掛著),一樣帶過來。 */
     fixtures: fixtures.map(f => ({
       id: f.id, round: f.round, date: f.date, kickoff: f.kickoff ?? null,
       home: f.home, away: f.away, played: !!f.played,
+      ...(f.played && f.fh != null && f.fa != null ? { fh: f.fh, fa: f.fa } : {}),
+      ...(f.played && f.scoreProvisional ? { scoreProvisional: true } : {}),
+      ...(!f.played && f.provisional?.fh != null && f.provisional?.fa != null
+        ? { provisional: { fh: f.provisional.fh, fa: f.provisional.fa, source: f.provisional.source ?? null } } : {}),
     })),
     // 總覽每個聯賽只列前 4 則(page-overview 的 slice(0, 4)),多給只是多下載
     news: (Array.isArray(news) ? news : []).slice(0, 4).map(n => ({

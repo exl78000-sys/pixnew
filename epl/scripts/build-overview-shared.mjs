@@ -20,4 +20,4 @@ const out = overviewSharedFrom({ cups, ucl, uclTeams, uclElo, intl });
 const json = JSON.stringify(out);
 await writeFile(join(DATA, 'overview-shared.json'), json);
 const n = overviewSharedCounts(out);
-console.log(`✔ web/data/overview-shared.json(${(json.length / 1024).toFixed(0)} KB;盃賽未賽 ${n.cupPending} 場、歐冠未賽 ${n.uclPending} 場、國家隊 ${n.intlFixtures} 場)`);
+console.log(`✔ web/data/overview-shared.json(${(json.length / 1024).toFixed(0)} KB;盃賽未賽 ${n.cupPending} / 最近踢完 ${n.cupDone} 場、歐冠未賽 ${n.uclPending} / 最近踢完 ${n.uclDone} 場、國家隊未賽 ${n.intlFixtures} / 最近踢完 ${n.intlRecent} 場)`);
