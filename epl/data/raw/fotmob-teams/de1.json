@@ -2,13 +2,13 @@
  "league": "de1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-07T15:00:25.692Z",
+ "fetchedAt": "2026-11-07T16:59:07.150Z",
  "teams": [
   {
    "code": "FCB",
    "fotmobId": 9823,
    "fotmobName": "Bayern München",
-   "fetchedAt": "2026-11-01T13:42:32.796Z",
+   "fetchedAt": "2026-11-07T16:59:07.149Z",
    "color": "#C60428",
    "teamColors": {
     "darkMode": "#DC052D",
@@ -231,7 +231,8 @@
      "winPercentage": 0.63
     }
    ],
-   "coachHistoryFull": true
+   "coachHistoryFull": true,
+   "coachMissing": "Aaron Danks"
   },
   {
    "code": "BVB",
@@ -290,66 +291,6 @@
      "loss": 0,
      "pointsPerGame": 3,
      "winPercentage": 1
-    }
-   ]
-  },
-  {
-   "code": "SCF",
-   "fotmobId": 8358,
-   "fotmobName": "Freiburg",
-   "fetchedAt": "2026-10-09T12:41:42.199Z",
-   "color": "#BD1C2C",
-   "teamColors": {
-    "darkMode": "#BD1C2C",
-    "lightMode": "#BD1C2C",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Europa-Park Stadion",
-   "city": "Freiburg im Breisgau",
-   "location": [
-    "48.021617675",
-    "7.829695355"
-   ],
-   "capacity": 34700,
-   "surface": "Grass",
-   "opened": 2021,
-   "coachHistory": [
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2024/2025",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 16,
-     "draw": 7,
-     "loss": 11,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 13,
-     "draw": 8,
-     "loss": 13,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 36771,
-     "name": "Julian Schuster",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 2.5,
-     "winPercentage": 0.75
     }
    ]
   },
@@ -414,6 +355,66 @@
    ]
   },
   {
+   "code": "SCF",
+   "fotmobId": 8358,
+   "fotmobName": "Freiburg",
+   "fetchedAt": "2026-10-09T12:41:42.199Z",
+   "color": "#BD1C2C",
+   "teamColors": {
+    "darkMode": "#BD1C2C",
+    "lightMode": "#BD1C2C",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Europa-Park Stadion",
+   "city": "Freiburg im Breisgau",
+   "location": [
+    "48.021617675",
+    "7.829695355"
+   ],
+   "capacity": 34700,
+   "surface": "Grass",
+   "opened": 2021,
+   "coachHistory": [
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2024/2025",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 16,
+     "draw": 7,
+     "loss": 11,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 13,
+     "draw": 8,
+     "loss": 13,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 36771,
+     "name": "Julian Schuster",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 2.5,
+     "winPercentage": 0.75
+    }
+   ]
+  },
+  {
    "code": "SVW",
    "fotmobId": 8697,
    "fotmobName": "Werder Bremen",
@@ -462,6 +463,66 @@
     {
      "id": 33244,
      "name": "Daniel Thioune",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "B04",
+   "fotmobId": 8178,
+   "fotmobName": "Bayer Leverkusen",
+   "fetchedAt": "2026-10-09T12:41:43.679Z",
+   "color": "#cf1e1e",
+   "teamColors": {
+    "darkMode": "#e32221",
+    "lightMode": "#cf1e1e",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "BayArena",
+   "city": "Leverkusen",
+   "location": [
+    "51.038213121",
+    "7.002249956"
+   ],
+   "capacity": 30210,
+   "surface": "Grass",
+   "opened": 1958,
+   "coachHistory": [
+    {
+     "id": 656595,
+     "name": "Erik ten Hag",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 0,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 0.5,
+     "winPercentage": 0
+    },
+    {
+     "id": 91505,
+     "name": "Kasper Hjulmand",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 17,
+     "draw": 7,
+     "loss": 8,
+     "pointsPerGame": 1.81,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 1515447,
+     "name": "Carles Martínez",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -594,126 +655,6 @@
    ]
   },
   {
-   "code": "B04",
-   "fotmobId": 8178,
-   "fotmobName": "Bayer Leverkusen",
-   "fetchedAt": "2026-10-09T12:41:43.679Z",
-   "color": "#cf1e1e",
-   "teamColors": {
-    "darkMode": "#e32221",
-    "lightMode": "#cf1e1e",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "BayArena",
-   "city": "Leverkusen",
-   "location": [
-    "51.038213121",
-    "7.002249956"
-   ],
-   "capacity": 30210,
-   "surface": "Grass",
-   "opened": 1958,
-   "coachHistory": [
-    {
-     "id": 656595,
-     "name": "Erik ten Hag",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 0,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 0.5,
-     "winPercentage": 0
-    },
-    {
-     "id": 91505,
-     "name": "Kasper Hjulmand",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 17,
-     "draw": 7,
-     "loss": 8,
-     "pointsPerGame": 1.81,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 1515447,
-     "name": "Carles Martínez",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
-   "code": "FCA",
-   "fotmobId": 8406,
-   "fotmobName": "Augsburg",
-   "fetchedAt": "2026-10-09T12:41:42.579Z",
-   "color": "#B93733",
-   "teamColors": {
-    "darkMode": "#B93733",
-    "lightMode": "#B93733",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "WWK Arena",
-   "city": "Augsburg",
-   "location": [
-    "48.323101360",
-    "10.885949135"
-   ],
-   "capacity": 30662,
-   "surface": "Grass",
-   "opened": 2009,
-   "coachHistory": [
-    {
-     "id": 36889,
-     "name": "Sandro Wagner",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 3,
-     "draw": 1,
-     "loss": 8,
-     "pointsPerGame": 0.83,
-     "winPercentage": 0.25
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2025/2026",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 9,
-     "draw": 6,
-     "loss": 7,
-     "pointsPerGame": 1.5,
-     "winPercentage": 0.41
-    },
-    {
-     "id": 816800,
-     "name": "Manuel Baum",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 2,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    }
-   ]
-  },
-  {
    "code": "HSV",
    "fotmobId": 9790,
    "fotmobName": "Hamburger SV",
@@ -822,6 +763,126 @@
     {
      "id": 266042,
      "name": "Urs Fischer",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 2,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    }
+   ]
+  },
+  {
+   "code": "SCP",
+   "fotmobId": 8460,
+   "fotmobName": "Paderborn",
+   "fetchedAt": "2026-10-09T12:41:48.242Z",
+   "color": "#004A99",
+   "teamColors": {
+    "darkMode": "#004A99",
+    "lightMode": "#004A99",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Home Deluxe Arena",
+   "city": "Paderborn",
+   "location": [
+    "51.730769438",
+    "8.711031675"
+   ],
+   "capacity": 15306,
+   "surface": "Grass",
+   "opened": 2008,
+   "coachHistory": [
+    {
+     "id": 1130966,
+     "name": "Lukas Kwasniok",
+     "season": "2024/2025",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 15,
+     "draw": 10,
+     "loss": 9,
+     "pointsPerGame": 1.62,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2025/2026",
+     "leagueId": 146,
+     "leagueName": "2. Bundesliga",
+     "win": 18,
+     "draw": 8,
+     "loss": 8,
+     "pointsPerGame": 1.82,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 141102,
+     "name": "Ralf Kettemann",
+     "season": "2026/2027",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 1,
+     "draw": 1,
+     "loss": 2,
+     "pointsPerGame": 1,
+     "winPercentage": 0.25
+    }
+   ]
+  },
+  {
+   "code": "FCA",
+   "fotmobId": 8406,
+   "fotmobName": "Augsburg",
+   "fetchedAt": "2026-10-09T12:41:42.579Z",
+   "color": "#B93733",
+   "teamColors": {
+    "darkMode": "#B93733",
+    "lightMode": "#B93733",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "WWK Arena",
+   "city": "Augsburg",
+   "location": [
+    "48.323101360",
+    "10.885949135"
+   ],
+   "capacity": 30662,
+   "surface": "Grass",
+   "opened": 2009,
+   "coachHistory": [
+    {
+     "id": 36889,
+     "name": "Sandro Wagner",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 3,
+     "draw": 1,
+     "loss": 8,
+     "pointsPerGame": 0.83,
+     "winPercentage": 0.25
+    },
+    {
+     "id": 816800,
+     "name": "Manuel Baum",
+     "season": "2025/2026",
+     "leagueId": 54,
+     "leagueName": "Bundesliga",
+     "win": 9,
+     "draw": 6,
+     "loss": 7,
+     "pointsPerGame": 1.5,
+     "winPercentage": 0.41
+    },
+    {
+     "id": 816800,
+     "name": "Manuel Baum",
      "season": "2026/2027",
      "leagueId": 54,
      "leagueName": "Bundesliga",
@@ -1193,66 +1254,6 @@
     }
    ],
    "coachHistoryFull": true
-  },
-  {
-   "code": "SCP",
-   "fotmobId": 8460,
-   "fotmobName": "Paderborn",
-   "fetchedAt": "2026-10-09T12:41:48.242Z",
-   "color": "#004A99",
-   "teamColors": {
-    "darkMode": "#004A99",
-    "lightMode": "#004A99",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Home Deluxe Arena",
-   "city": "Paderborn",
-   "location": [
-    "51.730769438",
-    "8.711031675"
-   ],
-   "capacity": 15306,
-   "surface": "Grass",
-   "opened": 2008,
-   "coachHistory": [
-    {
-     "id": 1130966,
-     "name": "Lukas Kwasniok",
-     "season": "2024/2025",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 15,
-     "draw": 10,
-     "loss": 9,
-     "pointsPerGame": 1.62,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2025/2026",
-     "leagueId": 146,
-     "leagueName": "2. Bundesliga",
-     "win": 18,
-     "draw": 8,
-     "loss": 8,
-     "pointsPerGame": 1.82,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 141102,
-     "name": "Ralf Kettemann",
-     "season": "2026/2027",
-     "leagueId": 54,
-     "leagueName": "Bundesliga",
-     "win": 1,
-     "draw": 1,
-     "loss": 2,
-     "pointsPerGame": 1,
-     "winPercentage": 0.25
-    }
-   ]
   },
   {
    "code": "FCU",

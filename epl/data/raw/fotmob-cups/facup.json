@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-11-07T14:57:40.156Z",
+ "retrievedAt": "2026-11-07T16:55:34.342Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-11-07T14:54:54.020Z",
+   "retrievedAt": "2026-11-07T16:51:15.882Z",
    "matches": [
     {
      "id": "6469281",
@@ -139,8 +139,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -174,8 +177,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -209,8 +215,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      7,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -240,16 +249,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      0,
+      3
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
+     "aet": false,
      "liveScore": null,
-     "state": "NS",
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/boreham-wood-vs-wigan-athletic/104stw#6469314",
      "unknownReasons": []
     },
@@ -279,8 +291,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      7,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -314,8 +329,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -349,8 +367,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      3,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -384,8 +405,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -419,8 +443,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -454,8 +481,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      4,
+      3
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -489,8 +519,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -524,8 +557,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -559,8 +595,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -594,8 +633,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -629,8 +671,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -664,8 +709,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -699,8 +747,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -734,8 +785,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      4
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -769,8 +823,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -804,8 +861,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      1,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -839,8 +899,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      3,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -874,8 +937,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      4,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -909,8 +975,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -944,8 +1013,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      3,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -979,8 +1051,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      2,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1014,8 +1089,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      3,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1049,8 +1127,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      0,
+      1
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1084,8 +1165,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      4,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1119,8 +1203,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      3,
+      2
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1154,8 +1241,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      4,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,
@@ -1189,8 +1279,11 @@
      "pens": null,
      "pensWinner": null,
      "aet": null,
-     "liveScore": null,
-     "state": "NS",
+     "liveScore": [
+      4,
+      0
+     ],
+     "state": "LIVE",
      "stateKnown": true,
      "reason": null,
      "awarded": false,

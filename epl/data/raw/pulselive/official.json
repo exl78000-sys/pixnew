@@ -65112,18 +65112,40 @@
   "FUL|NEW": {
    "fixtureId": 129017,
    "kickoff": "2026-11-07T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
-    "away": 0
+    "home": 1,
+    "away": 1
    },
    "homeId": 34,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      68651,
+      23793,
+      14624
+     ],
+     [
+      21614,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 4985,
@@ -65139,7 +65161,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -65310,9 +65332,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      8707,
+      108922
+     ],
+     [
+      303043,
+      67849
+     ],
+     [
+      9662,
+      117497,
+      14716
+     ],
+     [
+      114590
+     ]
+    ],
     "xi": [
      {
       "id": 8707,
@@ -65328,7 +65372,7 @@
       "playerId": null,
       "name": "Yoane Wissa",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -65498,29 +65542,263 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 117763,
+     "assist": null,
+     "team": 34,
+     "min": 83,
+     "label": "83'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
-    "subs": [],
-    "periods": []
+    "cards": [
+     {
+      "person": 5220,
+      "team": 23,
+      "min": 90,
+      "label": "90'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 117647,
+      "team": 23,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67849,
+      "team": 23,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14446,
+      "team": 23,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 117497,
+      "team": 23,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 117763,
+      "team": 34,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 119364,
+      "team": 34,
+      "min": 65,
+      "label": "65'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 123594,
+      "team": 34,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 128976,
+      "team": 34,
+      "min": 72,
+      "label": "72'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 135108,
+      "team": 23,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 303043,
+      "team": 23,
+      "min": 74,
+      "label": "74'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 4880,
+      "team": 34,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 6712,
+      "team": 34,
+      "min": 77,
+      "label": "77'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 14656,
+      "team": 34,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66657,
+      "team": 34,
+      "min": 78,
+      "label": "78'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49259,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 114590,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 5220,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 124462,
+      "team": 23,
+      "min": 85,
+      "label": "85'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "90+1'00"
   },
   "ARS|HUL": {
    "fixtureId": 129013,
    "kickoff": "2026-11-07T15:00:00.000Z",
-   "status": "U",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
-    "home": 0,
+    "home": 1,
     "away": 0
    },
    "homeId": 1,
    "awayId": 41,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      67776,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      74761,
+      15202
+     ],
+     [
+      67407,
+      11419,
+      67704
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 13274,
@@ -65536,7 +65814,7 @@
       "playerId": null,
       "name": "Noni Madueke",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -65608,7 +65886,7 @@
       "playerId": null,
       "name": "Christos Tzolis",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -65707,9 +65985,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-3-2",
+    "formationRaw": "5-3-2",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      337382
+     ],
+     [
+      66538,
+      75264,
+      21385
+     ],
+     [
+      126447,
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 126447,
@@ -65779,7 +66077,7 @@
       "playerId": null,
       "name": "Elliot Stroud",
       "shirt": 21,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -65895,6 +66193,685 @@
      }
     ]
    },
+   "goals": [
+    {
+     "side": "H",
+     "person": 11419,
+     "assist": null,
+     "team": 1,
+     "min": 72,
+     "label": "72'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 0
+    }
+   ],
+   "timeline": {
+    "cards": [
+     {
+      "person": 13486,
+      "team": 41,
+      "min": 34,
+      "label": "34'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 75264,
+      "team": 41,
+      "min": 48,
+      "label": "48'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": null,
+      "team": 41,
+      "min": 54,
+      "label": "54'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 108919,
+      "team": 41,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 337382,
+      "team": 41,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 133314,
+      "team": 41,
+      "min": 87,
+      "label": "87'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 51754,
+      "team": 41,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 126447,
+      "team": 41,
+      "min": 60,
+      "label": "60'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 108919,
+      "team": 41,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 13486,
+      "team": 41,
+      "min": 61,
+      "label": "61'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 15202,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 32728,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20810,
+      "team": 1,
+      "min": 63,
+      "label": "63'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 21584,
+      "team": 1,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 67704,
+      "team": 1,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 118077,
+      "team": 1,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 69914,
+      "team": 1,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 337567,
+      "team": 41,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 10424,
+      "team": 41,
+      "min": 69,
+      "label": "69'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 20081,
+      "team": 41,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 337382,
+      "team": 41,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 145034,
+      "team": 41,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 66538,
+      "team": 41,
+      "min": 75,
+      "label": "75'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 64523,
+      "team": 1,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 74761,
+      "team": 1,
+      "min": 89,
+      "label": "89'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+4'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+5'00",
+      "phase": "2"
+     }
+    ]
+   },
+   "clock": "90+5'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-07T16:57:45.479Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
+  },
+  "NFO|MCI": {
+   "fixtureId": 129021,
+   "kickoff": "2026-11-07T17:30:00.000Z",
+   "status": "U",
+   "final": false,
+   "score": {
+    "home": 0,
+    "away": 0
+   },
+   "homeId": 15,
+   "awayId": 11,
+   "home": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 14238,
+      "playerId": null,
+      "name": "Ryan Yates",
+      "shirt": 22,
+      "pos": "M",
+      "posInfo": "Left/Centre/Right Attacking Midfielder",
+      "captain": true
+     },
+     {
+      "id": 49270,
+      "playerId": null,
+      "name": "James McAtee",
+      "shirt": 24,
+      "pos": "M",
+      "posInfo": "Centre/Right Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 16035,
+      "playerId": null,
+      "name": "Nikola Milenkovic",
+      "shirt": 31,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 51813,
+      "playerId": null,
+      "name": "Liam Delap",
+      "shirt": 19,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 16723,
+      "playerId": null,
+      "name": "Matz Sels",
+      "shirt": 26,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 139648,
+      "playerId": null,
+      "name": "Murillo",
+      "shirt": 5,
+      "pos": "D",
+      "posInfo": "Left/Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 15259,
+      "playerId": null,
+      "name": "Morgan Gibbs-White",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 20335,
+      "playerId": null,
+      "name": "Xaver Schlager",
+      "shirt": 21,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 76353,
+      "playerId": null,
+      "name": "Daniel Muñoz",
+      "shirt": 27,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 23811,
+      "playerId": null,
+      "name": "Neco Williams",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 304238,
+      "playerId": null,
+      "name": "Jair Cunha",
+      "shirt": 23,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 50623,
+      "playerId": null,
+      "name": "Dan Ndoye",
+      "shirt": 14,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 141639,
+      "playerId": null,
+      "name": "John Victor",
+      "shirt": 12,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 304123,
+      "playerId": null,
+      "name": "Igor Jesus",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Striker",
+      "captain": false
+     },
+     {
+      "id": 68219,
+      "playerId": null,
+      "name": "Arnaud Kalimuendo",
+      "shirt": 15,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 23702,
+      "playerId": null,
+      "name": "Callum Hudson-Odoi",
+      "shirt": 7,
+      "pos": "F",
+      "posInfo": "Left Winger",
+      "captain": false
+     },
+     {
+      "id": 108816,
+      "playerId": null,
+      "name": "Ibrahim Sangaré",
+      "shirt": 6,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 76426,
+      "playerId": null,
+      "name": "Luca Netz",
+      "shirt": 25,
+      "pos": "D",
+      "posInfo": "Left Full Back",
+      "captain": false
+     },
+     {
+      "id": 123299,
+      "playerId": null,
+      "name": "Ousmane Diomande",
+      "shirt": 2,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 3756,
+      "playerId": null,
+      "name": "Chris Wood",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     }
+    ]
+   },
+   "away": {
+    "formation": null,
+    "formationRaw": null,
+    "rows": null,
+    "xi": [
+     {
+      "id": 54156,
+      "playerId": null,
+      "name": "Jérémy Doku",
+      "shirt": 11,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 31936,
+      "playerId": null,
+      "name": "Iliman Ndiaye",
+      "shirt": 7,
+      "pos": "F",
+      "posInfo": "Left/Right Winger",
+      "captain": false
+     },
+     {
+      "id": 22857,
+      "playerId": null,
+      "name": "Gianluigi Donnarumma",
+      "shirt": 1,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 65970,
+      "playerId": null,
+      "name": "Erling Haaland",
+      "shirt": 9,
+      "pos": "F",
+      "posInfo": "Centre Striker",
+      "captain": false
+     },
+     {
+      "id": 68150,
+      "playerId": null,
+      "name": "Rayan Cherki",
+      "shirt": 10,
+      "pos": "M",
+      "posInfo": "Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 67178,
+      "playerId": null,
+      "name": "Josko Gvardiol",
+      "shirt": 24,
+      "pos": "D",
+      "posInfo": "Left/Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 137371,
+      "playerId": null,
+      "name": "Abdukodir Khusanov",
+      "shirt": 45,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 16431,
+      "playerId": null,
+      "name": "Rúben Dias",
+      "shirt": 3,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": true
+     },
+     {
+      "id": 51593,
+      "playerId": null,
+      "name": "Elliot Anderson",
+      "shirt": 5,
+      "pos": "M",
+      "posInfo": "Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 14569,
+      "playerId": null,
+      "name": "Marc Guéhi",
+      "shirt": 6,
+      "pos": "D",
+      "posInfo": "Centre Central Defender",
+      "captain": false
+     },
+     {
+      "id": 63741,
+      "playerId": null,
+      "name": "Enzo Fernández",
+      "shirt": 17,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ],
+    "subs": [
+     {
+      "id": 338602,
+      "playerId": null,
+      "name": "Allan",
+      "shirt": 37,
+      "pos": "F",
+      "posInfo": "Right Winger",
+      "captain": false
+     },
+     {
+      "id": 76204,
+      "playerId": null,
+      "name": "Matheus Nunes",
+      "shirt": 27,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 141425,
+      "playerId": null,
+      "name": "Ayyoub Bouaddi",
+      "shirt": 32,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     },
+     {
+      "id": 20857,
+      "playerId": null,
+      "name": "Gerónimo Rulli",
+      "shirt": 28,
+      "pos": "G",
+      "posInfo": "Goalkeeper",
+      "captain": false
+     },
+     {
+      "id": 14805,
+      "playerId": null,
+      "name": "Phil Foden",
+      "shirt": 47,
+      "pos": "M",
+      "posInfo": "Centre/Right Attacking Midfielder",
+      "captain": false
+     },
+     {
+      "id": 302583,
+      "playerId": null,
+      "name": "Vitor Reis",
+      "shirt": 22,
+      "pos": "D",
+      "posInfo": "Central Defender",
+      "captain": false
+     },
+     {
+      "id": 112948,
+      "playerId": null,
+      "name": "Nico O'Reilly",
+      "shirt": 33,
+      "pos": "D",
+      "posInfo": "Left/Centre Full Back",
+      "captain": false
+     },
+     {
+      "id": 99281,
+      "playerId": null,
+      "name": "Rico Lewis",
+      "shirt": 82,
+      "pos": "D",
+      "posInfo": "Right Full Back",
+      "captain": false
+     },
+     {
+      "id": 12520,
+      "playerId": null,
+      "name": "Mateo Kovacic",
+      "shirt": 8,
+      "pos": "M",
+      "posInfo": "Centre Central Midfielder",
+      "captain": false
+     }
+    ]
+   },
    "goals": [],
    "timeline": {
     "cards": [],
@@ -65904,5 +66881,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-07T14:59:27.978Z"
+ "fetchedAt": "2026-11-07T16:57:45.479Z"
 }
