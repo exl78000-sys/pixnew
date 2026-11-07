@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim, tacticDefaults, profileFormation } from './game-sim.js?v=e09ab276';
+import { createSim, tacticDefaults, profileFormation, mentalityPush } from './game-sim.js?v=a27d505a';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -37,6 +37,8 @@ export function defaultSetup(profile, code) {
    頁面自己寫一份「哪一級是恆等元」的話,引擎改了它會悄悄過期(本站在轉換邏輯上付過這個代價)。
    名字刻意跟引擎那支不同:單檔版把共用模組攤平在同一個作用域,同名就撞。 */
 export const engineTacticLevels = (profile, code) => tacticDefaults(profile, code);
+/* 心態每一級有球時往前壓幾公尺(遊戲規則,常數在引擎);畫面照這個印,不自己寫一個數字 */
+export const MENT_STEP = mentalityPush(1, true);
 
 /* `neutral`(2026-10-03):遊戲頁的「中立場」勾選。原本只改了 λ(pred),引擎照樣給主隊主場的射門率、
    控球與犯規 —— 中立場要兩邊都中立,所以一路傳進引擎。 */

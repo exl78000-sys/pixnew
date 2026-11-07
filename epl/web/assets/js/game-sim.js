@@ -863,9 +863,26 @@ const LONG_BALL_25 = 22.86;   // 25 碼:另一個常見的定義,兩個都量才
        而且要像 POSS_K 那樣掃出來,不是猜。
      · 心態方向對但過頭(越位 4 倍),而且側寫宣告的是「自己多、**對手也多一點**」,
        量出來對手反而變少 —— 跟它自己講的不一致。
+   (心態那一列 2026-11-07 重做過,見 MENT_IN。)
    所以 game-view 的 TACTIC_TODO 這一輪**一個都沒有搬走**:四個拉了會讓球隊踢得很爛的
    按鈕,比四個寫著「還沒接」更糟。這張表是否定的證據,下一輪逐軸校準時從這裡接著做。 */
-const MENT_PUSH = 3;                           // 心態每級把整塊往前推幾公尺(±2 級 = ±6 m)
+/* 心態(2026-11-07 重做,掛上畫面)。**只改有球時壓上去多少**,沒球時的站位不動。
+   上面那張表的「心態」是整塊平移(有球沒球都推 3 公尺/級):重量一次(ARS 主場對 LIV、只動主隊、60 場 / 格),
+   它是**免費的午餐** —— 很進攻讓 ARS 從 2.05 球變 3.00、失球只從 0.65 變 0.85,淨勝球多將近一球:
+   沒球時也壓上去 = 逼得更前面,球待在對方半場更久,那改的是強弱不是踢法,玩家只會一直選很進攻。
+   真實的進攻心態是拿風險換機會:有球時多幾個人往前,丟球時身後的空間也大。所以拆成兩半量(60 場 / 格,±1 SE 約 0.15~0.2 球):
+     變體(有球 / 沒球,公尺/級)   很保守 進/失        平衡 進/失        很進攻 進/失      ARS 射門(保守→進攻)
+     A  2 / 0(採用)               1.75 / 0.87        2.02 / 0.88       2.15 / 0.98       10.6 → 12.0
+     B  3 / 保守時沒球也退 1.5     1.75 / 1.12        —                 2.15 / 0.97       10.6 → 12.8
+     C  3 / 0                      1.55 / 0.90        —                 2.15 / 0.97       11.0 → 12.8
+   A 的很進攻:兩隊都多進一點、淨勝球不變(1.14 → 1.17)—— 改的是踢法,正是側寫宣告的「自己多、對手也多一點」。
+   B 是「保守 = 沒球時退深」,結果**失球反而變多**(0.88 → 1.12):這個引擎的防守還不會因為後面人多就多擋下幾球
+   (封阻只有真實的幾分之一,見 5b~5q),退深只是把禁區觸球讓給對手(93.9 → 100.8)。這是引擎的限制,不是足球的事實 ——
+   所以不做那一半,畫面照實講「保守是自己少進,失球沒有跟著少」。C 的保守太貴(淨勝 1.14 → 0.65,約 1.7 SE)。
+   **2 公尺/級沒有資料可以校準**,是「淨勝球不動、兩邊進球照方向動」的那一個;第 3 級是恆等元(s.ment = 0)。 */
+const MENT_IN = 2;
+export const mentalityPush = (ment, inPoss) => (inPoss ? ment * MENT_IN : 0);   // ment = 級數 − 3
+const mentPush = (s, inPoss) => mentalityPush(s.ment, inPoss);
 const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
 const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
 /* 直接度原本也是「3 = 恆等元、每級 ±0.06」(DIRECT_STEP);5v 起改成跟壓迫同一套 —— 五級是聯盟五分位的真實中位數,
@@ -1682,7 +1699,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        會讓同一次對抗的權重跟著板凳變,那更難解釋。 */
     const relMean = players.reduce((a, q) => a + relOf(q.ability?.tkl), 0) / (players.length || 1);
     return { code: code, side, att, spec, players, gk: players[0], press, pressBase: press, pressLevel, lineDrop: 1,
-      push: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: dirBase, dirBase, dirLevel, keep, errRel: PFAIL.of(t), foulRel, tklRel, drbRel, aerRel, clrRel, relMean,
+      ment: 0, venuePush: neutral ? 0 : (side === 'home' ? HOME_PUSH : -HOME_PUSH), wide: 1, tempo: 1, direct: dirBase, dirBase, dirLevel, keep, errRel: PFAIL.of(t), foulRel, tklRel, drbRel, aerRel, clrRel, relMean,
       ypf: yellowPerFoulOf(code, side), possMean: pmRaw ?? null, bench };
   };
 
@@ -3161,7 +3178,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const sp = st.restart?.spots;
         const spot = sp && (sp.att.get(p.code) ?? sp.def.get(p.code));
         const pos = pen ? { x: st.restart.x, y: st.restart.y }
-          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush, wide: s.wide });
+          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, st.restart?.side === p.side), wide: s.wide });
         /* 死球時走回位置**也是跑動**(2026-09-21,階段 5m)。第一版的歸因只掛在活球那一支,
            於是逐分支加起來是 119 m/分・人而畫面上的錨是 129 —— **少了 8%**,
            而它看起來就像「來源列完了」。4h 的規矩是把來源逐類列出來,
@@ -3450,7 +3467,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         }
       } else {
         // 有球的那一隊:前腰與邊後衛往前壓(slot.adv,見 ADV_AM)—— 死球走位那一支不壓,那是排站位
-        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.push + s.venuePush + (holder?.side === p.side ? (p.slot.adv ?? 0) : 0), wide: s.wide });
+        const inPoss = holder?.side === p.side;
+        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, inPoss) + (inPoss ? (p.slot.adv ?? 0) : 0), wide: s.wide });
         const raw0 = { x: pos.x, y: pos.y };     // 階段 5m:夾之前的原始目標,用來拆「擺動是誰造成的」
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */
@@ -4555,8 +4573,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         s.press = L === s.pressLevel || PRESS_AT[L] == null ? s.pressBase : PRESS_AT[L];
       }
       if (levels.line != null) s.lineDrop = 1 - (cl(levels.line, 1, 5) - 3) * 0.125;
-      // 2026-09-17 階段 4a:另外四軸。級數 3 一律是恆等元(0 / 1 / 1 / 0),見 MENT_PUSH 那一段
-      if (levels.mentality != null) s.push = (cl(levels.mentality, 1, 5) - 3) * MENT_PUSH;
+      // 2026-09-17 階段 4a:另外四軸。級數 3 一律是恆等元(0 / 1 / 1 / 0),見 MENT_IN 與 WIDE_STEP 那兩段
+      if (levels.mentality != null) s.ment = cl(levels.mentality, 1, 5) - 3;
       if (levels.width != null) s.wide = 1 + (cl(levels.width, 1, 5) - 3) * WIDE_STEP;
       if (levels.tempo != null) s.tempo = 1 + (cl(levels.tempo, 1, 5) - 3) * TEMPO_STEP;
       if (levels.directness != null) {
@@ -4564,7 +4582,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         s.direct = L === s.dirLevel || DIR_AT[L] == null ? s.dirBase : DIR_AT[L];   // 5v:跟壓迫同一套
       }
       return { pressing: s.press / s.pressBase, line: s.lineDrop,
-        mentality: s.push, width: s.wide, tempo: s.tempo, directness: s.direct - s.dirBase };
+        mentality: s.ment, width: s.wide, tempo: s.tempo, directness: s.direct - s.dirBase };
     },
     /* 比賽中換陣型(2026-10-17,5p 的 6c)。**只換每個人的 slot 與 role** —— 沒有人被搬家:
        目標點(shapeOf 讀 slot)換了,他們就照自己的速度**跑過去**,所以瞬移的量測照樣守得到。

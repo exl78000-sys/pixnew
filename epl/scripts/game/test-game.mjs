@@ -429,8 +429,10 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
   const pushCalls = [...simB.matchAll(/shapeOf\([^;]*?\{ push: ([^,}]+)/g)].map(m => m[1].trim());
   /* 2026-10-17(5p):有球那一支多了前壓(`+ (holder?.side === p.side ? p.slot.adv … )`),所以守「以它開頭」——
      守的性質沒變:主場位移有進每一個走位呼叫,沒有哪一支漏掉它。 */
-  check('主場位移真的進了走位:每一個帶 push 的 shapeOf 呼叫都以 s.push + s.venuePush 開頭',
-    pushCalls.length >= 1 && pushCalls.every(x => x.startsWith('s.push + s.venuePush')), pushCalls.join(' / '));
+  /* 2026-11-07:心態從整塊平移(`s.push`)改成只在有球時推(`mentPush`),所以開頭換成 `s.venuePush + mentPush(s,` ——
+     守的性質還是那一個:主場位移與心態都進了每一個走位呼叫。 */
+  check('主場位移真的進了走位:每一個帶 push 的 shapeOf 呼叫都以 s.venuePush + mentPush(s, …) 開頭',
+    pushCalls.length >= 2 && pushCalls.every(x => x.startsWith('s.venuePush + mentPush(s')), pushCalls.join(' / '));
   /* ④ 中立場一路傳進引擎:遊戲頁 → 轉接層 → createSim(剝註解再掃 —— 註解裡本來就在講 neutral) */
   const bare = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
   const viewB = bare('game-view.js'), liveB = bare('game-live.js');
@@ -669,6 +671,22 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
     return JSON.stringify(m.events());
   };
   check('送了預設級跟什麼都沒送是同一場(前 10 分鐘的事件流逐字相同)', tenMin(false) === tenMin(true));
+
+  /* 心態(2026-11-07 掛上畫面):**只改有球時壓上去多少**。整塊平移(有球沒球都推)量過是免費的午餐 ——
+     沒球時也壓上去 = 逼得更前,改的是強弱;拆開之後很進攻讓兩隊都多進一點、淨勝球不變(60 場 / 格,見 MENT_IN 的註解)。
+     逐場的站位深度雜訊太大(15 分鐘三個種子正負都有),所以這裡守**機制**:純函式的值,與兩個站位呼叫點都帶著「這一刻是不是有球」。 */
+  {
+    const bareSim = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    const mp = SM.mentalityPush;
+    const callSites = bareSim.match(/push: s\.venuePush \+ mentPush\(s, (inPoss|st\.restart\?\.side === p\.side)\)/g) ?? [];
+    check('心態只改有球時的站位:沒球時 0、第 3 級 0、有球時每級同一個步長而且對稱',
+      typeof mp === 'function' && [1, 2, 3, 4, 5].every(L => mp(L - 3, false) === 0) && mp(0, true) === 0
+        && mp(2, true) > 0 && mp(2, true) === -mp(-2, true) && Math.abs(mp(2, true) - 2 * mp(1, true)) < 1e-12,
+      `有球 +2 級 ${mp?.(2, true)} 公尺・沒球 ${mp?.(2, false)}`);
+    check('兩個站位呼叫點(活球、死球走位)都走 mentPush 而且帶「這一刻誰持球」;舊的整塊平移 s.push 不在了',
+      callSites.length === 2 && !/(?<![\w.])s\.push\b/.test(bareSim) && /const inPoss = holder\?\.side === p\.side;/.test(bareSim),
+      `${callSites.length} 處`);
+  }
 
   /* ③ 壓迫的五級:期望值自己從側寫算一次(中位數 + 跟引擎同一條換算,常數從引擎原始碼讀) */
   const simSrc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8');
@@ -1926,6 +1944,13 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         check('畫面上的「還沒做的」不准再列體能(加了能力之後要回頭看的那一句)',
           segs.length >= 2 && segs.every(t => !t.includes('體能')),
           `${segs.length} 段「還沒做的」`);
+        /* 同一條的第二次(2026-11-07):直接度 9/20 就掛上畫面,「還沒做的」那一句到 11/07 還在列它;
+           心態那一天掛上去。畫面上已經有按鈕的軸(LIVE_TACTICS)與做完的換人規則都不准再出現在「還沒做的」裡。 */
+        const live = (view.match(/const LIVE_TACTICS = \[([^\]]*)\]/)?.[1] ?? '').match(/'(\w+)'/g)?.map(x => x.slice(1, -1)) ?? [];
+        const ZH = { mentality: '心態', pressing: '壓迫', line: '防線', directness: '直接度', width: '寬度', tempo: '節奏' };
+        const stale = segs.flatMap(t => [...live.map(k => ZH[k]), '換人次數', '換人窗口'].filter(z => z && t.includes(z)));
+        check('「還沒做的」不准再列已經掛上畫面的戰術軸與換人規則',
+          live.length >= 4 && live.includes('mentality') && stale.length === 0, stale.join('、') || `已掛 ${live.join('/')}`);
         check('畫面把體能講清楚:沒有真值可校準、而且它不負責後段進球潮',
           /衰退的幅度沒有真值可以校準/.test(view) && /不產生真實世界的後段進球潮/.test(view));
       }
