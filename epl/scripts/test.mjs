@@ -3807,14 +3807,21 @@ async function checkDataGap() {
     })()],
     /* 三個渲染器(FPL / Understat / 逐場累加)共用同一份跨聯賽搜尋 —— 複製會悄悄過期。
        2026-09-15 加英冠那一個時把數字從 2 改成 3:**釘的是「每個渲染器都有」**,
-       所以用渲染器的數量當基準,不要寫死一個會過期的常數。 */
-    ['跨聯賽搜尋:懶載入、不合併同人、跨池警語、每個渲染器都共用同一份', (() => {
-      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+       所以用渲染器的數量當基準,不要寫死一個會過期的常數。
+       2026-11-07 改成勾選搜尋範圍:每個渲染器都有勾選框、掛載點、本聯賽的表包在 #localPool,重畫表格後都呼叫 applyScope;
+       合併表與「未勾選的聯賽另有幾筆」都走 allplayers-view 的同一份快取(core 不再留一份 crossLeaguePlayers)。 */
+    ['跨聯賽搜尋:勾選範圍、懶載入、不合併同人、跨池警語、每個渲染器都共用同一份', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       const pg = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const av = readFileSync(join(ROOT, 'web', 'assets', 'js', 'allplayers-view.js'), 'utf8');
       const renderers = (pg.match(/id="xleague"/g) ?? []).length;   // 每個渲染器的版面各放一個掛載點
-      return /crossLeaguePlayers/.test(core) && /_playersCoreCache/.test(core)
-        && renderers >= 2 && (pg.match(/updateXLeague\(/g) ?? []).length >= renderers + 1
-        && /同名不代表同一人/.test(pg) && /不可直接互比/.test(pg);
+      return renderers >= 3
+        && (pg.match(/\$\{scopeChecks\(\)\}/g) ?? []).length === renderers
+        && (pg.match(/<div id="localPool">/g) ?? []).length === renderers
+        && (pg.match(/^\s*applyScope\(\);$/gm) ?? []).length === renderers
+        && !/crossLeaguePlayers|_playersCoreCache/.test(core) && !/crossLeaguePlayers/.test(pg)
+        && /export async function otherHits/.test(av) && /otherHits\(q, unchecked\)/.test(pg)
+        && /同名不代表同一人/.test(av) && /不可直接互比/.test(av);
     })()],
 
     /* ── 中場/戰況講評(2026-08-29,使用者要求)──
@@ -6452,17 +6459,22 @@ function checkAssetStamps() {
       && NV.navState('explore', null, 'pl').here?.key === 'more' && NV.navState('explore', 'duel', 'pl').here?.key === 'more',
       '不在導覽上的頁與探索的分頁各自亮對的區');
     {
-      /* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」):
-         ① 球員頁三個渲染器都畫「{聯賽}球員 / 全部聯賽」那一排,?scope=all 交給 allplayers-view(不載這個聯賽的球員資料);
-         ② 舊網址(explore?view=allplayers、allplayers.html)都轉到 players?scope=all;③ 探索頁不再有球員搜尋那個分頁 */
+      /* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」→「把全部聯賽球員 整合進 聯賽全部球員搜尋部分 可勾選要搜尋範圍」):
+         ① 頁首那一排「{聯賽}球員 / 全部聯賽」與 ?scope=all 的獨立分支都拿掉了,範圍改由「全部球員」那一節的勾選決定;
+         ② ?scope=all 讀成「全部勾起來」(舊網址都落到這裡),範圍寫回網址用 replaceState;
+         ③ 只勾本聯賽 = 本聯賽的完整表,勾了別的就換合併表、本聯賽專用的篩選收起來;
+         ④ 舊網址(explore?view=allplayers、allplayers.html)都轉到 players?scope=all;探索頁不再有球員搜尋那個分頁 */
       const pp = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
       const ex = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       const ap = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-allplayers.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-      const allBranch = pp.slice(pp.indexOf("if (C.qs('scope') === 'all') {"), pp.indexOf('} else try {'));
-      ok((pp.match(/\$\{scopeBar\('league'\)\}/g) ?? []).length === 3 && /scopeBar\('all'\)/.test(allBranch)
-        && /await renderAllPlayers\(document\.getElementById\('allBody'\)\)/.test(allBranch) && !/C\.load\(/.test(allBranch)
-        && /import \{ renderAllPlayers \} from '\.\/allplayers-view\.js(\?v=[0-9a-f]{8})?'/.test(pp),
-        '球員頁三個渲染器都有「本聯賽 / 全部聯賽」;全部聯賽交給 allplayers-view,不載這個聯賽的球員資料');
+      const ppCode = pp.replace(/\/\*[\s\S]*?\*\//g, '');
+      ok(!/scopeBar|renderAllPlayers|allBody/.test(ppCode)
+        && /if \(s === 'all'\) return new Set\(SCOPE_LGS\)/.test(ppCode)
+        && /history\.replaceState/.test(ppCode) && !/history\.pushState/.test(ppCode)
+        && /const localOnly = \(\) => scope\.size === 1 && scope\.has\(C\.league\(\)\)/.test(ppCode)
+        && /querySelectorAll\('\.local-only, #localPool'\)/.test(ppCode)
+        && /import \{ renderCrossLeague, otherHits, playerLeagues \} from '\.\/allplayers-view\.js(\?v=[0-9a-f]{8})?'/.test(pp),
+        '球員頁:搜尋範圍由勾選決定(?scope=all = 全選、寫回網址),只勾本聯賽才畫本聯賽的表與篩選');
       ok(/if \(C\.qs\('view'\) === 'allplayers'\) location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ex)
         && !/key: 'allplayers'/.test(ex) && !/renderAllPlayers/.test(ex)
         && /location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ap),

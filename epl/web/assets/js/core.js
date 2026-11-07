@@ -87,35 +87,9 @@ function checkStale(meta) {
 
    回傳 { data, absent } —— 缺了哪幾份由呼叫端決定要不要當成錯誤:
    load() 會擋下來,總覽頁只是少畫一塊。 */
-/* 跨聯賽球員搜尋(v1)。查其他聯賽的 players-core(聯集 + null 的統一層,
-   不帶照片所以輕),結果並列、各掛聯賽籤。三個刻意的決定:
-   - **不做「同一人」自動合併** —— 對錯人比對不到糟(租借姓名那條坑),
-     同名的人兩筆並列,讓讀者自己認。
-   - 只在真的搜尋時才載其他聯賽的檔(cups 1.8MB 那課),載過就快取。
-   - 沒有球員資料源的聯賽(英冠)靜靜跳過 —— 它自己的頁面會講原因。 */
-const _playersCoreCache = {};
-export async function crossLeaguePlayers(q, excludeLg) {
-  const ql = q.toLowerCase();
-  const out = [];
-  for (const lg of Object.keys(LEAGUES)) {
-    if (lg === excludeLg) continue;
-    /* 沒有開球員頁的聯賽(英冠之前、德甲現在)根本沒有 players-core —— 跟
-       allplayers-view 用**同一個**判斷,不去打一個註定 404 的請求。
-       try/catch 接得住,但每次搜尋都留一行 console 錯誤。 */
-    if (LEAGUES[lg]?.open && !LEAGUES[lg].open.includes('players')) continue;
-    if (!(lg in _playersCoreCache)) {
-      try {
-        const { data } = await loadFrom(lg, ['players-core']);
-        _playersCoreCache[lg] = data['players-core'] ?? null;
-      } catch { _playersCoreCache[lg] = null; }
-    }
-    for (const p of _playersCoreCache[lg] ?? []) {
-      if (p.name.toLowerCase().includes(ql) || (p.fullName ?? '').toLowerCase().includes(ql)) out.push(p);
-    }
-  }
-  return out;
-}
-
+/* 跨聯賽球員搜尋原本在這裡(crossLeaguePlayers,只回「其他聯賽找到 N 筆」的名單)。
+   2026-11-07 球員頁改成勾選搜尋範圍之後,整張合併表與「未勾選的聯賽另有幾筆」都在 allplayers-view.js,
+   共用同一份快取 —— 這裡再留一份的話,同一個 players-core 會被兩份快取各載一次。 */
 // 各聯賽資料檔在站上的路徑(英超是預設聯賽,放根目錄;其他聯賽在 leagues/ 底下)
 export const dataPath = (lg, name) => (lg === 'pl' ? `data/${name}.json` : `data/leagues/${lg}/${name}.json`);
 
@@ -1154,6 +1128,11 @@ export function nav() {
   if (!globalThis.__topbarScroll) {
     globalThis.__topbarScroll = true;
     let lastY = window.scrollY;
+    /* 收合 / 展開會讓導覽列的高度變 50px 上下,而它是 sticky、佔版面 —— 瀏覽器的捲動錨定(Chrome、Firefox)
+       會補一次 scrollY 讓內容不跳,那一次 scroll 事件看起來就像「往上 / 往下捲了 50px」,
+       於是又切回去、又補一次……實測 2026-11-07 手機寬度每一頁捲動後 2 秒內切 13~19 次、停不下來,
+       頁面上的按鈕一直在動(Playwright 點不到「元素不穩定」才發現的)。自己切換之後的下一個 scroll 事件只重設基準、不判方向。 */
+    let settling = false;
     const compactMq = matchMedia('(max-width: 700px)');
     const setH = () => {
       const bar = document.querySelector('.topbar');
@@ -1165,6 +1144,7 @@ export function nav() {
       const bar = document.querySelector('.topbar');
       if (!bar) return;
       const y = window.scrollY;
+      if (settling) { settling = false; lastY = y; return; }
       let want = bar.classList.contains('compact');
       if (!compactMq.matches) { want = false; lastY = y; }
       else {
@@ -1173,7 +1153,7 @@ export function nav() {
         else if (down && y > 120) want = true;
         if (down || up) lastY = y;
       }
-      if (want !== bar.classList.contains('compact')) { bar.classList.toggle('compact', want); setH(); }
+      if (want !== bar.classList.contains('compact')) { bar.classList.toggle('compact', want); setH(); settling = compactMq.matches; }
     };
     addEventListener('scroll', onScroll, { passive: true });
     if (typeof ResizeObserver === 'function') {

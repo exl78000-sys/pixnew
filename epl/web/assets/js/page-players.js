@@ -1,52 +1,107 @@
-import * as C from './core.js?v=dca599d7';
+import * as C from './core.js?v=9bed6349';
 
-import { renderAllPlayers } from './allplayers-view.js?v=f1f0ae73';
+import { renderCrossLeague, otherHits, playerLeagues } from './allplayers-view.js?v=93df2c36';
 
 const app = document.getElementById('app');
 
-/* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」):球員頁頂端一排「{聯賽} / 全部聯賽」。
-   本聯賽 = 原本的球員頁(三種渲染器各自的榜與表);全部聯賽 = 原本的跨聯賽球員搜尋(allplayers-view.js),網址 ?scope=all。
-   三個渲染器都在頁首放同一排(scopeBar),點了換頁(網址要跟著變,重新整理與分享才回得到同一個範圍)。 */
-function scopeBar(cur) {
-  return `<div class="filters" style="margin:10px 0 0">${C.tabs([
-    { key: 'league', label: `${C.LEAGUES[C.league()]?.zh ?? ''}球員` },
-    { key: 'all', label: '全部聯賽' },
-  ], cur, { attr: 'data-scope', label: '範圍', cls: 'seg-inline' })}</div>`;
+/* 「全部球員」的搜尋範圍(2026-11-07,使用者:「把全部聯賽球員 整合進 聯賽全部球員搜尋部分 可勾選要搜尋範圍」)。
+   上午那一版是頁首一排「{聯賽}球員 / 全部聯賽」換頁;現在改成「全部球員」那一節的一排勾選框,三個渲染器共用:
+   - 只勾本聯賽 → 本聯賽的完整表(各渲染器自己的欄位、球隊/位置/分鐘篩選、對比模式),跟以前一樣;
+   - 勾了別的聯賽(或取消本聯賽)→ 換成跨聯賽合併表(allplayers-view.js,共通欄位),本聯賽專用的篩選收起來。
+     兩張表欄位不同,硬拼成一張會變成一堆「—」;所以範圍一變就換整張,不是在下面多掛一張(下面那張要捲過 100 列才看得到)。
+   範圍寫進網址(?scope=all 或 ?scope=pl,es1),重新整理與分享回得到同一個範圍;只勾本聯賽時不帶參數。
+   舊網址(explore 的 allplayers、allplayers.html、上午的 ?scope=all)都落到 ?scope=all = 全部勾起來。 */
+const SCOPE_LGS = playerLeagues();
+function readScope() {
+  const s = C.qs('scope');
+  if (s === 'all') return new Set(SCOPE_LGS);
+  const set = new Set((s ?? '').split(',').filter(k => SCOPE_LGS.includes(k)));
+  if (!set.size) set.add(C.league());
+  return set;
 }
+let scope = readScope();
+const localOnly = () => scope.size === 1 && scope.has(C.league());
+function writeScope() {
+  const v = localOnly() ? null : SCOPE_LGS.every(lg => scope.has(lg)) ? 'all' : SCOPE_LGS.filter(lg => scope.has(lg)).join(',');
+  /* replaceState 不是 pushState:上一頁應該回到上一個**頁面**,不是在勾選之間倒退(探索頁的分頁同一個做法) */
+  try {
+    if (C.BUNDLE) {
+      const [pg, q] = (location.hash.slice(1) || 'players').split('?');
+      const params = new URLSearchParams(q ?? '');
+      if (v) params.set('scope', v); else params.delete('scope');
+      history.replaceState(null, '', `#${pg}${params.size ? `?${params}` : ''}`);
+    } else {
+      const u = new URL(location.href);
+      if (v) u.searchParams.set('scope', v); else u.searchParams.delete('scope');
+      history.replaceState(null, '', u);
+    }
+  } catch { /* 網址寫不進去不影響內容 */ }
+}
+/* 勾選框:聯賽從註冊表長出來(沒有球員層的聯賽不列 —— 勾了也搜不到東西)。本聯賽排第一 */
+function scopeChecks() {
+  const order = [C.league(), ...SCOPE_LGS.filter(lg => lg !== C.league())].filter(lg => SCOPE_LGS.includes(lg));
+  return `<div class="scope-checks" role="group" aria-label="搜尋範圍">
+    <span class="small dim">搜尋範圍</span>
+    ${order.map(lg => `<label class="scope-chk"><input type="checkbox" data-scope-lg="${lg}"${scope.has(lg) ? ' checked' : ''}>${
+      C.esc(C.LEAGUES[lg]?.zh ?? lg)}${lg === C.league() ? '<span class="tiny dim">(本聯賽)</span>' : ''}</label>`).join('')}
+    <button type="button" class="btn tiny" data-scope-set="all">全選</button>
+    <button type="button" class="btn tiny" data-scope-set="here">只看本聯賽</button>
+  </div>`;
+}
+const curQuery = () => document.getElementById('q')?.value ?? '';
 // 掛一次就好:單檔版每次換頁都重跑這支(跟 core.js 的 __segClick 同一個做法)
-if (!globalThis.__scopeClick) {
-  globalThis.__scopeClick = true;
+if (!globalThis.__scopeChecks) {
+  globalThis.__scopeChecks = true;
+  const sync = () => {
+    document.querySelectorAll('[data-scope-lg]').forEach(x => { x.checked = scope.has(x.dataset.scopeLg); });
+    writeScope();
+    applyScope(curQuery());
+  };
+  document.addEventListener('change', e => {
+    const x = e.target.closest?.('[data-scope-lg]');
+    if (!x) return;
+    if (x.checked) scope.add(x.dataset.scopeLg); else scope.delete(x.dataset.scopeLg);
+    sync();
+  });
   document.addEventListener('click', e => {
-    const b = e.target.closest?.('[data-scope]');
-    if (b && b.dataset.scope !== (C.qs('scope') === 'all' ? 'all' : 'league')) C.go('players', { scope: b.dataset.scope === 'all' ? 'all' : null });
+    const b = e.target.closest?.('[data-scope-set]');
+    if (!b) return;
+    scope = b.dataset.scopeSet === 'all' ? new Set(SCOPE_LGS) : new Set([C.league()]);
+    sync();
   });
 }
+
+/* 依範圍切換「全部球員」那一節:三個渲染器在每次重畫表格之後呼叫(q 是搜尋框目前的字)。
+   本聯賽專用的控制項標 .local-only、本聯賽的表包在 #localPool,合併表與提示畫在 #xleague。
+   token 防過期回應蓋掉新輸入。 */
+let xleagueToken = 0;
+async function applyScope(q = curQuery()) {
+  const host = document.getElementById('xleague');
+  if (!host) return;
+  const tok = ++xleagueToken;
+  const local = localOnly();
+  document.querySelectorAll('.local-only, #localPool').forEach(el => { el.style.display = local ? '' : 'none'; });
+  const unchecked = SCOPE_LGS.filter(lg => !scope.has(lg));
+  if (local) host.innerHTML = '';
+  else if (!scope.size) host.innerHTML = '<div class="note">沒有勾選任何聯賽 —— 至少勾一個才有東西可以搜尋。</div>';
+  else {
+    if (!host.querySelector('#xTable')) host.innerHTML = '<div id="xTable"></div><div id="xHint"></div>';
+    await renderCrossLeague(host.querySelector('#xTable'), { lgs: SCOPE_LGS.filter(lg => scope.has(lg)), q });
+  }
+  /* 未勾選的聯賽裡也有符合的人時講一聲(同名不代表同一人;勾選才列出來) */
+  const hits = await otherHits(q, unchecked);
+  if (tok !== xleagueToken || !host.isConnected) return;
+  let hint = host.querySelector('#xHint');
+  if (!hint) { hint = document.createElement('div'); hint.id = 'xHint'; host.append(hint); }
+  hint.innerHTML = hits.length ? `<div class="note info" style="margin-top:10px">未勾選的聯賽也有符合「${C.esc(q.trim())}」的球員:${
+    hits.map(h => `${C.esc(C.LEAGUES[h.lg]?.zh ?? h.lg)} ${h.n} 人`).join('、')} —— 勾選上面的聯賽就會列進來。</div>` : '';
+}
+
 
 /* 逐場累加那一層的位置代碼(檔尾 renderAggregate 用)。**宣告要在最上面**:頂層的 try 在模組執行時就跑,
    而 const 不像函式宣告會提升 —— 放在檔尾就是暫時死區,畫面上表格整個不見、只有 console 一行
    ReferenceError(實際踩過)。直線腳本的原始碼順序就是執行順序。 */
 const POS_ZH_AGG = { G: '門將', D: '後衛', M: '中場', F: '前鋒' };
-
-/* 跨聯賽搜尋結果塊(兩個渲染器共用一份 —— 複製會悄悄過期)。
-   token 防過期回應蓋掉新輸入;隊伍顯示隊碼不顯示名字 ——
-   隊名要載別的聯賽的名冊,而隊碼跨聯賽會重複,全域登錄解錯名字。 */
-let xleagueToken = 0;
-async function updateXLeague(q) {
-  const host = document.getElementById('xleague');
-  if (!host) return;
-  if (!q || q.trim().length < 2) { host.innerHTML = ''; return; }
-  const tok = ++xleagueToken;
-  const hits = await C.crossLeaguePlayers(q.trim(), C.league());
-  if (tok !== xleagueToken || !document.getElementById('xleague')) return;
-  host.innerHTML = hits.length ? `<div class="note info" style="margin-top:10px">
-    其他聯賽找到 ${hits.length} 筆:${hits.slice(0, 8).map(p =>
-      `<a href="${C.link('players', { code: p.code, league: p.league })}">${C.esc(p.name)}
-        <span class="dim tiny">(${C.esc(C.LEAGUES[p.league]?.zh ?? p.league)}・${C.esc(p.team ?? '')})</span></a>`).join('、')}
-    ${hits.length > 8 ? `<span class="dim tiny">…等 ${hits.length} 筆,輸入更完整的名字縮小範圍</span>` : ''}
-    <div class="tiny dim" style="margin-top:4px">同名不代表同一人;各聯賽的數據各自成池,不可直接互比。</div>
-  </div>` : '';
-}
-
 
 /* 核心欄位(兩個聯賽共用)。這 20 欄以前兩個渲染器各寫一份,標題與順序
    還悄悄漂移(統一頁重構的動機就是這個);現在一份工廠、聯賽差異用參數注入:
@@ -86,14 +141,7 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [], hide 
   ];
 }
 
-/* 全部聯賽:不載這個聯賽的球員資料(用不到),直接交給 allplayers-view。throw 'skip' 是這個檔「到此為止」的慣例。 */
-if (C.qs('scope') === 'all') {
-  try {
-    C.nav();
-    app.innerHTML = `<div class="page-head"><h1>球員 <span class="dim">全部聯賽</span></h1>${scopeBar('all')}</div><div id="allBody"><div class="loading">載入資料中…</div></div>`;
-    await renderAllPlayers(document.getElementById('allBody'));
-  } catch (err) { C.fail(err); }
-} else try {
+try {
   /* 列表只讀 players-list(2026-09-27,A6):每人十幾個欄位,英超 1,280 KB → 幾百 KB。整份 players.json(雷達、追蹤、租借…)
      只有兩條路才讀:帶 ?code= 的詳情頁,以及對比模式(雷達與對照表)—— 點到才 loadFrom,讀過會快取。
      三個渲染器讀的欄位不變(形狀同名同層),只是列表的來源換了一份。 */
@@ -141,7 +189,6 @@ if (C.qs('scope') === 'all') {
   app.innerHTML = `
   <div class="page-head">
     <h1>球員</h1>
-    ${scopeBar('league')}
     <p>${meta.counts.players} 名 ${meta.currentSeason} 註冊球員。數據分成<b>本季至今</b>與<b>上季完整賽季</b>兩套,
        用下面的按鈕切換 —— 每個數字都會標明是哪一季,不會混在一起。
        百分位是跟同位置、出場達門檻的球員相比;點球員看雷達圖,可勾選兩人對比。</p>
@@ -160,23 +207,26 @@ if (C.qs('scope') === 'all') {
   <div class="section"><h2>排行榜</h2><span class="hint" id="boardHint"></span></div>
   <div class="grid g3" id="boards"></div>
 
-  <div class="section"><h2>全部球員</h2><span class="hint">可排序、可篩選</span></div>
+  <div class="section"><h2>全部球員</h2><span class="hint">可排序、可篩選・勾選其他聯賽可一起搜尋</span></div>
+  ${scopeChecks()}
   <div class="filters">
     <input id="q" type="search" placeholder="搜尋球員…" style="min-width:180px">
-    <select id="fTeam"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
-    <select id="fPos"><option value="">所有位置</option>${POS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select>
-    <select id="fMin"><option value="0" selected>不限出場</option><option value="90">90 分鐘以上</option>
+    <select id="fTeam" class="local-only"><option value="">所有球隊</option>${codes.map(c => `<option value="${c}">${C.name(c)}</option>`).join('')}</select>
+    <select id="fPos" class="local-only"><option value="">所有位置</option>${POS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select>
+    <select id="fMin" class="local-only"><option value="0" selected>不限出場</option><option value="90">90 分鐘以上</option>
       <option value="600">600 分鐘以上</option><option value="1800">1800 分鐘以上</option></select>
-    <button class="btn" id="cmpBtn">對比模式:關</button>
-    <span class="dim small" id="count"></span>
+    <button class="btn local-only" id="cmpBtn">對比模式:關</button>
+    <span class="dim small local-only" id="count"></span>
   </div>
+  <div id="xleague"></div>
+  <div id="localPool">
   <div id="cmpBox"></div>
   <div id="list"></div>
-  <div id="xleague"></div>
   <div class="tiny dim" style="margin-top:8px">
     背號以 FPL 官方快照為主;快照沒有的,先用英超官方名單上的號碼補,再不然才用單一來源的補件並標
     <span class="dim">*</span>。兩個來源對不上的一律不填 —— 掛錯號碼比留空更糟。
     仍然查不到的顯示「—」。</div>
+  </div>
   ${C.foot(meta)}`;
 
   function renderSeasonUI() {
@@ -236,7 +286,7 @@ if (C.qs('scope') === 'all') {
       ((S().stat(p)?.minutes ?? 0) >= minMin) &&
       (!q || p.name.toLowerCase().includes(q) || p.fullName.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人`;
-    updateXLeague(q);
+    applyScope();
     document.getElementById('list').innerHTML = C.table(rows, coreColumns({
       statOf: p => S().stat(p),
       nameCell: p => `${cmpMode ? `<input type="checkbox" ${compare.includes(p.code) ? 'checked' : ''} style="margin-right:6px">` : ''}${C.playerPhoto(p, 28)} ${C.esc(p.name)}${p.status !== 'a' ? ` <span class="pill bad tiny">${p.statusZh}</span>` : ''}`,
@@ -595,7 +645,6 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     app.innerHTML = `
     <div class="page-head">
       <h1>${C.esc(LZ)}球員</h1>
-      ${scopeBar('league')}
       <p>${C.esc(season)} 的 ${cur.length} 名球員。數字是<b>整季彙總</b>,不是逐場 ——
          來源(Understat)給的就是這個粒度。每 90 分鐘的數字只在上場時間達
          ${leaders.minMinutes} 分鐘時給出,樣本太少的給了會誤導。</p>
@@ -618,31 +667,32 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     <div class="section"><h2>榜單</h2><span class="hint">只做這個來源真的有的項目</span></div>
     <div class="grid g2">${leaders.boards.map(boardCard).join('')}</div>
 
-    <div class="section"><h2>全部球員</h2><span class="hint">可篩選與排序</span></div>
+    <div class="section"><h2>全部球員</h2><span class="hint">可篩選與排序・勾選其他聯賽可一起搜尋</span></div>
     <div class="card">
+      ${scopeChecks()}
       <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:12px">
         <input id="q" type="search" placeholder="搜尋球員…" value="${C.esc(query)}"
                style="flex:1;min-width:160px;padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
-        <select id="fTeam" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+        <select id="fTeam" class="local-only" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
           <option value="">所有球隊</option>
           ${codes.map(c => `<option value="${C.esc(c)}" ${teamFilter === c ? 'selected' : ''}>${C.esc(codeName(c))}</option>`).join('')}
         </select>
-        <select id="fPos" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+        <select id="fPos" class="local-only" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
           <option value="">所有位置</option>
           ${[['GK', '門將'], ['D', '後衛'], ['M', '中場'], ['F', '前鋒']].map(([k, l]) =>
             `<option value="${k}" ${posFilter === k ? 'selected' : ''}>${l}</option>`).join('')}
         </select>
-        <select id="fMin" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
+        <select id="fMin" class="local-only" style="padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:#ffffff08;color:var(--ink)">
           <option value="0" ${minMinutes === 0 ? 'selected' : ''}>不限出場</option>
           <option value="90" ${minMinutes === 90 ? 'selected' : ''}>90 分鐘以上</option>
           <option value="600" ${minMinutes === 600 ? 'selected' : ''}>600 分鐘以上</option>
           <option value="1800" ${minMinutes === 1800 ? 'selected' : ''}>1800 分鐘以上</option>
         </select>
-        <button class="btn" id="cmpBtn" type="button" disabled title="${C.esc(LZ)}目前沒有可核對的跨球員雷達資料">對比模式:不可用</button>
-        <span class="dim small" id="count">共 ${filteredRows().length} 人</span>
+        <button class="btn local-only" id="cmpBtn" type="button" disabled title="${C.esc(LZ)}目前沒有可核對的跨球員雷達資料">對比模式:不可用</button>
+        <span class="dim small local-only" id="count">共 ${filteredRows().length} 人</span>
       </div>
-      ${tableHtml()}
       <div id="xleague"></div>
+      <div id="localPool">${tableHtml()}</div>
     </div>
 
     <div class="card">
@@ -664,7 +714,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     // 排序由 C.table 自己處理(以前這裡掛手刻的 th 監聽,是 C.table 的重複實作)
     const q = app.querySelector('#q');
     if (q) { q.oninput = () => { query = q.value; draw(); q.focus(); }; }
-    updateXLeague(query);
+    applyScope();
     const ps = app.querySelector('#fPos');
     if (ps) ps.onchange = () => { posFilter = ps.value; draw(); };
     const ts = app.querySelector('#fTeam');
@@ -772,7 +822,6 @@ function renderAggregate({ meta, players, leaders }) {
 
   app.innerHTML = `
     <h1>${C.esc(meta.leagueLabel ?? '')}球員 <span class="dim">逐場累加</span></h1>
-    ${scopeBar('league')}
     <p class="lede">每一場比賽的逐人統計加起來就是這一頁。<b>這不是整季的球員資料庫</b> ——
       沒有球員 xG 模型、身價與傷停,那幾樣這個聯賽沒有免費來源${
         Object.values(leaders.bios?.seasons ?? {}).some(b => b.withAge || b.withCountry)
@@ -780,15 +829,16 @@ function renderAggregate({ meta, players, leaders }) {
     <div id="srcNote"></div>
     <div class="filters" id="seasonBar" style="margin-top:12px"></div>
     <div id="boards" class="grid g3" style="margin-top:12px"></div>
-    <div class="section"><h2>全部球員</h2><span class="hint" id="count"></span></div>
+    <div class="section"><h2>全部球員</h2><span class="hint local-only" id="count"></span></div>
+    ${scopeChecks()}
     <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
       <input id="q" placeholder="搜尋球員" style="min-width:160px">
-      <select id="fTeam"></select>
-      <select id="fPos"></select>
-      <label class="small dim">最少分鐘 <input id="fMin" type="number" value="0" min="0" step="90" style="width:80px"></label>
+      <select id="fTeam" class="local-only"></select>
+      <select id="fPos" class="local-only"></select>
+      <label class="small dim local-only">最少分鐘 <input id="fMin" type="number" value="0" min="0" step="90" style="width:80px"></label>
     </div>
     <div id="xleague"></div>
-    <div id="list"></div>
+    <div id="localPool"><div id="list"></div></div>
     ${C.foot(meta)}`;
 
   const seasonPlayers = () => players.filter(p => p.season === season);
@@ -878,7 +928,7 @@ function renderAggregate({ meta, players, leaders }) {
       && p.minutes >= minMin && (!q || p.name.toLowerCase().includes(q)));
     document.getElementById('count').textContent = `共 ${rows.length} 人・點欄位標題可換排序`;
     document.getElementById('list').innerHTML = C.table(rows, columns(), { sortKey: 'mins_played', desc: true, pageSize: 100 });   // 先畫 100 列(B5)
-    updateXLeague(q);
+    applyScope();
   };
 
   const drawSeasonBar = () => {

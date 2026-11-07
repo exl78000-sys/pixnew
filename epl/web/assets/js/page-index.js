@@ -1,7 +1,7 @@
-import * as C from './core.js?v=dca599d7';
-import { mountFixtureList } from './fixture-list.js?v=52a1700f';
+import * as C from './core.js?v=9bed6349';
+import { mountFixtureList } from './fixture-list.js?v=38368d74';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
-import { mountLiveBoard } from './live-board.js?v=9500086b';
+import { mountLiveBoard } from './live-board.js?v=1b6083a5';
 
 const app = document.getElementById('app');
 
