@@ -1,6 +1,6 @@
-import * as C from './core.js?v=65f83e48';
+import * as C from './core.js?v=e883428c';
 
-/* 模型驗證(2026-11-07 起是「說明」頁的一個分頁;宿主是 page-model.js,另一個分頁是足球知識)。
+/* 模型驗證(2026-11-07 抽出來;page-model.js 依 view 畫它或足球知識,兩個都是聯賽分頁的一格)。
    內容原樣搬過來,只是改成 render 函式、畫進呼叫端給的容器 —— 跟 knowledge-view / ucl-view 同一個做法。
    函式裡的程式沒有縮排一層:整段八百行重新縮排,git blame 就整份換成這一則提交,往回查「這個數字為什麼這樣算」會斷線。 */
 export async function renderModelView(app) {

@@ -1,6 +1,6 @@
-import * as C from './core.js?v=65f83e48';
+import * as C from './core.js?v=e883428c';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=1d7da60b';
+import { mountSimTable } from './sim-table.js?v=1cd4cd1e';
 
 /* 聯賽頁的「比賽現況」與積分榜(2026-11-07,使用者:「聯賽跟實時戰況如何簡化合併?」→「併成一頁」)。
 

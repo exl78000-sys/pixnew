@@ -965,9 +965,16 @@ const LEAGUE_TABS = [
      同一天再併(使用者選了「建議二 + 建議三」):動態併進「比賽」頁底的摺疊區(上面 also 的 news);
      模型驗證與足球知識合成一格「說明」—— model.html 是宿主,頁內兩個分頁(?view=knowledge 是知識)。
      knowledge 放 also:舊的 knowledge.html 轉址那一瞬間亮這一格。換聯賽時停在同一分頁、同一個 view(pickTarget)。 */
-  { page: 'model', label: '說明', also: ['knowledge'] },
+  /* 2026-11-07 最後一輪(使用者:「說明兩頁移動到上一層」):「說明」那一格裡還有一排頁內分頁(模型驗證 / 足球知識),
+     那是全站唯一排到第三層的地方。兩頁各自回到聯賽分頁:同一個 model.html,靠 view 分(沒帶 view = 模型驗證),
+     不另開 knowledge.html —— 那一頁不在各聯賽的 open 清單裡,放回來的話五個聯賽要各改一次清單。
+     knowledge 放 also:舊的 knowledge.html 轉址那一瞬間亮「知識」。 */
+  { page: 'model', view: 'model', label: '模型' },
+  { page: 'model', view: 'knowledge', label: '知識', also: ['knowledge'] },
 ];
-// 探索頁現在只剩模擬遊玩(足球知識 2026-11-07 搬去「說明」)—— 不帶 view 時就是它,導覽列要亮「我的 → 模擬遊玩」
+// 模型頁不帶 view 時是模型驗證(page-model.js 的預設)—— 導覽列要亮同一個
+const MODEL_DEFAULT_VIEW = 'model';
+// 探索頁現在只剩模擬遊玩(足球知識 2026-11-07 搬去 model.html?view=knowledge)—— 不帶 view 時就是它,導覽列要亮「我的 → 模擬遊玩」
 const EXPLORE_DEFAULT_VIEW = 'duel';
 /* 五區的小圖示(只在手機底部列畫)。線條圖、吃 currentColor,不引入圖示庫。 */
 const NAV_ICON = {
@@ -981,7 +988,8 @@ const NAV_ICON = {
 export function navState(page = currentPage(), view = qs('view'), lg = league()) {
   const L = LEAGUES[lg] ?? LEAGUES.pl;
   const allow = p => (L.open ? L.open.includes(p) : true);
-  const v = page === 'explore' ? (view ?? EXPLORE_DEFAULT_VIEW) : null;
+  const v = page === 'explore' ? (view ?? EXPLORE_DEFAULT_VIEW)
+    : page === 'model' ? (view === 'knowledge' ? 'knowledge' : MODEL_DEFAULT_VIEW) : null;
   const sections = SECTIONS
     .map(s => ({ ...s, items: s.items.filter(it => allow(it.page)) }))
     .filter(s => s.items.length);
@@ -1005,7 +1013,7 @@ const PAGES = [
   ['tactics', '戰術'],
   ['players', '球員'],
   ['news', '動態'],
-  ['model', '說明'],   // 模型驗證 + 足球知識(2026-11-07 合成一頁,頁內分頁)
+  ['model', '模型驗證'],   // ?view=knowledge 是足球知識(同一頁,2026-11-07 起各自是聯賽分頁的一格)
   /* 盃賽移去 SITE_PAGES(跨聯賽那一組)了 —— 兩邊都放的話導覽列會出現兩個。
      原本「西甲不顯示英格蘭盃賽」的決定由新的形式取代:單一「盃賽」入口,
      預設分頁是歐冠(西甲讀者要的),英格蘭那兩個是清楚標示的頁內分頁。 */
@@ -1040,7 +1048,7 @@ export function nav() {
   const L = LEAGUES[lg] ?? LEAGUES.pl;
   const { sections, here: hereSection, isHere, ltabs, ltab } = navState(here, qs('view'), lg);
   document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
-  const itemLink = it => link(it.page, it.view ? { view: it.view } : {});
+  const itemLink = it => link(it.page, it.view && !(it.page === 'model' && it.view === MODEL_DEFAULT_VIEW) ? { view: it.view } : {});
   const itemLabel = it => it.label ?? pageLabel(it.page, lg);
   const secLink = s => itemLink(s.items[0]);
   const icon = k => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_ICON[k] ?? ''}</svg>`;
@@ -1053,8 +1061,9 @@ export function nav() {
   const isLeagueItem = it => it.page === 'index';
   const pickTarget = k => {
     const t = ltab && ltab.page !== 'index' && (!LEAGUES[k].open || LEAGUES[k].open.includes(ltab.page)) ? ltab : null;
-    /* 分頁本身沒定 view、而目前就站在那一頁的話,帶著目前的 view 走(說明頁的「足球知識」換聯賽後還是足球知識) */
-    const vw = t?.view ?? (t && t.page === here ? qs('view') : null);
+    /* 分頁本身沒定 view、而目前就站在那一頁的話,帶著目前的 view 走(切 view 的頁換聯賽後停在同一個 view) */
+    let vw = t?.view ?? (t && t.page === here ? qs('view') : null);
+    if (t?.page === 'model' && vw === MODEL_DEFAULT_VIEW) vw = null;   // 預設那一個不寫進網址
     return t ? link(t.page, { league: k, ...(vw ? { view: vw } : {}) }) : link('index', { league: k });
   };
   /* 清單掛在 body(position: fixed),不放在任何一條列裡:頂列有 backdrop-filter(會變成 fixed 的定位基準)、
@@ -1083,7 +1092,7 @@ export function nav() {
     ? `<div class="subbar lgbar"><div class="inner"><span class="sub-label">${esc(L.zh)}</span>
         <nav class="tabs sub" aria-label="${esc(L.zh)}分頁">${ltabs.map(t => {
           const on = t === ltab;
-          return `<a href="${link(t.page, t.view ? { view: t.view } : {})}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${esc(t.label ?? pageLabel(t.page, lg))}</a>`;
+          return `<a href="${itemLink(t)}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${esc(t.label ?? pageLabel(t.page, lg))}</a>`;
         }).join('')}</nav>
       </div></div>`
     : '';
@@ -1096,7 +1105,7 @@ export function nav() {
   /* 手機的底部列(桌機 display:none):跟頂列同一組格子 —— 總覽、聯賽(切換鈕)、盃賽、更多。
      單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的(含清單),不會疊兩條。 */
   document.querySelector('.bottombar')?.remove();
-  /* 清單的連結在打開那一刻重算:頁內分頁會用 replaceState 改 ?view=(說明頁的「足球知識」),
+  /* 清單的連結在打開那一刻重算:頁內分頁會用 replaceState 改網址(2026-11-07 那時說明頁的「足球知識」是這樣,之後回到聯賽分頁;規則留著給以後的頁內分頁),
      而清單是 nav() 當下畫的 —— 不重算的話,在足球知識換聯賽會回到模型驗證。點擊監聽只註冊一次(globalThis 守著),
      所以它呼叫的是「最近一次 nav() 留下的」這一支,單檔版換頁後也是對的那一頁。 */
   globalThis.__leagueHrefs = () => {

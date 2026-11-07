@@ -6458,18 +6458,19 @@ function checkAssetStamps() {
       const tabOf = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.ltab ? (st.ltab.label ?? st.ltab.page) : null; };
       const lit = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.here?.key === 'comp' && st.here.items.some(it => it.page === 'index' && st.isHere(it)); };
       /* 動態、模型、知識 2026-11-07 也搬進來(讀的都是目前聯賽的資料);同一天再併:動態併進「比賽」(news.html 轉址 → also)、
-         模型與知識合成「說明」(model.html,知識是 ?view=knowledge;knowledge.html 轉址 → also)。
+         模型與知識一度合成「說明」,同一天稍後又各自回到聯賽分頁(使用者:「說明兩頁移動到上一層」——頁內那排分頁是全站唯一的第三層):
+         同一個 model.html 靠 view 分,沒帶 view 是模型(亮「模型」不亮「知識」),knowledge.html 轉址 → also 亮知識。
          探索頁現在只剩模擬遊玩(不帶 view 也是它),不在聯賽底下;「我的」那一頁也不在 */
-      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players,說明'
+      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players,模型,知識'
         && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽' && tabOf('news') === '比賽'
         && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'teams' && tabOf('players') === 'players'
-        && tabOf('model') === '說明' && tabOf('model', 'knowledge') === '說明' && tabOf('knowledge') === '說明'
+        && tabOf('model') === '模型' && tabOf('model', 'model') === '模型' && tabOf('model', 'knowledge') === '知識' && tabOf('knowledge') === '知識'
         && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'duel') === null && tabOf('explore', null) === null
         && tabOf('explore', 'knowledge') === null && tabOf('predict') === null
         && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis', 'news', 'model', 'knowledge'].every(pg => lit(pg)) && lit('model', 'knowledge')
         && !lit('overview') && !lit('cups') && !lit('explore', 'duel') && !lit('explore') && !lit('predict')
-        && ['es1', 'en2', 'de1', 'it1', 'fr1'].every(lg => NV.navState('model', null, lg).ltabs.length === 4),
-        '比賽(含動態)、球隊(含戰術)、球員、說明(模型 + 知識)是聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 模擬遊玩 / 我的沒有分頁');
+        && ['es1', 'en2', 'de1', 'it1', 'fr1'].every(lg => NV.navState('model', null, lg).ltabs.length === 5),
+        '比賽(含動態)、球隊(含戰術)、球員、模型、知識是聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 模擬遊玩 / 我的沒有分頁');
       const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
       ok(/const lgbar = ltab/.test(navFn) && /\$\{sub\}\$\{lgbar\}<\/header>/.test(navFn)
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
@@ -6494,7 +6495,7 @@ function checkAssetStamps() {
          ① news.html 轉到比賽頁的動態區(anchorLink —— 分頁版 #news、單檔版 ?at=news),比賽頁的摺疊區有那個 id、
             掛著完整的動態(news-view),第二段畫完才捲過去、摺疊先打開;
          ② knowledge.html 與 explore.html?view=knowledge 轉到 model.html?view=knowledge;
-         ③ model.html 是兩個分頁的宿主,兩個 render 都畫進內層容器(直接寫 #app 會把分頁列蓋掉);
+         ③ model.html 依 view 畫模型驗證或足球知識,**頁內不畫分頁列**(切換是導覽列的聯賽分頁 —— 第三層拿掉了,使用者「說明兩頁移動到上一層」);
          ④ 站內沒有人再連到 news.html(連過去會多轉一次址)。 */
       const js = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
       const noC = t => t.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -6508,9 +6509,9 @@ function checkAssetStamps() {
       ok(/location\.replace\(C\.link\('model', \{ view: 'knowledge' \}\)\)/.test(pk)
         && /C\.qs\('view'\) === 'knowledge'\) location\.replace\(C\.link\('model', \{ view: 'knowledge' \}\)\)/.test(pe)
         && !/renderKnowledge/.test(pe)
-        && /key: 'model'[^\n]*render: renderModelView/.test(pm) && /key: 'knowledge'[^\n]*render: renderKnowledge/.test(pm)
-        && /<div id="docBody">/.test(pm) && /await v\.render\(body\)/.test(pm) && !/app\.innerHTML[^\n]*\n[^\n]*renderModelView\(app\)/.test(pm),
-        '說明頁是模型驗證與足球知識兩個分頁的宿主;足球知識的兩個舊網址都轉到這裡');
+        && /C\.qs\('view'\) === 'knowledge'/.test(pm) && /renderKnowledge\(app\)/.test(pm) && /renderModelView\(app\)/.test(pm)
+        && !/C\.tabs\(/.test(pm),
+        'model.html 依 view 畫模型或知識、頁內沒有分頁列;足球知識的兩個舊網址都轉到 ?view=knowledge');
       const linkers = readdirSync(join(ROOT, 'web', 'assets', 'js')).filter(f => f.endsWith('.js') && f !== 'core.js')
         .filter(f => /C\.link\('news'/.test(noC(js(f))));
       ok(linkers.length === 0, '站內沒有連結還指向 news.html(連過去只會多轉一次址)', linkers.join('、'));
