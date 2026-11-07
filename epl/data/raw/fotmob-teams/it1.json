@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-07T16:59:07.890Z",
+ "fetchedAt": "2026-11-07T17:31:28.313Z",
  "teams": [
   {
    "code": "LAZ",
@@ -485,6 +485,66 @@
    ]
   },
   {
+   "code": "BLG",
+   "fotmobId": 9857,
+   "fotmobName": "Bologna",
+   "fetchedAt": "2026-10-09T12:41:59.110Z",
+   "color": "#102880",
+   "teamColors": {
+    "darkMode": "#004eca",
+    "lightMode": "#102880",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Renato Dall'Ara",
+   "city": "Bologna",
+   "location": [
+    "44.492290396",
+    "11.309956759"
+   ],
+   "capacity": 39279,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 42581,
+     "name": "Vincenzo Italiano",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 16,
+     "draw": 8,
+     "loss": 14,
+     "pointsPerGame": 1.47,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 853795,
+     "name": "Domenico Tedesco",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.25,
+     "winPercentage": 0
+    },
+    {
+     "id": 41413,
+     "name": "Raffaele Palladino",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    }
+   ]
+  },
+  {
    "code": "NAP",
    "fotmobId": 9875,
    "fotmobName": "Napoli",
@@ -724,66 +784,6 @@
     }
    ],
    "coachHistoryFull": true
-  },
-  {
-   "code": "BLG",
-   "fotmobId": 9857,
-   "fotmobName": "Bologna",
-   "fetchedAt": "2026-10-09T12:41:59.110Z",
-   "color": "#102880",
-   "teamColors": {
-    "darkMode": "#004eca",
-    "lightMode": "#102880",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Renato Dall'Ara",
-   "city": "Bologna",
-   "location": [
-    "44.492290396",
-    "11.309956759"
-   ],
-   "capacity": 39279,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 42581,
-     "name": "Vincenzo Italiano",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 16,
-     "draw": 8,
-     "loss": 14,
-     "pointsPerGame": 1.47,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 853795,
-     "name": "Domenico Tedesco",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.25,
-     "winPercentage": 0
-    },
-    {
-     "id": 41413,
-     "name": "Raffaele Palladino",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
-    }
-   ]
   },
   {
    "code": "TOR",

@@ -65112,8 +65112,8 @@
   "FUL|NEW": {
    "fixtureId": 129017,
    "kickoff": "2026-11-07T15:00:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -65544,6 +65544,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 9662,
+     "assist": null,
+     "team": 23,
+     "min": 80,
+     "label": "80'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 117763,
      "assist": null,
@@ -65564,6 +65577,15 @@
       "team": 23,
       "min": 90,
       "label": "90'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 68637,
+      "team": 23,
+      "min": 90,
+      "label": "90+2'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -65735,12 +65757,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -65757,10 +65773,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+8'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "90+1'00"
+   "clock": "90+8'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-07T16:58:15.737Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "ARS|HUL": {
    "fixtureId": 129013,
@@ -66477,7 +66506,7 @@
    "clock": "90+5'00",
    "quality": {
     "complete": true,
-    "checkedAt": "2026-11-07T16:57:45.479Z",
+    "checkedAt": "2026-11-07T16:58:14.967Z",
     "issues": [],
     "retryCount": 0,
     "nextRetryAt": null
@@ -66881,5 +66910,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-07T16:57:45.479Z"
+ "fetchedAt": "2026-11-07T17:29:51.399Z"
 }
