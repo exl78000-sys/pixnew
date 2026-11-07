@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-11-06T22:27:53.581Z",
+ "fetchedAt": "2026-11-07T02:08:08.978Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-11-06T22:27:53.581Z",
+   "fetchedAt": "2026-11-07T02:08:08.978Z",
    "count": 380,
    "matches": [
     {
@@ -731,7 +731,7 @@
      "home": "EVE",
      "away": "COV",
      "utcDate": "2026-11-06T20:00:00Z",
-     "status": "TIMED",
+     "status": "FINISHED",
      "matchday": 10
     },
     {
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-11-06T22:27:53.581Z",
+   "fetchedAt": "2026-11-07T02:08:08.978Z",
    "count": 552,
    "matches": [
     {
@@ -4409,7 +4409,7 @@
      "home": "WRE",
      "away": "WOL",
      "utcDate": "2026-11-07T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4417,7 +4417,7 @@
      "home": "POR",
      "away": "STK",
      "utcDate": "2026-11-07T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4425,7 +4425,7 @@
      "home": "BRC",
      "away": "NOR",
      "utcDate": "2026-11-07T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4433,7 +4433,7 @@
      "home": "QPR",
      "away": "LIN",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4441,7 +4441,7 @@
      "home": "CAR",
      "away": "BUR",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4449,7 +4449,7 @@
      "home": "CHA",
      "away": "SHU",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4457,7 +4457,7 @@
      "home": "WAT",
      "away": "MID",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4465,7 +4465,7 @@
      "home": "BLB",
      "away": "WHU",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4473,7 +4473,7 @@
      "home": "WBA",
      "away": "MIL",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4481,7 +4481,7 @@
      "home": "PNE",
      "away": "SOU",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
     },
     {
@@ -4489,23 +4489,23 @@
      "home": "BIR",
      "away": "SWA",
      "utcDate": "2026-11-07T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 15
-    },
-    {
-     "fdId": 561941,
-     "home": "SHU",
-     "away": "WAT",
-     "utcDate": "2026-11-21T12:30:00Z",
-     "status": "TIMED",
-     "matchday": 16
     },
     {
      "fdId": 561944,
      "home": "SOU",
      "away": "DER",
      "utcDate": "2026-11-21T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561948,
+     "home": "NOR",
+     "away": "CAR",
+     "utcDate": "2026-11-21T12:30:00Z",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4513,7 +4513,15 @@
      "home": "MIL",
      "away": "QPR",
      "utcDate": "2026-11-21T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
+     "matchday": 16
+    },
+    {
+     "fdId": 561941,
+     "home": "SHU",
+     "away": "WAT",
+     "utcDate": "2026-11-21T15:00:00Z",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4521,7 +4529,7 @@
      "home": "SWA",
      "away": "WBA",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4529,7 +4537,7 @@
      "home": "MID",
      "away": "BRC",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4537,7 +4545,7 @@
      "home": "BOL",
      "away": "POR",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4545,15 +4553,7 @@
      "home": "STK",
      "away": "BIR",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
-     "matchday": 16
-    },
-    {
-     "fdId": 561948,
-     "home": "NOR",
-     "away": "CAR",
-     "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4561,7 +4561,7 @@
      "home": "LIN",
      "away": "WRE",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4569,7 +4569,7 @@
      "home": "WHU",
      "away": "PNE",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4577,7 +4577,7 @@
      "home": "WOL",
      "away": "CHA",
      "utcDate": "2026-11-21T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4585,7 +4585,7 @@
      "home": "BUR",
      "away": "BLB",
      "utcDate": "2026-11-22T12:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 16
     },
     {
@@ -4593,7 +4593,7 @@
      "home": "CAR",
      "away": "PNE",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4601,7 +4601,7 @@
      "home": "MID",
      "away": "SWA",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4609,7 +4609,7 @@
      "home": "POR",
      "away": "WHU",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4617,7 +4617,7 @@
      "home": "SHU",
      "away": "SOU",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4625,7 +4625,7 @@
      "home": "CHA",
      "away": "LIN",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4633,7 +4633,7 @@
      "home": "BRC",
      "away": "WRE",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4641,7 +4641,7 @@
      "home": "NOR",
      "away": "QPR",
      "utcDate": "2026-11-24T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4649,7 +4649,7 @@
      "home": "WOL",
      "away": "DER",
      "utcDate": "2026-11-24T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4657,7 +4657,7 @@
      "home": "WAT",
      "away": "BLB",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4665,7 +4665,7 @@
      "home": "BOL",
      "away": "WBA",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4673,7 +4673,7 @@
      "home": "BUR",
      "away": "BIR",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4681,7 +4681,7 @@
      "home": "STK",
      "away": "MIL",
      "utcDate": "2026-11-25T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 17
     },
     {
@@ -4689,7 +4689,7 @@
      "home": "SOU",
      "away": "MID",
      "utcDate": "2026-11-27T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4697,7 +4697,7 @@
      "home": "BLB",
      "away": "CHA",
      "utcDate": "2026-11-28T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4705,7 +4705,7 @@
      "home": "LIN",
      "away": "WOL",
      "utcDate": "2026-11-28T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4713,7 +4713,7 @@
      "home": "PNE",
      "away": "NOR",
      "utcDate": "2026-11-28T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4721,7 +4721,7 @@
      "home": "WRE",
      "away": "POR",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4729,7 +4729,7 @@
      "home": "QPR",
      "away": "SHU",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4737,7 +4737,7 @@
      "home": "MIL",
      "away": "BUR",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4745,7 +4745,7 @@
      "home": "BIR",
      "away": "BOL",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4753,7 +4753,7 @@
      "home": "DER",
      "away": "WAT",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4761,7 +4761,7 @@
      "home": "WHU",
      "away": "STK",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4769,7 +4769,7 @@
      "home": "WBA",
      "away": "BRC",
      "utcDate": "2026-11-28T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4777,7 +4777,7 @@
      "home": "SWA",
      "away": "CAR",
      "utcDate": "2026-11-29T12:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 18
     },
     {
@@ -4785,7 +4785,7 @@
      "home": "SHU",
      "away": "WHU",
      "utcDate": "2026-12-04T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4793,7 +4793,7 @@
      "home": "BRC",
      "away": "SWA",
      "utcDate": "2026-12-05T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4801,7 +4801,15 @@
      "home": "BOL",
      "away": "BLB",
      "utcDate": "2026-12-05T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
+     "matchday": 19
+    },
+    {
+     "fdId": 561984,
+     "home": "WAT",
+     "away": "MIL",
+     "utcDate": "2026-12-05T12:30:00Z",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4809,7 +4817,7 @@
      "home": "MID",
      "away": "DER",
      "utcDate": "2026-12-05T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4817,7 +4825,7 @@
      "home": "CAR",
      "away": "LIN",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4825,7 +4833,7 @@
      "home": "NOR",
      "away": "WRE",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4833,7 +4841,7 @@
      "home": "CHA",
      "away": "BIR",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4841,15 +4849,7 @@
      "home": "WOL",
      "away": "SOU",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
-     "matchday": 19
-    },
-    {
-     "fdId": 561984,
-     "home": "WAT",
-     "away": "MIL",
-     "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4857,7 +4857,7 @@
      "home": "POR",
      "away": "WBA",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4865,7 +4865,7 @@
      "home": "STK",
      "away": "QPR",
      "utcDate": "2026-12-05T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4873,7 +4873,7 @@
      "home": "BUR",
      "away": "PNE",
      "utcDate": "2026-12-06T12:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 19
     },
     {
@@ -4881,7 +4881,7 @@
      "home": "BLB",
      "away": "NOR",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4889,7 +4889,7 @@
      "home": "WBA",
      "away": "CAR",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4897,7 +4897,7 @@
      "home": "WRE",
      "away": "CHA",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4905,7 +4905,7 @@
      "home": "MIL",
      "away": "SHU",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4913,7 +4913,7 @@
      "home": "SWA",
      "away": "BOL",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4921,23 +4921,23 @@
      "home": "QPR",
      "away": "WOL",
      "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
-     "matchday": 20
-    },
-    {
-     "fdId": 561996,
-     "home": "BIR",
-     "away": "WAT",
-     "utcDate": "2026-12-08T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
      "fdId": 561989,
      "home": "WHU",
      "away": "MID",
-     "utcDate": "2026-12-08T20:45:00Z",
-     "status": "TIMED",
+     "utcDate": "2026-12-08T20:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 20
+    },
+    {
+     "fdId": 561996,
+     "home": "BIR",
+     "away": "WAT",
+     "utcDate": "2026-12-08T20:00:00Z",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4945,7 +4945,7 @@
      "home": "PNE",
      "away": "POR",
      "utcDate": "2026-12-09T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4953,7 +4953,7 @@
      "home": "LIN",
      "away": "STK",
      "utcDate": "2026-12-09T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4961,7 +4961,7 @@
      "home": "DER",
      "away": "BRC",
      "utcDate": "2026-12-09T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4969,7 +4969,7 @@
      "home": "SOU",
      "away": "BUR",
      "utcDate": "2026-12-09T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 20
     },
     {
@@ -4977,7 +4977,7 @@
      "home": "BOL",
      "away": "WRE",
      "utcDate": "2026-12-11T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -4985,7 +4985,7 @@
      "home": "PNE",
      "away": "MID",
      "utcDate": "2026-12-12T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -4993,7 +4993,7 @@
      "home": "QPR",
      "away": "WAT",
      "utcDate": "2026-12-12T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5001,7 +5001,7 @@
      "home": "STK",
      "away": "WBA",
      "utcDate": "2026-12-12T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5009,7 +5009,7 @@
      "home": "CHA",
      "away": "SWA",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5017,15 +5017,7 @@
      "home": "WHU",
      "away": "BRC",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
-     "matchday": 21
-    },
-    {
-     "fdId": 562007,
-     "home": "LIN",
-     "away": "NOR",
-     "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5033,7 +5025,7 @@
      "home": "BLB",
      "away": "DER",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5041,7 +5033,7 @@
      "home": "POR",
      "away": "BIR",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5049,7 +5041,7 @@
      "home": "SHU",
      "away": "BUR",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5057,7 +5049,7 @@
      "home": "WOL",
      "away": "MIL",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5065,7 +5057,15 @@
      "home": "CAR",
      "away": "SOU",
      "utcDate": "2026-12-12T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
+     "matchday": 21
+    },
+    {
+     "fdId": 562007,
+     "home": "LIN",
+     "away": "NOR",
+     "utcDate": "2026-12-13T14:00:00Z",
+     "status": "SCHEDULED",
      "matchday": 21
     },
     {
@@ -5073,7 +5073,7 @@
      "home": "WBA",
      "away": "SHU",
      "utcDate": "2026-12-18T20:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5081,7 +5081,7 @@
      "home": "BRC",
      "away": "CAR",
      "utcDate": "2026-12-19T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5089,7 +5089,7 @@
      "home": "MIL",
      "away": "CHA",
      "utcDate": "2026-12-19T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5097,7 +5097,7 @@
      "home": "BIR",
      "away": "WHU",
      "utcDate": "2026-12-19T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5105,7 +5105,7 @@
      "home": "SWA",
      "away": "PNE",
      "utcDate": "2026-12-19T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5113,7 +5113,7 @@
      "home": "WAT",
      "away": "BOL",
      "utcDate": "2026-12-19T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5121,7 +5121,7 @@
      "home": "MID",
      "away": "POR",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5129,7 +5129,7 @@
      "home": "NOR",
      "away": "WOL",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5137,7 +5137,7 @@
      "home": "BUR",
      "away": "STK",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5145,7 +5145,7 @@
      "home": "DER",
      "away": "LIN",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5153,7 +5153,7 @@
      "home": "WRE",
      "away": "QPR",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5161,7 +5161,7 @@
      "home": "SOU",
      "away": "BLB",
      "utcDate": "2026-12-19T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 22
     },
     {
@@ -5169,7 +5169,7 @@
      "home": "BOL",
      "away": "BUR",
      "utcDate": "2026-12-26T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5177,7 +5177,7 @@
      "home": "SHU",
      "away": "MID",
      "utcDate": "2026-12-26T12:30:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5185,7 +5185,7 @@
      "home": "POR",
      "away": "WAT",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5193,7 +5193,7 @@
      "home": "BLB",
      "away": "BIR",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5201,7 +5201,7 @@
      "home": "WHU",
      "away": "NOR",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5209,7 +5209,7 @@
      "home": "WOL",
      "away": "SWA",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5217,7 +5217,7 @@
      "home": "QPR",
      "away": "BRC",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5225,7 +5225,7 @@
      "home": "STK",
      "away": "WRE",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5233,7 +5233,7 @@
      "home": "CAR",
      "away": "MIL",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5241,7 +5241,7 @@
      "home": "LIN",
      "away": "WBA",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5249,7 +5249,7 @@
      "home": "PNE",
      "away": "DER",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5257,7 +5257,7 @@
      "home": "CHA",
      "away": "SOU",
      "utcDate": "2026-12-26T15:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 23
     },
     {
@@ -5265,7 +5265,7 @@
      "home": "WRE",
      "away": "BLB",
      "utcDate": "2026-12-29T18:00:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5273,7 +5273,7 @@
      "home": "WBA",
      "away": "PNE",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5281,7 +5281,7 @@
      "home": "DER",
      "away": "SHU",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5289,7 +5289,7 @@
      "home": "SWA",
      "away": "QPR",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5297,7 +5297,7 @@
      "home": "WAT",
      "away": "WOL",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5305,7 +5305,7 @@
      "home": "NOR",
      "away": "CHA",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5313,15 +5313,7 @@
      "home": "BUR",
      "away": "LIN",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
-     "matchday": 24
-    },
-    {
-     "fdId": 562045,
-     "home": "BIR",
-     "away": "CAR",
-     "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5329,7 +5321,7 @@
      "home": "MID",
      "away": "BOL",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5337,7 +5329,7 @@
      "home": "BRC",
      "away": "STK",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5345,7 +5337,15 @@
      "home": "MIL",
      "away": "POR",
      "utcDate": "2026-12-29T19:45:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
+     "matchday": 24
+    },
+    {
+     "fdId": 562045,
+     "home": "BIR",
+     "away": "CAR",
+     "utcDate": "2026-12-29T20:00:00Z",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
@@ -5353,14 +5353,14 @@
      "home": "SOU",
      "away": "WHU",
      "utcDate": "2026-12-29T20:15:00Z",
-     "status": "TIMED",
+     "status": "SCHEDULED",
      "matchday": 24
     },
     {
      "fdId": 562049,
      "home": "MID",
      "away": "PNE",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5368,7 +5368,7 @@
      "fdId": 562050,
      "home": "SOU",
      "away": "CAR",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5376,7 +5376,7 @@
      "fdId": 562051,
      "home": "WAT",
      "away": "QPR",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5384,7 +5384,7 @@
      "fdId": 562052,
      "home": "BUR",
      "away": "SHU",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5392,7 +5392,7 @@
      "fdId": 562053,
      "home": "DER",
      "away": "BLB",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5400,7 +5400,7 @@
      "fdId": 562054,
      "home": "BIR",
      "away": "POR",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5408,7 +5408,7 @@
      "fdId": 562055,
      "home": "WBA",
      "away": "STK",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5416,7 +5416,7 @@
      "fdId": 562056,
      "home": "NOR",
      "away": "LIN",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5424,7 +5424,7 @@
      "fdId": 562057,
      "home": "SWA",
      "away": "CHA",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5432,7 +5432,7 @@
      "fdId": 562058,
      "home": "WRE",
      "away": "BOL",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5440,7 +5440,7 @@
      "fdId": 562059,
      "home": "MIL",
      "away": "WOL",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
     },
@@ -5448,23 +5448,23 @@
      "fdId": 562060,
      "home": "BRC",
      "away": "WHU",
-     "utcDate": "2027-01-01T00:00:00Z",
+     "utcDate": "2027-01-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 25
+    },
+    {
+     "fdId": 562070,
+     "home": "WHU",
+     "away": "SWA",
+     "utcDate": "2027-01-15T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 26
     },
     {
      "fdId": 562061,
      "home": "STK",
      "away": "DER",
-     "utcDate": "2027-01-16T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 26
-    },
-    {
-     "fdId": 562062,
-     "home": "CHA",
-     "away": "WAT",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5472,7 +5472,7 @@
      "fdId": 562063,
      "home": "WOL",
      "away": "BUR",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5480,7 +5480,7 @@
      "fdId": 562064,
      "home": "PNE",
      "away": "WRE",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5488,7 +5488,7 @@
      "fdId": 562065,
      "home": "CAR",
      "away": "MID",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5496,7 +5496,7 @@
      "fdId": 562066,
      "home": "LIN",
      "away": "MIL",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5504,7 +5504,7 @@
      "fdId": 562067,
      "home": "POR",
      "away": "NOR",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5512,7 +5512,7 @@
      "fdId": 562068,
      "home": "QPR",
      "away": "BIR",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5520,15 +5520,7 @@
      "fdId": 562069,
      "home": "SHU",
      "away": "BRC",
-     "utcDate": "2027-01-16T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 26
-    },
-    {
-     "fdId": 562070,
-     "home": "WHU",
-     "away": "SWA",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5536,7 +5528,7 @@
      "fdId": 562071,
      "home": "BOL",
      "away": "SOU",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
@@ -5544,31 +5536,31 @@
      "fdId": 562072,
      "home": "BLB",
      "away": "WBA",
-     "utcDate": "2027-01-16T00:00:00Z",
+     "utcDate": "2027-01-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 26
     },
     {
-     "fdId": 562073,
-     "home": "WRE",
-     "away": "SHU",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "fdId": 562062,
+     "home": "CHA",
+     "away": "WAT",
+     "utcDate": "2027-01-17T12:00:00Z",
      "status": "SCHEDULED",
-     "matchday": 27
+     "matchday": 26
     },
     {
      "fdId": 562074,
      "home": "PNE",
      "away": "STK",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-22T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
     {
-     "fdId": 562075,
-     "home": "CAR",
-     "away": "WOL",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "fdId": 562073,
+     "home": "WRE",
+     "away": "SHU",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5576,7 +5568,7 @@
      "fdId": 562076,
      "home": "QPR",
      "away": "SOU",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5584,7 +5576,7 @@
      "fdId": 562077,
      "home": "BRC",
      "away": "BOL",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5592,7 +5584,7 @@
      "fdId": 562078,
      "home": "DER",
      "away": "MIL",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5600,7 +5592,7 @@
      "fdId": 562079,
      "home": "POR",
      "away": "BUR",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5608,7 +5600,7 @@
      "fdId": 562080,
      "home": "CHA",
      "away": "MID",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5616,7 +5608,7 @@
      "fdId": 562081,
      "home": "BIR",
      "away": "LIN",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5624,7 +5616,7 @@
      "fdId": 562082,
      "home": "WAT",
      "away": "NOR",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5632,7 +5624,7 @@
      "fdId": 562083,
      "home": "WBA",
      "away": "WHU",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5640,7 +5632,15 @@
      "fdId": 562084,
      "home": "BLB",
      "away": "SWA",
-     "utcDate": "2027-01-23T00:00:00Z",
+     "utcDate": "2027-01-23T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 27
+    },
+    {
+     "fdId": 562075,
+     "home": "CAR",
+     "away": "WOL",
+     "utcDate": "2027-01-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 27
     },
@@ -5648,7 +5648,7 @@
      "fdId": 562085,
      "home": "BOL",
      "away": "CHA",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5656,7 +5656,7 @@
      "fdId": 562086,
      "home": "NOR",
      "away": "DER",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5664,7 +5664,7 @@
      "fdId": 562087,
      "home": "LIN",
      "away": "WAT",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5672,7 +5672,7 @@
      "fdId": 562088,
      "home": "SHU",
      "away": "PNE",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5680,7 +5680,7 @@
      "fdId": 562089,
      "home": "SOU",
      "away": "WBA",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5688,7 +5688,7 @@
      "fdId": 562090,
      "home": "MIL",
      "away": "BIR",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5696,7 +5696,7 @@
      "fdId": 562091,
      "home": "STK",
      "away": "BLB",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5704,7 +5704,7 @@
      "fdId": 562092,
      "home": "BUR",
      "away": "QPR",
-     "utcDate": "2027-01-26T00:00:00Z",
+     "utcDate": "2027-01-26T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5712,7 +5712,7 @@
      "fdId": 562093,
      "home": "WOL",
      "away": "BRC",
-     "utcDate": "2027-01-27T00:00:00Z",
+     "utcDate": "2027-01-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5720,7 +5720,7 @@
      "fdId": 562094,
      "home": "SWA",
      "away": "POR",
-     "utcDate": "2027-01-27T00:00:00Z",
+     "utcDate": "2027-01-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5728,7 +5728,7 @@
      "fdId": 562095,
      "home": "WHU",
      "away": "CAR",
-     "utcDate": "2027-01-27T00:00:00Z",
+     "utcDate": "2027-01-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
     },
@@ -5736,15 +5736,23 @@
      "fdId": 562096,
      "home": "MID",
      "away": "WRE",
-     "utcDate": "2027-01-27T00:00:00Z",
+     "utcDate": "2027-01-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 28
+    },
+    {
+     "fdId": 562102,
+     "home": "LIN",
+     "away": "QPR",
+     "utcDate": "2027-01-29T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 29
     },
     {
      "fdId": 562097,
      "home": "BUR",
      "away": "CAR",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5752,7 +5760,7 @@
      "fdId": 562098,
      "home": "SWA",
      "away": "BIR",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5760,7 +5768,7 @@
      "fdId": 562099,
      "home": "SOU",
      "away": "PNE",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5768,7 +5776,7 @@
      "fdId": 562100,
      "home": "MIL",
      "away": "WBA",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5776,15 +5784,7 @@
      "fdId": 562101,
      "home": "WOL",
      "away": "WRE",
-     "utcDate": "2027-01-30T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 29
-    },
-    {
-     "fdId": 562102,
-     "home": "LIN",
-     "away": "QPR",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5792,7 +5792,7 @@
      "fdId": 562103,
      "home": "STK",
      "away": "POR",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5800,7 +5800,7 @@
      "fdId": 562104,
      "home": "BOL",
      "away": "DER",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5808,7 +5808,7 @@
      "fdId": 562105,
      "home": "WHU",
      "away": "BLB",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5816,7 +5816,7 @@
      "fdId": 562106,
      "home": "MID",
      "away": "WAT",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5824,7 +5824,7 @@
      "fdId": 562107,
      "home": "SHU",
      "away": "CHA",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-30T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
     },
@@ -5832,15 +5832,23 @@
      "fdId": 562108,
      "home": "NOR",
      "away": "BRC",
-     "utcDate": "2027-01-30T00:00:00Z",
+     "utcDate": "2027-01-31T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 29
+    },
+    {
+     "fdId": 562120,
+     "home": "BRC",
+     "away": "MID",
+     "utcDate": "2027-02-05T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 30
     },
     {
      "fdId": 562109,
      "home": "WBA",
      "away": "SWA",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5848,7 +5856,7 @@
      "fdId": 562110,
      "home": "DER",
      "away": "SOU",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5856,7 +5864,7 @@
      "fdId": 562111,
      "home": "WAT",
      "away": "SHU",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5864,7 +5872,7 @@
      "fdId": 562112,
      "home": "PNE",
      "away": "WHU",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5872,7 +5880,7 @@
      "fdId": 562113,
      "home": "POR",
      "away": "BOL",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5880,7 +5888,7 @@
      "fdId": 562114,
      "home": "QPR",
      "away": "MIL",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5888,7 +5896,7 @@
      "fdId": 562115,
      "home": "CHA",
      "away": "WOL",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5896,15 +5904,7 @@
      "fdId": 562116,
      "home": "WRE",
      "away": "LIN",
-     "utcDate": "2027-02-06T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 30
-    },
-    {
-     "fdId": 562117,
-     "home": "BLB",
-     "away": "BUR",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5912,7 +5912,7 @@
      "fdId": 562118,
      "home": "CAR",
      "away": "NOR",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
@@ -5920,23 +5920,31 @@
      "fdId": 562119,
      "home": "BIR",
      "away": "STK",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "utcDate": "2027-02-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
     },
     {
-     "fdId": 562120,
-     "home": "BRC",
-     "away": "MID",
-     "utcDate": "2027-02-06T00:00:00Z",
+     "fdId": 562117,
+     "home": "BLB",
+     "away": "BUR",
+     "utcDate": "2027-02-07T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 30
+    },
+    {
+     "fdId": 562124,
+     "home": "BIR",
+     "away": "DER",
+     "utcDate": "2027-02-12T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
     },
     {
      "fdId": 562121,
      "home": "BRC",
      "away": "SOU",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -5944,7 +5952,7 @@
      "fdId": 562122,
      "home": "QPR",
      "away": "WBA",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -5952,15 +5960,7 @@
      "fdId": 562123,
      "home": "LIN",
      "away": "PNE",
-     "utcDate": "2027-02-13T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 31
-    },
-    {
-     "fdId": 562124,
-     "home": "BIR",
-     "away": "DER",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -5968,15 +5968,7 @@
      "fdId": 562125,
      "home": "NOR",
      "away": "MID",
-     "utcDate": "2027-02-13T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 31
-    },
-    {
-     "fdId": 562126,
-     "home": "CAR",
-     "away": "BOL",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -5984,7 +5976,7 @@
      "fdId": 562127,
      "home": "WOL",
      "away": "SHU",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -5992,7 +5984,7 @@
      "fdId": 562128,
      "home": "STK",
      "away": "WAT",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -6000,7 +5992,7 @@
      "fdId": 562129,
      "home": "WRE",
      "away": "WHU",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -6008,7 +6000,7 @@
      "fdId": 562130,
      "home": "BUR",
      "away": "SWA",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -6016,7 +6008,7 @@
      "fdId": 562131,
      "home": "POR",
      "away": "CHA",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -6024,7 +6016,15 @@
      "fdId": 562132,
      "home": "MIL",
      "away": "BLB",
-     "utcDate": "2027-02-13T00:00:00Z",
+     "utcDate": "2027-02-13T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 31
+    },
+    {
+     "fdId": 562126,
+     "home": "CAR",
+     "away": "BOL",
+     "utcDate": "2027-02-14T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 31
     },
@@ -6032,7 +6032,7 @@
      "fdId": 562133,
      "home": "BLB",
      "away": "BRC",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6040,7 +6040,7 @@
      "fdId": 562134,
      "home": "SHU",
      "away": "POR",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6048,7 +6048,7 @@
      "fdId": 562135,
      "home": "WHU",
      "away": "LIN",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6056,7 +6056,7 @@
      "fdId": 562136,
      "home": "CHA",
      "away": "BUR",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6064,15 +6064,7 @@
      "fdId": 562137,
      "home": "PNE",
      "away": "BIR",
-     "utcDate": "2027-02-16T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 32
-    },
-    {
-     "fdId": 562138,
-     "home": "WAT",
-     "away": "CAR",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6080,7 +6072,7 @@
      "fdId": 562139,
      "home": "WBA",
      "away": "WRE",
-     "utcDate": "2027-02-16T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6088,31 +6080,7 @@
      "fdId": 562140,
      "home": "DER",
      "away": "QPR",
-     "utcDate": "2027-02-16T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 32
-    },
-    {
-     "fdId": 562141,
-     "home": "BOL",
-     "away": "WOL",
-     "utcDate": "2027-02-17T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 32
-    },
-    {
-     "fdId": 562142,
-     "home": "SWA",
-     "away": "MIL",
-     "utcDate": "2027-02-17T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 32
-    },
-    {
-     "fdId": 562143,
-     "home": "SOU",
-     "away": "NOR",
-     "utcDate": "2027-02-17T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
     },
@@ -6120,15 +6088,55 @@
      "fdId": 562144,
      "home": "MID",
      "away": "STK",
-     "utcDate": "2027-02-17T00:00:00Z",
+     "utcDate": "2027-02-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 32
+    },
+    {
+     "fdId": 562138,
+     "home": "WAT",
+     "away": "CAR",
+     "utcDate": "2027-02-17T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562141,
+     "home": "BOL",
+     "away": "WOL",
+     "utcDate": "2027-02-17T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562142,
+     "home": "SWA",
+     "away": "MIL",
+     "utcDate": "2027-02-17T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562143,
+     "home": "SOU",
+     "away": "NOR",
+     "utcDate": "2027-02-17T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 32
+    },
+    {
+     "fdId": 562151,
+     "home": "MID",
+     "away": "BIR",
+     "utcDate": "2027-02-19T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
     },
     {
      "fdId": 562145,
      "home": "SOU",
      "away": "WRE",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6136,7 +6144,7 @@
      "fdId": 562146,
      "home": "CHA",
      "away": "CAR",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6144,7 +6152,7 @@
      "fdId": 562147,
      "home": "SWA",
      "away": "LIN",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6152,7 +6160,7 @@
      "fdId": 562148,
      "home": "SHU",
      "away": "STK",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6160,7 +6168,7 @@
      "fdId": 562149,
      "home": "PNE",
      "away": "QPR",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6168,15 +6176,7 @@
      "fdId": 562150,
      "home": "DER",
      "away": "BUR",
-     "utcDate": "2027-02-20T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 33
-    },
-    {
-     "fdId": 562151,
-     "home": "MID",
-     "away": "BIR",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6184,7 +6184,7 @@
      "fdId": 562152,
      "home": "WAT",
      "away": "BRC",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6192,15 +6192,7 @@
      "fdId": 562153,
      "home": "BLB",
      "away": "POR",
-     "utcDate": "2027-02-20T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 33
-    },
-    {
-     "fdId": 562154,
-     "home": "WHU",
-     "away": "MIL",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6208,7 +6200,7 @@
      "fdId": 562155,
      "home": "BOL",
      "away": "NOR",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
     },
@@ -6216,23 +6208,31 @@
      "fdId": 562156,
      "home": "WBA",
      "away": "WOL",
-     "utcDate": "2027-02-20T00:00:00Z",
+     "utcDate": "2027-02-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 33
+    },
+    {
+     "fdId": 562154,
+     "home": "WHU",
+     "away": "MIL",
+     "utcDate": "2027-02-21T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 33
+    },
+    {
+     "fdId": 562164,
+     "home": "BIR",
+     "away": "WBA",
+     "utcDate": "2027-02-26T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
     },
     {
      "fdId": 562157,
      "home": "QPR",
      "away": "WHU",
-     "utcDate": "2027-02-27T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 34
-    },
-    {
-     "fdId": 562158,
-     "home": "POR",
-     "away": "SOU",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6240,7 +6240,7 @@
      "fdId": 562159,
      "home": "STK",
      "away": "BOL",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6248,7 +6248,7 @@
      "fdId": 562160,
      "home": "NOR",
      "away": "SWA",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6256,7 +6256,7 @@
      "fdId": 562161,
      "home": "WRE",
      "away": "DER",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6264,7 +6264,7 @@
      "fdId": 562162,
      "home": "WOL",
      "away": "MID",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6272,15 +6272,7 @@
      "fdId": 562163,
      "home": "BRC",
      "away": "CHA",
-     "utcDate": "2027-02-27T00:00:00Z",
-     "status": "SCHEDULED",
-     "matchday": 34
-    },
-    {
-     "fdId": 562164,
-     "home": "BIR",
-     "away": "WBA",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6288,7 +6280,7 @@
      "fdId": 562165,
      "home": "LIN",
      "away": "SHU",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6296,7 +6288,7 @@
      "fdId": 562166,
      "home": "BUR",
      "away": "WAT",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6304,7 +6296,7 @@
      "fdId": 562167,
      "home": "CAR",
      "away": "BLB",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6312,7 +6304,15 @@
      "fdId": 562168,
      "home": "MIL",
      "away": "PNE",
-     "utcDate": "2027-02-27T00:00:00Z",
+     "utcDate": "2027-02-27T12:00:00Z",
+     "status": "SCHEDULED",
+     "matchday": 34
+    },
+    {
+     "fdId": 562158,
+     "home": "POR",
+     "away": "SOU",
+     "utcDate": "2027-02-28T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 34
     },
@@ -6320,7 +6320,7 @@
      "fdId": 562176,
      "home": "MID",
      "away": "BLB",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6328,7 +6328,7 @@
      "fdId": 562169,
      "home": "NOR",
      "away": "MIL",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6336,7 +6336,7 @@
      "fdId": 562170,
      "home": "BUR",
      "away": "WBA",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6344,7 +6344,7 @@
      "fdId": 562171,
      "home": "WAT",
      "away": "WRE",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6352,7 +6352,7 @@
      "fdId": 562172,
      "home": "CHA",
      "away": "WHU",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6360,7 +6360,7 @@
      "fdId": 562173,
      "home": "BOL",
      "away": "QPR",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6368,7 +6368,7 @@
      "fdId": 562174,
      "home": "BRC",
      "away": "BIR",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6376,7 +6376,7 @@
      "fdId": 562175,
      "home": "CAR",
      "away": "DER",
-     "utcDate": "2027-03-02T00:00:00Z",
+     "utcDate": "2027-03-02T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6384,7 +6384,7 @@
      "fdId": 562177,
      "home": "POR",
      "away": "LIN",
-     "utcDate": "2027-03-03T00:00:00Z",
+     "utcDate": "2027-03-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6392,7 +6392,7 @@
      "fdId": 562178,
      "home": "WOL",
      "away": "PNE",
-     "utcDate": "2027-03-03T00:00:00Z",
+     "utcDate": "2027-03-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6400,7 +6400,7 @@
      "fdId": 562179,
      "home": "SHU",
      "away": "SWA",
-     "utcDate": "2027-03-03T00:00:00Z",
+     "utcDate": "2027-03-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6408,7 +6408,7 @@
      "fdId": 562180,
      "home": "STK",
      "away": "SOU",
-     "utcDate": "2027-03-03T00:00:00Z",
+     "utcDate": "2027-03-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 35
     },
@@ -6416,7 +6416,7 @@
      "fdId": 562181,
      "home": "DER",
      "away": "CHA",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6424,7 +6424,7 @@
      "fdId": 562182,
      "home": "BLB",
      "away": "WOL",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6432,7 +6432,7 @@
      "fdId": 562183,
      "home": "SOU",
      "away": "WAT",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6440,7 +6440,7 @@
      "fdId": 562184,
      "home": "WRE",
      "away": "CAR",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6448,7 +6448,7 @@
      "fdId": 562185,
      "home": "SWA",
      "away": "STK",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6456,7 +6456,7 @@
      "fdId": 562186,
      "home": "PNE",
      "away": "BOL",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6464,7 +6464,7 @@
      "fdId": 562187,
      "home": "LIN",
      "away": "MID",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6472,7 +6472,7 @@
      "fdId": 562188,
      "home": "MIL",
      "away": "BRC",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6480,7 +6480,7 @@
      "fdId": 562189,
      "home": "QPR",
      "away": "POR",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6488,7 +6488,7 @@
      "fdId": 562190,
      "home": "WBA",
      "away": "NOR",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6496,7 +6496,7 @@
      "fdId": 562191,
      "home": "BIR",
      "away": "SHU",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6504,7 +6504,7 @@
      "fdId": 562192,
      "home": "WHU",
      "away": "BUR",
-     "utcDate": "2027-03-06T00:00:00Z",
+     "utcDate": "2027-03-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 36
     },
@@ -6512,7 +6512,7 @@
      "fdId": 562193,
      "home": "WAT",
      "away": "DER",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6520,7 +6520,7 @@
      "fdId": 562194,
      "home": "BUR",
      "away": "MIL",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6528,7 +6528,7 @@
      "fdId": 562195,
      "home": "POR",
      "away": "WRE",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6536,7 +6536,7 @@
      "fdId": 562196,
      "home": "MID",
      "away": "SOU",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6544,7 +6544,7 @@
      "fdId": 562197,
      "home": "SHU",
      "away": "QPR",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6552,7 +6552,7 @@
      "fdId": 562198,
      "home": "BRC",
      "away": "WBA",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6560,7 +6560,7 @@
      "fdId": 562199,
      "home": "CHA",
      "away": "BLB",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6568,7 +6568,7 @@
      "fdId": 562200,
      "home": "STK",
      "away": "WHU",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6576,7 +6576,7 @@
      "fdId": 562201,
      "home": "NOR",
      "away": "PNE",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6584,7 +6584,7 @@
      "fdId": 562202,
      "home": "CAR",
      "away": "SWA",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6592,7 +6592,7 @@
      "fdId": 562203,
      "home": "BOL",
      "away": "BIR",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6600,7 +6600,7 @@
      "fdId": 562204,
      "home": "WOL",
      "away": "LIN",
-     "utcDate": "2027-03-13T00:00:00Z",
+     "utcDate": "2027-03-13T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 37
     },
@@ -6608,7 +6608,7 @@
      "fdId": 562205,
      "home": "PNE",
      "away": "BUR",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6616,7 +6616,7 @@
      "fdId": 562206,
      "home": "SWA",
      "away": "BRC",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6624,7 +6624,7 @@
      "fdId": 562207,
      "home": "QPR",
      "away": "STK",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6632,7 +6632,7 @@
      "fdId": 562208,
      "home": "WBA",
      "away": "POR",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6640,7 +6640,7 @@
      "fdId": 562209,
      "home": "WRE",
      "away": "NOR",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6648,7 +6648,7 @@
      "fdId": 562210,
      "home": "LIN",
      "away": "CAR",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6656,7 +6656,7 @@
      "fdId": 562211,
      "home": "DER",
      "away": "MID",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6664,7 +6664,7 @@
      "fdId": 562212,
      "home": "SOU",
      "away": "WOL",
-     "utcDate": "2027-03-16T00:00:00Z",
+     "utcDate": "2027-03-16T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6672,7 +6672,7 @@
      "fdId": 562213,
      "home": "WHU",
      "away": "SHU",
-     "utcDate": "2027-03-17T00:00:00Z",
+     "utcDate": "2027-03-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6680,7 +6680,7 @@
      "fdId": 562214,
      "home": "MIL",
      "away": "WAT",
-     "utcDate": "2027-03-17T00:00:00Z",
+     "utcDate": "2027-03-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6688,7 +6688,7 @@
      "fdId": 562215,
      "home": "BLB",
      "away": "BOL",
-     "utcDate": "2027-03-17T00:00:00Z",
+     "utcDate": "2027-03-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6696,7 +6696,7 @@
      "fdId": 562216,
      "home": "BIR",
      "away": "CHA",
-     "utcDate": "2027-03-17T00:00:00Z",
+     "utcDate": "2027-03-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 38
     },
@@ -6704,7 +6704,7 @@
      "fdId": 562217,
      "home": "SWA",
      "away": "WOL",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6712,7 +6712,7 @@
      "fdId": 562218,
      "home": "MIL",
      "away": "CAR",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6720,7 +6720,7 @@
      "fdId": 562219,
      "home": "WRE",
      "away": "STK",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6728,7 +6728,7 @@
      "fdId": 562220,
      "home": "BRC",
      "away": "QPR",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6736,7 +6736,7 @@
      "fdId": 562221,
      "home": "WAT",
      "away": "POR",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6744,7 +6744,7 @@
      "fdId": 562222,
      "home": "SOU",
      "away": "CHA",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6752,7 +6752,7 @@
      "fdId": 562223,
      "home": "BIR",
      "away": "BLB",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6760,7 +6760,7 @@
      "fdId": 562224,
      "home": "BUR",
      "away": "BOL",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6768,7 +6768,7 @@
      "fdId": 562225,
      "home": "MID",
      "away": "SHU",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6776,7 +6776,7 @@
      "fdId": 562226,
      "home": "WBA",
      "away": "LIN",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6784,7 +6784,7 @@
      "fdId": 562227,
      "home": "NOR",
      "away": "WHU",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6792,7 +6792,7 @@
      "fdId": 562228,
      "home": "DER",
      "away": "PNE",
-     "utcDate": "2027-03-20T00:00:00Z",
+     "utcDate": "2027-03-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 39
     },
@@ -6800,7 +6800,7 @@
      "fdId": 562229,
      "home": "STK",
      "away": "BUR",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6808,7 +6808,7 @@
      "fdId": 562230,
      "home": "POR",
      "away": "MID",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6816,7 +6816,7 @@
      "fdId": 562231,
      "home": "CAR",
      "away": "BRC",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6824,7 +6824,7 @@
      "fdId": 562232,
      "home": "BOL",
      "away": "WAT",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6832,7 +6832,7 @@
      "fdId": 562233,
      "home": "CHA",
      "away": "MIL",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6840,7 +6840,7 @@
      "fdId": 562234,
      "home": "WHU",
      "away": "BIR",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6848,7 +6848,7 @@
      "fdId": 562235,
      "home": "LIN",
      "away": "DER",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6856,7 +6856,7 @@
      "fdId": 562236,
      "home": "WOL",
      "away": "NOR",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6864,7 +6864,7 @@
      "fdId": 562237,
      "home": "SHU",
      "away": "WBA",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6872,7 +6872,7 @@
      "fdId": 562238,
      "home": "BLB",
      "away": "SOU",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6880,7 +6880,7 @@
      "fdId": 562239,
      "home": "QPR",
      "away": "WRE",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6888,7 +6888,7 @@
      "fdId": 562240,
      "home": "PNE",
      "away": "SWA",
-     "utcDate": "2027-04-03T00:00:00Z",
+     "utcDate": "2027-04-03T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 40
     },
@@ -6896,7 +6896,7 @@
      "fdId": 562241,
      "home": "LIN",
      "away": "BRC",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6904,7 +6904,7 @@
      "fdId": 562242,
      "home": "MIL",
      "away": "MID",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6912,7 +6912,7 @@
      "fdId": 562243,
      "home": "WHU",
      "away": "BOL",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6920,7 +6920,7 @@
      "fdId": 562244,
      "home": "QPR",
      "away": "CHA",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6928,7 +6928,7 @@
      "fdId": 562245,
      "home": "STK",
      "away": "CAR",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6936,7 +6936,7 @@
      "fdId": 562246,
      "home": "POR",
      "away": "WOL",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6944,7 +6944,7 @@
      "fdId": 562247,
      "home": "SWA",
      "away": "SOU",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6952,7 +6952,7 @@
      "fdId": 562248,
      "home": "BUR",
      "away": "WRE",
-     "utcDate": "2027-04-06T00:00:00Z",
+     "utcDate": "2027-04-06T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6960,7 +6960,7 @@
      "fdId": 562249,
      "home": "PNE",
      "away": "WAT",
-     "utcDate": "2027-04-07T00:00:00Z",
+     "utcDate": "2027-04-07T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6968,7 +6968,7 @@
      "fdId": 562250,
      "home": "WBA",
      "away": "DER",
-     "utcDate": "2027-04-07T00:00:00Z",
+     "utcDate": "2027-04-07T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6976,7 +6976,7 @@
      "fdId": 562251,
      "home": "BIR",
      "away": "NOR",
-     "utcDate": "2027-04-07T00:00:00Z",
+     "utcDate": "2027-04-07T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6984,7 +6984,7 @@
      "fdId": 562252,
      "home": "SHU",
      "away": "BLB",
-     "utcDate": "2027-04-07T00:00:00Z",
+     "utcDate": "2027-04-07T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 41
     },
@@ -6992,7 +6992,7 @@
      "fdId": 562253,
      "home": "WRE",
      "away": "SWA",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7000,7 +7000,7 @@
      "fdId": 562254,
      "home": "WOL",
      "away": "BIR",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7008,7 +7008,7 @@
      "fdId": 562255,
      "home": "WAT",
      "away": "WBA",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7016,7 +7016,7 @@
      "fdId": 562256,
      "home": "BLB",
      "away": "PNE",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7024,7 +7024,7 @@
      "fdId": 562257,
      "home": "BOL",
      "away": "MIL",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7032,7 +7032,7 @@
      "fdId": 562258,
      "home": "NOR",
      "away": "SHU",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7040,7 +7040,7 @@
      "fdId": 562259,
      "home": "MID",
      "away": "QPR",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7048,7 +7048,7 @@
      "fdId": 562260,
      "home": "CAR",
      "away": "POR",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7056,7 +7056,7 @@
      "fdId": 562261,
      "home": "SOU",
      "away": "LIN",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7064,7 +7064,7 @@
      "fdId": 562262,
      "home": "CHA",
      "away": "STK",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7072,7 +7072,7 @@
      "fdId": 562263,
      "home": "BRC",
      "away": "BUR",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7080,7 +7080,7 @@
      "fdId": 562264,
      "home": "DER",
      "away": "WHU",
-     "utcDate": "2027-04-10T00:00:00Z",
+     "utcDate": "2027-04-10T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 42
     },
@@ -7088,7 +7088,7 @@
      "fdId": 562265,
      "home": "PNE",
      "away": "CHA",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7096,7 +7096,7 @@
      "fdId": 562266,
      "home": "POR",
      "away": "BRC",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7104,7 +7104,7 @@
      "fdId": 562267,
      "home": "BIR",
      "away": "WRE",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7112,7 +7112,7 @@
      "fdId": 562268,
      "home": "STK",
      "away": "WOL",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7120,7 +7120,7 @@
      "fdId": 562269,
      "home": "LIN",
      "away": "BOL",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7128,7 +7128,7 @@
      "fdId": 562270,
      "home": "WBA",
      "away": "MID",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7136,7 +7136,7 @@
      "fdId": 562271,
      "home": "QPR",
      "away": "BLB",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7144,7 +7144,7 @@
      "fdId": 562272,
      "home": "WHU",
      "away": "WAT",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7152,7 +7152,7 @@
      "fdId": 562273,
      "home": "BUR",
      "away": "NOR",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7160,7 +7160,7 @@
      "fdId": 562274,
      "home": "MIL",
      "away": "SOU",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7168,7 +7168,7 @@
      "fdId": 562275,
      "home": "SWA",
      "away": "DER",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7176,7 +7176,7 @@
      "fdId": 562276,
      "home": "SHU",
      "away": "CAR",
-     "utcDate": "2027-04-17T00:00:00Z",
+     "utcDate": "2027-04-17T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 43
     },
@@ -7184,7 +7184,7 @@
      "fdId": 562277,
      "home": "BOL",
      "away": "SHU",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7192,7 +7192,7 @@
      "fdId": 562278,
      "home": "NOR",
      "away": "STK",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7200,7 +7200,7 @@
      "fdId": 562279,
      "home": "MID",
      "away": "BUR",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7208,7 +7208,7 @@
      "fdId": 562280,
      "home": "DER",
      "away": "POR",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7216,7 +7216,7 @@
      "fdId": 562281,
      "home": "WOL",
      "away": "WHU",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7224,7 +7224,7 @@
      "fdId": 562282,
      "home": "WRE",
      "away": "MIL",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7232,7 +7232,7 @@
      "fdId": 562283,
      "home": "SOU",
      "away": "BIR",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7240,7 +7240,7 @@
      "fdId": 562284,
      "home": "CHA",
      "away": "WBA",
-     "utcDate": "2027-04-20T00:00:00Z",
+     "utcDate": "2027-04-20T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7248,7 +7248,7 @@
      "fdId": 562285,
      "home": "BRC",
      "away": "PNE",
-     "utcDate": "2027-04-21T00:00:00Z",
+     "utcDate": "2027-04-21T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7256,7 +7256,7 @@
      "fdId": 562286,
      "home": "BLB",
      "away": "LIN",
-     "utcDate": "2027-04-21T00:00:00Z",
+     "utcDate": "2027-04-21T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7264,7 +7264,7 @@
      "fdId": 562287,
      "home": "CAR",
      "away": "QPR",
-     "utcDate": "2027-04-21T00:00:00Z",
+     "utcDate": "2027-04-21T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7272,7 +7272,7 @@
      "fdId": 562288,
      "home": "WAT",
      "away": "SWA",
-     "utcDate": "2027-04-21T00:00:00Z",
+     "utcDate": "2027-04-21T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 44
     },
@@ -7280,7 +7280,7 @@
      "fdId": 562289,
      "home": "WAT",
      "away": "BIR",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7288,7 +7288,7 @@
      "fdId": 562290,
      "home": "MID",
      "away": "WHU",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7296,7 +7296,7 @@
      "fdId": 562291,
      "home": "STK",
      "away": "LIN",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7304,7 +7304,7 @@
      "fdId": 562292,
      "home": "BUR",
      "away": "SOU",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7312,7 +7312,7 @@
      "fdId": 562293,
      "home": "BOL",
      "away": "SWA",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7320,7 +7320,7 @@
      "fdId": 562294,
      "home": "SHU",
      "away": "MIL",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7328,7 +7328,7 @@
      "fdId": 562295,
      "home": "WOL",
      "away": "QPR",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7336,7 +7336,7 @@
      "fdId": 562296,
      "home": "BRC",
      "away": "DER",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7344,7 +7344,7 @@
      "fdId": 562297,
      "home": "CHA",
      "away": "WRE",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7352,7 +7352,7 @@
      "fdId": 562298,
      "home": "NOR",
      "away": "BLB",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7360,7 +7360,7 @@
      "fdId": 562299,
      "home": "CAR",
      "away": "WBA",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7368,7 +7368,7 @@
      "fdId": 562300,
      "home": "POR",
      "away": "PNE",
-     "utcDate": "2027-04-24T00:00:00Z",
+     "utcDate": "2027-04-24T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 45
     },
@@ -7376,7 +7376,7 @@
      "fdId": 562301,
      "home": "QPR",
      "away": "NOR",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7384,7 +7384,7 @@
      "fdId": 562302,
      "home": "WHU",
      "away": "POR",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7392,7 +7392,7 @@
      "fdId": 562303,
      "home": "WBA",
      "away": "BOL",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7400,7 +7400,7 @@
      "fdId": 562304,
      "home": "SOU",
      "away": "SHU",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7408,7 +7408,7 @@
      "fdId": 562305,
      "home": "BIR",
      "away": "BUR",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7416,7 +7416,7 @@
      "fdId": 562306,
      "home": "MIL",
      "away": "STK",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7424,7 +7424,7 @@
      "fdId": 562307,
      "home": "WRE",
      "away": "BRC",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7432,7 +7432,7 @@
      "fdId": 562308,
      "home": "BLB",
      "away": "WAT",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7440,7 +7440,7 @@
      "fdId": 562309,
      "home": "LIN",
      "away": "CHA",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7448,7 +7448,7 @@
      "fdId": 562310,
      "home": "PNE",
      "away": "CAR",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7456,7 +7456,7 @@
      "fdId": 562311,
      "home": "DER",
      "away": "WOL",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     },
@@ -7464,7 +7464,7 @@
      "fdId": 562312,
      "home": "SWA",
      "away": "MID",
-     "utcDate": "2027-05-01T00:00:00Z",
+     "utcDate": "2027-05-01T12:00:00Z",
      "status": "SCHEDULED",
      "matchday": 46
     }
@@ -8399,6 +8399,2716 @@
    "from": "2026-12-19T15:00:00Z",
    "to": "2026-12-20T14:00:00Z",
    "detectedAt": "2026-11-04T19:30:59.408Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561948,
+   "home": "NOR",
+   "away": "CAR",
+   "from": "2026-11-21T15:00:00Z",
+   "to": "2026-11-21T12:30:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561941,
+   "home": "SHU",
+   "away": "WAT",
+   "from": "2026-11-21T12:30:00Z",
+   "to": "2026-11-21T15:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561984,
+   "home": "WAT",
+   "away": "MIL",
+   "from": "2026-12-05T15:00:00Z",
+   "to": "2026-12-05T12:30:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561989,
+   "home": "WHU",
+   "away": "MID",
+   "from": "2026-12-08T20:45:00Z",
+   "to": "2026-12-08T20:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561996,
+   "home": "BIR",
+   "away": "WAT",
+   "from": "2026-12-08T19:45:00Z",
+   "to": "2026-12-08T20:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562007,
+   "home": "LIN",
+   "away": "NOR",
+   "from": "2026-12-12T15:00:00Z",
+   "to": "2026-12-13T14:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562045,
+   "home": "BIR",
+   "away": "CAR",
+   "from": "2026-12-29T19:45:00Z",
+   "to": "2026-12-29T20:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562049,
+   "home": "MID",
+   "away": "PNE",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562050,
+   "home": "SOU",
+   "away": "CAR",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562051,
+   "home": "WAT",
+   "away": "QPR",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562052,
+   "home": "BUR",
+   "away": "SHU",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562053,
+   "home": "DER",
+   "away": "BLB",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562054,
+   "home": "BIR",
+   "away": "POR",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562055,
+   "home": "WBA",
+   "away": "STK",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562056,
+   "home": "NOR",
+   "away": "LIN",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562057,
+   "home": "SWA",
+   "away": "CHA",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562058,
+   "home": "WRE",
+   "away": "BOL",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562059,
+   "home": "MIL",
+   "away": "WOL",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562060,
+   "home": "BRC",
+   "away": "WHU",
+   "from": "2027-01-01T00:00:00Z",
+   "to": "2027-01-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562070,
+   "home": "WHU",
+   "away": "SWA",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-15T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562061,
+   "home": "STK",
+   "away": "DER",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562063,
+   "home": "WOL",
+   "away": "BUR",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562064,
+   "home": "PNE",
+   "away": "WRE",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562065,
+   "home": "CAR",
+   "away": "MID",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562066,
+   "home": "LIN",
+   "away": "MIL",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562067,
+   "home": "POR",
+   "away": "NOR",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562068,
+   "home": "QPR",
+   "away": "BIR",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562069,
+   "home": "SHU",
+   "away": "BRC",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562071,
+   "home": "BOL",
+   "away": "SOU",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562072,
+   "home": "BLB",
+   "away": "WBA",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562062,
+   "home": "CHA",
+   "away": "WAT",
+   "from": "2027-01-16T00:00:00Z",
+   "to": "2027-01-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562074,
+   "home": "PNE",
+   "away": "STK",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-22T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562073,
+   "home": "WRE",
+   "away": "SHU",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562076,
+   "home": "QPR",
+   "away": "SOU",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562077,
+   "home": "BRC",
+   "away": "BOL",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562078,
+   "home": "DER",
+   "away": "MIL",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562079,
+   "home": "POR",
+   "away": "BUR",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562080,
+   "home": "CHA",
+   "away": "MID",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562081,
+   "home": "BIR",
+   "away": "LIN",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562082,
+   "home": "WAT",
+   "away": "NOR",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562083,
+   "home": "WBA",
+   "away": "WHU",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562084,
+   "home": "BLB",
+   "away": "SWA",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-23T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562075,
+   "home": "CAR",
+   "away": "WOL",
+   "from": "2027-01-23T00:00:00Z",
+   "to": "2027-01-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562085,
+   "home": "BOL",
+   "away": "CHA",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562086,
+   "home": "NOR",
+   "away": "DER",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562087,
+   "home": "LIN",
+   "away": "WAT",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562088,
+   "home": "SHU",
+   "away": "PNE",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562089,
+   "home": "SOU",
+   "away": "WBA",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562090,
+   "home": "MIL",
+   "away": "BIR",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562091,
+   "home": "STK",
+   "away": "BLB",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562092,
+   "home": "BUR",
+   "away": "QPR",
+   "from": "2027-01-26T00:00:00Z",
+   "to": "2027-01-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562093,
+   "home": "WOL",
+   "away": "BRC",
+   "from": "2027-01-27T00:00:00Z",
+   "to": "2027-01-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562094,
+   "home": "SWA",
+   "away": "POR",
+   "from": "2027-01-27T00:00:00Z",
+   "to": "2027-01-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562095,
+   "home": "WHU",
+   "away": "CAR",
+   "from": "2027-01-27T00:00:00Z",
+   "to": "2027-01-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562096,
+   "home": "MID",
+   "away": "WRE",
+   "from": "2027-01-27T00:00:00Z",
+   "to": "2027-01-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562102,
+   "home": "LIN",
+   "away": "QPR",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-29T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562097,
+   "home": "BUR",
+   "away": "CAR",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562098,
+   "home": "SWA",
+   "away": "BIR",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562099,
+   "home": "SOU",
+   "away": "PNE",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562100,
+   "home": "MIL",
+   "away": "WBA",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562101,
+   "home": "WOL",
+   "away": "WRE",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562103,
+   "home": "STK",
+   "away": "POR",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562104,
+   "home": "BOL",
+   "away": "DER",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562105,
+   "home": "WHU",
+   "away": "BLB",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562106,
+   "home": "MID",
+   "away": "WAT",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562107,
+   "home": "SHU",
+   "away": "CHA",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-30T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562108,
+   "home": "NOR",
+   "away": "BRC",
+   "from": "2027-01-30T00:00:00Z",
+   "to": "2027-01-31T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562120,
+   "home": "BRC",
+   "away": "MID",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-05T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562109,
+   "home": "WBA",
+   "away": "SWA",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562110,
+   "home": "DER",
+   "away": "SOU",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562111,
+   "home": "WAT",
+   "away": "SHU",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562112,
+   "home": "PNE",
+   "away": "WHU",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562113,
+   "home": "POR",
+   "away": "BOL",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562114,
+   "home": "QPR",
+   "away": "MIL",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562115,
+   "home": "CHA",
+   "away": "WOL",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562116,
+   "home": "WRE",
+   "away": "LIN",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562118,
+   "home": "CAR",
+   "away": "NOR",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562119,
+   "home": "BIR",
+   "away": "STK",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562117,
+   "home": "BLB",
+   "away": "BUR",
+   "from": "2027-02-06T00:00:00Z",
+   "to": "2027-02-07T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562124,
+   "home": "BIR",
+   "away": "DER",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-12T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562121,
+   "home": "BRC",
+   "away": "SOU",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562122,
+   "home": "QPR",
+   "away": "WBA",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562123,
+   "home": "LIN",
+   "away": "PNE",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562125,
+   "home": "NOR",
+   "away": "MID",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562127,
+   "home": "WOL",
+   "away": "SHU",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562128,
+   "home": "STK",
+   "away": "WAT",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562129,
+   "home": "WRE",
+   "away": "WHU",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562130,
+   "home": "BUR",
+   "away": "SWA",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562131,
+   "home": "POR",
+   "away": "CHA",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562132,
+   "home": "MIL",
+   "away": "BLB",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562126,
+   "home": "CAR",
+   "away": "BOL",
+   "from": "2027-02-13T00:00:00Z",
+   "to": "2027-02-14T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562133,
+   "home": "BLB",
+   "away": "BRC",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562134,
+   "home": "SHU",
+   "away": "POR",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562135,
+   "home": "WHU",
+   "away": "LIN",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562136,
+   "home": "CHA",
+   "away": "BUR",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562137,
+   "home": "PNE",
+   "away": "BIR",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562139,
+   "home": "WBA",
+   "away": "WRE",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562140,
+   "home": "DER",
+   "away": "QPR",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562144,
+   "home": "MID",
+   "away": "STK",
+   "from": "2027-02-17T00:00:00Z",
+   "to": "2027-02-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562138,
+   "home": "WAT",
+   "away": "CAR",
+   "from": "2027-02-16T00:00:00Z",
+   "to": "2027-02-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562141,
+   "home": "BOL",
+   "away": "WOL",
+   "from": "2027-02-17T00:00:00Z",
+   "to": "2027-02-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562142,
+   "home": "SWA",
+   "away": "MIL",
+   "from": "2027-02-17T00:00:00Z",
+   "to": "2027-02-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562143,
+   "home": "SOU",
+   "away": "NOR",
+   "from": "2027-02-17T00:00:00Z",
+   "to": "2027-02-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562151,
+   "home": "MID",
+   "away": "BIR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-19T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562145,
+   "home": "SOU",
+   "away": "WRE",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562146,
+   "home": "CHA",
+   "away": "CAR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562147,
+   "home": "SWA",
+   "away": "LIN",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562148,
+   "home": "SHU",
+   "away": "STK",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562149,
+   "home": "PNE",
+   "away": "QPR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562150,
+   "home": "DER",
+   "away": "BUR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562152,
+   "home": "WAT",
+   "away": "BRC",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562153,
+   "home": "BLB",
+   "away": "POR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562155,
+   "home": "BOL",
+   "away": "NOR",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562156,
+   "home": "WBA",
+   "away": "WOL",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562154,
+   "home": "WHU",
+   "away": "MIL",
+   "from": "2027-02-20T00:00:00Z",
+   "to": "2027-02-21T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562164,
+   "home": "BIR",
+   "away": "WBA",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-26T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562157,
+   "home": "QPR",
+   "away": "WHU",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562159,
+   "home": "STK",
+   "away": "BOL",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562160,
+   "home": "NOR",
+   "away": "SWA",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562161,
+   "home": "WRE",
+   "away": "DER",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562162,
+   "home": "WOL",
+   "away": "MID",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562163,
+   "home": "BRC",
+   "away": "CHA",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562165,
+   "home": "LIN",
+   "away": "SHU",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562166,
+   "home": "BUR",
+   "away": "WAT",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562167,
+   "home": "CAR",
+   "away": "BLB",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562168,
+   "home": "MIL",
+   "away": "PNE",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-27T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562158,
+   "home": "POR",
+   "away": "SOU",
+   "from": "2027-02-27T00:00:00Z",
+   "to": "2027-02-28T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562176,
+   "home": "MID",
+   "away": "BLB",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562169,
+   "home": "NOR",
+   "away": "MIL",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562170,
+   "home": "BUR",
+   "away": "WBA",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562171,
+   "home": "WAT",
+   "away": "WRE",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562172,
+   "home": "CHA",
+   "away": "WHU",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562173,
+   "home": "BOL",
+   "away": "QPR",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562174,
+   "home": "BRC",
+   "away": "BIR",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562175,
+   "home": "CAR",
+   "away": "DER",
+   "from": "2027-03-02T00:00:00Z",
+   "to": "2027-03-02T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562177,
+   "home": "POR",
+   "away": "LIN",
+   "from": "2027-03-03T00:00:00Z",
+   "to": "2027-03-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562178,
+   "home": "WOL",
+   "away": "PNE",
+   "from": "2027-03-03T00:00:00Z",
+   "to": "2027-03-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562179,
+   "home": "SHU",
+   "away": "SWA",
+   "from": "2027-03-03T00:00:00Z",
+   "to": "2027-03-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562180,
+   "home": "STK",
+   "away": "SOU",
+   "from": "2027-03-03T00:00:00Z",
+   "to": "2027-03-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562181,
+   "home": "DER",
+   "away": "CHA",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562182,
+   "home": "BLB",
+   "away": "WOL",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562183,
+   "home": "SOU",
+   "away": "WAT",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562184,
+   "home": "WRE",
+   "away": "CAR",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562185,
+   "home": "SWA",
+   "away": "STK",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562186,
+   "home": "PNE",
+   "away": "BOL",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562187,
+   "home": "LIN",
+   "away": "MID",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562188,
+   "home": "MIL",
+   "away": "BRC",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562189,
+   "home": "QPR",
+   "away": "POR",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562190,
+   "home": "WBA",
+   "away": "NOR",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562191,
+   "home": "BIR",
+   "away": "SHU",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562192,
+   "home": "WHU",
+   "away": "BUR",
+   "from": "2027-03-06T00:00:00Z",
+   "to": "2027-03-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562193,
+   "home": "WAT",
+   "away": "DER",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562194,
+   "home": "BUR",
+   "away": "MIL",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562195,
+   "home": "POR",
+   "away": "WRE",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562196,
+   "home": "MID",
+   "away": "SOU",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562197,
+   "home": "SHU",
+   "away": "QPR",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562198,
+   "home": "BRC",
+   "away": "WBA",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562199,
+   "home": "CHA",
+   "away": "BLB",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562200,
+   "home": "STK",
+   "away": "WHU",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562201,
+   "home": "NOR",
+   "away": "PNE",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562202,
+   "home": "CAR",
+   "away": "SWA",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562203,
+   "home": "BOL",
+   "away": "BIR",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562204,
+   "home": "WOL",
+   "away": "LIN",
+   "from": "2027-03-13T00:00:00Z",
+   "to": "2027-03-13T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562205,
+   "home": "PNE",
+   "away": "BUR",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562206,
+   "home": "SWA",
+   "away": "BRC",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562207,
+   "home": "QPR",
+   "away": "STK",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562208,
+   "home": "WBA",
+   "away": "POR",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562209,
+   "home": "WRE",
+   "away": "NOR",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562210,
+   "home": "LIN",
+   "away": "CAR",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562211,
+   "home": "DER",
+   "away": "MID",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562212,
+   "home": "SOU",
+   "away": "WOL",
+   "from": "2027-03-16T00:00:00Z",
+   "to": "2027-03-16T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562213,
+   "home": "WHU",
+   "away": "SHU",
+   "from": "2027-03-17T00:00:00Z",
+   "to": "2027-03-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562214,
+   "home": "MIL",
+   "away": "WAT",
+   "from": "2027-03-17T00:00:00Z",
+   "to": "2027-03-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562215,
+   "home": "BLB",
+   "away": "BOL",
+   "from": "2027-03-17T00:00:00Z",
+   "to": "2027-03-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562216,
+   "home": "BIR",
+   "away": "CHA",
+   "from": "2027-03-17T00:00:00Z",
+   "to": "2027-03-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562217,
+   "home": "SWA",
+   "away": "WOL",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562218,
+   "home": "MIL",
+   "away": "CAR",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562219,
+   "home": "WRE",
+   "away": "STK",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562220,
+   "home": "BRC",
+   "away": "QPR",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562221,
+   "home": "WAT",
+   "away": "POR",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562222,
+   "home": "SOU",
+   "away": "CHA",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562223,
+   "home": "BIR",
+   "away": "BLB",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562224,
+   "home": "BUR",
+   "away": "BOL",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562225,
+   "home": "MID",
+   "away": "SHU",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562226,
+   "home": "WBA",
+   "away": "LIN",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562227,
+   "home": "NOR",
+   "away": "WHU",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562228,
+   "home": "DER",
+   "away": "PNE",
+   "from": "2027-03-20T00:00:00Z",
+   "to": "2027-03-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562229,
+   "home": "STK",
+   "away": "BUR",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562230,
+   "home": "POR",
+   "away": "MID",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562231,
+   "home": "CAR",
+   "away": "BRC",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562232,
+   "home": "BOL",
+   "away": "WAT",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562233,
+   "home": "CHA",
+   "away": "MIL",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562234,
+   "home": "WHU",
+   "away": "BIR",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562235,
+   "home": "LIN",
+   "away": "DER",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562236,
+   "home": "WOL",
+   "away": "NOR",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562237,
+   "home": "SHU",
+   "away": "WBA",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562238,
+   "home": "BLB",
+   "away": "SOU",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562239,
+   "home": "QPR",
+   "away": "WRE",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562240,
+   "home": "PNE",
+   "away": "SWA",
+   "from": "2027-04-03T00:00:00Z",
+   "to": "2027-04-03T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562241,
+   "home": "LIN",
+   "away": "BRC",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562242,
+   "home": "MIL",
+   "away": "MID",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562243,
+   "home": "WHU",
+   "away": "BOL",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562244,
+   "home": "QPR",
+   "away": "CHA",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562245,
+   "home": "STK",
+   "away": "CAR",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562246,
+   "home": "POR",
+   "away": "WOL",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562247,
+   "home": "SWA",
+   "away": "SOU",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562248,
+   "home": "BUR",
+   "away": "WRE",
+   "from": "2027-04-06T00:00:00Z",
+   "to": "2027-04-06T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562249,
+   "home": "PNE",
+   "away": "WAT",
+   "from": "2027-04-07T00:00:00Z",
+   "to": "2027-04-07T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562250,
+   "home": "WBA",
+   "away": "DER",
+   "from": "2027-04-07T00:00:00Z",
+   "to": "2027-04-07T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562251,
+   "home": "BIR",
+   "away": "NOR",
+   "from": "2027-04-07T00:00:00Z",
+   "to": "2027-04-07T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562252,
+   "home": "SHU",
+   "away": "BLB",
+   "from": "2027-04-07T00:00:00Z",
+   "to": "2027-04-07T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562253,
+   "home": "WRE",
+   "away": "SWA",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562254,
+   "home": "WOL",
+   "away": "BIR",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562255,
+   "home": "WAT",
+   "away": "WBA",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562256,
+   "home": "BLB",
+   "away": "PNE",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562257,
+   "home": "BOL",
+   "away": "MIL",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562258,
+   "home": "NOR",
+   "away": "SHU",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562259,
+   "home": "MID",
+   "away": "QPR",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562260,
+   "home": "CAR",
+   "away": "POR",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562261,
+   "home": "SOU",
+   "away": "LIN",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562262,
+   "home": "CHA",
+   "away": "STK",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562263,
+   "home": "BRC",
+   "away": "BUR",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562264,
+   "home": "DER",
+   "away": "WHU",
+   "from": "2027-04-10T00:00:00Z",
+   "to": "2027-04-10T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562265,
+   "home": "PNE",
+   "away": "CHA",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562266,
+   "home": "POR",
+   "away": "BRC",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562267,
+   "home": "BIR",
+   "away": "WRE",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562268,
+   "home": "STK",
+   "away": "WOL",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562269,
+   "home": "LIN",
+   "away": "BOL",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562270,
+   "home": "WBA",
+   "away": "MID",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562271,
+   "home": "QPR",
+   "away": "BLB",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562272,
+   "home": "WHU",
+   "away": "WAT",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562273,
+   "home": "BUR",
+   "away": "NOR",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562274,
+   "home": "MIL",
+   "away": "SOU",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562275,
+   "home": "SWA",
+   "away": "DER",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562276,
+   "home": "SHU",
+   "away": "CAR",
+   "from": "2027-04-17T00:00:00Z",
+   "to": "2027-04-17T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562277,
+   "home": "BOL",
+   "away": "SHU",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562278,
+   "home": "NOR",
+   "away": "STK",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562279,
+   "home": "MID",
+   "away": "BUR",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562280,
+   "home": "DER",
+   "away": "POR",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562281,
+   "home": "WOL",
+   "away": "WHU",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562282,
+   "home": "WRE",
+   "away": "MIL",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562283,
+   "home": "SOU",
+   "away": "BIR",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562284,
+   "home": "CHA",
+   "away": "WBA",
+   "from": "2027-04-20T00:00:00Z",
+   "to": "2027-04-20T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562285,
+   "home": "BRC",
+   "away": "PNE",
+   "from": "2027-04-21T00:00:00Z",
+   "to": "2027-04-21T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562286,
+   "home": "BLB",
+   "away": "LIN",
+   "from": "2027-04-21T00:00:00Z",
+   "to": "2027-04-21T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562287,
+   "home": "CAR",
+   "away": "QPR",
+   "from": "2027-04-21T00:00:00Z",
+   "to": "2027-04-21T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562288,
+   "home": "WAT",
+   "away": "SWA",
+   "from": "2027-04-21T00:00:00Z",
+   "to": "2027-04-21T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562289,
+   "home": "WAT",
+   "away": "BIR",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562290,
+   "home": "MID",
+   "away": "WHU",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562291,
+   "home": "STK",
+   "away": "LIN",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562292,
+   "home": "BUR",
+   "away": "SOU",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562293,
+   "home": "BOL",
+   "away": "SWA",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562294,
+   "home": "SHU",
+   "away": "MIL",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562295,
+   "home": "WOL",
+   "away": "QPR",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562296,
+   "home": "BRC",
+   "away": "DER",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562297,
+   "home": "CHA",
+   "away": "WRE",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562298,
+   "home": "NOR",
+   "away": "BLB",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562299,
+   "home": "CAR",
+   "away": "WBA",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562300,
+   "home": "POR",
+   "away": "PNE",
+   "from": "2027-04-24T00:00:00Z",
+   "to": "2027-04-24T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562301,
+   "home": "QPR",
+   "away": "NOR",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562302,
+   "home": "WHU",
+   "away": "POR",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562303,
+   "home": "WBA",
+   "away": "BOL",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562304,
+   "home": "SOU",
+   "away": "SHU",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562305,
+   "home": "BIR",
+   "away": "BUR",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562306,
+   "home": "MIL",
+   "away": "STK",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562307,
+   "home": "WRE",
+   "away": "BRC",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562308,
+   "home": "BLB",
+   "away": "WAT",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562309,
+   "home": "LIN",
+   "away": "CHA",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562310,
+   "home": "PNE",
+   "away": "CAR",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562311,
+   "home": "DER",
+   "away": "WOL",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 562312,
+   "home": "SWA",
+   "away": "MID",
+   "from": "2027-05-01T00:00:00Z",
+   "to": "2027-05-01T12:00:00Z",
+   "detectedAt": "2026-11-07T02:08:08.978Z"
   }
  ]
 }
