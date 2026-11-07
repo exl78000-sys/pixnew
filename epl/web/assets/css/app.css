@@ -207,6 +207,7 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
     mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
   }
   .subbar nav.tabs.sub::-webkit-scrollbar { display: none; }
+  .subbar nav.tabs.sub.fits { mask-image: none; }
   .subbar nav.tabs.sub > a, .subbar nav.tabs.sub > .league-pick { flex: 0 0 auto; }
   .bottombar {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));

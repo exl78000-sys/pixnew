@@ -962,13 +962,12 @@ const SECTIONS = [
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
 ];
 /* 聯賽分頁:站在其中任何一頁時,賽事子列的「聯賽」格亮、下面畫這一排。also 是不在分頁上、但屬於那一格的頁
-   (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。球員搜尋本身是跨聯賽的,放在這裡是因為讀者找球員的入口在這。 */
+   (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。 */
 const LEAGUE_TABS = [
   { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures'] },
   { page: 'teams', also: ['coaches'] },
   { page: 'tactics' },
-  { page: 'players' },
-  { page: 'explore', view: 'allplayers', label: '球員搜尋' },
+  { page: 'players' },   // 含「全部聯賽」(?scope=all,原本的球員搜尋 2026-11-07 併進來)
 ];
 // 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
 const EXPLORE_DEFAULT_VIEW = 'knowledge';
@@ -1127,8 +1126,11 @@ export function nav() {
 
   /* 手機上子列是一條橫向捲動列,作用中的那一格可能在可視範圍外 —— 把它捲進視野。
      `block: 'nearest'` 是必要的:預設會連垂直方向一起捲,整頁會跳。 */
-  document.querySelectorAll('.subbar nav.tabs.sub').forEach(n => n.querySelector('a.on, .league-pick.on')
-    ?.scrollIntoView({ inline: 'center', block: 'nearest' }));
+  document.querySelectorAll('.subbar nav.tabs.sub').forEach(n => {
+    n.querySelector('a.on, .league-pick.on')?.scrollIntoView({ inline: 'center', block: 'nearest' });
+    /* 右緣淡出是在說「右邊還有」—— 整排都放得下時(聯賽分頁四格)它只會把最後一格淡掉,看起來像壞掉 */
+    n.classList.toggle('fits', n.scrollWidth <= n.clientWidth + 1);
+  });
 
   /* 手機上往下捲就收品牌列(2026-09-27,C1)。量過:375px 寬的導覽列 131px 而且 sticky,佔 812px 螢幕的 16%,
      捲到哪裡都跟著;品牌那一行(站名 + 切換聯賽)在讀內容時用不到。往下捲超過 120px 就加 `compact`

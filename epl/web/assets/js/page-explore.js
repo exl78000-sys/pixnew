@@ -1,6 +1,5 @@
-import * as C from './core.js?v=6f73a2e7';
-import { renderKnowledge } from './knowledge-view.js?v=0e65179c';
-import { renderAllPlayers } from './allplayers-view.js?v=fa886fc8';
+import * as C from './core.js?v=7c658de6';
+import { renderKnowledge } from './knowledge-view.js?v=a39a811c';
 /* 模擬遊玩那一支**不在這裡 import**(2026-09-26,B4):game-view → game-live → game-sim,引擎本身 314 KB,
    而知識與球員搜尋兩個分頁根本用不到 —— 原本三個分頁都揹著它(explore.html 的 modulepreload 也一起預載)。
    改成點到那個分頁才 `import()`(見 VIEWS)。stamp-assets 照樣給那個字面路徑戳,但 modulepreload 只收靜態 import;
@@ -31,11 +30,14 @@ const VIEWS = [
   { key: 'knowledge', zh: '足球知識', render: renderKnowledge },
   /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
      模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
-  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=68920887')).renderGame(body) },
-  { key: 'allplayers', zh: '球員搜尋', render: renderAllPlayers },
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=eefb2f40')).renderGame(body) },
 ];
 
 const app = document.getElementById('app');
+
+/* 球員搜尋 2026-11-07 併進球員頁(使用者:「球員 球員搜尋頁整合」):舊的 explore.html?view=allplayers 轉到
+   players.html?scope=all,書籤不斷。在畫任何東西之前就轉,不然會先閃一下足球知識。 */
+if (C.qs('view') === 'allplayers') location.replace(C.link('players', { scope: 'all' }));
 
 try {
   C.nav();

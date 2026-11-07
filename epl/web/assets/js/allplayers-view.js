@@ -1,4 +1,4 @@
-import * as C from './core.js?v=6f73a2e7';
+import * as C from './core.js?v=7c658de6';
 
 /* 跨聯賽球員搜尋(總球員頁)。2026-08-30 改成**合併單表**(使用者要求),
    加隊徽與頭貼。設計決定,都是踩過的坑或明寫的界線:
@@ -19,9 +19,8 @@ const STAT_COLS = [
   ['yellow', '黃牌'], ['red', '紅牌'],
 ];
 
-/* 這一頁併進「探索」單頁(2026-09-03)。內容抽成 render 函式,
-   由 page-explore.js 以頁內分頁呼叫 —— 跟歐冠併進盃賽時同一個做法
-   (`ucl-view.js`)。`app` 由呼叫端給,不再自己抓 #app。 */
+/* 這一頁 2026-09-03 併進「探索」、2026-11-07 再併進球員頁的「全部聯賽」(page-players.js 在 ?scope=all 時呼叫)。
+   內容抽成 render 函式 —— 跟歐冠併進盃賽時同一個做法(`ucl-view.js`)。`app` 由呼叫端給,不再自己抓 #app。 */
 export async function renderAllPlayers(app) {
   try {
     C.nav();
@@ -156,8 +155,8 @@ export async function renderAllPlayers(app) {
       if (sel) sel.onchange = e => { state.season = e.target.value; renderTable(); };
     }
   
+    /* 標題與「本聯賽 / 全部聯賽」切換由球員頁畫(2026-11-07 併進球員頁),這裡只畫內容 */
     app.innerHTML = `
-      <h1>球員搜尋 <span class="dim">跨聯賽</span></h1>
       <p class="lede">一個框查所有聯賽的球員,合併一張表。點結果進該聯賽的球員頁看完整數據。</p>
       <div class="card">
         <input id="pq" type="search" placeholder="輸入球員名字(至少 2 個字母)或隊碼…"

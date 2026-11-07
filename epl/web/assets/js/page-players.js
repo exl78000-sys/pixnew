@@ -1,6 +1,26 @@
-import * as C from './core.js?v=6f73a2e7';
+import * as C from './core.js?v=7c658de6';
+
+import { renderAllPlayers } from './allplayers-view.js?v=ad96176f';
 
 const app = document.getElementById('app');
+
+/* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」):球員頁頂端一排「{聯賽} / 全部聯賽」。
+   本聯賽 = 原本的球員頁(三種渲染器各自的榜與表);全部聯賽 = 原本的跨聯賽球員搜尋(allplayers-view.js),網址 ?scope=all。
+   三個渲染器都在頁首放同一排(scopeBar),點了換頁(網址要跟著變,重新整理與分享才回得到同一個範圍)。 */
+function scopeBar(cur) {
+  return `<div class="filters" style="margin:10px 0 0">${C.tabs([
+    { key: 'league', label: `${C.LEAGUES[C.league()]?.zh ?? ''}球員` },
+    { key: 'all', label: '全部聯賽' },
+  ], cur, { attr: 'data-scope', label: '範圍', cls: 'seg-inline' })}</div>`;
+}
+// 掛一次就好:單檔版每次換頁都重跑這支(跟 core.js 的 __segClick 同一個做法)
+if (!globalThis.__scopeClick) {
+  globalThis.__scopeClick = true;
+  document.addEventListener('click', e => {
+    const b = e.target.closest?.('[data-scope]');
+    if (b && b.dataset.scope !== (C.qs('scope') === 'all' ? 'all' : 'league')) C.go('players', { scope: b.dataset.scope === 'all' ? 'all' : null });
+  });
+}
 
 /* 逐場累加那一層的位置代碼(檔尾 renderAggregate 用)。**宣告要在最上面**:頂層的 try 在模組執行時就跑,
    而 const 不像函式宣告會提升 —— 放在檔尾就是暫時死區,畫面上表格整個不見、只有 console 一行
@@ -66,7 +86,14 @@ function coreColumns({ statOf, nameCell, teamCol, afterId = [], tail = [], hide 
   ];
 }
 
-try {
+/* 全部聯賽:不載這個聯賽的球員資料(用不到),直接交給 allplayers-view。throw 'skip' 是這個檔「到此為止」的慣例。 */
+if (C.qs('scope') === 'all') {
+  try {
+    C.nav();
+    app.innerHTML = `<div class="page-head"><h1>球員 <span class="dim">全部聯賽</span></h1>${scopeBar('all')}</div><div id="allBody"><div class="loading">載入資料中…</div></div>`;
+    await renderAllPlayers(document.getElementById('allBody'));
+  } catch (err) { C.fail(err); }
+} else try {
   /* 列表只讀 players-list(2026-09-27,A6):每人十幾個欄位,英超 1,280 KB → 幾百 KB。整份 players.json(雷達、追蹤、租借…)
      只有兩條路才讀:帶 ?code= 的詳情頁,以及對比模式(雷達與對照表)—— 點到才 loadFrom,讀過會快取。
      三個渲染器讀的欄位不變(形狀同名同層),只是列表的來源換了一份。 */
@@ -114,6 +141,7 @@ try {
   app.innerHTML = `
   <div class="page-head">
     <h1>球員</h1>
+    ${scopeBar('league')}
     <p>${meta.counts.players} 名 ${meta.currentSeason} 註冊球員。數據分成<b>本季至今</b>與<b>上季完整賽季</b>兩套,
        用下面的按鈕切換 —— 每個數字都會標明是哪一季,不會混在一起。
        百分位是跟同位置、出場達門檻的球員相比;點球員看雷達圖,可勾選兩人對比。</p>
@@ -567,6 +595,7 @@ function renderUnderstat({ meta, clubs = [], teams = [], players, leaders }) {
     app.innerHTML = `
     <div class="page-head">
       <h1>${C.esc(LZ)}球員</h1>
+      ${scopeBar('league')}
       <p>${C.esc(season)} 的 ${cur.length} 名球員。數字是<b>整季彙總</b>,不是逐場 ——
          來源(Understat)給的就是這個粒度。每 90 分鐘的數字只在上場時間達
          ${leaders.minMinutes} 分鐘時給出,樣本太少的給了會誤導。</p>
@@ -743,6 +772,7 @@ function renderAggregate({ meta, players, leaders }) {
 
   app.innerHTML = `
     <h1>${C.esc(meta.leagueLabel ?? '')}球員 <span class="dim">逐場累加</span></h1>
+    ${scopeBar('league')}
     <p class="lede">每一場比賽的逐人統計加起來就是這一頁。<b>這不是整季的球員資料庫</b> ——
       沒有球員 xG 模型、身價與傷停,那幾樣這個聯賽沒有免費來源${
         Object.values(leaders.bios?.seasons ?? {}).some(b => b.withAge || b.withCountry)

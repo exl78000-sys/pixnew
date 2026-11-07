@@ -6415,18 +6415,17 @@ function checkAssetStamps() {
     /* 2026-11-07「比賽」區拿掉、聯賽首頁與實時戰況併進「賽事」;同一天「球隊」「球員」也併進聯賽頁的分頁(使用者要求)—— 頂列兩區 */
     ok(allPl.sections.length === 2 && allPl.sections.map(x => x.label).join() === '賽事,更多', '英超頂列兩區、順序固定');
     {
-      /* 聯賽分頁:比賽 / 球隊 / 戰術 / 球員 / 球員搜尋。站在其中任何一頁(含 also:單場分析、賽程表、教練)時,
+      /* 聯賽分頁:比賽 / 球隊 / 戰術 / 球員(球員搜尋同一天併進球員頁的「全部聯賽」,不再是一格)。站在其中任何一頁(含 also:單場分析、賽程表、教練)時,
          ① 「聯賽」那一格亮(here 是賽事、index 那一項 isHere);② 亮的分頁是對的那一格;③ 不屬於聯賽的頁(總覽、盃賽、足球知識)沒有分頁 */
       const tabOf = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.ltab ? (st.ltab.label ?? st.ltab.page) : null; };
       const lit = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.here?.key === 'comp' && st.here.items.some(it => it.page === 'index' && st.isHere(it)); };
-      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,tactics,players,球員搜尋'
+      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,tactics,players'
         && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽'
         && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'tactics' && tabOf('players') === 'players'
-        && tabOf('explore', 'allplayers') === '球員搜尋'
         && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'knowledge') === null && tabOf('explore', null) === null
-        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis'].every(pg => lit(pg)) && lit('explore', 'allplayers')
+        && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis'].every(pg => lit(pg))
         && !lit('overview') && !lit('cups') && !lit('explore', 'knowledge'),
-        '球隊、戰術、球員、球員搜尋併進聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 足球知識沒有分頁');
+        '球隊、戰術、球員併進聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 足球知識沒有分頁');
       const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
       ok(/const lgbar = ltab/.test(navFn) && /\$\{sub\}\$\{lgbar\}<\/header>/.test(navFn)
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
@@ -6450,8 +6449,25 @@ function checkAssetStamps() {
     const lost = [...new Set(secPages)].filter(pg => !NV.navState(pg, null, 'pl').here);
     ok(lost.length === 0, '每一個導覽上的頁都找得到自己的區', lost.join('、'));
     ok(NV.navState('analysis', null, 'pl').here?.key === 'comp' && NV.navState('ucl-match', null, 'pl').here?.key === 'comp'
-      && NV.navState('explore', 'allplayers', 'pl').here?.key === 'comp' && NV.navState('explore', null, 'pl').here?.key === 'more',
-      '不在導覽上的頁與探索的三個分頁各自亮對的區');
+      && NV.navState('explore', null, 'pl').here?.key === 'more' && NV.navState('explore', 'duel', 'pl').here?.key === 'more',
+      '不在導覽上的頁與探索的分頁各自亮對的區');
+    {
+      /* 球員搜尋併進球員頁(2026-11-07,使用者:「球員 球員搜尋頁整合」):
+         ① 球員頁三個渲染器都畫「{聯賽}球員 / 全部聯賽」那一排,?scope=all 交給 allplayers-view(不載這個聯賽的球員資料);
+         ② 舊網址(explore?view=allplayers、allplayers.html)都轉到 players?scope=all;③ 探索頁不再有球員搜尋那個分頁 */
+      const pp = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-players.js'), 'utf8');
+      const ex = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-explore.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const ap = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-allplayers.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const allBranch = pp.slice(pp.indexOf("if (C.qs('scope') === 'all') {"), pp.indexOf('} else try {'));
+      ok((pp.match(/\$\{scopeBar\('league'\)\}/g) ?? []).length === 3 && /scopeBar\('all'\)/.test(allBranch)
+        && /await renderAllPlayers\(document\.getElementById\('allBody'\)\)/.test(allBranch) && !/C\.load\(/.test(allBranch)
+        && /import \{ renderAllPlayers \} from '\.\/allplayers-view\.js(\?v=[0-9a-f]{8})?'/.test(pp),
+        '球員頁三個渲染器都有「本聯賽 / 全部聯賽」;全部聯賽交給 allplayers-view,不載這個聯賽的球員資料');
+      ok(/if \(C\.qs\('view'\) === 'allplayers'\) location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ex)
+        && !/key: 'allplayers'/.test(ex) && !/renderAllPlayers/.test(ex)
+        && /location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ap),
+        '球員搜尋的舊網址(探索分頁、allplayers.html)都轉到球員頁的全部聯賽;探索頁不再有那個分頁');
+    }
     // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)
     const bad = [];
     for (const lg of Object.keys(NV.LEAGUES)) {
