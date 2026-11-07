@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-07T20:21:55.301Z",
+ "fetchedAt": "2026-11-07T21:58:05.295Z",
  "teams": [
   {
    "code": "PSG",
@@ -979,66 +979,6 @@
    ]
   },
   {
-   "code": "TRO",
-   "fotmobId": 10242,
-   "fotmobName": "Troyes",
-   "fetchedAt": "2026-10-09T12:42:09.145Z",
-   "color": "#2A50A1",
-   "teamColors": {
-    "darkMode": "#2d56ae",
-    "lightMode": "#2A50A1",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade de l'Aube",
-   "city": "Troyes",
-   "location": [
-    "48.307532778",
-    "4.098485112"
-   ],
-   "capacity": 21877,
-   "surface": "Grass",
-   "opened": 1924,
-   "coachHistory": [
-    {
-     "id": 26159,
-     "name": "Stéphane Dumont",
-     "season": "2024/2025",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 13,
-     "draw": 5,
-     "loss": 16,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 26159,
-     "name": "Stéphane Dumont",
-     "season": "2025/2026",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 20,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.97,
-     "winPercentage": 0.59
-    },
-    {
-     "id": 26159,
-     "name": "Stéphane Dumont",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 1,
-     "draw": 1,
-     "loss": 3,
-     "pointsPerGame": 0.8,
-     "winPercentage": 0.2
-    }
-   ]
-  },
-  {
    "code": "ANG",
    "fotmobId": 8121,
    "fotmobName": "Angers",
@@ -1095,6 +1035,66 @@
      "loss": 2,
      "pointsPerGame": 1.4,
      "winPercentage": 0.4
+    }
+   ]
+  },
+  {
+   "code": "TRO",
+   "fotmobId": 10242,
+   "fotmobName": "Troyes",
+   "fetchedAt": "2026-10-09T12:42:09.145Z",
+   "color": "#2A50A1",
+   "teamColors": {
+    "darkMode": "#2d56ae",
+    "lightMode": "#2A50A1",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade de l'Aube",
+   "city": "Troyes",
+   "location": [
+    "48.307532778",
+    "4.098485112"
+   ],
+   "capacity": 21877,
+   "surface": "Grass",
+   "opened": 1924,
+   "coachHistory": [
+    {
+     "id": 26159,
+     "name": "Stéphane Dumont",
+     "season": "2024/2025",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 13,
+     "draw": 5,
+     "loss": 16,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 26159,
+     "name": "Stéphane Dumont",
+     "season": "2025/2026",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 20,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.97,
+     "winPercentage": 0.59
+    },
+    {
+     "id": 26159,
+     "name": "Stéphane Dumont",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 1,
+     "draw": 1,
+     "loss": 3,
+     "pointsPerGame": 0.8,
+     "winPercentage": 0.2
     }
    ]
   },
