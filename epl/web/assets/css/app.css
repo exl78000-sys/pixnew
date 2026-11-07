@@ -371,6 +371,9 @@ a.card > .row > .crest + div { flex: 1 1 0; min-width: 0; }
    色塊版的邊框是給純色方塊用的,logo 有白底就夠分得出來,再框一圈反而髒 */
 .comp-badge.logo { background: #fff; border: 0; padding: 2px; box-sizing: border-box; }
 .team-cell { display: flex; align-items: center; gap: 9px; }
+/* 表格裡的隊名格是 inline-flex(2026-11-07):前面常掛一顆關注星號(followStar),而 flex 是區塊 —— 星號後面接一個區塊,
+   瀏覽器就把它擠到下一行,每一列變兩行高(模擬表、球隊表在手機上整張高一倍)。td 本來就 nowrap,inline-flex 排得下。 */
+td .team-cell { display: inline-flex; vertical-align: middle; }
 .team-cell .nm { font-weight: 600; }
 
 /* ── 標記 ───────────────────────────── */
@@ -494,6 +497,45 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 @media (max-width: 1000px) { .ov-split { grid-template-columns: minmax(0, 1fr); } }
 .recent-list { margin-top: 6px; }
 .cd-min { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ── C.table 的手機卡片模式(2026-11-07)──
+   表與卡片同一個 render 畫,切換只靠這一段:640px 以下藏表(與收欄那一列)、顯示卡片。
+   卡片之間用細線分隔,不再包一層框 —— 外面本來就有 .card。 */
+.table-cards { display: none; }
+@media (max-width: 640px) {
+  .table-box.has-cards .table-wrap, .table-box.has-cards .table-fold { display: none !important; }
+  .table-box.has-cards .table-cards { display: block; }
+}
+/* 手機上表格的格子間距(2026-11-07):左右各 10px 在 390px 寬裡,一張十欄的表光是留白就吃掉 200px ——
+   縮成 6px,積分榜(# 球隊 賽 淨 積分)與模擬表(期望積分 奪冠 前四 降級)才塞得進一個畫面。
+   `.hide-narrow` 給「有它更好、沒有也看得懂」的次要文字(例:教練的原文名)。 */
+@media (max-width: 640px) {
+  thead th, tbody td { padding-left: 6px; padding-right: 6px; }
+  table { font-size: 13px; }
+  .hide-narrow { display: none; }
+  /* 表格裡的隊名太長就截斷(滑過去有隊徽的 title);Wolverhampton Wanderers 這種會讓整張積分榜多出一截橫捲 */
+  td .team-cell { gap: 6px; }
+  td .team-cell .nm { max-width: 7.5em; overflow: hidden; text-overflow: ellipsis; }
+  td .followstar { min-width: 30px; }
+  /* 人名這種可以斷行的,手機上讓它斷成兩行,不要撐寬整張表 */
+  td .wrap-narrow { display: inline-block; max-width: 6.5em; white-space: normal; vertical-align: middle; }
+}
+.tcard { padding: 10px 4px; border-bottom: 1px solid var(--line-soft); }
+.tcard:last-child { border-bottom: 0; }
+.tcard.clickable { cursor: pointer; }
+.tcard.clickable:active { background: #ffffff08; }
+.tcard.followed { background: #00ff850a; }
+.tcard:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* 一場比賽:上面一行是時間 / 狀態與賽事,下面一行「主隊 | 比分 | 客隊」(主客等寬,比分在同一條直線上) */
+.mcard-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+.mcard-top .left { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mcard-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; font-size: 14px; }
+.mcard-row .h, .mcard-row .a { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mcard-row .h { justify-content: flex-end; text-align: right; }
+.mcard-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mcard-row .crest { width: 20px; height: 20px; flex: none; }
+.mcard-row .mid { text-align: center; min-width: 56px; font-variant-numeric: tabular-nums; }
+.mcard-sub { margin-top: 6px; }
 .recent-day { font-size: 11.5px; color: var(--ink-3); letter-spacing: .04em; margin: 12px 0 4px; padding-bottom: 3px;
   border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
 .recent-day:first-child { margin-top: 2px; }

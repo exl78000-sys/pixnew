@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
@@ -112,6 +112,22 @@ export function mountFixtureList({
        降級成賽前分頁 + 比分,不需要在這裡擋。抽屜只留給往季賽果與
        還沒有賽前分析的未來場次,那裡它就是全部內容。 */
     ], { sortKey: 'date', desc: false,
+      /* 手機(≤ 640px)改畫卡片(2026-11-07,使用者:「手機介面優化」):表在 390px 寬只看得到主隊,
+         客隊、比分與機率條都在橫捲的另一端。卡片:上面一行時間 + 輪次 / 倒數或狀態,下面「主隊 | 比分或預期 | 客隊」,
+         再下面機率條。分析連結不另外放 —— 整張卡片可點,點下去的去處跟表的那一列相同(onRow)。 */
+      card: f => {
+        const side = (code, home) => `<span class="${home ? 'h' : 'a'}">${home ? `${star(code)}<span class="nm">${C.esc(C.name(code))}</span>${C.badge(code)}`
+          : `${C.badge(code)}<span class="nm">${C.esc(C.name(code))}</span>${star(code)}`}</span>`;
+        const state = f.played
+          ? (hasReport(f) ? '<span class="pill accent tiny">有賽後分析</span>' : '<span class="dim">完場</span>')
+          : (f.kickoff ? C.countdown(f.kickoff, { seconds: false }) : '<span class="dim">時間待定</span>');
+        const mid = f.played
+          ? `<b class="mono">${f.fh} - ${f.fa}</b>${f.scoreProvisional ? '<div><span class="pill warn tiny" title="FotMob 的比分;社群賽果檔還沒到,到了會逐場核對">暫定</span></div>' : ''}`
+          : (f.prediction ? `<span class="mono dim small" title="預期進球">${f.prediction.xgHome} : ${f.prediction.xgAway}</span>` : '<span class="dim">vs</span>');
+        return `<div class="mcard-top"><span class="left">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}<span>・第 ${f.round} 輪</span></span><span>${state}</span></div>
+          <div class="mcard-row">${side(f.home, true)}<span class="mid">${mid}</span>${side(f.away, false)}</div>
+          ${f.prediction && !f.played ? `<div class="mcard-sub">${C.probBar(f.prediction)}</div>` : ''}`;
+      },
       /* 關注的球隊的場次標一列底色 + 主客隊名旁邊的 ★(2026-09-14)。
          **順序不動** —— 這張表預設照開賽時間排,搬動的話「下一輪什麼時候踢」就看不出來了;
          而且讀者本來就會用上面的球隊篩選器只看一支隊。 */

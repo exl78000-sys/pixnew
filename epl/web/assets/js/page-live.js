@@ -1,6 +1,6 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=b928299e';
+import { mountSimTable } from './sim-table.js?v=f0788ede';
 
 const app = document.getElementById('app');
 
@@ -359,14 +359,14 @@ try {
         { key: 'pos', label: '#', value: r => r.pos, num: true },
         { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
         { key: 'p', label: '賽', value: r => r.p, num: true },
-        { key: 'w', label: '勝', value: r => r.w, num: true },
-        { key: 'd', label: '和', value: r => r.d, num: true },
-        { key: 'l', label: '負', value: r => r.l, num: true },
-        { key: 'gf', label: '進', value: r => r.gf, num: true },
-        { key: 'ga', label: '失', value: r => r.ga, num: true },
+        { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
+        { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
+        { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
+        { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
+        { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
         { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
         { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-        { key: 'form', label: '戰績', value: r => r.pts, sortable: false,
+        { key: 'form', label: '戰績', fold: 7, value: r => r.pts, sortable: false,
           render: r => (r.p ? C.formRun(r.form) : '<span class="dim tiny">尚未出賽</span>') },
       ], { sortKey: 'pts', desc: true, onRow: r => C.go('teams', { code: r.code }) });
     }

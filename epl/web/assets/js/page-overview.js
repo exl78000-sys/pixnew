@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 
 const app = document.getElementById('app');
 
@@ -561,6 +561,24 @@ try {
         return u.link ? `<a href="${u.link}" style="color:inherit;text-decoration:none">${body}</a>` : body;
       } },
   ], { sortKey: 'kick', desc: false,
+    /* 先畫 20 場(2026-11-07):七天窗一週有六十幾場,手機上一張一張疊下去,右欄「最近賽果」要捲四千多 px 才看得到;
+       桌機上左欄也比右欄長三倍。其餘按「再顯示 / 全部顯示」(C.table 的 pageSize,排序照整份排)。 */
+    pageSize: 20,
+    /* 手機(≤ 640px)改畫卡片(2026-11-07,使用者:「手機介面優化」):表在 390px 寬「對戰」那一欄整個在橫捲的另一端,
+       讀者只看得到時間、倒數與賽事。卡片跟右欄「最近賽果」同一個排法:上面一行賽事 + 開球,下面「主隊 | vs / 比分 | 客隊」。 */
+    card: u => {
+      const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" alt="">` : '');
+      const flag = f => (f ? `<img class="intl-flag" src="${f}" alt="" width="20" height="15">` : '');
+      const state = u.pending ? '<span class="dim">時間待定</span>'
+        : !u.live ? C.countdown(u.kick, { seconds: false })
+          : u.live.finished ? '<span class="pill tiny">完場</span>'
+            : `<span class="pill bad tiny"><span class="livedot"></span>${u.live.minute ?? '進行中'}</span>`;
+      const mid = u.live && u.live.hs != null && u.live.as != null ? `<b class="mono">${u.live.hs} : ${u.live.as}</b>` : '<span class="dim">vs</span>';
+      return `<div class="mcard-top"><span class="left">${C.compBadge(u.compKey, { label: u.comp })}<span>${
+        u.pending ? C.dateFull(u.kick.slice(0, 10)) : C.kickoffLocal(u.kick)}</span></span><span>${state}</span></div>
+        <div class="mcard-row"><span class="h"><span class="nm">${C.esc(u.home)}</span>${flag(u.hFlag)}${img(u.hCrest)}</span>
+          <span class="mid">${mid}</span><span class="a">${img(u.aCrest)}${flag(u.aFlag)}<span class="nm">${C.esc(u.away)}</span></span></div>`;
+    },
     /* 整列可點,不用瞄準文字連結(使用者要求)。歐冠場次連自己的單場頁(2026-09-13)。
        **盃賽場次開盃賽頁的對應分頁** —— 不是因為盃賽沒有單場頁(同日也做了 `cup-match.html`),
        是因為這張表只列**還沒踢的**場次(上面的 `if (m.played) continue`),

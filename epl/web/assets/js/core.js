@@ -1860,7 +1860,12 @@ export function foldPlan({ cols, widths, available, total = null, keep = new Set
 /* pageSize(2026-09-26,B5):長表先畫前 N 列,表格下方一列「再顯示 N 列 / 全部顯示」。
    球員總表 617 列一次畫是 1,312 張圖、16,755 個節點,而讀者在前 100 列之外要的多半是搜尋或排序。
    **排序仍照整份排**(排完才切前 N 列),讀者換排序時已展開的列數保留;limit 是硬切(沒有按鈕),兩個可以並用。 */
-export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null, rowClass = null, pageSize = null } = {}) {
+/* card(2026-11-07,使用者:「手機介面優化」):手機寬度(≤ 640px)改畫成一列一張的卡片,桌機照舊是表。
+   為什麼:賽程表那種「主隊 | 比分 | 客隊 | 機率」的表在 390px 寬只看得到主隊,客隊與比分被擠到橫捲的另一端 ——
+   收欄(fold)救不了,因為擠掉的正是不能收的那幾欄。卡片由呼叫端給(`card: (列) => html`),
+   排序與「再顯示」跟表同一份(同一個 render 畫兩種);切換只靠 CSS 媒體查詢,不用 JS 量寬度。
+   卡片模式沒有表頭可以點,所以手機上的排序就是預設那一種 —— 這幾張表的預設本來就是讀者要的(開賽時間)。 */
+export function table(rows, cols, { sortKey = null, desc = true, onRow = null, rowClickable = null, limit = null, rowClass = null, pageSize = null, card = null } = {}) {
   const id = `t${Math.random().toString(36).slice(2, 8)}`;
   let state = { key: sortKey, desc };
   let shown = pageSize;        // 讀者按「再顯示」會加大;null 就是全部
@@ -1949,11 +1954,20 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
         render();
       };
     });
+    const cardsEl = el.querySelector('.table-cards');
+    if (card && cardsEl) {
+      cardsEl.innerHTML = data.map(r => {
+        const click = onRow && (!rowClickable || rowClickable(r));
+        return `<div class="${['tcard', click ? 'clickable' : '', rowClass ? (rowClass(r) ?? '') : ''].filter(Boolean).join(' ')}" data-i="${rows.indexOf(r)}"${
+          click ? ' role="link" tabindex="0"' : ''}>${card(r)}</div>`;
+      }).join('');
+    }
     if (onRow) {
-      el.querySelectorAll('tbody tr').forEach(tr => {
+      el.querySelectorAll('tbody tr, .tcard.clickable').forEach(tr => {
         const row = rows[+tr.dataset.i];
         if (rowClickable && !rowClickable(row)) return;
         tr.onclick = () => onRow(row);
+        if (tr.classList.contains('tcard')) tr.onkeydown = e => { if (e.key === 'Enter') onRow(row); };
       });
     }
     // 「再顯示 / 全部顯示」那一列:只在真的有沒畫的列時出現;數字從資料算,不寫死
@@ -1990,7 +2004,8 @@ export function table(rows, cols, { sortKey = null, desc = true, onRow = null, r
     });
     ro.observe(wrap); ro.observe(tbl);
   });
-  return `<div class="table-box" id="${id}"><div class="table-fold small dim" hidden></div><div class="table-wrap"><table></table></div><div class="table-more small dim" hidden></div></div>`;
+  return `<div class="table-box${card ? ' has-cards' : ''}" id="${id}"><div class="table-fold small dim" hidden></div><div class="table-wrap"><table></table></div>${
+    card ? '<div class="table-cards"></div>' : ''}<div class="table-more small dim" hidden></div></div>`;
 }
 
 /* ── 雷達圖 ─────────────────────────── */

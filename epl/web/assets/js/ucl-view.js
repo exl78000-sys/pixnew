@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 
 
 /* 歐冠頁。跟聯賽頁不一樣、而且會影響怎麼寫的四件事:
@@ -439,11 +439,11 @@ function leagueTable(season) {
     { key: 'team', label: '球隊', value: r => r.name, left: true,
       render: r => uclTeamCell({ id: r.id, name: r.name, code: r.code, league: r.league }) },
     { key: 'p', label: '賽', value: r => r.p, num: true },
-    { key: 'w', label: '勝', value: r => r.w, num: true },
-    { key: 'd', label: '和', value: r => r.d, num: true },
-    { key: 'l', label: '負', value: r => r.l, num: true },
-    { key: 'gf', label: '進', value: r => r.gf, num: true },
-    { key: 'ga', label: '失', value: r => r.ga, num: true },
+    { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
+    { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
+    { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
+    { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
+    { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
     { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => `${r.gd > 0 ? '+' : ''}${r.gd}` },
     { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
     { key: 'outcome', label: '結局', value: r => ['auto', 'playoff', 'out'].indexOf(r.outcome), left: true,

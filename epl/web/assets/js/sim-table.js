@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 import { followedIn, followStar, bindFollowStars } from './follow.js?v=02130043';
 
 /* ── 本季預測積分榜(共用模組) ─────────────────────────
@@ -26,11 +26,12 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
     { key: 'pos', label: '#', value: r => r.expectedPos, render: (r, i) => i + 1, sortable: false, num: true },
     { key: 'team', label: '球隊', value: r => C.name(r.code), left: true,
       render: r => `${followStar(lg, r.code)}${C.teamCell(r.code)}` },
-    { key: 'earned', label: '本季實得', value: r => (curBy.get(r.code)?.pts ?? 0), num: true,
+    { key: 'earned', label: '本季實得', fold: 8, value: r => (curBy.get(r.code)?.pts ?? 0), num: true,
       title: '已經踢完的比賽拿到的分數,這部分不是預測',
       render: r => { const c = curBy.get(r.code);
         return c?.p ? `<b>${c.pts}</b><span class="dim tiny"> / ${c.p} 場</span>` : '<span class="dim">—</span>'; } },
-    { key: 'expectedPoints', label: '期望積分', value: r => r.expectedPoints, num: true,
+    /* 手機放不下時連期望積分也收(fold 1,最後收):這張表要回答的是「奪冠 / 前四 / 降級的機率」,期望積分點欄名就放回來 */
+    { key: 'expectedPoints', label: '期望積分', fold: 1, value: r => r.expectedPoints, num: true,
       title: '本季實得 + 剩餘賽程的模擬結果',
       render: r => `<b>${r.expectedPoints}</b>` },
     { key: 'titlePct', label: '奪冠', value: r => r.titlePct, num: true,
@@ -65,10 +66,10 @@ export function mountSimTable(mountId, { sim, teams, table, meta, note = true })
         title: '落在直接降級上一名、要跟次級聯賽球隊打附加賽的機率(不含附加賽的勝負)',
         render: r => `${r.relegationPlayoffPct}%${C.bar(r.relegationPlayoffPct, 100, 'hot')}` },
     ] : []),
-    { key: 'last', label: '上季', value: r => (teamBy.get(r.code)?.lastSeason?.pos ?? 99), num: true,
+    { key: 'last', label: '上季', fold: 9, value: r => (teamBy.get(r.code)?.lastSeason?.pos ?? 99), num: true,
       render: r => { const t = teamBy.get(r.code);
         return t?.lastSeason ? `第 ${t.lastSeason.pos} 名` : '<span class="pill">升班馬</span>'; } },
-    { key: 'elo', label: 'Elo', value: r => teamBy.get(r.code)?.elo ?? 0, num: true,
+    { key: 'elo', label: 'Elo', fold: 10, value: r => teamBy.get(r.code)?.elo ?? 0, num: true,
       render: r => C.fx(teamBy.get(r.code)?.elo, 0) },
   ], { sortKey: 'expectedPoints', desc: true,
     /* 關注的球隊**只標色,不改順序** —— 這張表的順序是名次,

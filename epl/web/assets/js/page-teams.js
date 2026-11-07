@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -485,16 +485,16 @@ try {
         { key: 'pos', label: '#', value: r => r.pos, num: true },
         { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
         { key: 'p', label: '賽', value: r => r.p, num: true },
-        { key: 'w', label: '勝', value: r => r.w, num: true },
-        { key: 'd', label: '和', value: r => r.d, num: true },
-        { key: 'l', label: '負', value: r => r.l, num: true },
-        { key: 'gf', label: '進', value: r => r.gf, num: true },
-        { key: 'ga', label: '失', value: r => r.ga, num: true },
+        { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
+        { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
+        { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
+        { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
+        { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
         { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
         { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-        { key: 'homeAwayGap', label: '主客差', value: r => r.homeAwayGap, num: true,
+        { key: 'homeAwayGap', label: '主客差', fold: 8, value: r => r.homeAwayGap, num: true,
           title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
-        { key: 'form', label: '末段狀態', value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
+        { key: 'form', label: '末段狀態', fold: 7, value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
       ], { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } })}`;
   }
 
@@ -650,20 +650,21 @@ try {
     const rec = c => c[rankSlot];
     const has = k => rows.some(c => rec(c)[k] != null);
     el.innerHTML = C.table(rows, [
+      /* 手機寬度先收進失、勝和負與可信度(2026-11-07),留教練、球隊、場次、勝率與場均勝點 —— 排名看的是後兩個 */
       { key: 'coach', label: '教練', value: c => c.zh ?? c.name ?? '',
-        render: c => `${C.esc(c.zh ?? c.name ?? '')} <span class="dim tiny">${C.esc(c.zh ? (c.name ?? '') : '')}</span>` },
+        render: c => `<span class="wrap-narrow">${C.esc(c.zh ?? c.name ?? '')}</span> <span class="dim tiny hide-narrow">${C.esc(c.zh ? (c.name ?? '') : '')}</span>` },
       { key: 'team', label: '球隊', value: c => C.name(c.team), render: c => C.teamCell(c.team) },
       { key: 'p', label: '場次', value: c => rec(c).p, num: true },
-      { key: 'w', label: '勝', value: c => rec(c).w, num: true },
-      { key: 'd', label: '和', value: c => rec(c).d, num: true },
-      { key: 'l', label: '負', value: c => rec(c).l, num: true },
-      { key: 'gf', label: '進', value: c => rec(c).gf, num: true },
-      { key: 'ga', label: '失', value: c => rec(c).ga, num: true },
-      ...(has('winPct') ? [{ key: 'winPct', label: '勝率', num: true,
+      { key: 'w', label: '勝', fold: 2, value: c => rec(c).w, num: true },
+      { key: 'd', label: '和', fold: 4, value: c => rec(c).d, num: true },
+      { key: 'l', label: '負', fold: 3, value: c => rec(c).l, num: true },
+      { key: 'gf', label: '進', fold: 6, value: c => rec(c).gf, num: true },
+      { key: 'ga', label: '失', fold: 5, value: c => rec(c).ga, num: true },
+      ...(has('winPct') ? [{ key: 'winPct', label: '勝率', fold: 1, num: true,
         value: c => rec(c).winPct, render: c => `${rec(c).winPct}%` }] : []),
       { key: 'ppg', label: '場均勝點', num: true,
         value: c => ppgOf(rec(c)), render: c => `<b>${C.fx(ppgOf(rec(c)), 2)}</b>` },
-      { key: 'conf', label: '資料可信度', value: c => c.confidence, sortable: false, render: confPill },
+      { key: 'conf', label: '資料可信度', fold: 7, value: c => c.confidence, sortable: false, render: confPill },
     ], { sortKey: 'ppg', desc: true, onRow: c => { C.go('teams', { code: c.team }); } });
     const note = document.getElementById('coachRankNote');
     if (note) note.innerHTML = coachRankNote();

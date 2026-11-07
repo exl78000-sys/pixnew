@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1e077d95';
+import * as C from './core.js?v=96cf2e4c';
 import { followedIn } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');

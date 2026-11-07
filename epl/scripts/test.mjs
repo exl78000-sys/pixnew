@@ -5414,6 +5414,31 @@ async function checkDataGap() {
         && countdownText(at(2 * 24 * H + 21 * H + 59 * M + 30000), now).text === '2 天 21:59:30'
         && /C\.countdown\(u\.kick, \{ seconds: false \}\)/.test(ov) && !/label: '輪次'/.test(ov);
     })()],
+    /* 手機介面(2026-11-07,使用者:「手機介面優化」)。390px 寬實測:總覽即將到來看不到「對戰」、聯賽賽程只看得到主隊、
+       積分榜看不到「積分」、模擬表每一列被關注星號撐成兩行。守:
+       ① C.table 的 card 選項會畫卡片、CSS 在 640px 以下藏表顯示卡片;賽程表與總覽即將到來都給了卡片;
+       ② 積分榜類的表「球隊 / 賽 / 淨 / 積分」不收,其餘欄有收欄序;
+       ③ 表格裡的隊名格是 inline-flex(前面掛星號時不換行)。 */
+    ['手機:賽程表與總覽即將到來有卡片模式、積分榜保住積分、表格裡星號不把隊名擠到下一行', (() => {
+      const core = readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8');
+      const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
+      const js = f => readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
+      const tableSrc = core.slice(core.indexOf('export function table('), core.indexOf('export function table(') + 12000);
+      const cardOk = /pageSize = null, card = null \}/.test(tableSrc) && /class="table-cards"/.test(tableSrc) && /has-cards/.test(tableSrc)
+        && /@media \(max-width: 640px\) \{\s*\.table-box\.has-cards \.table-wrap, \.table-box\.has-cards \.table-fold \{ display: none !important; \}\s*\.table-box\.has-cards \.table-cards \{ display: block; \}/.test(css)
+        && /\.table-cards \{ display: none; \}/.test(css);
+      const users = /\bcard: f =>/.test(js('fixture-list.js')) && /\bcard: u =>/.test(js('page-overview.js'));
+      // 積分榜:這幾欄不能有 fold
+      const standings = [['page-live.js', "document.getElementById('curTable')"], ['page-teams.js', 'function lastSeasonTable()'], ['ucl-view.js', "{ key: 'p', label: '賽'"]];
+      const keepOk = standings.every(([f, start]) => {
+        const src = js(f); const i = src.indexOf(start); const blk = src.slice(i, src.indexOf('sortKey', i));
+        const colOf = k => blk.match(new RegExp(`\\{ key: '${k}', label: '[^']*',([^\\n]*)`))?.[1] ?? null;
+        return ['p', 'gd', 'pts'].every(k => colOf(k) != null && !/fold:/.test(colOf(k)))
+          && ['w', 'gf', 'ga'].every(k => /fold: \d/.test(colOf(k) ?? ''));
+      });
+      const inline = /td \.team-cell \{ display: inline-flex; vertical-align: middle; \}/.test(css);
+      return cardOk && users && keepOk && inline;
+    })()],
     ['總覽「即將到來」分左右兩欄:右欄是最近賽果,跟左欄同一套勾選,PK 平手看 pens 判贏家', (() => {
       const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
       const css = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8');
