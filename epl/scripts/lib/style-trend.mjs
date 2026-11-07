@@ -99,9 +99,22 @@ export function styleTrendFor({ lastRows = [], curRows = [], window = 10, minGam
   const delta = baseline
     ? Object.fromEntries(FIELDS.map(f => [f, round(recent[f] - baseline[f], 2)]))
     : null;
+  /* 逐場 xG 缺口(2026-11-07):這個聯賽**有** xG 來源(有接 lookup)、但視窗裡有場次沒有 xG 時,
+     軸會退回實測組 —— 而畫面原本只有一種說法「這個聯賽沒有逐場 xG 來源」。Understat 11-02 起停更,
+     英超西甲的視窗一跨過 11-01 就全部退回實測軸,畫面照那句話講,讀者會以為英超從來沒有 xG。
+     「沒有來源」與「來源只到某一天」是兩句不同的話(新聯賽的「缺什麼不可以照抄」那條坑),所以記下來交給畫面:
+     缺幾場、最後一場有 xG 的是哪天、缺的是不是都在它之後(= 上游還沒跟上,不是零星缺漏)。 */
+  const joined = recentRows.some(r => 'xg' in r);
+  const noXg = recentRows.filter(r => r.xg == null);
+  const lastXgDate = [...all].reverse().find(r => r.xg != null)?.date ?? null;
+  const xgGap = joined && noXg.length ? {
+    missing: noXg.length, total: recentRows.length, lastXgDate,
+    trailing: noXg.every(r => lastXgDate == null || r.date > lastXgDate),
+  } : null;
   return {
     window,
     span: { from: recentRows[0].date, to: recentRows.at(-1).date },
+    xgGap,
     currentSeasonGames: curRows.length,
     /* 逐場統計主檔(football-data 季檔)比賽果慢一兩天 —— 已完賽但還沒進季檔的
        場次數要標在畫面上,不然剛踢完那幾天看起來像資料壞了(使用者問過)。 */

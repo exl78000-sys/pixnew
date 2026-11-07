@@ -430,7 +430,9 @@ export async function buildLeague(L) {
       if (t) styleTrendBy.set(code, t);
     }
     if (styleTrendBy.size) {
-      attachTrendPercentiles(styleTrendBy, seasonRuler([...lastRows.values()].flat()));
+      /* 第二個參數是 `{ ruler }`、尺要逐隊分組的 Map(2026-11-07 修):原本寫成 `seasonRuler([...lastRows.values()].flat())` 直接當第二個參數,
+         函式拿不到 ruler 就靜靜 return —— 德義法 9/15 上線起位移雷達一張都沒畫(只有表),而註解說「跟英超英冠同一份實作」。 */
+      attachTrendPercentiles(styleTrendBy, { ruler: seasonRuler(lastRows) });
       console.log(`  風格位移:近 10 場視窗 ${styleTrendBy.size} 隊`);
     } else {
       console.log('  風格位移:沒有第二來源的逐場統計,這一層不做(不是空著,是整塊不畫)');

@@ -3489,12 +3489,46 @@ async function checkDataGap() {
             ['xG 缺一場 → 整組退回實測軸,不用半套平均', holey.recent.xg === null
               && m2.get('YY').axesMode === 'measured' && m2.get('YY').axes.some(a => a.key === 'volume'), ''],
             ['尺記錄 xG 完整視窗數', ruler2.xgWindows === ruler2.windows && ruler2.windows > 0, ''],
+            /* xG 缺口要記下來交給畫面(2026-11-07):Understat 11-02 起停更,視窗一跨過去就退回實測軸 ——
+               畫面不可以講成「這個聯賽沒有來源」。分三種:有接、缺在最後幾場(上游還沒跟上)/ 有接、零星缺 / 根本沒接(不記) */
+            ...(() => {
+              const stale = styleTrendFor({ lastRows: mkXg(38), curRows: [...mkXg(2), ...mk(3).map(r => ({ ...r, date: '2026-12-0' + r.date.slice(-1), xg: null, xga: null }))] });
+              const none = styleTrendFor({ lastRows: mk(38), curRows: mk(2) });
+              return [
+                ['xG 缺在最後幾場 → xgGap 記缺幾場、最後一場有 xG 的日期、trailing', stale.xgGap?.missing === 3
+                  && stale.xgGap.total === 10 && stale.xgGap.trailing === true && stale.xgGap.lastXgDate === mkXg(2).at(-1).date,
+                  JSON.stringify(stale.xgGap)],
+                ...(() => {
+                  const sporadic = styleTrendFor({ lastRows: mkXg(38), curRows: [
+                    { ...mk(1)[0], date: '2026-11-01', xg: null, xga: null }, { ...mkXg(1)[0], date: '2026-11-08' }] });
+                  return [['xG 零星缺一場(後面還有 xG)→ trailing 是 false', sporadic.xgGap?.missing === 1
+                    && sporadic.xgGap.trailing === false && sporadic.xgGap.lastXgDate === '2026-11-08', JSON.stringify(sporadic.xgGap)]];
+                })(),
+                ['完整 → 沒有 xgGap;沒接 xG 的聯賽 → 也沒有(那是另一句話)', full.xgGap === null && none.xgGap === null, ''],
+              ];
+            })(),
           ];
         })(),
+        /* 球隊頁的位移卡:有接 xG 但視窗缺場要講「只到某天」,不可以講成「沒有來源」;沒接的聯賽講「這張卡沒接」 */
+        ['球隊頁:xG 缺口與「沒接」是兩句話', (() => {
+          const pt = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+          return /: st\.xgGap\s*\?/.test(pt) && /只到 \$\{C\.dateFull\(st\.xgGap\.lastXgDate\)\}/.test(pt)
+            && !/逐場 xG 在這個聯賽沒有來源/.test(pt) && !/逐場 xG 只有本季有免費來源/.test(pt);
+        })()],
+        /* 德義法的位移雷達(2026-11-07 修):尺要用 `{ ruler }` 傳、而且是逐隊的 Map ——
+           原本直接傳 seasonRuler(攤平的陣列),函式拿不到 ruler 就 return,9/15 上線起一張雷達都沒畫 */
+        ['德義法的位移雷達有級分(尺用 { ruler } 傳)', (() => {
+          const bl = readFileSync(join(ROOT, 'scripts', 'lib', 'build-league.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+          return /attachTrendPercentiles\(styleTrendBy, \{ ruler: seasonRuler\(lastRows\) \}\)/.test(bl);
+        })()],
         ['產物:英超與西甲的位移雷達用 XG 組、英冠維持實測組', (() => {
+
           const pl = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'teams.json'), 'utf8'));
           const en = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'en2', 'teams.json'), 'utf8'));
-          const plXg = pl.filter(t => t.styleTrend?.axesMode === 'xg').length;
+          /* 「XG 組」或「有接 xG、只是視窗裡缺幾場」都算對(2026-11-07):原本只數 XG 組 ≥ 15,
+             Understat 停更、這週的比賽一進季檔,二十隊全部退回實測軸 —— 那是上游時差,不是本站的錯,
+             而這一條擋部署(「上游時差寫成 CI 紅線」那條坑)。紅線守的是「沒有一隊靜靜掉成實測軸而不講為什麼」。 */
+          const plXg = pl.filter(t => t.styleTrend?.axesMode === 'xg' || t.styleTrend?.xgGap).length;
           const enOk = en.filter(t => t.styleTrend).every(t => t.styleTrend.axesMode === 'measured');
           return plXg >= 15 && enOk;
         })()],

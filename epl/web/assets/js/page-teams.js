@@ -1000,7 +1000,14 @@ try {
           軸與公式:${AXES.map(([, label, formula]) => `${label}=${formula ?? ''}`).join('、')}。
           ${st.axesMode === 'xg'
             ? '<b>進攻火力/終結效率/防守穩固/比賽韌性四軸與主雷達同名同義</b>(逐場 xG 取自 Understat、每場比分已對回本站賽果;韌性照主雷達公式,10 場裡領先/落後的樣本少、抖動大)。傳球創造與定位球威脅沒有逐場的免費來源(實測驗證過),以場面控制與紀律補位。'
-            : '這一組全是逐場實測欄位 —— 逐場 xG 在這個聯賽沒有來源,跟主雷達的軸不是同一套,不可互比。'}</div>`;
+            : st.xgGap
+              /* 有來源、只是視窗裡缺幾場(Understat 11-02 起停更就是這樣)—— 不可以講成「沒有來源」 */
+              ? `這一組全是逐場實測欄位 —— 逐場 xG(Understat)${st.xgGap.lastXgDate ? `只到 ${C.dateFull(st.xgGap.lastXgDate)}` : '這一段沒有'},
+                 這 ${st.xgGap.total} 場裡有 ${st.xgGap.missing} 場${st.xgGap.trailing ? '是在那之後踢的、上游還沒有 xG' : '沒有 xG'};
+                 半套視窗的 xG 平均會偏,所以這張先用實測軸,跟主雷達的軸不是同一套、不可互比。${st.xgGap.trailing ? '上游補上之後會自動換回 xG 組。' : ''}`
+              /* 原本寫「逐場 xG 在這個聯賽沒有來源」—— 不精確:德義法有 Understat、英冠有 FotMob 逐射門 xG,
+                 只是這張卡的 xG 只接了英超西甲的 Understat 球隊逐場檔(team-dates)。講本站做了什麼,不講世界上有沒有。 */
+              : '這一組全是逐場實測欄位 —— 這張卡的逐場 xG 只接了英超與西甲(Understat 球隊逐場檔),這個聯賽沒有接,跟主雷達的軸不是同一套,不可互比。'}</div>`;
     })() : '';
     return `<div class="card" style="margin-top:14px">
       <div class="spread"><h3 style="margin:0">近 ${st.recent.games} 場風格位移</h3>
@@ -1024,7 +1031,9 @@ try {
       <div class="tiny dim" style="margin-top:8px">
         逐場統計取自 football-data.co.uk 季檔 —— 上季到本季同一套欄位,視窗跨季不換尺。
         ${st.baseline ? '' : `<b>沒有上季${C.esc(meta.competition?.short ?? '本聯賽')}基準</b>(上季不在這個聯賽),只列近況不給位移。`}
-        xG 不進這個視窗:逐場 xG 只有本季有免費來源,混進來前後就不是同一種數字。
+        ${/* 原本這裡寫「xG 不進這個視窗:逐場 xG 只有本季有免費來源」—— Understat 逐場 xG 接上兩季之後就不成立了
+              (XG 組的雷達用的正是兩季的逐場 xG),跟上面那段說明自相矛盾(2026-11-07 改)。 */''}
+        下面這張表只列逐場實測欄位${st.axesMode === 'xg' ? ';逐場 xG 只用在上面的雷達' : ''}。
         <b>這是資訊,不影響模型勝率</b>(跟近況五場同一個規矩)。</div>
     </div>`;
   }
