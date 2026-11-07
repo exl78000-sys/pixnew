@@ -947,11 +947,11 @@ const SITE_PAGES = [
    聯賽首頁在這一區標「聯賽」(它在別處的頁名仍是「英超首頁」);順序:總覽 → 聯賽 → 盃賽 → 國家隊
    (實時戰況同一天稍後也併進聯賽頁,見 live-board.js)。
    單場分析與賽程表(also)跟著搬過來,站在那裡時亮「賽事」。 */
+/* 「球隊」「球員」兩區也拿掉、併進聯賽頁(2026-11-07,使用者:「球隊球員也進到聯賽頁裡」,選了「聯賽頁加分頁」):
+   那幾頁都是「某一個聯賽的」東西,讀者先挑聯賽、再看這個聯賽的比賽 / 球隊 / 戰術 / 球員 —— 跟導覽的順序一致。
+   頂列剩「賽事、更多」;站在聯賽的任何一頁(LEAGUE_TABS)時,「聯賽」那一格亮,下面多一排聯賽分頁。
+   網址一個都沒改(teams.html、players.html… 照舊),舊書籤不斷。 */
 const SECTIONS = [
-  { key: 'club', label: '球隊', icon: 'shield',
-    items: [{ page: 'teams' }, { page: 'tactics' }], also: ['coaches'] },
-  { key: 'player', label: '球員', icon: 'person',
-    items: [{ page: 'players' }, { page: 'explore', view: 'allplayers', label: '球員搜尋' }], also: [] },
   { key: 'comp', label: '賽事', icon: 'trophy',
     /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
     /* 實時戰況 2026-11-07 併進「聯賽」那一頁(live.html 只剩轉址),所以不在子列上;放在 also 讓轉址那一瞬間亮對的區 */
@@ -960,6 +960,15 @@ const SECTIONS = [
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },
+];
+/* 聯賽分頁:站在其中任何一頁時,賽事子列的「聯賽」格亮、下面畫這一排。also 是不在分頁上、但屬於那一格的頁
+   (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。球員搜尋本身是跨聯賽的,放在這裡是因為讀者找球員的入口在這。 */
+const LEAGUE_TABS = [
+  { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures'] },
+  { page: 'teams', also: ['coaches'] },
+  { page: 'tactics' },
+  { page: 'players' },
+  { page: 'explore', view: 'allplayers', label: '球員搜尋' },
 ];
 // 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
 const EXPLORE_DEFAULT_VIEW = 'knowledge';
@@ -978,9 +987,12 @@ export function navState(page = currentPage(), view = qs('view'), lg = league())
   const sections = SECTIONS
     .map(s => ({ ...s, items: s.items.filter(it => allow(it.page)) }))
     .filter(s => s.items.length);
-  const isHere = it => it.page === page && (!it.view || it.view === v);
+  const ltabs = LEAGUE_TABS.filter(t => allow(t.page));
+  const ltab = ltabs.find(t => (t.page === page && (!t.view || t.view === v)) || t.also?.includes(page)) ?? null;
+  // 站在聯賽的任何一頁 = 站在「聯賽」那一格(所以球隊頁、球員頁也亮賽事 → 聯賽)
+  const isHere = it => (it.page === page && (!it.view || it.view === v)) || (it.page === 'index' && !!ltab);
   const here = sections.find(s => s.items.some(isHere)) ?? sections.find(s => s.also.includes(page)) ?? null;
-  return { sections, here, isHere };
+  return { sections, here, isHere, ltabs, ltab };
 }
 
 const PAGES = [
@@ -1028,7 +1040,7 @@ export function nav() {
   const here = currentPage();
   const lg = league();
   const L = LEAGUES[lg] ?? LEAGUES.pl;
-  const { sections, here: hereSection, isHere } = navState(here, qs('view'), lg);
+  const { sections, here: hereSection, isHere, ltabs, ltab } = navState(here, qs('view'), lg);
   document.title = document.title.replace(/(?:英超|西甲)戰情室/, L.brand);
   const itemLink = it => link(it.page, it.view ? { view: it.view } : {});
   const itemLabel = it => it.label ?? pageLabel(it.page, lg);
@@ -1041,12 +1053,19 @@ export function nav() {
   // 子列:目前那一區有兩頁以上才畫(只有一頁的區,子列只是把頂列那一格再印一次)
   /* 聯賽切換併進「聯賽」那一格(2026-11-07,使用者:「聯賽選擇按鈕 整合進聯賽」,選了「只在聯賽格切換」):
      品牌旁那顆下拉拿掉,賽事子列的「聯賽」格本身寫目前聯賽(「英超 ▾」),點開是六個聯賽、各連到那個聯賽的聯賽頁。
-     球隊 / 球員 / 更多那幾區沒有切換鈕 —— 選好的聯賽照舊帶在網址上,品牌也寫著目前是哪個聯賽(「西甲戰情室」)。
+     更多那一區沒有切換鈕 —— 選好的聯賽照舊帶在網址上,品牌也寫著目前是哪個聯賽(「西甲戰情室」)。
+     球隊 / 球員同一天稍後併進聯賽頁的分頁(LEAGUE_TABS),站在那裡時這一格也亮、換聯賽停在同一分頁。
      清單**不放在子列的 nav 裡**:手機上子列是 overflow-x 捲動 + 右緣 mask,絕對定位的清單會被裁掉,
      所以清單掛在 .subbar .inner(nav 外面),由 JS 依按鈕的位置擺。 */
   const isLeagueItem = it => it.page === 'index' && hereSection?.key === 'comp';
+  /* 站在聯賽的某一分頁時,換聯賽停在同一分頁(球隊頁 → 那個聯賽的球隊頁;code / id 不帶,兩聯賽的隊碼與場次 id 不共用);
+     目標聯賽沒開那一頁、或站在聯賽以外的頁(總覽、盃賽),一律到那個聯賽的聯賽頁。 */
+  const pickTarget = k => {
+    const t = ltab && ltab.page !== 'index' && (!LEAGUES[k].open || LEAGUES[k].open.includes(ltab.page)) ? ltab : null;
+    return t ? link(t.page, { league: k, ...(t.view ? { view: t.view } : {}) }) : link('index', { league: k });
+  };
   const leagueList = `<div class="league-list" id="leagueList" role="menu" hidden>${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
-      `<a role="menuitem" href="${link('index', { league: k })}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
+      `<a role="menuitem" href="${pickTarget(k)}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
         BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
           ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div>`;
   const subItem = it => isLeagueItem(it)
@@ -1058,13 +1077,22 @@ export function nav() {
         ${hereSection.items.some(isLeagueItem) ? leagueList : ''}
       </div></div>`
     : '';
+  // 聯賽分頁那一排:只在站在聯賽的某一頁時畫,左邊標聯賽名(「這一排是英超的」)
+  const lgbar = ltab
+    ? `<div class="subbar lgbar"><div class="inner"><span class="sub-label">${esc(L.zh)}</span>
+        <nav class="tabs sub" aria-label="${esc(L.zh)}分頁">${ltabs.map(t => {
+          const on = t === ltab;
+          return `<a href="${link(t.page, t.view ? { view: t.view } : {})}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${esc(t.label ?? pageLabel(t.page, lg))}</a>`;
+        }).join('')}</nav>
+      </div></div>`
+    : '';
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       ${/* 站名連到**總覽**(2026-09-30,使用者要求):五區之後總覽收在「賽事」裡要點兩下,而它是全站的入口 ——
            品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁在「賽事」區的第二格(「聯賽」)。 */''}
       <a class="brand" href="${link('overview')}" title="回總覽"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
       <nav class="tabs sections" aria-label="主選單">${top}</nav>
-    </div>${sub}</header>`);
+    </div>${sub}${lgbar}</header>`);
   /* 手機的底部五格(桌機 display:none)。單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的,不會疊兩條。 */
   document.querySelector('.bottombar')?.remove();
   document.body.insertAdjacentHTML('beforeend', `<nav class="bottombar" aria-label="主選單">${sections.map(s =>
@@ -1099,8 +1127,8 @@ export function nav() {
 
   /* 手機上子列是一條橫向捲動列,作用中的那一格可能在可視範圍外 —— 把它捲進視野。
      `block: 'nearest'` 是必要的:預設會連垂直方向一起捲,整頁會跳。 */
-  document.querySelector('.subbar nav.tabs.sub')?.querySelector('a.on')
-    ?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  document.querySelectorAll('.subbar nav.tabs.sub').forEach(n => n.querySelector('a.on, .league-pick.on')
+    ?.scrollIntoView({ inline: 'center', block: 'nearest' }));
 
   /* 手機上往下捲就收品牌列(2026-09-27,C1)。量過:375px 寬的導覽列 131px 而且 sticky,佔 812px 螢幕的 16%,
      捲到哪裡都跟著;品牌那一行(站名 + 切換聯賽)在讀內容時用不到。往下捲超過 120px 就加 `compact`

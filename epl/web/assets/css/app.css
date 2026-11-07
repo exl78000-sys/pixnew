@@ -192,6 +192,9 @@ nav.tabs.sections { margin-left: auto; }
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; }
 .sub-label { font-size: 11.5px; color: var(--ink-3); letter-spacing: 1px; }
 nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
+/* 聯賽分頁那一排(2026-11-07,球隊 / 球員併進聯賽頁):跟子列同一種長相,左邊標聯賽名;底色深一階,看得出是「聯賽」底下的一層 */
+.subbar.lgbar { background: #00000026; }
+.subbar.lgbar .sub-label { color: var(--ink-2); font-weight: 700; letter-spacing: .5px; }
 
 /* 手機(2026-09-30,方案 B):頂列只剩「品牌 + 聯賽下拉」一行;五區搬到固定在底部的一列(拇指搆得到、不佔上方);
    子列(目前那一區的頁)是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽。 */
