@@ -65112,7 +65112,7 @@
   "FUL|NEW": {
    "fixtureId": 129017,
    "kickoff": "2026-11-07T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -65121,9 +65121,31 @@
    "homeId": 34,
    "awayId": 23,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      6712,
+      68651,
+      23793,
+      14624
+     ],
+     [
+      21614,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      119364
+     ]
+    ],
     "xi": [
      {
       "id": 4985,
@@ -65139,7 +65161,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -65310,9 +65332,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      8707,
+      108922
+     ],
+     [
+      303043,
+      67849
+     ],
+     [
+      9662,
+      117497,
+      14716
+     ],
+     [
+      114590
+     ]
+    ],
     "xi": [
      {
       "id": 8707,
@@ -65328,7 +65372,7 @@
       "playerId": null,
       "name": "Yoane Wissa",
       "shirt": 9,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Centre Striker",
       "captain": false
      },
@@ -65502,14 +65546,27 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   },
   "ARS|HUL": {
    "fixtureId": 129013,
    "kickoff": "2026-11-07T15:00:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -65518,9 +65575,31 @@
    "homeId": 1,
    "awayId": 41,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      67776,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      15202,
+      74761
+     ],
+     [
+      67407,
+      11419,
+      67704
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 13274,
@@ -65536,7 +65615,7 @@
       "playerId": null,
       "name": "Noni Madueke",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -65608,7 +65687,7 @@
       "playerId": null,
       "name": "Christos Tzolis",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -65707,9 +65786,29 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "5-3-2",
+    "formationRaw": "5-3-2",
+    "rows": [
+     [
+      55642
+     ],
+     [
+      13486,
+      10424,
+      4394,
+      133314,
+      337382
+     ],
+     [
+      66538,
+      75264,
+      21385
+     ],
+     [
+      126447,
+      8107
+     ]
+    ],
     "xi": [
      {
       "id": 126447,
@@ -65779,7 +65878,7 @@
       "playerId": null,
       "name": "Elliot Stroud",
       "shirt": 21,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Left Winger",
       "captain": false
      },
@@ -65899,10 +65998,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "02'00"
   }
  },
- "fetchedAt": "2026-11-07T15:01:42.697Z"
+ "fetchedAt": "2026-11-07T15:03:59.567Z"
 }
