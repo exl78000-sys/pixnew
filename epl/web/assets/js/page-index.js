@@ -1,6 +1,7 @@
-import * as C from './core.js?v=96cf2e4c';
-import { mountFixtureList } from './fixture-list.js?v=19ded4a8';
+import * as C from './core.js?v=7e0216d2';
+import { mountFixtureList } from './fixture-list.js?v=0457b97d';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
+import { mountLiveBoard } from './live-board.js?v=b2e9cd01';
 
 const app = document.getElementById('app');
 
@@ -22,31 +23,9 @@ try {
   const intro = meta.intro
     ?? `把 ${meta.historySeasons?.join('、') ?? '過往賽季'} 的每一場比賽、每一位球員的進階數據跑成模型，做出本季 ${meta.currentSeason} 的積分預測、單場勝負機率、戰術剖析與傷停動態。所有數字都可以往下追到原始資料，沒有一項是拍腦袋填的。`;
 
-  const kpi = (label, value, sub) => `<div class="kpi"><div class="label">${label}</div><div class="value">${value}</div><div class="sub">${sub}</div></div>`;
-  const skelValue = '<span class="skel line" style="display:inline-block;width:3em;height:1em;margin:0"></span>';
-
-  /* 四格 KPI。第一段只有 meta:第一格(要賽程)與第四格的傷停那一支(要動態)先放骨架,第二段補上。 */
-  const kpisHtml = ({ played, fixtures, injuries } = {}) => `
-    ${played
-      ? kpi('本季進度', played.length ? `第 ${played.at(-1).round} 輪` : `第 ${fixtures.find(f => !f.played)?.round ?? 1} 輪`,
-        `${meta.currentSeason}・已賽 ${played.length} / ${fixtures.length} 場`)
-      : kpi('本季進度', skelValue, `${meta.currentSeason}`)}
-    ${/* 兩個聯賽現在都有走查回測,所以這裡不再分聯賽。
-          舊的兩句都已經過期:西甲那句「尚無獨立留出賽季」不成立了,
-          英超那句「執行 npm test 後產生」是寫給開發者的。 */''}
-    ${kpi('模型準度', bt.available ? bt.rps : '—',
-      bt.available ? `RPS(越低越好)・基準線 ${bt.baselineRps}` : '這個聯賽還沒有回測結果')}
-    ${kpi('命中率', bt.available ? C.pct(bt.hitRate, 1) : '—', bt.available ? `${bt.season} ${bt.games} 場走查回測` : '尚未回測')}
-    ${/* 第四格:有傷停資料才講傷停,沒有就講資料範圍。
-          原本問的是「是不是西甲」,現在問**這個聯賽有沒有傷停來源** ——
-          英超的產物沒有 capabilities 欄位,所以 undefined 會落到傷停那一支(正確)。 */''}
-    ${meta.capabilities?.injuries === false || meta.players?.available === false
-      ? kpi('資料範圍', `${(meta.historySeasons?.length ?? 1) + 1} 季`, `${meta.lastSeason} 完整・${meta.currentSeason} 進行中`)
-      : meta.live?.demo === false && meta.live?.counts?.live > 0
-      ? kpi('進行中', `${meta.live.counts.live} 場`, `第 ${meta.live.round} 輪・點上方實時戰況`)
-      : injuries
-        ? kpi('傷停名單', injuries.length, `涵蓋 ${meta.counts.players} 名註冊球員`)
-        : kpi('傷停名單', skelValue, `涵蓋 ${meta.counts.players} 名註冊球員`)}`;
+  /* 四格數字卡(本季進度 / 模型準度 / 命中率 / 傷停)拿掉了(2026-11-07,跟實時戰況合併成一頁時)——
+     進度在下面的開賽倒數與積分榜、準度在頁底「模型是怎麼算的」與模型驗證頁,傷停在動態頁;
+     同一頁講兩次的東西,在手機上是整整一個螢幕的高度。 */
 
   /* ── 你的球隊(2026-09-14)──────────────────
      關注的那幾支收成一張卡,釘在賽程表上方。**積分榜的順序一個字都不動** ——
@@ -100,27 +79,12 @@ try {
     ])}
   </div>
 
-  <div class="grid g4" id="kpis">${kpisHtml()}</div>
-
-  <div class="grid g2" style="margin-top:16px">
-    <div class="card">
-      <h2>接下來的比賽</h2>
-      <div id="next">${'<div class="skel line"></div>'.repeat(4)}</div>
-      ${/* 「往下看完整賽程與預測」那個錨點連結拿掉了(2026-09-03,使用者要求):
-            完整賽程就在同一頁再往下捲一點,連結省不了多少事。
-            實時戰況是**跨頁**的,那個留著 —— 以前是「西甲一律不給」,
-            改成看有沒有即時來源(meta.live.available)。 */''}
-      ${meta.live?.available
-        ? `<div style="margin-top:10px"><a href="${C.link('live')}">實時戰況 →</a></div>` : ''}
-    </div>
-    <div class="card">
-      <h2>最新動態</h2>
-      <div id="news">${'<div class="skel line"></div>'.repeat(4)}</div>
-      <div style="margin-top:10px"><a href="${C.link('news')}">看全部動態 →</a></div>
-    </div>
-  </div>
-
   <div id="myTeams"></div>
+
+  ${/* 比賽現況 + 積分榜(2026-11-07,原實時戰況頁;live-board.js)。
+        「接下來的比賽」那張卡拿掉了 —— 它跟開賽倒數講同一件事;動態搬到頁底。 */''}
+  <a id="live" aria-hidden="true"></a>
+  <div id="liveBoard">${C.skel(4)}</div>
 
   ${/* 賽程表原本是獨立的一頁。分成兩頁的話,讀者看完積分榜想看下一輪對誰,
         要再點一次而且整頁重載;而兩頁的頁首、時效標籤、模型說明本來就講同一件事,
@@ -134,17 +98,24 @@ try {
         而且前端得知道「哪個聯賽有什麼」—— 那正是加英冠時撞到的問題(英冠沒有 edition,
         兩張卡片都不出現過)。西甲的每一行已經搬進 build-laliga.mjs 的 meta.boundaries,
         跟英冠同一個做法。這裡只負責畫,一行都不知道是哪個聯賽。 */''}
-  ${meta.boundaries?.length ? `<div class="card" style="margin-top:20px">
-      <h2>目前資料界線</h2>
+  ${/* 動態、資料界線、模型說明收進頁底的摺疊(2026-11-07 合併時):
+        它們是「想知道才打開」的東西,常駐的話手機上要捲過三張卡才到頁尾 —— 標題留著,一點就開。 */''}
+  <details class="card fold-card" style="margin-top:20px">
+    <summary><h2>最新動態</h2><span class="hint">傷停、轉會與外電・<a href="${C.link('news')}">看全部動態 →</a></span></summary>
+    <div id="news" style="margin-top:8px">${'<div class="skel line"></div>'.repeat(4)}</div>
+  </details>
+
+  ${meta.boundaries?.length ? `<details class="card fold-card" style="margin-top:12px">
+      <summary><h2>目前資料界線</h2><span class="hint">這個聯賽做得到與做不到的</span></summary>
       <div class="small muted" style="display:grid;gap:8px">
         ${meta.boundaries.map(x => `<div${x.startsWith('—') ? ' class="dim"' : ''}>${C.esc(x)}</div>`).join('')}
       </div>
-    </div>` : ''}
+    </details>` : ''}
 
   ${/* 「上季最終戰績」2026-09-03 搬到球隊頁(使用者要求)——
        它講的是每一隊上季怎麼樣,而首頁已經有本季積分榜與賽程。 */''}
-  <div class="card" style="margin-top:20px">
-    <h2>模型是怎麼算的</h2>
+  <details class="card fold-card" style="margin-top:12px">
+    <summary><h2>模型是怎麼算的</h2><span class="hint">${bt.available ? `走查回測 RPS ${bt.rps}・命中率 ${C.pct(bt.hitRate, 1)}` : '還沒有走查回測'}</span></summary>
     <div class="small muted" style="display:grid;gap:6px">
       <div><b class="mono">${meta.model.type}</b> — 每支球隊各有進攻強度與防守強度,加上主場優勢
         (${meta.model.homeAdvantage}× 進球)與低比分修正 ρ=${meta.model.rho};
@@ -160,41 +131,21 @@ try {
             而前端沒有 Markdown 處理器)。統一走 esc(),契約就只有一條:純文字。 */''}
       ${meta.model.caveats.map(c => `<div class="dim">・${C.esc(c)}</div>`).join('')}
     </div>
-  </div>
+  </details>
   ${C.foot(meta)}`;
 
   /* ── 第二段:賽程、動態、往季賽果與報告索引到了,填那幾塊 ────────────
-     預測積分榜移到實時戰況頁了,所以這一頁不再需要 sim.json —— 少載一份。
-     `table` 拿掉了(2026-09-03):上季戰績搬到球隊頁之後,這一頁沒有任何地方
-     用到它 —— 留著就是每次進首頁多下載一份用不到的資料集。 */
-  const { fixtures, news, results, reports, analysis } = await C.load('fixtures', 'news', 'results', 'reports', 'analysis');
+     live / table / sim 是 2026-11-07 跟實時戰況合併時加回來的:比賽現況要即時快照,
+     兩張積分榜(目前 / 預測)要 table 與 sim。 */
+  const { fixtures, news, results, reports, analysis, live, table, sim } =
+    await C.load('fixtures', 'news', 'results', 'reports', 'analysis', 'live', 'table', 'sim');
   fixturesAll = fixtures;
 
-  const played = fixtures.filter(f => f.played);
-  /* 中止 / 延期 / 取消的不算「接下來的比賽」(見 core.js 的 isSuspended),另外一行講出來 —— 不要讓它靜靜消失 */
-  const suspended = fixtures.filter(f => C.isSuspended(f));
-  const upcoming = fixtures.filter(f => !f.played && !C.isSuspended(f)).sort((a, b) => (a.date < b.date ? -1 : 1));
-  const injuries = news.filter(n => n.cat === '傷停' || n.cat === '禁賽');
-  document.getElementById('kpis').innerHTML = kpisHtml({ played, fixtures, injuries });
-
-  /* 近期比賽 */
-  document.getElementById('next').innerHTML = upcoming.slice(0, 6).map(f => `
-    <a href="${C.link('analysis', { id: f.id })}" style="color:inherit;text-decoration:none">
-      <div class="spread" style="padding:8px 0;border-bottom:1px solid var(--line-soft)">
-        <div style="min-width:0">
-          <div class="row" style="gap:7px">${C.badge(f.home)}<b>${C.name(f.home)}</b>
-            <span class="dim">vs</span>${C.badge(f.away)}<b>${C.name(f.away)}</b></div>
-          <div class="tiny dim">${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・第 ${f.round} 輪・
-            預期比分 ${f.prediction.xgHome}:${f.prediction.xgAway}</div>
-          ${f.kickoff ? `<div class="tiny"><span class="dim">開賽倒數 </span>${C.countdown(f.kickoff)}</div>` : '<div class="tiny dim">開球時間待賽程來源確認</div>'}
-        </div>
-        ${C.probBar(f.prediction)}
-      </div></a>`).join('')
-    + (suspended.length ? `<div class="tiny dim" style="padding-top:8px">${suspended.map(f =>
-        `${C.esc(C.SUSPENDED_ZH[f.status])}:${C.name(f.home)} vs ${C.name(f.away)}(原訂 ${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・第 ${f.round} 輪)`).join('<br>')}</div>` : '');
+  /* 比賽現況與積分榜(原實時戰況頁):輪詢、先畫再覆蓋、走鐘都在 live-board.js 裡 */
+  mountLiveBoard(document.getElementById('liveBoard'), { meta, fixtures, table, sim, teams, analysis, live });
 
   /* 動態 */
-  // 賽前預告已經在左邊那塊呈現了,這裡只放真正的動態
+  // 賽前預告在開賽倒數與單場分析裡,這裡只放真正的動態
   const newsRows = news.filter(n => n.cat !== '賽前').slice(0, 7);
   document.getElementById('news').innerHTML = newsRows.length
     ? newsRows.map(n => `

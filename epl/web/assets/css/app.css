@@ -501,6 +501,15 @@ button.btn.on { background: var(--accent); color: #0b0710; border-color: var(--a
 /* ── C.table 的手機卡片模式(2026-11-07)──
    表與卡片同一個 render 畫,切換只靠這一段:640px 以下藏表(與收欄那一列)、顯示卡片。
    卡片之間用細線分隔,不再包一層框 —— 外面本來就有 .card。 */
+/* 頁底的摺疊卡(2026-11-07,聯賽頁的動態 / 資料界線 / 模型說明):標題列整條可點,右邊一個 ▸ / ▾,
+   標題與說明在同一行(手機上說明換到下一行)。不加框外的陰影 —— 它就是一張 .card */
+.fold-card > summary { list-style: none; cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.fold-card > summary::-webkit-details-marker { display: none; }
+.fold-card > summary h2 { margin: 0; font-size: 16px; }
+.fold-card > summary::after { content: '▸'; margin-left: auto; color: var(--ink-3); }
+.fold-card[open] > summary::after { content: '▾'; }
+.fold-card[open] > summary { margin-bottom: 10px; }
+.fold-card > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
 .table-cards { display: none; }
 @media (max-width: 640px) {
   .table-box.has-cards .table-wrap, .table-box.has-cards .table-fold { display: none !important; }

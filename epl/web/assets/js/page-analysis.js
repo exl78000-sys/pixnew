@@ -1,4 +1,4 @@
-import * as C from './core.js?v=96cf2e4c';
+import * as C from './core.js?v=7e0216d2';
 
 const app = document.getElementById('app');
 
@@ -160,14 +160,11 @@ try {
         })() : state.phase === 'upcoming'
           ? `開賽倒數 ${C.countdown(f.kickoff)}`
           : `<span class="pill warn tiny" id="headPhase">${C.elapsedText(state.elapsed)}</span>`}</span>
-        ${/* 實時戰況這一頁不是每個聯賽都有(英冠沒有接即時來源)。
-              沒有的聯賽照樣給連結的話,讀者點過去只會撞上缺口頁 ——
-              那不是誠實,那是把人送去死路。用 C.closedPage 判斷,不寫死聯賽代碼。 */''}
+        ${/* 實時戰況 2026-11-07 併進聯賽頁(每個聯賽都有,沒有即時來源的照樣有依賽程推的進行中與開賽倒數),
+              所以不用再問 closedPage(…'live') —— 連到聯賽頁的「比賽現況」那一區。 */''}
         ${f.played
           ? `<a class="pill info tiny" href="#panel-post" data-view="post">看賽後分析 ↓</a>`
-          : C.closedPage(C.league(), 'live')
-            ? ''
-            : `<a class="pill info tiny" href="${C.link('live')}">看實時戰況 →</a>`}
+          : `<a class="pill info tiny" href="${C.link('index')}#live">看本輪比賽現況 →</a>`}
       </div>
     </div>
 

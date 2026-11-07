@@ -1,0 +1,496 @@
+import * as C from './core.js?v=7e0216d2';
+import { followedIn } from './follow.js?v=02130043';
+import { mountSimTable } from './sim-table.js?v=4775a4f3';
+
+/* 聯賽頁的「比賽現況」與積分榜(2026-11-07,使用者:「聯賽跟實時戰況如何簡化合併?」→「併成一頁」)。
+
+   原本是兩頁:聯賽首頁(數字卡、接下來的比賽、動態、賽程表)與實時戰況(進行中、開賽倒數、剛結束、
+   還沒有賽果、已完賽、兩張積分榜)。兩頁講同一批比賽:首頁「接下來的比賽」≈ 實時「開賽倒數」、
+   實時「已完賽」≈ 首頁賽程表的已賽場次。合併之後只有一頁,實時戰況那一頁的內容搬到這裡 ——
+   **程式是原本 page-live.js 的那一份**(輪詢、先畫再覆蓋、走鐘、補賽 / 提前開踢的說明、延賽的兩種講法
+   一個字都沒改),差別只有三個:
+   - 畫在呼叫端給的容器裡,不畫頁首(頁首是聯賽頁的);
+   - 拿掉數字卡與「已完賽」那一區 —— 已完賽的在下面的賽程表(選「已賽」或往前翻輪次),「剛結束」三天內的仍在這裡;
+   - 兩張積分榜(目前 / 預測)收成一個分頁切換,一次只看一張。
+   live.html 留著當轉址(舊連結與書籤不斷),導覽列不再有那一格。
+
+   沒有即時來源的聯賽(英冠德義法)照樣畫:進行中與開賽倒數是用賽程推的,本來就不需要即時資料。 */
+export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis, live: liveInitial }) {
+  if (!el) return;
+  const isLaLiga = C.league() === 'es1';
+  let live = liveInitial ?? { available: false, matches: [] };
+  // 即時模式(npm run live:watch)會在資料裡自報;靜態站沒有這個旗標
+  const isLiveMode = () => !!live.liveMode;
+  /* 積分榜看哪一張:讀者切過就記在這個區塊裡(重畫不跳回去);預設看目前的 */
+  let standView = 'cur';
+  /* 球員檔平常不跟即時戰況一起載入;第一次開報告才取得,之後沿用快取。
+     讀的是 players-list(2026-09-27,A6 第二段):這裡只拿它對賽後報告的頭貼(code → photo),列表那一份就有;
+     球員連結本身直接進球員的完整頁(bindPlayerLinks 不用 resolvePlayer)。 */
+  let playerByCodePromise = null;
+  const getPlayerByCode = async () => {
+    if (!playerByCodePromise) {
+      playerByCodePromise = C.load('players-list').then(({ 'players-list': players }) => new Map(players.map(p => [String(p.code), p])));
+    }
+    return playerByCodePromise;
+  };
+  const resolvePlayer = async code => (await getPlayerByCode()).get(String(code));
+  // 比賽報告是掛在 body 的抽屜，不在容器內，所以監聽整份 document。
+  C.bindPlayerLinks(document, resolvePlayer, { meta, mode: 'current' });
+
+  function renderPage() {
+    const scrollY = window.scrollY;   // 每 30 秒重畫一次,不要把正在往下看賽程表的人捲回去
+    const matches = live.available ? live.matches : [];
+    /* 產物沒帶 fixtureId / round 的(西甲的 FotMob 比分快照第一版就沒帶),用賽程對回來:
+       同一季同主客只有一場。對不到的才退回抽屜(href="#")。重播模式是別季的比賽,不對。 */
+    if (!live.demo) {
+      const fxByPair = new Map(fixtures.map(f => [`${f.home}|${f.away}`, f]));
+      for (const m of matches) {
+        const fx = fxByPair.get(`${m.home}|${m.away}`);
+        if (!fx) continue;
+        if (m.fixtureId == null) m.fixtureId = fx.id;
+        if (m.round == null) m.round = fx.round;
+      }
+    }
+    const liveByKey = new Map(matches.filter(m => !live.demo).map(m => [`${m.home}|${m.away}`, m]));
+    const now = Date.now();
+
+    /* 剛結束的比賽留在上面三天。
+       窗口從**結束時間**起算(開球 + MATCH_WINDOW_MIN),不是從開球起算,
+       否則同一天的晚場會比早場少留兩個小時。MATCH_WINDOW_MIN 直接用
+       core 的那一個,不在這裡另寫一份 —— 兩份會各自漂移。 */
+    const RECENT_MS = 3 * 24 * 3600 * 1000;
+    const endedAt = fx => (fx.kickoff ? Date.parse(fx.kickoff) + C.MATCH_WINDOW_MIN * 60000 : NaN);
+    /* 「剛結束」的判定不能只看 `fx.played`(2026-09-12 使用者回報:
+       「比賽途中其實就有資料,有比分結果,結束卻歸零、寫沒賽果」)。
+       `played` 要等社群賽果檔(天為單位),所以比賽踢完的那幾個小時裡它還是 false ——
+       即時快照說完場、而且有比分的,一樣算剛結束。 */
+    const liveDone = fx => {
+      const m = liveByKey.get(`${fx.home}|${fx.away}`);
+      return m?.finished && m.hs != null && m.as != null ? m : null;
+    };
+    const recentFinished = fixtures.filter(fx => {
+      if (!fx.played && !liveDone(fx)) return false;
+      const e = endedAt(fx);
+      // e 比 now 大(資料源比賽程先給比分)也算剛結束 —— 那是「更新」,不是「還沒發生」
+      return Number.isFinite(e) && now - e < RECENT_MS;
+    }).sort((a, b) => (a.kickoff < b.kickoff ? 1 : -1));
+    const recentIds = new Set(recentFinished.map(fx => fx.id));
+
+    // 從人的角度講「多久以前」。負值(資料源比賽程早)不講,免得出現「-1 小時前」
+    const agoText = ms => {
+      if (!Number.isFinite(ms) || ms < 0) return null;
+      const h = Math.floor(ms / 3600000);
+      if (h < 1) return '剛結束';
+      if (h < 24) return `${h} 小時前`;
+      return `${Math.floor(h / 24)} 天前`;
+    };
+    // 有真正即時資料的那幾場用完整的完場卡(陣型、xG、賽前機率),其餘用賽程卡
+    const recentCards = recentFinished.map(fx => {
+      const m = liveByKey.get(`${fx.home}|${fx.away}`);
+      const ago = agoText(now - endedAt(fx));
+      return m && m.finished ? finishedCard(m, ago) : finishedFixtureCard(fx, ago);
+    });
+
+    /* 就算沒有即時資料源,光靠賽程也知道現在有哪幾場正在踢 —— 這一段永遠可用。
+       而快照**夠新**的時候它比賽程準:FPL 的 finished 比完場晚二十幾分鐘才寫,
+       在那之前這一場仍該留在「進行中」並且顯示比分(不受 115 分鐘的推算限制)。
+       快照太舊(靜態站上可能是上次部署那份)就完全不採用,免得畫面說一場舊比賽正在踢。 */
+    const fresh = C.feedFresh(live, now) && !live.demo;
+    const phased = fixtures.map(f => ({
+      f, s: C.scheduleState(f, now, fresh ? liveByKey.get(`${f.home}|${f.away}`) ?? null : null),
+    }));
+    /* 關注的球隊(這個聯賽的)。**只管這個聯賽** —— 這一頁本來就是單一聯賽的,
+       你在別的聯賽關注的隊在「我的球隊」那一頁看(使用者的決定,2026-09-14)。 */
+    const mine = followedIn(C.league());
+    const isMine = f => mine.has(f.home) || mine.has(f.away);
+    /* 進行中:關注的球隊排最前面,其餘照開球時間。**只有這一區重排** ——
+       開賽倒數那一區的順序是「開球順序上第一段連續同輪」算出來的(core.js 的
+       countdownFixtures),插隊會讓「這一輪幾點開始」整個看不出來。 */
+    const inPlaySched = phased.filter(x => x.s.phase === 'inplay')
+      .sort((a, b) => (isMine(a.f) !== isMine(b.f) ? (isMine(a.f) ? -1 : 1)
+        : (a.f.kickoff < b.f.kickoff ? -1 : 1)));
+    const pinned = inPlaySched.filter(x => isMine(x.f)).length;
+    /* 「還沒有賽果」那一區的上限。一輪有幾場是**聯賽決定的**(英超西甲 20 隊 → 10 場、
+       英冠 24 隊 → 12 場),不可以寫死一個數字(CLAUDE.md 那條「前端把聯賽的事實寫死」)。 */
+    const perRound = Math.max(1, Math.floor((meta.competition?.teams ?? 20) / 2));
+    /* 已經在「剛結束」的不要再出現一次(實測:快照過期時,同一場會同時出現在兩區)。 */
+    const awaiting = phased.filter(x => x.s.phase === 'awaiting' && !x.f.played && !recentIds.has(x.f.id))
+      .sort((a, b) => (a.f.kickoff > b.f.kickoff ? -1 : 1)).slice(0, perRound);
+    const upcoming = phased.filter(x => x.s.phase === 'upcoming').map(x => x.f)
+      .sort((a, b) => (a.kickoff < b.kickoff ? -1 : 1));
+
+    /* 開賽倒數只顯示「開球順序上第一段連續同輪」的場次,其餘收成一行摘要。
+       規則與量過的數字寫在 core.js 的 countdownFixtures —— 抽到那裡是為了能被
+       npm test 測到:測試看不到 DOM,留在頁面裡就只能用正則掃原始碼。 */
+    const countdownList = C.countdownFixtures(upcoming);
+    const countdownRest = upcoming.slice(countdownList.length);
+    /* 補賽:這一段的輪次**比已經踢過的輪次還低**,代表它是從更早的一輪延後過來的。
+       實測 2025-26 第 31 輪 Man City vs Crystal Palace —— 同輪其他九場 3/21 踢完,
+       它 5/13 才踢,晚了 53 天。判斷用「已完賽的最大輪次」,不要用「下一段的輪次」——
+       正常情況下一段本來就比較大,那樣會把每一輪都標成補賽。 */
+    const maxPlayedRound = Math.max(0, ...fixtures.filter(f => f.played && f.round != null).map(f => f.round));
+    /* 「本季還有幾場」要數**所有未賽的**,不能數 upcoming ——
+       upcoming 只收有開球時間的場次,而上游是逐月公布開球時間的。 */
+    const unplayedCount = fixtures.filter(f => !f.played).length;
+    /* 中止 / 延期 / 取消的另外一行講出來(core.js 的 isSuspended)—— 原本在首頁「接下來的比賽」那張卡下面,
+       那張卡併掉之後搬到這裡,不要讓它靜靜消失 */
+    const suspended = fixtures.filter(f => C.isSuspended(f));
+    /* 這一批可能橫跨兩輪(有場次提前開踢時,見 core.countdownFixtures)。
+       標題要講的是**真正的下一輪** —— 也就是這批裡輪次最小的那個。 */
+    const countdownRounds = [...new Set(countdownList.map(f => f.round).filter(r => r != null))];
+    const mainRound = countdownRounds.length ? Math.min(...countdownRounds) : null;
+    const earlyOnes = countdownList.filter(f => f.round != null && f.round > mainRound);
+    const isCatchUp = mainRound != null && mainRound < maxPlayedRound;
+    const earlyRounds = [...new Set(earlyOnes.map(f => f.round))].sort((x, y) => x - y);
+    const earlyRoundsText = `${earlyRounds.join('、')} 輪`;
+    /* 「同一輪其他場次在哪」要數**所有未賽的**,不是 upcoming。只有日期沒有時間也照說。 */
+    const earlyRest = fixtures.filter(f => !f.played && earlyRounds.includes(f.round)
+      && !countdownList.includes(f));
+    const earlyRestDates = [...new Set(earlyRest.map(f => String(f.date ?? f.kickoff ?? '').slice(0, 10)))]
+      .filter(Boolean).sort();
+    const earlyRestText = earlyRest.length
+      ? `同一輪其他 ${earlyRest.length} 場在 ${earlyRestDates.length ? earlyRestDates.map(C.dateZh).join('、') : '日期未定'}。`
+      : '';
+
+    // 有真正即時資料的比賽優先用即時資料,其餘用賽程推導
+    const liveCards = inPlaySched.map(({ f, s }) => ({ f, s, m: liveByKey.get(`${f.home}|${f.away}`) ?? null }));
+    const withRealData = liveCards.filter(x => x.m).length;
+
+    /* 有比賽在踢、資料卻已經舊了的時候要明講。
+       不講的話讀者會把 40 分鐘前的比分當成現在的比分 —— 那比沒有比分更糟。
+       門檻抓 5 分鐘:比賽日的輪詢是每 2 分鐘一次,超過 5 分鐘代表更新機制沒在跑。 */
+    const staleBanner = () => {
+      if (!live.available || !live.fetchedAt) return '';
+      const playing = (live.matches ?? []).filter(m => m.started && !m.finished).length;
+      if (!playing) return '';
+      const mins = Math.round((Date.now() - Date.parse(live.fetchedAt)) / 60000);
+      if (mins < 5) return '';
+      return `<div class="note ${mins >= 15 ? 'warn' : ''}" style="margin-top:12px">
+        <b>比分已經 ${mins} 分鐘沒更新</b>(有 ${playing} 場正在踢)。
+        畫面上的比分與分鐘數是 ${C.kickoffLocal(live.fetchedAt)} 抓到的,<b>不是現在的實況</b>。
+        <div class="tiny dim" style="margin-top:6px">
+          比賽中正常是每 2 分鐘更新一次。超過這個時間通常是更新流程還沒被觸發或正在排隊 ——
+          這一頁每 20 秒會自己重新取一次,拿到新資料就會自動換掉,不需要重新整理。</div>
+      </div>`;
+    };
+
+    /* 資料來源說明 —— 一定要講清楚,免得把重播當成現正進行。
+       合併成一頁之後縮成一行:沒有即時來源時只在「進行中」那一區講(那裡才需要),
+       不在每個聯賽的頁面頂端都掛一整段「沒有接上即時來源」。 */
+    const sourceLine = () => {
+      if (!live.available) return '';
+      if (live.demo) {
+        return `<div class="note" style="margin-top:10px"><b>開賽倒數 / 進行中 / 還沒有賽果</b>是依本季賽程與現在時間推算的,是真的。
+          即時比分那一份目前放的是${C.esc(live.sourceLabel)} —— 真實比賽資料,但<b>不是本季的比賽</b>。</div>`;
+      }
+      const fetched = new Date(live.fetchedAt);
+      const age = Math.round((Date.now() - fetched.getTime()) / 60000);
+      const ageText = age < 2 ? '剛剛' : age < 90 ? `${age} 分鐘前` : `${Math.round(age / 60)} 小時前`;
+      return `<div class="tiny dim" style="margin-top:4px">即時比分來源:${C.esc(live.sourceLabel)}・資料時間 ${fetched.toLocaleString('zh-TW', { hour12: false })}(${ageText})${
+        isLiveMode() ? `・即時模式,每 ${Math.round((live.pollIntervalMs ?? 60000) / 1000)} 秒自動更新` : '・有比賽在踢時這一頁每 20 秒自己重新取一次'}${
+        live.source === 'mirror' ? '・鏡像是每輪賽後才更新的' : ''}</div>`;
+    };
+
+    const cur = table.current;
+    const curPlayed = cur.reduce((a, r) => a + r.p, 0) / 2;
+
+    el.innerHTML = `
+    ${staleBanner()}
+    ${sourceLine()}
+
+    ${/* 進行中放最上面(2026-09-12 使用者要求:「進行中比賽要在最前面,比倒數前面」)。
+          這一區沒有比賽在踢時根本不存在,開賽倒數就自然是最上面。 */''}
+    ${inPlaySched.length ? `
+      <div class="section"><h2><span class="livedot"></span>進行中</h2>
+        <span class="hint">依賽程推算・${withRealData ? `${withRealData} 場已接上即時比分` : '尚未接上即時比分'}${
+          /* 有插隊就講出來 —— 不講的話讀者看到的是一個他解釋不了的順序 */
+          pinned ? `・<b>你關注的 ${pinned} 場排在最前面</b>` : ''}</span></div>
+      ${!withRealData ? `<div class="note" style="margin-bottom:10px">
+        這 ${inPlaySched.length} 場<b>依賽程現在正在進行</b>,但目前沒有接上即時資料源,所以看不到比分 ——
+        畫面不會把賽前預測冒充實況。${isLaLiga ? '' : '接上即時來源的聯賽,比分、場上陣容與即時勝率會在這裡自動更新。'}</div>` : ''}
+      <div class="grid g2">${liveCards.map(x => x.m ? liveCard(x.m) : schedCard(x)).join('')}</div>` : ''}
+
+    ${/* 開賽倒數緊接在進行中之後:這一頁最常被用來回答「下一場什麼時候踢」。 */''}
+    <div class="section"><h2>開賽倒數</h2><span class="hint">${countdownList.length
+      ? `第 ${mainRound} 輪${isCatchUp ? '補賽' : ''}・${countdownList.length} 場・`
+      : ''}依實際開球時間排序・已換算為 ${C.tzName()}</span></div>
+    ${isCatchUp ? `<div class="note" style="margin-bottom:10px">這是第 ${mainRound} 輪的補賽 ——
+      同一輪其他場次已經踢完,這場延後到現在。</div>` : ''}
+    ${earlyOnes.length ? `<div class="note" style="margin-bottom:10px">其中 ${earlyOnes.length} 場是
+      <b>提前開踢的第 ${earlyRoundsText}</b> ——${earlyRestText}
+      第 ${mainRound} 輪的場次仍然全部列在下面。</div>` : ''}
+    <div class="grid g2">${countdownList.map(countdownCard).join('') || (unplayedCount
+      ? `<div class="card dim">還有 ${unplayedCount} 場未賽,但下一批還沒公布開球時間 —— 日期在下面的賽程表。</div>`
+      : '<div class="card dim">本季沒有未開賽的比賽了。</div>')}</div>
+    ${/* 沒顯示的不是藏起來:下一批幾號開始、哪一輪,都寫在這一行;完整的在同一頁下面的賽程表。 */''}
+    ${countdownRest.length ? `<div class="note" style="margin-top:10px">
+      下一批:第 ${countdownRest[0].round} 輪・${C.kickoffLocal(countdownRest[0].kickoff)} 起。
+      <a href="#allFixtures">看完整賽程(本季還有 ${unplayedCount} 場未賽)↓</a></div>` : ''}
+    ${suspended.length ? `<div class="tiny dim" style="margin-top:8px">${suspended.map(f =>
+      `${C.esc(C.SUSPENDED_ZH[f.status])}:${C.name(f.home)} vs ${C.name(f.away)}(原訂 ${f.kickoff ? C.kickoffLocal(f.kickoff) : C.dateFull(f.date)}・第 ${f.round} 輪)`).join('<br>')}</div>` : ''}
+
+    ${recentCards.length ? `
+      <div class="section"><h2>剛結束</h2>
+        <span class="hint">完賽 3 天內・共 ${recentCards.length} 場・新到舊・點任一場看完整賽後解讀;更早的在下面的賽程表</span></div>
+      <div class="grid g2">${recentCards.join('')}</div>` : ''}
+
+    ${awaiting.length ? `
+      ${/* 原本這一句寫「資料源還沒更新比分」—— **那對延賽是錯的**:它說我們的資料落後了,
+            但那場可能根本沒踢,讀者會等一個永遠不會來的比分。本站沒有延賽的資料來源,
+            分不出是哪一種,所以兩種都講,並且把「早該結束多久」給讀者自己判斷。 */''}
+      <div class="section"><h2>還沒有賽果</h2><span class="hint">時間上早該結束,但本站還沒拿到比分 —— 有官方狀態的直接標;沒有的可能是資料源還沒更新,也可能延賽了</span></div>
+      ${/* 這一區的卡片也要讀即時快照(2026-09-12)。快照太舊時上面的 phase 不採用它,
+            但「它抓到的那個比分」仍然是我們手上唯一的比分 —— 印出來並講清楚是幾點抓的。 */''}
+      <div class="grid g3">${awaiting.map(({ f, s }) => {
+        const lm = live.demo ? null : liveByKey.get(`${f.home}|${f.away}`);
+        const lscore = lm && lm.hs != null && lm.as != null ? lm : null;
+        return `
+        <a class="card matchcard" href="${C.link('analysis', { id: f.id })}" style="padding:12px 14px">
+          <div class="spread"><span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span>
+            ${f.provisional
+              ? `<span class="pill warn tiny">終場・暫定</span>`
+              : lscore
+                ? `<span class="pill warn tiny">${lscore.finished ? '終場・即時快照' : '即時快照'}</span>`
+                : f.officialStatus
+                  ? `<span class="pill bad tiny">官方:${f.officialStatusZh}</span>`
+                  : `<span class="pill warn tiny">${s.elapsed > 60 * 24
+                      ? `早該結束 ${Math.floor(s.elapsed / 60 / 24)} 天` : '賽果未取得'}</span>`}</div>
+          <div class="row" style="gap:7px;margin-top:8px">${C.badge(f.home)}<b class="small">${C.name(f.home)}</b>
+            ${f.provisional ? `<b class="mono">${f.provisional.fh} : ${f.provisional.fa}</b>`
+              : lscore ? `<b class="mono">${lscore.hs} : ${lscore.as}</b>`
+              : '<span class="dim">vs</span>'}${C.badge(f.away)}<b class="small">${C.name(f.away)}</b></div>
+          <div class="tiny dim" style="margin-top:6px">${f.provisional
+            ? `暫定比分(${C.esc(f.provisional.source)});待獨立賽果核對後進積分與模型`
+            : lscore
+              ? `即時快照的比分(${C.esc(live.sourceLabel ?? live.source ?? '即時來源')},${C.ageText(live.fetchedAt, now)}抓的);官方賽果還沒到,不進積分與模型`
+              : `賽前預期 ${f.prediction.xgHome}:${f.prediction.xgAway}`}</div>
+        </a>`;
+      }).join('')}</div>` : ''}
+
+    ${/* 積分榜:目前 / 預測兩張收成一個切換(2026-11-07 合併時)。
+          上面那張是「已經拿到幾分」,預測那張是「照目前實力跑完整季會是幾分」——
+          表格本身跟球隊頁共用同一份定義(sim-table.js),不複製。 */''}
+    <div class="section"><h2>積分榜</h2>
+      <span class="hint">${standView === 'cur'
+        ? `${meta.currentSeason}・依目前已完賽場次計算・點球隊看球隊頁`
+        : `蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季・同一個賽季的另一種看法`}</span></div>
+    ${C.tabs([{ key: 'cur', label: '目前' }, { key: 'sim', label: '預測(跑完整季)' }], standView, { attr: 'data-stand', label: '積分榜' })}
+    <div style="margin-top:10px">
+    ${standView === 'cur' ? (curPlayed > 0 ? '<div id="curTable"></div>' : `
+      <div class="note">${meta.currentSeason} 目前還沒有已完賽的比賽進入資料源,積分榜是空的。
+        ${isLaLiga
+          ? '西甲賽果會由西甲同步流程帶入。'
+          : '賽果由各聯賽的賽果來源帶入,會自動併進這張表。'}</div>`)
+      : '<div id="simTable"></div>'}
+    </div>`;
+
+    if (standView === 'sim') mountSimTable('simTable', { sim, teams, table, meta });
+
+    if (standView === 'cur' && curPlayed > 0) {
+      // 列全部隊伍(含尚未出賽的),名次才不會跳號
+      document.getElementById('curTable').innerHTML = C.table(cur, [
+        { key: 'pos', label: '#', value: r => r.pos, num: true },
+        { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+        { key: 'p', label: '賽', value: r => r.p, num: true },
+        { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
+        { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
+        { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
+        { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
+        { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
+        { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
+        { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
+        { key: 'form', label: '戰績', fold: 7, value: r => r.pts, sortable: false,
+          render: r => (r.p ? C.formRun(r.form) : '<span class="dim tiny">尚未出賽</span>') },
+      ], { sortKey: 'pts', desc: true, onRow: r => C.go('teams', { code: r.code }) });
+    }
+    el.querySelectorAll('[data-stand]').forEach(b => {
+      b.onclick = () => { standView = b.dataset.stand; renderPage(); };
+    });
+
+    C.startCountdowns();
+    el.querySelectorAll('[data-match]').forEach(x => {
+      x.onclick = e => { e.preventDefault(); openReport(matches.find(m => m.key === x.dataset.match)); };
+    });
+    window.scrollTo(0, scrollY);
+  }
+
+  /* ── 卡片 ─────────────────────────── */
+  // 這兩個要用函式宣告 —— 上面的模板字串會先執行,const 會落在暫時死區
+  function scoreLine(home, away, middle) {
+    return `<div class="scoreline">
+      <div class="side">${C.badge(home)}<b>${C.name(home)}</b></div>
+      <div class="sc">${middle}</div>
+      <div class="side away">${C.badge(away)}<b>${C.name(away)}</b></div>
+    </div>`;
+  }
+  function scoreOf(m) { return scoreLine(m.home, m.away, `${m.hs ?? '-'} : ${m.as ?? '-'}`); }
+
+  // 沒有即時資料時的卡片:誠實顯示「正在進行、比分未知」
+  function schedCard({ f, s }) {
+    const p = f.prediction;
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
+      <div class="spread"><span class="pill bad"><span class="livedot"></span>${C.elapsedText(s.elapsed)}</span>
+        <span class="tiny dim">第 ${f.round} 輪</span></div>
+      <div style="margin:12px 0">${scoreLine(f.home, f.away, '<span class="dim" style="font-size:22px">? : ?</span>')}</div>
+      <div class="tiny dim center" style="margin-bottom:8px">比分需要即時資料源・下面是賽前預測</div>
+      ${C.probBar(p)}
+      <div class="tiny dim center" style="margin-top:6px">賽前預期比分 ${p.xgHome} : ${p.xgAway}
+        ・最可能 ${p.topScores[0].s}(${C.pct(p.topScores[0].p, 0)})</div>
+    </a>`;
+  }
+
+  /* 進行中的卡瘦身(使用者回饋:多場並列時一場一大塊會亂):
+     只留分鐘、比分、勝率條、進球者;勝率曲線、陣型、下一球、講評
+     全部在單場的分析頁 —— 點卡片直達。沒有 fixtureId 的才退回抽屜。 */
+  function liveCard(m) {
+    const p = m.inplay;
+    return `<a class="card matchcard" ${m.fixtureId
+      ? `href="${C.link('analysis', { id: m.fixtureId })}"`
+      : `href="#" data-match="${m.key}"`}>
+      <div class="spread"><span class="pill bad"><span class="livedot"></span><span data-liveclock="${C.esc(m.key)}">${C.minuteText(C.liveMinute(m, live.fetchedAt))}</span></span>
+        <span class="tiny dim">第 ${m.round} 輪</span></div>
+      <div style="margin:12px 0">${scoreOf(m)}</div>
+      ${p ? C.probBar(p) : ''}
+      ${(() => {
+        const H = m.sides[m.home], A = m.sides[m.away];
+        const sc = [...H.scorers.map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`),
+                    ...A.scorers.map(x => `${C.esc(x.name)}${x.goals > 1 ? ' ×' + x.goals : ''}`)];
+        return sc.length ? `<div class="tiny" style="margin-top:8px">⚽ ${sc.join('、')}</div>` : '';
+      })()}
+      <div class="tiny dim center" style="margin-top:8px">點開看講評、勝率曲線與場上資訊 →</div>
+    </a>`;
+  }
+
+  function countdownCard(f) {
+    const p = f.prediction;
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
+      <div class="spread">
+        <span class="pill info">第 ${f.round} 輪</span>
+        <span class="small">${C.kickoffLocal(f.kickoff)}</span>
+      </div>
+      <div style="margin:10px 0">${scoreLine(f.home, f.away, '<span class="dim" style="font-size:16px">vs</span>')}</div>
+      <div class="center" style="font-size:19px;font-weight:700">${C.countdown(f.kickoff)}</div>
+      <div style="margin-top:10px">${C.probBar(p)}</div>
+      <div class="tiny dim center" style="margin-top:5px">賽前預期比分 ${p.xgHome} : ${p.xgAway}</div>
+    </a>`;
+  }
+
+  function finishedCard(m, ago = null) {
+    const H = m.sides[m.home], A = m.sides[m.away];
+    const surprise = m.preMatch
+      ? (m.hs > m.as ? m.preMatch.home : m.hs < m.as ? m.preMatch.away : m.preMatch.draw)
+      : null;
+    /* 剛完場的直達分析頁(使用者要求),抽屜只留給對不到賽程 id 的。 */
+    return `<a class="card matchcard" ${m.fixtureId
+      ? `href="${C.link('analysis', { id: m.fixtureId })}"`
+      : `href="#" data-match="${m.key}"`}>
+      <div class="spread"><span class="row" style="gap:6px"><span class="pill">完場</span>${
+          ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
+        <span class="tiny dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span></div>
+      <div style="margin:12px 0">${scoreOf(m)}</div>
+      <div class="tiny dim center">陣型 ${H.shape.label} vs ${A.shape.label}${
+        /* 西甲的比分快照沒有 xG,印出來是「xG null : null」(sweep 抓到的);沒有就整段不印 */
+        H.xG != null && A.xG != null ? `・xG ${H.xG} : ${A.xG}` : ''}
+        ${surprise !== null ? `・賽前模型給這結果 ${C.pct(surprise, 0)}` : ''}</div>
+      ${m.notes.length ? `<div class="small muted" style="margin-top:8px">${C.esc(m.notes[0].text)}</div>` : ''}
+    </a>`;
+  }
+
+  function finishedFixtureCard(f, ago = null) {
+    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
+      <div class="spread"><span class="row" style="gap:6px"><span class="pill">完場</span>${
+          ago ? `<span class="pill accent tiny">${ago}</span>` : ''}</span>
+        <span class="tiny dim">${C.kickoffLocal(f.kickoff)}・第 ${f.round} 輪</span></div>
+      <div style="margin:12px 0">${scoreLine(f.home, f.away, `${f.fh ?? '-'} : ${f.fa ?? '-'}`)}</div>
+      <div class="tiny dim center">已取得正式比分・點擊查看賽前機率與可用賽後資料 →</div>
+    </a>`;
+  }
+
+  /* ── 完整賽後 / 場中報告 ───────────── */
+  // 賽後文章跟賽前分析走同一套流程:數字先算完,文字只能引用算好的數字
+  function articleCard(m) {
+    const art = analysis.post[`${m.season ?? meta.currentSeason}|${m.home}|${m.away}`];
+    if (!art) return '';
+    return `<div class="card"><h3>${C.esc(art.title)}
+        <span class="pill tiny ${art.source === 'llm' ? 'accent' : ''}">${art.source === 'llm' ? 'AI 潤稿' : '自動生成'}</span></h3>
+      <div style="display:grid;gap:10px;line-height:1.8">
+        ${art.paragraphs.map(t => `<p class="small" style="margin:0">${C.esc(t)}</p>`).join('')}</div>
+      <div class="tiny dim" style="margin-top:10px">${C.esc(art.caveat)}</div></div>`;
+  }
+
+  async function openReport(m) {
+    if (!m) return;
+    // 報告本體不重複儲存大型 base64 圖片，點開報告時才與本機球員庫合併頭貼。
+    try { m = C.reportWithPlayerPhotos(m, await getPlayerByCode()); } catch { /* 圖片失敗仍顯示報告 */ }
+    const p = m.finished ? m.preMatch : m.inplay;
+    C.drawer(`${C.badge(m.home)} ${C.name(m.home)} ${m.hs ?? '-'}-${m.as ?? '-'} ${C.name(m.away)} ${C.badge(m.away)}`, `
+      <div class="card">
+        <div class="spread">
+          <span class="small dim">${C.kickoffLocal(m.kickoff)}・第 ${m.round} 輪</span>
+          <span class="pill ${m.finished ? '' : 'bad'}">${m.finished ? '完場' : `<span data-liveclock="${C.esc(m.key)}">${C.minuteText(C.liveMinute(m, live.fetchedAt))}</span>`}</span>
+        </div>
+        <div style="margin:14px 0">${scoreOf(m)}</div>
+        ${p ? `${C.probBar(p)}
+          <div class="tiny dim center" style="margin-top:6px">
+            ${m.finished ? '完場後保留賽前機率・不用賽果改成 100%' : `剩餘 ${Math.round(p.remaining * 90)} 分鐘・期望再進 ${p.xgRestHome} : ${p.xgRestAway}`}</div>` : ''}
+        ${m.preMatch ? `<div class="stat-line" style="margin-top:10px">
+          <span class="small muted">賽前模型</span>
+          <span class="mono small">${C.pct(m.preMatch.home, 0)} / ${C.pct(m.preMatch.draw, 0)} / ${C.pct(m.preMatch.away, 0)}
+            ・預期比分 ${m.preMatch.xgHome}:${m.preMatch.xgAway}</span></div>` : ''}
+      </div>
+
+      ${/* 中場/戰況講評(規則生成,每句只引用算好的數字) */''}
+      ${m.liveSummary ? `<div class="card"><h3>${m.liveSummary.kind === 'ht' ? '中場講評' : `戰況講評 <span class="dim tiny">第 ${m.liveSummary.minute} 分鐘</span>`}
+          <span class="pill tiny">自動生成</span></h3>
+        <div style="display:grid;gap:8px;line-height:1.8">
+          ${m.liveSummary.paragraphs.map(t => `<p class="small" style="margin:0">${C.esc(t)}</p>`).join('')}</div>
+        <div class="tiny dim" style="margin-top:8px">每一句都只引用模型與官方名單算出的數字,不摻臆測;完場後由賽後分析接手。</div>
+      </div>` : ''}
+
+      ${articleCard(m)}
+
+      ${C.matchReportCards(m)}
+
+      ${m.fixtureId ? `<div><a href="${C.link('analysis', { id: m.fixtureId })}">看這場的賽前完整分析 →</a></div>` : ''}`);
+  }
+
+  renderPage();
+
+  // 即時模式(npm run live:watch)會在記憶體裡更新 data/live.json,這裡定期取回並重畫;
+  // 就算完全沒有即時資料源,也要定期重畫,比賽才會自己從「倒數」變成「進行中」。
+  const POLL_MS = 20000, REDRAW_MS = 30000;
+  let lastStamp = live.fetchedAt ?? null;
+  /* 取回最新的 live.json:走共用的 C.fetchFeed(raw 優先、有逾時、失敗退回站上那份)。
+     raw.githubusercontent.com 那份比 Pages 上的新 —— 比賽日的輪詢每 2 分鐘就把資料推回 repo,
+     Pages 要等下一次部署。 */
+  const feeds = C.liveFeeds(meta);
+  const overlayLive = async () => {
+    try {
+      const fresh = await C.fetchFeed(feeds);
+      if (!fresh) return;
+      const stamp = fresh.fetchedAt ?? null;
+      /* feed 只進不退:raw CDN 會新舊副本交替回應,收了舊的那份,
+         比分與分鐘會整頁倒退(分析頁同一條規則) */
+      if (stamp && lastStamp && Date.parse(stamp) < Date.parse(lastStamp)) return;
+      if (stamp !== lastStamp || fresh.available !== live.available) {
+        lastStamp = stamp;
+        live = fresh;
+        renderPage();
+      }
+    } catch { /* 靜態站沒有即時端點時會失敗,忽略即可 */ }
+  };
+  /* 先畫再覆蓋(2026-09-12,使用者回報「重新整理後比分退回去」)。
+     第一次畫面用的是 Pages 上那份 live.json —— 部署當下的快照,離部署越久越舊(實測差二十幾分鐘);
+     而輪詢的第一次在 20 秒後,所以重新整理的頭 20 秒比分退回部署時的狀態。
+     畫完立刻拿一次 raw 那份覆蓋,不等第一個 tick;抓取有逾時,raw 慢也不卡畫面。 */
+  overlayLive();
+  C.pageInterval(overlayLive, POLL_MS);
+  C.pageInterval(renderPage, REDRAW_MS);
+  /* 走鐘:卡片與抽屜的分鐘每秒往前(跟分析頁同一套 C.liveMinute),只改字不重畫 */
+  C.pageInterval(() => {
+    for (const n of document.querySelectorAll('[data-liveclock]')) {
+      const m = (live?.matches ?? []).find(x => x.key === n.dataset.liveclock);
+      if (m && m.started && !m.finished) n.textContent = `${C.minuteText(C.liveMinute(m, live.fetchedAt))}`;
+    }
+  }, 1000);
+}

@@ -114,7 +114,7 @@ async function checkInplayKickoff() {
   /* C.pct 沒有值印「—」(2026-11-01:英超賽前快照沒有大 2.5 球,賽程表整排印 NaN%) */
   ok('C.pct:沒有值(undefined / null / NaN)印「—」,有值照舊', V.pct(undefined) === '—' && V.pct(null) === '—' && V.pct(NaN) === '—'
     && V.pct(0.4173, 0) === '42%' && V.pct(0) === '0.0%', [V.pct(undefined), V.pct(0)].join(' / '));
-  const pages = ['page-analysis.js', 'page-live.js', 'page-overview.js'].map(f => [f, strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))]);
+  const pages = ['page-analysis.js', 'live-board.js', 'page-overview.js'].map(f => [f, strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'))]);
   const selfBuilt = pages.filter(([, src]) => /第 \$\{[^}]*disp\} 分鐘/.test(src) || /第 \$\{u\.live\.minute\} 分鐘/.test(src)).map(([f]) => f);
   ok('畫分鐘的三頁都走 C.minuteText,沒有人自己拼「第 X 分鐘」(中場會變成「第 中場 分鐘」)',
     !selfBuilt.length && pages.every(([, src]) => /C\.minuteText\(/.test(src)), selfBuilt.join('、'));
@@ -2160,8 +2160,13 @@ async function checkSuspended() {
       V.scheduleState({ played: false, kickoff: '2026-10-10T12:00:00Z' }, now).phase === 'awaiting'],
     ['三個聯賽 build 的 slimMatch 都把 status 帶出去',
       ['scripts/build-laliga.mjs', 'scripts/build-championship.mjs', 'scripts/lib/build-league.mjs'].every(f => srcOf(f).includes('if (m.status) out.status = m.status;'))],
-    ['首頁「接下來的比賽」排除中止 / 延期,而且另外一行講出來',
-      idx.includes('!f.played && !C.isSuspended(f)') && idx.includes('C.SUSPENDED_ZH[f.status]')],
+    /* 「接下來的比賽」那張卡 2026-11-07 併掉了(跟開賽倒數講同一件事),中止 / 延期那一行搬到比賽現況(live-board.js):
+       倒數用的 upcoming 由 scheduleState 篩(中止的回 suspended,不會進倒數),另外一行講出來 */
+    ['聯賽頁的開賽倒數排除中止 / 延期,而且另外一行講出來', (() => {
+      const lb = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
+      return lb.includes("phased.filter(x => x.s.phase === 'upcoming')") && lb.includes('fixtures.filter(f => C.isSuspended(f))')
+        && lb.includes('C.SUSPENDED_ZH[f.status]');
+    })()],
   ];
   let fail = 0;
   for (const [name, pass, detail] of cases) {
@@ -2665,7 +2670,7 @@ async function checkDataGap() {
        實測西甲 339/380、英冠 264/552 目前還沒有時間。拿 upcoming 去講,
        西甲會顯示「本季還有 11 場」,而它其實還有三百多場。 */
     ['實時頁的「本季還有幾場」數的是未賽場次,不是有開球時間的場次', (() => {
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       return /const unplayedCount = fixtures\.filter\(f => !f\.played\)\.length/.test(src)
         && /本季還有 \$\{unplayedCount\} 場未賽/.test(src);
     })()],
@@ -2747,12 +2752,12 @@ async function checkDataGap() {
         && V.feedFresh({}, now) === false && V.feedFresh(null, now) === false;
     })()],
     ['實時頁:快照夠新才拿來定 phase,而且重播模式不採用', (() => {
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       return /const fresh = C\.feedFresh\(live, now\) && !live\.demo/.test(src)
         && /C\.scheduleState\(f, now, fresh \? liveByKey\.get/.test(src);
     })()],
     ['實時頁:「還沒有賽果」的卡片會印快照比分,而且不跟「剛結束」重複', (() => {
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       const i = src.indexOf('<h2>還沒有賽果</h2>');
       if (i < 0) { console.log('      找不到「還沒有賽果」那一區'); return false; }
       const blk = src.slice(i, i + 2600);
@@ -2761,7 +2766,7 @@ async function checkDataGap() {
         && /!recentIds\.has\(x\.f\.id\)/.test(src);                       // 不跟剛結束重複
     })()],
     ['實時頁:「剛結束」收快照說完場的場次(賽程的 played 還沒跟上)', (() => {
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       return /const liveDone = fx =>/.test(src) && /if \(!fx\.played && !liveDone\(fx\)\) return false;/.test(src);
     })()],
     ['沒有開球時間的場次確實不會進倒數(三個聯賽都有這種場次)', (() => {
@@ -2896,7 +2901,7 @@ async function checkDataGap() {
       ['build-laliga.mjs', 'build-championship.mjs'].every(f =>
         /fixtureId: fixture\.id \?\? null, round: fixture\.round \?\? null/.test(readFileSync(join(ROOT, 'scripts', f), 'utf8'))))()],
     ['實時戰況頁:產物沒帶 fixtureId 的用賽程對回來(不是退回 href="#")', (() => {
-      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       return /fxByPair/.test(src) && /m\.fixtureId == null\) m\.fixtureId = fx\.id/.test(src);
     })()],
     /* 2026-09-26(A4)起總覽只載 overview.json,即時快照是它裡面的 live 鍵(lib/overview.mjs 的 slimLive);
@@ -2966,7 +2971,7 @@ async function checkDataGap() {
       [['page-cups.js', '\n  renderComp();', 'overlayLive();'],
        ['page-overview.js', '\n  render();', '\n  overlayCupsLive();'],
        ['page-overview.js', '\n  render();', '\n  overlayLeagueLive()'],
-       ['page-live.js', '\n  renderPage();', 'overlayLive();'],
+       ['live-board.js', '\n  renderPage();', 'overlayLive();'],
        ['page-analysis.js', 'renderLive(findIn(live), live?.fetchedAt);', 'overlayLive();']].every(([f, draw, overlay]) => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         const a = src.indexOf(draw), b = src.indexOf(overlay);
@@ -2979,7 +2984,7 @@ async function checkDataGap() {
        頭 20 秒比分退回部署時的狀態,離部署越久退得越多。修法是畫完立刻覆蓋一次再交給輪詢;
        這一條釘住那個序列(直線腳本的原始碼順序就是執行順序)。 */
     ['實時頁與單場面板畫完立刻覆蓋一次、再交給輪詢(重新整理不會退回部署快照 20 秒)', (() =>
-      [['page-live.js', 'overlayLive();\n  C.pageInterval(overlayLive, POLL_MS);'],
+      [['live-board.js', 'overlayLive();\n  C.pageInterval(overlayLive, POLL_MS);'],
        ['page-analysis.js', 'overlayLive();\n    C.pageInterval(overlayLive, 20000);']].every(([f, seq]) => {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         if (!src.includes(seq)) console.log(`      ${f}:找不到「先覆蓋一次再輪詢」的序列`);
@@ -2989,7 +2994,7 @@ async function checkDataGap() {
        抓取與路徑都收進 core,這裡守「沒有人自己再寫一份」。 */
     ['三頁的即時 feed 都走共用的 C.fetchFeed 與 C.liveFeeds,沒有自己再寫 fetch 迴圈或拼路徑', (() => {
       const bad = [];
-      for (const f of ['page-live.js', 'page-analysis.js', 'page-overview.js']) {
+      for (const f of ['live-board.js', 'page-analysis.js', 'page-overview.js']) {
         const src = readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8');
         if (!/C\.fetchFeed\(/.test(src) || !/C\.liveFeeds\(/.test(src)) bad.push(`${f}:沒用共用函式`);
         if (/await fetch\(/.test(src)) bad.push(`${f}:自己寫了 fetch`);
@@ -3861,7 +3866,7 @@ async function checkDataGap() {
             && b.threat === 65 && b.topThreat?.name === 'AtkB' && s.topThreat === null;
         })(), ''],
         ['講評:前端掛在實時抽屜、標自動生成', (() => {
-          const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+          const src = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
           return /liveSummary/.test(src) && /中場講評/.test(src) && /自動生成/.test(src);
         })()],
         /* 原本守「rebase 失敗要 abort、推不出去要重置」(2026-08-29 卡死那課)。2026-10-30 起迴圈不再推預設分支,
@@ -4070,9 +4075,10 @@ async function checkDataGap() {
           /<h2>上季最終戰績<\/h2>/.test(tm) && !/<h2>上季最終戰績<\/h2>/.test(idx)],
         ['球隊頁有載入 table 資料集(忘了加的話整段靜靜不畫)',
           /'form', 'table'\)/.test(tm) && /form, table \} =/.test(tm)],
-        /* 搬走之後首頁沒有任何地方用到 table —— 留在 load 清單裡就是每次進首頁
-           多下載一份用不到的資料集。 */
-        ['首頁不再下載用不到的 table 資料集', !/'table'/.test(idx)],
+        /* 上季戰績搬走之後首頁一度不載 table;2026-11-07 實時戰況併進首頁,本季積分榜跟著來,
+           table 又載回來了 —— 守的是「載它是為了積分榜」,不是「不准載」(上季戰績仍只在球隊頁,上面那一條守著)。 */
+        ['首頁載 table 是給合併進來的積分榜用的(live-board 畫)', /'table'/.test(idx) && /mountLiveBoard\(/.test(idx)
+          && /function mountLiveBoard\(el, \{ meta, fixtures, table,/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8'))],
         ['沒有那份資料就整段不畫,不留空殼', /if \(!rows\.length\) return ''/.test(tm)],
       ];
     })(),
@@ -5037,7 +5043,7 @@ async function checkDataGap() {
        實時頁的進行中卡瘦身、直達單場頁 —— 單場的家始終只有分析頁一個。 */
     ['單場即時:分析頁有即時面板與輪詢、實時頁卡片直達', (() => {
       const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
-      const pl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+      const pl = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
       return /id="livePanel"/.test(pa) && /livePanelHtml/.test(pa) && /liveSummary/.test(pa)
         && /m\.started && !m\.finished/.test(pa) && /20000/.test(pa)
         && /場上數據/.test(pa) && /沒有免費的即時來源/.test(pa)
@@ -5098,7 +5104,7 @@ async function checkDataGap() {
         ['延賽偵測:接線(builds 掛 + 實時頁講官方狀態 + CI 抓取與回寫)', (() => {
           const b1 = readFileSync(join(ROOT, 'scripts', 'build.mjs'), 'utf8');
           const b2 = readFileSync(join(ROOT, 'scripts', 'build-championship.mjs'), 'utf8');
-          const lv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+          const lv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
           const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
           return /attachScheduleStatus\(fixtures/.test(b1) && /attachScheduleStatus\(fixtures/.test(b2)
             && /officialStatusZh/.test(lv) && /schedule:status/.test(wf)
@@ -5429,7 +5435,7 @@ async function checkDataGap() {
         && /\.table-cards \{ display: none; \}/.test(css);
       const users = /\bcard: f =>/.test(js('fixture-list.js')) && /\bcard: u =>/.test(js('page-overview.js'));
       // 積分榜:這幾欄不能有 fold
-      const standings = [['page-live.js', "document.getElementById('curTable')"], ['page-teams.js', 'function lastSeasonTable()'], ['ucl-view.js', "{ key: 'p', label: '賽'"]];
+      const standings = [['live-board.js', "document.getElementById('curTable')"], ['page-teams.js', 'function lastSeasonTable()'], ['ucl-view.js', "{ key: 'p', label: '賽'"]];
       const keepOk = standings.every(([f, start]) => {
         const src = js(f); const i = src.indexOf(start); const blk = src.slice(i, src.indexOf('sortKey', i));
         const colOf = k => blk.match(new RegExp(`\\{ key: '${k}', label: '[^']*',([^\\n]*)`))?.[1] ?? null;
@@ -6251,10 +6257,10 @@ function checkAssetStamps() {
      順帶守著 import 有沒有真的加上去:上一次改這裡時,
      版本戳讓 import 那一行不再是字面字串,replace 靜靜沒命中,
      頁面變成「載入失敗」而 npm test 全綠 —— 測試檢查不到版面。 */
-  const liveSrc = readFileSync(join(W, 'assets', 'js', 'page-live.js'), 'utf8');
+  const liveSrc = readFileSync(join(W, 'assets', 'js', 'live-board.js'), 'utf8');
   ok(/import \{ mountSimTable \} from '\.\/sim-table\.js(\?v=[0-9a-f]{8})?';/.test(liveSrc),
-    'page-live.js 有 import 共用的預測積分榜');
-  ok(liveSrc.includes("mountSimTable('simTable'"), 'page-live.js 有呼叫它');
+    'live-board.js 有 import 共用的預測積分榜');
+  ok(liveSrc.includes("mountSimTable('simTable'"), 'live-board.js 有呼叫它');
   /* 區塊順序(兩次使用者要求,不衝突):進行中 → 開賽倒數 → 剛結束。
      進行中那一區沒有比賽在踢時不存在,所以沒有比賽的日子開賽倒數仍是最上面(2026-08-31 的要求);
      有比賽在踢時它在倒數前面(2026-09-12 的要求)。掃的是樣板字串的順序,直線樣板的順序就是畫面順序。 */
@@ -6262,13 +6268,12 @@ function checkAssetStamps() {
     && liveSrc.indexOf('<h2>開賽倒數</h2>') < liveSrc.indexOf('<h2>剛結束</h2>'),
     '實時戰況頁:進行中在開賽倒數前面、開賽倒數在剛結束前面');
 
-  /* 首頁只留賽程,兩張積分榜都在實時戰況頁 ——
-     這兩條是在守「不要又搬回來」:同一份資料兩個地方畫,
-     改了一邊另一邊會悄悄過期。 */
+  /* 兩張積分榜只畫在一個地方:2026-11-07 起是聯賽頁的 live-board.js(實時戰況併進來了)。
+     守的是「同一份資料不要兩個地方畫」—— 首頁自己不再畫一份,sim.json 只為那一份載。 */
   const idx = readFileSync(join(W, 'assets', 'js', 'page-index.js'), 'utf8');
   ok(!idx.includes('本季目前戰績'), '首頁不重複「本季目前戰績」');
-  ok(!idx.includes('mountSimTable'), '首頁不重複「本季預測積分榜」');
-  ok(!/'sim'/.test(idx), '首頁不再載 sim.json(用不到就不要下載)');
+  ok(!idx.includes('mountSimTable'), '首頁自己不畫預測積分榜(live-board 畫,不複製)');
+  ok(/'sim'/.test(idx) && /mountLiveBoard\(document\.getElementById\('liveBoard'\), \{[^}]*\bsim\b/.test(idx), '首頁載 sim.json 是交給 live-board 畫積分榜');
 
   /* 單檔版的 hash 路由每次換頁都會 `.topbar?.remove()`。
      nav() 若用布林旗標擋重複渲染,旗標在第一頁就被設成 true,
@@ -6371,12 +6376,12 @@ function checkAssetStamps() {
   ok(liveSrc.includes('C.MATCH_WINDOW_MIN'), '實時戰況頁用 core 的賽末時間,不自己再寫一份');
   ok(!/\b115\b/.test(liveSrc.replace(/\/\*[\s\S]*?\*\//g, '')), '實時戰況頁沒有另一份寫死的 115');
   ok(liveSrc.includes('const RECENT_MS = 3 * 24 * 3600 * 1000'), '「剛結束」的窗口是 3 天');
-  ok(liveSrc.includes('doneRest') && liveSrc.includes('finishedRest'),
-    '已完賽區吃的是扣掉「剛結束」之後的清單(否則同一場出現兩次)');
-  ok(!/\$\{live\.available && done\.length \?/.test(liveSrc),
-    '已完賽區不再直接用未扣除的 done');
-  ok(liveSrc.includes('live.demo ? new Set()'),
-    '重播模式不做排除(重播的是別季比賽,配對鍵可能撞上本季)');
+  /* 「已完賽」那一區 2026-11-07 拿掉了(聯賽頁的賽程表就有已賽場次,畫兩次讀者會以為是兩場),
+     原本守它「扣掉剛結束」與「重播模式不排除」的兩條跟著退場 —— 守的東西不存在了(CLAUDE.md 那條 b)。
+     改守:那一區真的不在了;重播模式的快照仍然不拿來對本季的場次(配對鍵可能撞上本季)。 */
+  ok(!/<h2>已完賽/.test(liveSrc), '比賽現況不再有「已完賽」區(已賽的在同一頁的賽程表,不畫兩次)');
+  ok(liveSrc.includes('matches.filter(m => !live.demo)') && liveSrc.includes('if (!live.demo) {'),
+    '重播模式的快照不拿來對本季場次(別季比賽的配對鍵可能撞上本季)');
 
   /* 導覽五區(2026-09-30,方案 B;取代原本的 GROUPS 那一段)。SECTIONS 裡列的頁都必須真的存在於 PAGES / SITE_PAGES ——
      打錯一個字的話那一頁會從導覽列整個消失,而且不會有任何地方報錯。navState 直接呼叫(三個引數都給,不碰 location)。 */
@@ -6391,9 +6396,18 @@ function checkAssetStamps() {
     const allPl = NV.navState('index', null, 'pl');
     /* 2026-11-07「比賽」區拿掉、聯賽首頁與實時戰況併進「賽事」(使用者要求)—— 頂列四區 */
     ok(allPl.sections.length === 4 && allPl.sections.map(x => x.label).join() === '球隊,球員,賽事,更多', '英超四區都在、順序固定');
-    ok(NV.navState('index', null, 'pl').here?.items.map(it => it.label ?? it.page).join() === 'overview,聯賽,live,cups,intl'
+    /* 同一天稍後實時戰況也併進聯賽頁(live.html 只剩轉址):子列四格,live 放 also 讓轉址那一瞬間亮對 */
+    ok(NV.navState('index', null, 'pl').here?.items.map(it => it.label ?? it.page).join() === 'overview,聯賽,cups,intl'
       && NV.navState('live', null, 'pl').here?.key === 'comp' && NV.navState('fixtures', null, 'pl').here?.key === 'comp',
-      '「賽事」區:總覽 → 聯賽(首頁)→ 實時戰況 → 盃賽 → 國家隊;賽程表與實時都亮賽事');
+      '「賽事」區:總覽 → 聯賽(含比賽現況)→ 盃賽 → 國家隊;轉址頁與賽程表都亮賽事');
+    {
+      /* 舊的實時戰況網址(書籤、外部連結)不能斷:live.html 轉到聯賽頁的 #live,而聯賽頁真的有那個錨點、而且掛著比賽現況 */
+      const lvRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const ixRaw = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
+      ok(/location\.replace\(`\$\{C\.link\('index'\)\}#live`\)/.test(lvRaw) && !/C\.load\(/.test(lvRaw)
+        && /id="live"/.test(ixRaw) && /id="liveBoard"/.test(ixRaw) && /mountLiveBoard\(document\.getElementById\('liveBoard'\)/.test(ixRaw),
+        '實時戰況的舊網址轉到聯賽頁 #live(保留聯賽參數),聯賽頁有那個錨點並掛著比賽現況');
+    }
     const keys = allPl.sections.flatMap(x => x.items.map(it => it.page + (it.view ? ':' + it.view : '')));
     ok(new Set(keys).size === keys.length, '同一頁(含 view)不會出現在兩個地方', keys.join(' '));
     // 每個導覽上的頁,站在那裡時都有一區亮;單場分析與歐冠單場都亮「賽事」
@@ -8979,11 +8993,11 @@ async function checkFollow() {
 
   /* 三、六個消費端都走共用的那一份。自己再寫一份 localStorage 讀取的話,
      鍵改了、形狀改了就會有一個地方悄悄過期(姓名配對那條坑的形狀)。 */
-  for (const f of ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js',
+  for (const f of ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js',
     'sim-table.js', 'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']) {
     ok(/from '\.\/follow\.js/.test(src(f)), `${f} 從 follow.js 拿關注狀態`);
   }
-  const others = ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js', 'sim-table.js',
+  const others = ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js', 'sim-table.js',
     'fixture-list.js', 'page-cups.js', 'follow-view.js', 'predict-view.js']
     .filter(f => /warroom:follow/.test(strip(src(f))));
   ok(others.length === 0, '沒有人自己再讀一次 localStorage 的鍵', others.join('、'));
@@ -9002,7 +9016,7 @@ async function checkFollow() {
   /* 四、**聯賽頁一律帶聯賽,只有盃賽頁可以不分聯賽。**
      盃賽裡的 BUR 就是 Burnley 這間俱樂部,他今年在哪一級無關;
      但聯賽頁用 followedAnywhere 的話,關注英冠的 Burnley 會標到英超那一支身上。 */
-  const anywhereUsers = ['page-teams.js', 'page-index.js', 'page-live.js', 'page-news.js',
+  const anywhereUsers = ['page-teams.js', 'page-index.js', 'live-board.js', 'page-news.js',
     'sim-table.js', 'fixture-list.js', 'follow-view.js', 'predict-view.js']
     .filter(f => /followedAnywhere/.test(strip(src(f))));
   ok(anywhereUsers.length === 0, '只有盃賽頁用不分聯賽的查法', anywhereUsers.join('、'));

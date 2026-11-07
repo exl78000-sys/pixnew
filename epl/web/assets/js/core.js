@@ -961,7 +961,8 @@ const SITE_PAGES = [
    - PAGES / SITE_PAGES 還在,它們是**頁名登錄**(標籤、缺口頁、closedPage 用),不再決定導覽列長什麼樣。 */
 /* 「比賽」區拿掉、併進「賽事」(2026-11-07,使用者:「把比賽拿掉移至 賽事 聯賽 實時戰況」):那一區只有聯賽首頁與實時戰況兩頁,
    而總覽(賽事區第一格)本來就是看比賽的地方 —— 即將到來、最近賽果都在那裡。頂列從五格變四格。
-   聯賽首頁在這一區標「聯賽」(它在別處的頁名仍是「英超首頁」);順序:總覽 → 聯賽 → 實時戰況 → 盃賽 → 國家隊。
+   聯賽首頁在這一區標「聯賽」(它在別處的頁名仍是「英超首頁」);順序:總覽 → 聯賽 → 盃賽 → 國家隊
+   (實時戰況同一天稍後也併進聯賽頁,見 live-board.js)。
    單場分析與賽程表(also)跟著搬過來,站在那裡時亮「賽事」。 */
 const SECTIONS = [
   { key: 'club', label: '球隊', icon: 'shield',
@@ -970,8 +971,9 @@ const SECTIONS = [
     items: [{ page: 'players' }, { page: 'explore', view: 'allplayers', label: '球員搜尋' }], also: [] },
   { key: 'comp', label: '賽事', icon: 'trophy',
     /* 總覽排第一(2026-10-03,使用者要求):它是全站的入口,點「賽事」就該先到它;盃賽與國家隊在後 */
-    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'live' }, { page: 'cups' }, { page: 'intl' }],
-    also: ['analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match'] },
+    /* 實時戰況 2026-11-07 併進「聯賽」那一頁(live.html 只剩轉址),所以不在子列上;放在 also 讓轉址那一瞬間亮對的區 */
+    items: [{ page: 'overview' }, { page: 'index', label: '聯賽' }, { page: 'cups' }, { page: 'intl' }],
+    also: ['live', 'analysis', 'fixtures', 'ucl', 'ucl-match', 'cup-match'] },
   { key: 'more', label: '更多', icon: 'dots',
     items: [{ page: 'news' }, { page: 'model' }, { page: 'explore', view: 'knowledge', label: '足球知識' },
       { page: 'explore', view: 'duel', label: '模擬遊玩' }, { page: 'predict' }], also: [] },

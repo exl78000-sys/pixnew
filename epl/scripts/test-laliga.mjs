@@ -359,7 +359,7 @@ check('西甲即時帶場中機率:賽前預測從 build 產物借(openfootball 
 check('西甲暫定賽果:只進顯示層、正式賽果進來就消失、兩頁都標「終場・暫定」', (() => {
   const bl = readFileSync(join(ROOT, 'scripts', 'build-laliga.mjs'), 'utf8');
   const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
-  const pl2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-live.js'), 'utf8');
+  const pl2 = readFileSync(join(ROOT, 'web', 'assets', 'js', 'live-board.js'), 'utf8');
   const fx = JSON.parse(readFileSync(join(ROOT, 'web', 'data', 'leagues', 'es1', 'fixtures.json'), 'utf8'));
   const pv = fx.filter(f => f.provisional);
   return /只進顯示層/.test(bl) && /!m\.played \? finalsRaw/.test(bl)
