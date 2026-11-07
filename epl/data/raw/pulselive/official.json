@@ -64863,21 +64863,21 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "1"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
       "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+7'00",
+      "phase": "1"
      }
     ]
    },
-   "clock": "45+4'00"
+   "clock": "45+7'00"
   }
  },
- "fetchedAt": "2026-11-07T13:21:40.592Z"
+ "fetchedAt": "2026-11-07T13:23:57.687Z"
 }
