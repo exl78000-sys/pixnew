@@ -65548,6 +65548,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -65558,10 +65564,16 @@
       "min": 45,
       "label": "45+2'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+2'00"
+   "clock": "45'00"
   },
   "ARS|HUL": {
    "fixtureId": 129013,
@@ -66010,6 +66022,12 @@
     "subs": [],
     "periods": [
      {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -66020,11 +66038,17 @@
       "min": 45,
       "label": "45+4'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+4'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-11-07T16:03:40.443Z"
+ "fetchedAt": "2026-11-07T16:05:59.102Z"
 }
