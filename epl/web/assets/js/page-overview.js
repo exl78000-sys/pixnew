@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7ac058b1';
+import * as C from './core.js?v=a4dc5e8a';
 
 const app = document.getElementById('app');
 
@@ -548,7 +548,8 @@ try {
     { key: 'cd', label: '倒數', value: u => u.kick, sortable: false,
       render: u => {
         if (u.pending) return '<span class="dim small">—</span>';
-        if (!u.live) return `<span class="small">${C.countdown(u.kick)}</span>`;
+        // 不印秒(使用者 2026-11-07:「倒數不用秒」)—— 七天窗的表,秒在跳只是讓整欄一直閃
+        if (!u.live) return `<span class="small">${C.countdown(u.kick, { seconds: false })}</span>`;
         // 已開賽:比數 + 分鐘(有即時快照才會有;分鐘從快照時間往前推,跟實時戰況頁同一個 liveMinute)
         const sc = u.live.hs != null && u.live.as != null ? `<b class="mono" style="font-size:14px">${u.live.hs} : ${u.live.as}</b>` : '';
         return u.live.finished
@@ -557,7 +558,10 @@ try {
               u.live.minute ?? '進行中'}</span>${sc}</span>`;
       } },
     // 靠左:內容是「圖 + 字」的 flex 排版,跟對戰欄同一邊(使用者要求,2026-09-07)
-    { key: 'comp', label: '賽事', value: u => u.comp, left: true, render: u => C.compBadge(u.compKey, { label: u.comp }) },
+    /* 「輪次」那一欄拿掉了(2026-11-07,使用者:「第幾輪不用顯示 已縮減空間」)—— 左右兩欄之後左邊只剩六成寬。
+       輪次還在,放在賽事那一格的滑鼠提示裡(歐冠的「十六強 首回合」這種有資訊的,滑過去看得到)。 */
+    { key: 'comp', label: '賽事', value: u => u.comp, left: true,
+      render: u => `<span${u.note ? ` title="${C.esc(`${u.comp}・${u.note}`)}"` : ''}>${C.compBadge(u.compKey, { label: u.comp })}</span>` },
     { key: 'match', label: '對戰', value: u => u.home, left: true,
       render: u => {
         const img = c => (c ? `<img class="crest" src="${c}" loading="lazy" width="20" height="20" style="vertical-align:middle">` : '');
@@ -567,8 +571,6 @@ try {
           <span class="dim">vs</span> <span>${C.esc(u.away)}</span>${flag(u.aFlag)}${img(u.aCrest)}</span>`;
         return u.link ? `<a href="${u.link}" style="color:inherit;text-decoration:none">${body}</a>` : body;
       } },
-    { key: 'note', label: '輪次', value: u => u.note, sortable: false,
-      render: u => `<span class="tiny dim">${C.esc(u.note)}</span>` },
   ], { sortKey: 'kick', desc: false,
     /* 整列可點,不用瞄準文字連結(使用者要求)。歐冠場次連自己的單場頁(2026-09-13)。
        **盃賽場次開盃賽頁的對應分頁** —— 不是因為盃賽沒有單場頁(同日也做了 `cup-match.html`),

@@ -1161,17 +1161,26 @@ export const tzName = () => {
   try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return '本地時間'; }
 };
 
-export function countdownText(iso, now = Date.now()) {
+/* seconds: false(2026-11-07,使用者:「倒數不用秒」,總覽那張表):寫成「2 天 21 時 59 分」——
+   不寫成「2 天 21:59」,因為少了秒之後 21:59 看起來像一個時刻(晚上九點五十九),而它是剩多久。 */
+export function countdownText(iso, now = Date.now(), { seconds = true } = {}) {
   const diff = new Date(iso).getTime() - now;
   if (diff <= 0) return { text: '已開賽・等待資料', past: true };
   const s = Math.floor(diff / 1000);
   const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60), sec = s % 60;
   const pad = n => String(n).padStart(2, '0');
-  return { text: d > 0 ? `${d} 天 ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`, past: false, soon: diff < 3600000 };
+  const soon = diff < 3600000;
+  if (!seconds) {
+    const text = d > 0 ? `${d} 天 ${h} 時 ${m} 分` : h > 0 ? `${h} 時 ${m} 分` : m > 0 ? `${m} 分` : '不到 1 分';
+    return { text, past: false, soon };
+  }
+  return { text: d > 0 ? `${d} 天 ${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(h)}:${pad(m)}:${pad(sec)}`, past: false, soon };
 }
 
-export const countdown = iso => `<span class="cd mono" data-kickoff="${iso}">${countdownText(iso).text}</span>`;
+export const countdown = (iso, { seconds = true } = {}) =>
+  /* 不帶秒的那一種不用等寬字型:「天 時 分」是中文字,等寬字型會把每個字撐成兩格寬 —— 數字用 tabular-nums 對齊就夠了 */
+  `<span class="cd ${seconds ? 'mono' : 'cd-min'}" data-kickoff="${iso}"${seconds ? '' : ' data-sec="0"'}>${countdownText(iso, Date.now(), { seconds }).text}</span>`;
 
 let cdTimer = null;
 /* ── 換頁時要收乾淨的計時器 ───────────────
@@ -1195,7 +1204,7 @@ export function startCountdowns() {
   const tick = () => {
     const now = Date.now();
     for (const el of document.querySelectorAll('.cd[data-kickoff]')) {
-      const { text, past, soon } = countdownText(el.dataset.kickoff, now);
+      const { text, past, soon } = countdownText(el.dataset.kickoff, now, { seconds: el.dataset.sec !== '0' });
       el.textContent = text;
       el.classList.toggle('past', past);
       el.classList.toggle('soon', !!soon);

@@ -19,6 +19,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadTeams } from './lib/teams.mjs';
 import { round } from './lib/util.mjs';
+import { markFinishedFromFixtures } from './lib/fresh-played.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=')[1];
@@ -27,9 +28,9 @@ const DELAY = Math.max(0, Number(arg('delay') ?? 1600));
 const FORCE = process.argv.includes('--force');
 
 const PROFILES = {
-  pl: { teamFile: 'teams.json', cacheDir: 'understat', dataDir: 'web/data',
+  pl: { teamFile: 'teams.json', cacheDir: 'understat', dataDir: 'web/data', fotmobDir: 'fotmob-epl',
     lastSeason: '2025-26', currentSeason: '2026-27' },
-  es1: { teamFile: 'teams-la-liga.json', cacheDir: 'understat-la-liga', dataDir: 'web/data/leagues/es1',
+  es1: { teamFile: 'teams-la-liga.json', cacheDir: 'understat-la-liga', dataDir: 'web/data/leagues/es1', fotmobDir: 'fotmob-la-liga',
     lastSeason: '2025-26', currentSeason: '2026-27' },
 };
 const P = PROFILES[LEAGUE];
@@ -78,7 +79,20 @@ async function main() {
   await mkdir(dirname(FILE), { recursive: true });
   const T = loadTeams(ROOT, LEAGUE === 'pl' ? undefined : { file: P.teamFile });
   const results = JSON.parse(await readFile(join(ROOT, P.dataDir, 'results.json'), 'utf8'));
-  const arr = results.results ?? results;
+  /* results.json 是上一次 build 的產物,倉庫裡那份從 10-30(D3)起停在 10-28 —— 只讀它的話,10-28 之後的場次
+     在下面的逐場比分核對裡**一場都對不到**(byDate 查不到就略過),本季的 xG 等於沒核對就收進來(鐵則五)。
+     補上同一次部署剛抓的 FotMob 賽程快取說踢完、而 results.json 還沒有的那幾場(lib/fresh-played.mjs,
+     逐場抓取器同一支)。FotMob 跟 Understat 是兩家,所以那幾場的核對仍然是獨立來源。 */
+  let arr = results.results ?? results;
+  const scoresPath = join(ROOT, 'data', 'raw', P.fotmobDir, 'scores.json');
+  if (existsSync(scoresPath)) {
+    const fresh = markFinishedFromFixtures(arr, JSON.parse(await readFile(scoresPath, 'utf8')),
+      { season: P.currentSeason, today: new Date().toISOString().slice(0, 10) });
+    arr = fresh.results;
+    if (fresh.marked.length || fresh.skipped.length) {
+      console.log(`  results.json 沒有、FotMob 賽程說踢完的 ${fresh.marked.length} 場拿來核對${fresh.skipped.length ? `(${fresh.skipped.length} 組分不出是哪一場,略過)` : ''}`);
+    }
+  }
   const gfOf = (code, season) => arr.filter(m => m.season === season && !m.stage
     && (m.home === code || m.away === code) && m.played)
     .reduce((n, m) => n + (m.home === code ? m.fh : m.fa), 0);

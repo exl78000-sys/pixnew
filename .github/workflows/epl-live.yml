@@ -259,18 +259,6 @@ jobs:
           FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
         continue-on-error: true
 
-      # 逐場球隊 xG(Understat dates):上季驗證過就跳過,只刷新本季(每聯賽 ~20 請求)。
-      # 位移雷達的 xG 三軸靠它跟主雷達同名同義。
-      - name: 抓逐場球隊 xG(英超)
-        working-directory: epl
-        run: node scripts/fetch-team-xg.mjs --league=pl
-        continue-on-error: true
-
-      - name: 抓逐場球隊 xG(西甲)
-        working-directory: epl
-        run: node scripts/fetch-team-xg.mjs --league=es1
-        continue-on-error: true
-
       # 人工交付的頭貼「指定網址」在這一步生效。單線、每次上限 5 人，
       # 而且只挑「這個網址規則還沒試過」的人 —— 已經在官方 CDN 試過並失敗的
       # 不會重來，所以實際請求數通常是個位數。
@@ -283,16 +271,6 @@ jobs:
 
       - name: 補抓指定網址的球員頭貼
         run: npm run photos -- --limit=5
-        continue-on-error: true
-
-      # 歐冠球員榜的頭貼(2026-09-21)。**一人一個請求**,所以只抓本季榜上真的會出現的人
-      # (探測 run #40 證明過:本站本來就在打的 matchDetails 回應裡沒有球員照片,
-      # 零額外請求那條路不存在;而 images.fotmob.com/.../playerimages/{id}.png 可用)。
-      # 第一次 40 個請求,之後每輪只補榜上新出現的人 —— 已經有圖的不重抓。
-      # 沙箱連不到圖片 CDN,所以這一步只在 runner 上真的做事。
-      - name: 補抓歐冠球員榜的頭貼
-        working-directory: epl
-        run: npm run ucl:photos
         continue-on-error: true
 
       # 英超官方 CDN 沒有的少量頭貼，SportMonks 名單會先補入；
@@ -393,6 +371,20 @@ jobs:
           for lg in pl es1 en2 de1 it1 fr1; do
             npm run scores:fetch -- --league=$lg || true
           done
+        continue-on-error: true
+
+      # 逐場球隊 xG(Understat dates):上季驗證過就跳過,只刷新本季(每聯賽 ~20 請求)。
+      # 位移雷達的 xG 三軸靠它跟主雷達同名同義。
+      # 排在「抓各聯賽賽果與比分」之後(2026-11-07):逐場比分核對除了 results.json(倉庫裡那份停在 10-28),
+      # 還要讀這一步剛抓的 FotMob 賽程快取 —— 排在前面的話讀到的是上一次部署的。
+      - name: 抓逐場球隊 xG(英超)
+        working-directory: epl
+        run: node scripts/fetch-team-xg.mjs --league=pl
+        continue-on-error: true
+
+      - name: 抓逐場球隊 xG(西甲)
+        working-directory: epl
+        run: node scripts/fetch-team-xg.mjs --league=es1
         continue-on-error: true
 
       # 英冠賽前缺陣名單(傷停,2026-10-31,使用者選「接,用乙」):開賽前 24 小時內還沒抓的場次,每一場一個請求。
@@ -540,6 +532,18 @@ jobs:
           # 設定方式:repo → Settings → Secrets and variables → Actions
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      # 歐冠球員榜的頭貼(2026-09-21)。**一人一個請求**,所以只抓本季榜上真的會出現的人
+      # (探測 run #40 證明過:本站本來就在打的 matchDetails 回應裡沒有球員照片,
+      # 零額外請求那條路不存在;而 images.fotmob.com/.../playerimages/{id}.png 可用)。
+      # 第一次 40 個請求,之後每輪只補榜上新出現的人 —— 已經有圖的不重抓。
+      # 沙箱連不到圖片 CDN,所以這一步只在 runner 上真的做事。
+      # 排在「建立資料集」之後(2026-11-07):它讀 web/data/ucl.json 的榜,而倉庫裡那份從 10-30(D3)起停在 10-28 ——
+      # 排在 build 前面的話,10-28 之後才擠進榜的人永遠不會被補。抓到的圖下一次部署才掛得上去(一次部署的延遲,跟以前一樣)。
+      - name: 補抓歐冠球員榜的頭貼
+        working-directory: epl
+        run: npm run ucl:photos
+        continue-on-error: true
 
       # 這兩步刻意排在 npm test **之前**:測試是部署的閘門,擋下來的話後面都不會跑,
       # 而傷停快照記的是「今天誰不能上」—— 漏掉一天明天補不回來(60 天累積會斷)。

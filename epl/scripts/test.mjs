@@ -2906,7 +2906,7 @@ async function checkDataGap() {
       const ov = readFileSync(join(ROOT, 'scripts', 'lib', 'overview.mjs'), 'utf8');
       return /loadFrom\(lg, \['overview'\]\)/.test(src) && /live: slimLive\(live\)/.test(ov)
         && ['hs', 'as', 'minute', 'clock', 'period', 'kickoff', 'started', 'finished', 'fetchedAt'].every(k => new RegExp(`\\b${k}:`).test(ov))
-        && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick\)/.test(src);
+        && /u\.live\.hs/.test(src) && /C\.liveMinute\(m, lv\.fetchedAt\)/.test(src) && /C\.countdown\(u\.kick[,)]/.test(src);
     })()],
     /* 盃賽比分的快速通道(2026-09-08)。
 
@@ -5398,6 +5398,21 @@ async function checkDataGap() {
       }
       if (bad.length) console.log(`    ${bad.slice(0, 6).join(' / ')}`);
       return bad.length === 0;
+    })()],
+    /* 使用者 2026-11-07:「第幾輪不用顯示 已縮減空間 倒數不用秒」。倒數不帶秒時寫成「幾天 幾時 幾分」——
+       寫成 21:59 會看起來像一個時刻。帶秒的那一種(其他頁)一個字元都不變。 */
+    ['總覽即將到來:沒有「輪次」欄、倒數不帶秒(「2 天 21 時 59 分」),其他頁的倒數照舊帶秒', await (async () => {
+      const { countdownText } = await import('../web/assets/js/core.js');
+      const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
+      const now = Date.parse('2026-11-07T00:00:00Z');
+      const at = ms => new Date(now + ms).toISOString();
+      const H = 3600000, M = 60000;
+      return countdownText(at(2 * 24 * H + 21 * H + 59 * M + 30000), now, { seconds: false }).text === '2 天 21 時 59 分'
+        && countdownText(at(3 * H + 5 * M), now, { seconds: false }).text === '3 時 5 分'
+        && countdownText(at(42 * M + 10000), now, { seconds: false }).text === '42 分'
+        && countdownText(at(20000), now, { seconds: false }).text === '不到 1 分'
+        && countdownText(at(2 * 24 * H + 21 * H + 59 * M + 30000), now).text === '2 天 21:59:30'
+        && /C\.countdown\(u\.kick, \{ seconds: false \}\)/.test(ov) && !/label: '輪次'/.test(ov);
     })()],
     ['總覽「即將到來」分左右兩欄:右欄是最近賽果,跟左欄同一套勾選,PK 平手看 pens 判贏家', (() => {
       const ov = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-overview.js'), 'utf8');
