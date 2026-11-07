@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-11-05T12:36:21.758Z",
+ "retrievedAt": "2026-11-06T22:27:42.622Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,13 +35,13 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-11-05T12:09:47.072Z",
+   "retrievedAt": "2026-11-06T22:03:09.773Z",
    "matches": [
     {
      "id": "6469281",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-06T19:30:00Z",
+     "kickoff": "2026-11-06T19:30:00.000Z",
      "home": {
       "name": "Bristol Rovers",
       "shortName": "Bristol Rovers",
@@ -59,16 +59,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      2,
+      0
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
+     "aet": false,
      "liveScore": null,
-     "state": "NS",
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/cambridge-united-vs-bristol-rovers/3ackyl#6469281",
      "unknownReasons": []
     },
@@ -76,7 +79,7 @@
      "id": "6469310",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-06T19:45:00Z",
+     "kickoff": "2026-11-06T19:45:00.000Z",
      "home": {
       "name": "Oxford City",
       "shortName": "Oxford City",
@@ -94,16 +97,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      2,
+      4
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
+     "aet": false,
      "liveScore": null,
-     "state": "NS",
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/leicester-city-vs-oxford-city/6n2jwem#6469310",
      "unknownReasons": []
     },
