@@ -1011,6 +1011,8 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   color: var(--ink-2); font-size: 13px; font-weight: 700; list-style: none; }
 .seg-item:hover { color: var(--ink); background: #ffffff12; }
 .seg-item.on { color: #0b0710; background: var(--accent); border-color: var(--accent); }
+/* viewSwitch 的每一格是連結(球隊 / 戰術):不要底線 */
+a.seg-item, a.seg-item:hover { text-decoration: none; }
 .seg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .seg-more { position: relative; }
 .seg-more > summary::-webkit-details-marker { display: none; }

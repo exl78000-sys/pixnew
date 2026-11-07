@@ -1,6 +1,6 @@
-import * as C from './core.js?v=7c658de6';
+import * as C from './core.js?v=dca599d7';
 
-import { renderAllPlayers } from './allplayers-view.js?v=ad96176f';
+import { renderAllPlayers } from './allplayers-view.js?v=f1f0ae73';
 
 const app = document.getElementById('app');
 

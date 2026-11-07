@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7c658de6';
+import * as C from './core.js?v=dca599d7';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
 
 const app = document.getElementById('app');
@@ -460,6 +460,7 @@ try {
     app.innerHTML = `
     <div class="page-head">
       <h1>球隊</h1>
+      ${C.teamsViewSwitch('teams')}
       <p>${overviewIntro()}</p>
       ${C.stampRow(stamps)}
     </div>

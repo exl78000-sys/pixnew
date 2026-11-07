@@ -6415,17 +6415,17 @@ function checkAssetStamps() {
     /* 2026-11-07「比賽」區拿掉、聯賽首頁與實時戰況併進「賽事」;同一天「球隊」「球員」也併進聯賽頁的分頁(使用者要求)—— 頂列兩區 */
     ok(allPl.sections.length === 2 && allPl.sections.map(x => x.label).join() === '賽事,更多', '英超頂列兩區、順序固定');
     {
-      /* 聯賽分頁:比賽 / 球隊 / 戰術 / 球員(球員搜尋同一天併進球員頁的「全部聯賽」,不再是一格)。站在其中任何一頁(含 also:單場分析、賽程表、教練)時,
+      /* 聯賽分頁:比賽 / 球隊 / 球員(球員搜尋同一天併進球員頁的「全部聯賽」、戰術併進「球隊」,都不再是一格)。站在其中任何一頁(含 also:單場分析、賽程表、教練)時,
          ① 「聯賽」那一格亮(here 是賽事、index 那一項 isHere);② 亮的分頁是對的那一格;③ 不屬於聯賽的頁(總覽、盃賽、足球知識)沒有分頁 */
       const tabOf = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.ltab ? (st.ltab.label ?? st.ltab.page) : null; };
       const lit = (pg, v = null) => { const st = NV.navState(pg, v, 'pl'); return st.here?.key === 'comp' && st.here.items.some(it => it.page === 'index' && st.isHere(it)); };
-      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,tactics,players'
+      ok(NV.navState('teams', null, 'pl').ltabs.map(t => t.label ?? t.page).join() === '比賽,teams,players'
         && tabOf('index') === '比賽' && tabOf('analysis') === '比賽' && tabOf('fixtures') === '比賽' && tabOf('live') === '比賽'
-        && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'tactics' && tabOf('players') === 'players'
+        && tabOf('teams') === 'teams' && tabOf('coaches') === 'teams' && tabOf('tactics') === 'teams' && tabOf('players') === 'players'
         && tabOf('overview') === null && tabOf('cups') === null && tabOf('explore', 'knowledge') === null && tabOf('explore', null) === null
         && ['index', 'teams', 'tactics', 'players', 'coaches', 'analysis'].every(pg => lit(pg))
         && !lit('overview') && !lit('cups') && !lit('explore', 'knowledge'),
-        '球隊、戰術、球員併進聯賽頁的分頁:站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 足球知識沒有分頁');
+        '球隊、戰術、球員併進聯賽頁的分頁(戰術亮「球隊」):站在那裡時「聯賽」那一格亮、分頁亮對的那一格;總覽 / 盃賽 / 足球知識沒有分頁');
       const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
       ok(/const lgbar = ltab/.test(navFn) && /\$\{sub\}\$\{lgbar\}<\/header>/.test(navFn)
         && /const pickTarget = k =>/.test(navFn) && /ltab\.page !== 'index' && \(!LEAGUES\[k\]\.open \|\| LEAGUES\[k\]\.open\.includes\(ltab\.page\)\)/.test(navFn),
@@ -6467,6 +6467,15 @@ function checkAssetStamps() {
         && !/key: 'allplayers'/.test(ex) && !/renderAllPlayers/.test(ex)
         && /location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ap),
         '球員搜尋的舊網址(探索分頁、allplayers.html)都轉到球員頁的全部聯賽;探索頁不再有那個分頁');
+      /* 戰術併進球隊(2026-11-07,使用者:「戰術 球隊頁整合」):球隊總覽與戰術頁頁首都有同一排「球隊 / 戰術」連結,
+         由 core 的 teamsViewSwitch 畫(一份);球隊詳情(?code=)不畫 —— 那是單一隊,戰術比較是全聯賽的 */
+      const tm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
+      const tc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-tactics.js'), 'utf8');
+      const ov = tm.slice(tm.indexOf('function overview()'), tm.indexOf('${C.foot(meta)}', tm.indexOf('function overview()')));
+      ok(/\$\{C\.teamsViewSwitch\('teams'\)\}/.test(ov) && (tm.match(/teamsViewSwitch/g) ?? []).length === 1
+        && /<h1>戰術分析<\/h1>\s*\$\{C\.teamsViewSwitch\('tactics'\)\}/.test(tc)
+        && /export const teamsViewSwitch = active => viewSwitch\(\[\{ page: 'teams', label: '球隊' \}, \{ page: 'tactics', label: '戰術' \}\]/.test(core),
+        '球隊總覽與戰術頁頁首都有「球隊 / 戰術」切換(core 一份),球隊詳情不畫');
     }
     // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)
     const bad = [];

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=7c658de6';
+import * as C from './core.js?v=dca599d7';
 
 const app = document.getElementById('app');
 
@@ -493,6 +493,7 @@ try {
   app.innerHTML = `
   <div class="page-head">
     <h1>戰術分析</h1>
+    ${C.teamsViewSwitch('tactics')}
     ${page.intro ? `<p>${C.esc(page.intro)}</p>` : ''}
     ${C.stampRow([
       C.stamp(`${meta.lastSeason} 整季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),

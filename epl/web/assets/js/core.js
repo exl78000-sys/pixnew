@@ -768,6 +768,20 @@ export const stampRow = items =>
    頁面原本的 onclick / 委派一行都不用改。點擊之後的 .on / aria-selected 與「更多」的收合由下面那個委派處理,
    頁面自己再 toggle .on 也無妨(結果一樣)。
    items:[{ key, label, html?, extra? }] —— html 給帶圖示的標籤(已跳脫好的),extra 是附加的屬性字串。 */
+/* 同一個聯賽分頁底下的幾種看法(2026-11-07,使用者:「戰術 球隊頁整合」):球隊 / 戰術。
+   跟 tabs() 同一種長相,但每一格是**連結**不是按鈕 —— 兩種看法是兩個網址(teams.html / tactics.html,舊書籤不斷),
+   不用 JS 也點得動,單檔版的 hash 連結照樣能用。目標聯賽沒開的那一格不畫,只剩一格就整排不畫。 */
+export function viewSwitch(items, active, label = '') {
+  const L = LEAGUES[league()] ?? LEAGUES.pl;
+  const shown = items.filter(it => !L.open || L.open.includes(it.page));
+  if (shown.length < 2) return '';
+  return `<nav class="seg seg-inline view-switch"${label ? ` aria-label="${esc(label)}"` : ''}>${shown.map(it => {
+    const on = it.page === active;
+    return `<a class="seg-item${on ? ' on' : ''}" href="${link(it.page)}"${on ? ' aria-current="page"' : ''}>${esc(it.label)}</a>`;
+  }).join('')}</nav>`;
+}
+export const teamsViewSwitch = active => viewSwitch([{ page: 'teams', label: '球隊' }, { page: 'tactics', label: '戰術' }], active, '球隊');
+
 export function tabs(items, active, { attr = 'data-tab', label = '', max = 0, cls = '', itemCls = '', id = '' } = {}) {
   const btn = it => {
     const on = String(it.key) === String(active);
@@ -965,8 +979,7 @@ const SECTIONS = [
    (單場分析與賽程表屬於「比賽」、教練屬於「球隊」)。 */
 const LEAGUE_TABS = [
   { page: 'index', label: '比賽', also: ['live', 'analysis', 'fixtures'] },
-  { page: 'teams', also: ['coaches'] },
-  { page: 'tactics' },
+  { page: 'teams', also: ['coaches', 'tactics'] },   // 戰術 2026-11-07 併進「球隊」(頁首的「球隊 / 戰術」切換)
   { page: 'players' },   // 含「全部聯賽」(?scope=all,原本的球員搜尋 2026-11-07 併進來)
 ];
 // 探索頁不帶 view 時停在第一個分頁(page-explore.js 的 VIEWS[0])—— 導覽列要亮同一個
