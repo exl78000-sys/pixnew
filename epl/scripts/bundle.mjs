@@ -61,6 +61,8 @@ async function main() {
   'follow', 'fixture-list', 'sim-table',
   /* 聯賽頁的比賽現況與積分榜(2026-11-07 實時戰況併進聯賽頁時抽出來的);它引用 follow 與 sim-table,排在它們後面 */
   'live-board', 'ucl-view', 'predict-core', 'predict-score',
+  /* 戰術那幾段(2026-11-07 戰術頁併進球隊頁時抽出來的),page-teams 引用它 */
+  'tactics-view',
   /* 探索頁的三個內容模組(併頁時抽出來的,做法同 ucl-view)。
      模擬遊玩 2026-09-16 起跑連續時間引擎:`game-sim` 是引擎、`game-live` 是它跟畫面之間的轉接層、
      `game-pitch` 畫球場、`game-view` 是版面 —— 照相依順序排(共用模組引用共用模組)。

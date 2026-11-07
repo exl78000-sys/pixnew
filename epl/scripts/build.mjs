@@ -1093,12 +1093,11 @@ async function main() {
        上一版為了判斷走哪套版面去 fetch 再看 404,西甲每次進這一頁就多打兩個
        (`npm run sweep` 抓到的)。寫的人知道自己寫了什麼,就不必讓讀者付這筆錢。 */
     tacticsPage: {
-      intro: `這一頁不談印象,只談上季 ${LAST_SEASON} 的 ${lastMatches.length} 場比賽留下的痕跡:`
+      intro: `戰術這幾段不談印象,只談上季 ${LAST_SEASON} 的 ${lastMatches.length} 場比賽留下的痕跡:`
         + '每支球隊實際把人力放在哪裡、機會創造得多好、領先之後守不守得住、進球集中在上半場還是下半場。'
         + '所有指標都能對回原始賽果與球員數據。',
       boundaries: [],
       xgNote: 'xG 來自球員層級的期望進球加總,xGA 取自門將的期望失球。',
-      teamHint: '風格雷達、人員配置、定位球順位與教練都在各隊自己的頁面',
       datasets: ['shapes', 'formation'],
     },
     competition: competitionDef(COMPETITION),

@@ -1019,7 +1019,10 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 .seg-item:hover { color: var(--ink); background: #ffffff12; }
 .seg-item.on { color: #0b0710; background: var(--accent); border-color: var(--accent); }
 /* viewSwitch 的每一格是連結(球隊 / 戰術):不要底線 */
-a.seg-item, a.seg-item:hover { text-decoration: none; }
+/* 球隊頁頁首的跳轉列(2026-11-07 戰術併進球隊頁):按鈕只捲到那一段,不是分頁所以不亮 .on。
+   .tm-anchor 讓出 sticky 導覽列的高度,捲過去時標題不會被蓋住 */
+.jump-bar { margin-top: 12px; }
+.tm-anchor { scroll-margin-top: calc(var(--topbar-h, 64px) + 12px); }
 .seg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .seg-more { position: relative; }
 .seg-more > summary::-webkit-details-marker { display: none; }

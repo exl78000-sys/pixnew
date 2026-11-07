@@ -1057,7 +1057,6 @@ async function main() {
         '沒有球員層的逐場位置,所以不做人力配置與攻守分型那兩種推導 —— 不是還沒做,是沒有那份資料。',
       ],
       xgNote: 'xG 與 xGA 來自 Understat 的整隊整季統計,不是球員層級加總。',
-      teamHint: '風格雷達、實際使用陣型與教練都在各隊自己的頁面',
       datasets: ['shapes'],
     },
     schema: {

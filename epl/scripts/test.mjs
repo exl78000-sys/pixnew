@@ -4078,8 +4078,9 @@ async function checkDataGap() {
       const idx = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-index.js'), 'utf8');
       const tm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
       return [
-        ['上季最終戰績在球隊頁,不在首頁',
-          /<h2>上季最終戰績<\/h2>/.test(tm) && !/<h2>上季最終戰績<\/h2>/.test(idx)],
+        /* 2026-11-07 起它是「各隊總表」(上季戰績 + 戰術欄,戰術頁併進球隊頁時併的) */
+        ['上季最終戰績(各隊總表)在球隊頁,不在首頁',
+          /<h2>各隊總表<\/h2>/.test(tm) && !/<h2>(上季最終戰績|各隊總表)<\/h2>/.test(idx)],
         ['球隊頁有載入 table 資料集(忘了加的話整段靜靜不畫)',
           /'form', 'table'\)/.test(tm) && /form, table \} =/.test(tm)],
         /* 上季戰績搬走之後首頁一度不載 table;2026-11-07 實時戰況併進首頁,本季積分榜跟著來,
@@ -5460,7 +5461,7 @@ async function checkDataGap() {
         && /\.table-cards \{ display: none; \}/.test(css);
       const users = /\bcard: f =>/.test(js('fixture-list.js')) && /\bcard: u =>/.test(js('page-overview.js'));
       // 積分榜:這幾欄不能有 fold
-      const standings = [['live-board.js', "document.getElementById('curTable')"], ['page-teams.js', 'function lastSeasonTable()'], ['ucl-view.js', "{ key: 'p', label: '賽'"]];
+      const standings = [['live-board.js', "document.getElementById('curTable')"], ['page-teams.js', 'function lastSeasonTable('], ['ucl-view.js', "{ key: 'p', label: '賽'"]];
       const keepOk = standings.every(([f, start]) => {
         const src = js(f); const i = src.indexOf(start); const blk = src.slice(i, src.indexOf('sortKey', i));
         const colOf = k => blk.match(new RegExp(`\\{ key: '${k}', label: '[^']*',([^\\n]*)`))?.[1] ?? null;
@@ -6333,22 +6334,25 @@ function checkAssetStamps() {
        (資料是哪一種)→ 現在沒有分界線。兩套版面的代價不是多寫一次,是**看不見的漏掉**:
        西甲的 shapes.json 裡 20 隊都有官方先發陣型,而舊的西甲分支從頭到尾沒讀它 ——
        資料躺在倉庫裡、畫面上一個字都沒有。這幾條守著不要長回第二套版面。 */
-    const tacSrc = readFileSync(join(jsDir, 'page-tactics.js'), 'utf8');
+    /* 2026-11-07 戰術頁併進球隊頁:區塊在 tactics-view.js(只匯出、不碰 #app),順序由 page-teams 決定 */
+    const tacSrc = readFileSync(join(jsDir, 'tactics-view.js'), 'utf8');
     const tac = strip(tacSrc);
+    const teamsSrc = strip(readFileSync(join(jsDir, 'page-teams.js'), 'utf8'));
     ok(!/renderLaLigaTactics/.test(tac) && !/hasRoleData/.test(tac),
-      '戰術頁只有一套版面(沒有 renderLaLigaTactics,也沒有「資料是哪一種」的二元分岔)');
-    ok((tacSrc.match(/app\.innerHTML = /g) ?? []).length === 1,
-      '戰術頁只組一次版面 —— 兩個 app.innerHTML 就是兩套版面又長回來了');
+      '戰術區塊只有一套版面(沒有 renderLaLigaTactics,也沒有「資料是哪一種」的二元分岔)');
+    ok(!/app\.innerHTML/.test(tac) && !/getElementById\('app'\)/.test(tac),
+      '戰術區塊不自己組頁面(只匯出區塊,版面由球隊頁組)');
     /* 要讀哪幾份產物由 build 宣告。寫死 C.load('formation') 的話西甲每次進這一頁
        就多打一個 404(上一版就是這樣,`npm run sweep` 抓到的)。 */
-    ok(/C\.load\(\.\.\.\(page\.datasets \?\? \[\]\)\)/.test(tac),
-      '戰術頁額外要讀的產物由 meta.tacticsPage.datasets 宣告,不是前端寫死再看 404');
+    ok(/C\.load\('tactics', \.\.\.\(meta\.tacticsPage\?\.datasets \?\? \[\]\)\)/.test(teamsSrc),
+      '戰術那幾段額外要讀的產物由 meta.tacticsPage.datasets 宣告,不是前端寫死再看 404');
     for (const [lg, dir] of [['pl', 'data'], ['es1', join('data', 'leagues', 'es1')]]) {
       const m = JSON.parse(readFileSync(join(W, dir, 'meta.json'), 'utf8'));
       const tp = m.tacticsPage ?? {};
+      /* teamHint(「看單一球隊」那排連結的說明)2026-11-07 跟著那排連結拿掉了 —— 球隊頁最上面就是卡片 */
       ok(typeof tp.intro === 'string' && tp.intro.length > 10 && typeof tp.xgNote === 'string'
-        && typeof tp.teamHint === 'string' && Array.isArray(tp.datasets),
-        `${lg} 的戰術頁文案與產物清單由 build 寫(intro / xgNote / teamHint / datasets)`);
+        && Array.isArray(tp.datasets),
+        `${lg} 的戰術頁文案與產物清單由 build 寫(intro / xgNote / datasets)`);
       const missing = (tp.datasets ?? []).filter(n => !existsSync(join(W, dir, `${n}.json`)));
       ok(missing.length === 0,
         `${lg} 宣告的戰術頁產物都真的存在(列了不存在的就是每次多打一個 404)`, missing.join('、'));
@@ -6479,15 +6483,26 @@ function checkAssetStamps() {
         && !/key: 'allplayers'/.test(ex) && !/renderAllPlayers/.test(ex)
         && /location\.replace\(C\.link\('players', \{ scope: 'all' \}\)\)/.test(ap),
         '球員搜尋的舊網址(探索分頁、allplayers.html)都轉到球員頁的全部聯賽;探索頁不再有那個分頁');
-      /* 戰術併進球隊(2026-11-07,使用者:「戰術 球隊頁整合」):球隊總覽與戰術頁頁首都有同一排「球隊 / 戰術」連結,
-         由 core 的 teamsViewSwitch 畫(一份);球隊詳情(?code=)不畫 —— 那是單一隊,戰術比較是全聯賽的 */
-      const tm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8');
-      const tc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-tactics.js'), 'utf8');
-      const ov = tm.slice(tm.indexOf('function overview()'), tm.indexOf('${C.foot(meta)}', tm.indexOf('function overview()')));
-      ok(/\$\{C\.teamsViewSwitch\('teams'\)\}/.test(ov) && (tm.match(/teamsViewSwitch/g) ?? []).length === 1
-        && /<h1>戰術分析<\/h1>\s*\$\{C\.teamsViewSwitch\('tactics'\)\}/.test(tc)
-        && /export const teamsViewSwitch = active => viewSwitch\(\[\{ page: 'teams', label: '球隊' \}, \{ page: 'tactics', label: '戰術' \}\]/.test(core),
-        '球隊總覽與戰術頁頁首都有「球隊 / 戰術」切換(core 一份),球隊詳情不畫');
+      /* 戰術併進球隊頁(2026-11-07,使用者:「球隊跟戰術 整合合一 不是分兩個子頁」→「照這個做,總表併成一張」):
+         ① 球隊總覽一頁畫到底:卡片 → 各隊總表 → 戰術各組 → 教練,頁首跳轉鈕只捲動(不改網址 —— 單檔版的 # 是路由);
+         ② 各隊總表 = 上季戰績的欄位 + tacticsColumns(戰術的總表與「看單一球隊」不再自己畫);
+         ③ tactics.html 只剩轉址(#tactics 捲到戰術第一段;單檔版不接 #);④ 「球隊 / 戰術」切換拿掉 */
+      const tm = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-teams.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const tc = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-tactics.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const tv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'tactics-view.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      const ov = tm.slice(tm.indexOf('function overview(tx)'), tm.indexOf('function cardFormations('));
+      const lt = tm.slice(tm.indexOf('function lastSeasonTable('), tm.indexOf('function coachNotes('));
+      ok(/tacticsGroups\(\{ meta, \.\.\.tx \}\)/.test(ov) && /id="tm-\$\{g\.id\}"/.test(ov) && /data-jump="tm-\$\{j\.id\}"/.test(ov)
+        && ov.indexOf('id="tm-cards"') < ov.indexOf('id="tm-table"') && ov.indexOf('id="tm-table"') < ov.indexOf('id="tm-${g.id}"')
+        && ov.indexOf('id="tm-${g.id}"') < ov.indexOf('id="tm-coach"')
+        && /mountTactics\(tx\)/.test(ov) && !/location\.hash\s*=(?!=)|history\.(push|replace)State/.test(ov),
+        '球隊總覽一頁畫到底(卡片 → 總表 → 戰術各組 → 教練),跳轉鈕只捲動、不改網址');
+      ok(/\.\.\.tacticsColumns\(T\)/.test(lt) && /<h2>各隊總表<\/h2>/.test(lt)
+        && !/各隊攻守總表|teamLinksBlock|看單一球隊/.test(tv),
+        '各隊總表 = 上季戰績 + 戰術欄;戰術那邊不再自己畫總表與「看單一球隊」');
+      ok(/location\.replace\(C\.link\('teams'\) \+ \(C\.BUNDLE \? '' : '#tactics'\)\)/.test(tc)
+        && !/teamsViewSwitch|viewSwitch/.test(core) && !/teamsViewSwitch/.test(tm),
+        '戰術頁只剩轉址(單檔版不接 #);「球隊 / 戰術」切換拿掉');
     }
     // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)
     const bad = [];
@@ -7954,7 +7969,7 @@ function checkUcl() {
       .replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
       .replace(/(^|[^:])\/\/[^\n]*/g, (m, p) => p + ' '.repeat(m.length - p.length));
     /* 共用版面 = 三個以上聯賽都會走到的那幾支。core.js 例外:註冊表本身在那裡。 */
-    const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'page-tactics.js'];
+    const SHARED = ['page-analysis.js', 'page-teams.js', 'page-players.js', 'page-index.js', 'tactics-view.js'];
     /* ── 人工交付的把關(2026-09-16,推薦順序第二項)──
        德義法的隊色 / 城市 / 球場 / 教練要人工交付。收件匣還沒到,所以這裡守的是
        **管道本身是對的**:核對器在、build 只讀核對後的產物、三個聯賽都掛上了。

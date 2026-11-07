@@ -1,5 +1,6 @@
-import * as C from './core.js?v=9bed6349';
+import * as C from './core.js?v=7de90160';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
+import { tacticsGroups, tacticsStamps, tacticsBoundaries, mountTactics, tacticsColumns, coverageNote } from './tactics-view.js?v=c3f6a175';
 
 const app = document.getElementById('app');
 
@@ -452,24 +453,70 @@ try {
       風格標籤則是從上季的每一場比賽與每一位球員的數據推出來的。點進去看完整剖析。`;
   }
 
-  function overview() {
+  /* 戰術併進球隊總覽(2026-11-07,使用者:「球隊跟戰術 整合合一 不是分兩個子頁」)。
+     一頁從上往下讀:卡片 → 各隊總表(上季戰績 + 攻守,同一季同一批球隊,原本兩張表)→ 風格 → 陣型 → 定位球 → 比賽時段 → 教練。
+     頁首一排跳轉鈕只捲到那一段,不換頁、不改網址(單檔版的網址是路由,不能拿 # 當錨點)。
+     戰術的區塊在 tactics-view.js(原本的 page-tactics.js),這裡只決定順序;tactics.html 轉址到這一頁。
+     tx 是戰術那幾份產物({ tactics, shapes, formation });讀不到就只畫球隊那一半,不擋整頁。 */
+  let cardForm = new Map();   // 卡片上的陣型(overview 算、card 讀)
+  function overview(tx) {
+    const T = tx?.tactics ?? [];
+    const groups = T.length ? tacticsGroups({ meta, ...tx }) : [];
+    cardForm = cardFormations(tx);
     const stamps = [
       C.stamp('賽程、預測、積分榜', { iso: meta.builtAt, kind: 'daily', note: '每次 build 重算' }),
-      C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' }),
+      ...(T.length ? tacticsStamps(meta, tx.shapes) : [C.stamp(`${meta.lastSeason} 全季統計`, { kind: 'season', note: '上季已完結,數字不會再變' })]),
     ];
+    const tableHtml = lastSeasonTable(T);
+    const coachHtml = coachNotes() + coachRankSection();
+    const jumps = [
+      { id: 'cards', label: '球隊' },
+      ...(tableHtml ? [{ id: 'table', label: '總表' }] : []),
+      ...groups.map(g => ({ id: g.id, label: g.label })),
+      ...(coachHtml.trim() ? [{ id: 'coach', label: '教練' }] : []),
+    ];
+    const tIntro = meta.tacticsPage?.intro ? `<p class="lede" style="margin-top:22px">${C.esc(meta.tacticsPage.intro)}</p>` : '';
     app.innerHTML = `
     <div class="page-head">
       <h1>球隊</h1>
-      ${C.teamsViewSwitch('teams')}
       <p>${overviewIntro()}</p>
       ${C.stampRow(stamps)}
+      ${jumps.length > 1 ? `<div class="seg seg-inline jump-bar" aria-label="跳到">${jumps.map(j =>
+        `<button type="button" class="seg-item" data-jump="tm-${j.id}">${C.esc(j.label)}</button>`).join('')}</div>` : ''}
     </div>
-    <div class="grid g3">${teams.map(card).join('')}</div>
+    <div class="grid g3 tm-anchor" id="tm-cards">${teams.map(card).join('')}</div>
 
-    ${lastSeasonTable()}
-    ${coachNotes()}
-    ${coachRankSection()}
+    ${tableHtml ? `<div class="tm-anchor" id="tm-table">${tableHtml}${T.length ? coverageNote(T) : ''}</div>` : ''}
+    ${groups.map((g, i) => `<div class="tm-anchor" id="tm-${g.id}">${i === 0 ? tIntro + tacticsBoundaries(meta) : ''}${g.html}</div>`).join('')}
+    ${coachHtml.trim() ? `<div class="tm-anchor" id="tm-coach">${coachHtml}</div>` : ''}
     ${C.foot(meta)}`;
+    if (T.length) mountTactics(tx);
+    /* 舊的戰術頁轉過來帶 #tactics;內容是 JS 畫的,瀏覽器自己捲不到,畫完補捲一次。
+       **等兩個影格再捲**:總表的收欄(C.table 的 fold)在畫完之後的微任務才量、才收,
+       收完表格變矮 —— 立刻捲的話位置是收欄前算的,實測落在目標下方一千多 px */
+    if (!C.BUNDLE && location.hash) {
+      const want = location.hash === '#tactics' ? `tm-${groups[0]?.id}` : location.hash.slice(1);
+      requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(want)?.scrollIntoView()));
+    }
+  }
+  /* 卡片上的陣型:本季正式名單最常用的那一個優先(有場次分母),沒有就上季主要陣型(整季佔比)。
+     兩種都講清楚是哪一季、什麼單位 —— 「4-2-3-1」三個字沒有出處就是一個看起來像答案的標籤。
+     兩種都沒有的隊(升班馬沒有上季側寫、正式名單還沒公布)整行不畫。 */
+  function cardFormations(tx) {
+    const out = new Map();
+    for (const t of tx?.tactics ?? []) {
+      const f = t.formation?.list?.[0];
+      if (t.formation?.primary && f?.share != null) {
+        out.set(t.code, `上季主要陣型 <b class="mono">${C.esc(t.formation.primary)}</b>・${f.share}% ${f.minutes != null ? '分鐘' : '先發'}`);
+      }
+    }
+    for (const [code, sh] of Object.entries(tx?.shapes ?? {})) {
+      const o = sh?.official;
+      if (!o?.games) continue;
+      const top = [...(o.used ?? [])].sort((a, b) => b.games - a.games)[0];
+      if (top) out.set(code, `本季正式名單 <b class="mono">${C.esc(top.formation)}</b>・${top.games}/${o.games} 場`);
+    }
+    return out;
   }
 
   /* 上季最終戰績。**2026-09-03 從首頁搬過來**(使用者要求)——
@@ -477,26 +524,31 @@ try {
      積分榜與賽程,兩張大表疊在同一頁只是把首頁拉長。
      欄位、排序與「點一列進該隊」的行為原封不動搬過來,沒有重新設計。
      沒有這份資料就整段不畫(英冠的 table 產物有 last,西甲也有;真的缺就不留空殼)。 */
-  function lastSeasonTable() {
+  function lastSeasonTable(T = []) {
+    /* 2026-11-07 起是「各隊總表」:上季最終戰績的欄位後面接戰術那幾欄(主要陣型、占比、xG、xGA)——
+       兩張表原本分在球隊頁與戰術頁,而它們是同一季、同一批球隊(六個聯賽逐個比過隊碼,完全相同)。
+       戰術欄各自判斷:整欄都沒有值的不出;個別球隊沒有的印「—」並說明。 */
     const rows = table?.last ?? [];
     if (!rows.length) return '';
-    return `<div class="section" style="margin-top:22px"><h2>上季最終戰績</h2>
-        <span class="hint">${meta.lastSeason}・所有進階指標的基準</span></div>
-      ${C.table(rows, [
-        { key: 'pos', label: '#', value: r => r.pos, num: true },
-        { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
-        { key: 'p', label: '賽', value: r => r.p, num: true },
-        { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
-        { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
-        { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
-        { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
-        { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
-        { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
-        { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
-        { key: 'homeAwayGap', label: '主客差', fold: 8, value: r => r.homeAwayGap, num: true,
-          title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
-        { key: 'form', label: '末段狀態', fold: 7, value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
-      ], { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } })}`;
+    const cols = [
+      { key: 'pos', label: '#', value: r => r.pos, num: true },
+      { key: 'team', label: '球隊', value: r => C.name(r.code), render: r => C.teamCell(r.code) },
+      { key: 'p', label: '賽', value: r => r.p, num: true },
+      { key: 'w', label: '勝', fold: 2, value: r => r.w, num: true },
+      { key: 'd', label: '和', fold: 4, value: r => r.d, num: true },
+      { key: 'l', label: '負', fold: 3, value: r => r.l, num: true },
+      { key: 'gf', label: '進', fold: 6, value: r => r.gf, num: true },
+      { key: 'ga', label: '失', fold: 5, value: r => r.ga, num: true },
+      { key: 'gd', label: '淨', value: r => r.gd, num: true, render: r => C.signed(r.gd, 0) },
+      { key: 'pts', label: '積分', value: r => r.pts, num: true, render: r => `<b>${r.pts}</b>` },
+      ...tacticsColumns(T),
+      { key: 'homeAwayGap', label: '主客差', fold: 8, value: r => r.homeAwayGap, num: true,
+        title: '主場場均勝點 − 客場場均勝點', render: r => C.signed(r.homeAwayGap, 2) },
+      { key: 'form', label: '末段狀態', fold: 7, value: r => r.pts, sortable: false, render: r => C.formRun(r.form) },
+    ];
+    return `<div class="section" style="margin-top:22px"><h2>各隊總表</h2>
+        <span class="hint">${meta.lastSeason}・戰績與攻守・所有進階指標的基準・點一列進該隊</span></div>
+      ${C.table(rows, cols, { sortKey: 'pts', desc: true, onRow: r => { C.go('teams', { code: r.code }); } })}`;
   }
 
   /* 教練資料的誠實層:哪些是官方每天核對的、哪些還是人工整理會過期的。
@@ -714,6 +766,7 @@ try {
       <div class="team-card-stats">
         ${cells.map(([l, v]) => `<div><div class="tiny dim">${l}</div><div class="mono">${v}</div></div>`).join('')}
       </div>
+      ${cardForm.get(t.code) ? `<div class="tiny dim" style="margin-top:10px">${cardForm.get(t.code)}</div>` : ''}
       ${t.tactics?.tags?.length
         ? `<div class="tags" style="margin-top:10px">${t.tactics.tags.slice(0, 4).map(x => `<span class="pill">${C.esc(x)}</span>`).join('')}</div>`
         : `<div class="tiny dim" style="margin-top:10px">${ls ? '上季風格資料從缺' : '升班馬・沒有上季風格樣本'}</div>`}
@@ -1367,10 +1420,23 @@ try {
     const t = teams.find(x => x.code === code);
     detail(t);
   } else {
-    overview();
+    /* 戰術那幾份(各聯賽要讀哪幾份由 build 宣告在 meta.tacticsPage.datasets)只有總覽用得到 */
+    const tx = await C.load('tactics', ...(meta.tacticsPage?.datasets ?? []))
+      .then(d => ({ tactics: d.tactics ?? [], shapes: d.shapes ?? {}, formation: d.formation ?? null }))
+      .catch(() => null);
+    overview(tx);
   }
   /* 星號的點擊走委派,綁在 #app 上一次就好 —— 綁在按鈕上的話,
      表格重畫(排序、換分頁)之後那顆星就沒有反應了。
      這一頁**不重畫**:按鈕自己會換成 ★,整頁重畫只會把捲動位置跳掉。 */
   bindFollowStars(app);
 } catch (err) { C.fail(err); }
+
+/* 跳轉鈕:捲到那一段(sticky 導覽列的高度由 .tm-anchor 的 scroll-margin 讓出來)。掛一次就好,單檔版換頁會重跑這支 */
+if (!globalThis.__teamsJump) {
+  globalThis.__teamsJump = true;
+  document.addEventListener('click', e => {
+    const b = e.target.closest?.('[data-jump]');
+    if (b) document.getElementById(b.dataset.jump)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+}
