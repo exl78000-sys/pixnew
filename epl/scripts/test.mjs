@@ -4127,9 +4127,27 @@ async function checkDataGap() {
       return [
         /* 2026-09-30 方案 B:頂列五區 + 聯賽下拉;手機上五區搬到固定在底部的一列,頂列只剩品牌與下拉一行,
            子列是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽(量過)。 */
-        ['導覽是五區 + 子列 + 聯賽下拉(details),手機另畫底部列',
-          /<nav class="tabs sections"/.test(core) && /<details class="league-menu">/.test(core)
+        ['導覽是四區 + 子列(聯賽切換在賽事子列的「聯賽」格),手機另畫底部列',
+          /<nav class="tabs sections"/.test(core) && /class="league-pick/.test(core)
           && /<nav class="bottombar"/.test(core) && /class="subbar"/.test(core)],
+        /* 2026-11-07 使用者:「聯賽選擇按鈕 整合進聯賽」(選了「只在聯賽格切換」):品牌旁的下拉拿掉,
+           賽事子列的「聯賽」格寫目前聯賽、點開六個聯賽,各連到那個聯賽的聯賽頁。三件事一起守:
+           ① 品牌列不再有切換鈕;② 按鈕只長在賽事那一區的 index 格、清單項目連到 link('index', { league });
+           ③ 清單掛在子列的 nav 外面(手機上 nav 是橫捲 + mask,清單放在裡面會被裁掉),而且 CSS 讓 hidden 真的藏得住
+           (.league-list 是 display:grid,不補 [hidden] 那一行清單會永遠開著)。 */
+        ['聯賽切換併進賽事子列的「聯賽」格:品牌列沒有切換鈕、按鈕只在賽事區的聯賽格、清單連到各聯賽的聯賽頁、掛在 nav 外面',
+          (() => {
+            const navFn = core.slice(core.indexOf('export function nav()'), core.indexOf('export function foot('));
+            const head = navFn.slice(navFn.indexOf("insertAdjacentHTML('afterbegin'"), navFn.indexOf('</header>'));
+            const subTpl = navFn.slice(navFn.indexOf('const sub = hereSection'), navFn.indexOf("    : '';", navFn.indexOf('const sub = hereSection')));
+            return !/league-menu|leagueMenu|league-pick/.test(head)
+              && /const isLeagueItem = it => it\.page === 'index' && hereSection\?\.key === 'comp'/.test(navFn)
+              && /href="\$\{link\('index', \{ league: k \}\)\}"/.test(navFn)
+              && /<\/nav>\s*\$\{hereSection\.items\.some\(isLeagueItem\) \? leagueList : ''\}/.test(subTpl)
+              && /\.league-list\[hidden\] \{ display: none; \}/.test(css)
+              && /\.subbar \.inner \{[^}]*position: relative/.test(css)
+              && !/leagueSwitchLink/.test(core);
+          })()],
         ['站名連到總覽(2026-09-30,使用者要求)',
           /<a class="brand" href="\$\{link\('overview'\)\}"/.test(core)],
         ['桌機不畫底部列;手機藏頂列五區、底部列 fixed、內容留出底部列的高度',
@@ -5505,7 +5523,7 @@ async function checkDataGap() {
         && /setProperty\('--topbar-h'/.test(core) && !/requestAnimationFrame\(\(\) => \{ ticking/.test(core)
         && /addEventListener\('scroll', onScroll, \{ passive: true \}\)/.test(core)
         && /\.topbar\.compact > \.inner \{ display: none; \}/.test(mobile)
-        && /\.league-menu > summary, \.league-list a, a\.pill, button\.pill, \.btn\.tiny, \.comp-pick \{ min-height: 36px/.test(mobile)
+        && /\.league-list a, a\.pill, button\.pill, \.btn\.tiny, \.comp-pick \{ min-height: 36px/.test(mobile)
         && /\.followstar \{ min-width: 36px; min-height: 36px/.test(mobile)
         && /\.analysis-switch \{[\s\S]{0,200}top: var\(--topbar-h, 61px\)/.test(css);
     })()],

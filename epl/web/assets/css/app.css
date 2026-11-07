@@ -74,23 +74,25 @@ a:hover { text-decoration: underline; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .3px; font-size: 16px; color: var(--ink); }
 .brand .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .brand small { font-weight: 500; color: var(--ink-3); font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; }
-/* 聯賽切換(2026-09-30 起是品牌旁邊的一個下拉;原本六顆常駐、在手機上自己佔一行)。
-   details/summary:不用 JS 就打得開,點外面收起來由 core.js 掛一個 click。 */
-.league-menu { position: relative; }
-.league-menu > summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 11px; border: 1px solid var(--line); border-radius: 999px; background: #ffffff08;
-  font-size: 12.5px; font-weight: 700; color: var(--ink); user-select: none; }
-.league-menu > summary::-webkit-details-marker { display: none; }
-.league-menu > summary:hover { background: #ffffff12; }
-.league-menu .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
-  border-top: 5px solid var(--ink-3); transition: transform .15s; }
-.league-menu[open] .caret { transform: rotate(180deg); }
+/* 聯賽切換(2026-11-07 起併進賽事子列的「聯賽」格;之前是品牌旁邊的下拉,更早是六顆常駐)。
+   按鈕長得跟子列其他分頁一樣,多一個 ▾;清單掛在 .subbar .inner(nav 外面,手機的橫捲 + mask 才不會把它裁掉),
+   位置由 core.js 依按鈕擺。 */
+nav.tabs .league-pick { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: inherit;
+  color: var(--ink-2); padding: 4px 11px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: 1px solid var(--line); background: #ffffff08; transition: .15s; }
+nav.tabs .league-pick:hover { color: var(--ink); background: #ffffff12; }
+nav.tabs .league-pick.on { color: #0b0710; background: var(--accent); border-color: var(--accent); }
+.league-pick .caret { width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid currentColor; opacity: .7; transition: transform .15s; }
+.league-pick[aria-expanded="true"] .caret { transform: rotate(180deg); }
 .league-list { position: absolute; top: calc(100% + 6px); left: 0; z-index: 45; min-width: 120px;
   display: grid; gap: 2px; padding: 6px; border: 1px solid var(--line); border-radius: 12px;
   background: var(--bg-2); box-shadow: 0 10px 30px #0008; }
 .league-list a { color: var(--ink-2); padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; text-decoration: none; }
 .league-list a:hover { background: #ffffff0d; color: var(--ink); text-decoration: none; }
 .league-list a.on { color: #0b0710; background: var(--accent); }
+/* display:grid 會蓋過 hidden 屬性 —— 沒有這一行清單永遠開著 */
+.league-list[hidden] { display: none; }
 nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
 .pick-group { display: contents; }
 
@@ -187,7 +189,7 @@ nav.tabs.sections { margin-left: auto; }
    就是在說「你在分析這一組」——因此左邊掛一個組名,不用讀者自己推。 */
 .subbar { border-top: 1px solid var(--line-soft); background: #ffffff05; }
 .subbar .inner { max-width: 1240px; margin: 0 auto; padding: 7px 20px;
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; }
 .sub-label { font-size: 11.5px; color: var(--ink-3); letter-spacing: 1px; }
 nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
 
@@ -195,8 +197,6 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
    子列(目前那一區的頁)是一條橫向捲動列。原本「分析」那五頁內容前是 198 + 57 = 255px 的導覽。 */
 @media (max-width: 700px) {
   nav.tabs.sections { display: none; }
-  .league-menu { margin-left: auto; }
-  .league-list { left: auto; right: 0; }
   .subbar .inner { padding: 6px 14px; flex-wrap: nowrap; }
   .subbar nav.tabs.sub {
     flex-wrap: nowrap; overflow-x: auto; min-width: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none;
@@ -204,7 +204,7 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
     mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
   }
   .subbar nav.tabs.sub::-webkit-scrollbar { display: none; }
-  .subbar nav.tabs.sub > a { flex: 0 0 auto; }
+  .subbar nav.tabs.sub > a, .subbar nav.tabs.sub > .league-pick { flex: 0 0 auto; }
   .bottombar {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 38;
@@ -255,14 +255,14 @@ nav.tabs.sub a { font-size: 13px; padding: 4px 11px; }
   .stat-line.tie-leg.intl-row .leg-score, .stat-line.tie-leg.intl-row .leg-ko { min-width: 0; }
   .stat-line.tie-leg.intl-row .prob { min-width: 120px; }
   /* 觸控目標:原本 36px,低於一般建議的 44。單行之後高度省下來了,補回去 */
-  nav.tabs > a { min-height: 40px; display: flex; align-items: center; }
-  /* 往下捲時收品牌列(2026-09-27,C1;規則在 core.js 的 nav()):品牌與聯賽下拉那一行收起,子列留著;往上捲一點就放回來。 */
+  nav.tabs > a, nav.tabs > .league-pick { min-height: 40px; display: flex; align-items: center; }
+  /* 往下捲時收品牌列(2026-09-27,C1;規則在 core.js 的 nav()):品牌那一行收起,子列留著;往上捲一點就放回來。 */
   .topbar.compact > .inner { display: none; }
   /* 觸控目標拉到 36px(2026-09-27,C2)。375px 實測首頁 74 個可點的東西裡 50 個不到 32px:切換聯賽 42×25、
      分頁與卡片上的 pill 連結 24px、小按鈕 21–23px、勾選格 26–28px、表格裡的球隊連結 26px。
      只動**連結與按鈕形態的 pill**(a / button),當標籤用的 span.pill 不動;內文裡的文字連結(14–16px)不動 ——
      那是段落的一部分,撐高會把行距撐壞。 */
-  .league-menu > summary, .league-list a, a.pill, button.pill, .btn.tiny, .comp-pick { min-height: 36px; display: inline-flex; align-items: center; }
+  .league-list a, a.pill, button.pill, .btn.tiny, .comp-pick { min-height: 36px; display: inline-flex; align-items: center; }
   .followstar { min-width: 36px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; }
   td .team-cell, td a .team-cell { min-height: 36px; align-items: center; }
 }

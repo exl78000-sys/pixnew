@@ -251,23 +251,6 @@ export const currentPage = () => (BUNDLE
   ? location.hash.slice(1).split('?')[0] || 'index'
   : (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/, '') || 'index');
 
-/* 聯賽切換不能一律回總覽:
-   在球隊／球員詳情頁時,讀者通常是想比較另一個聯賽的同一類頁面。
-   但兩聯賽的隊碼與球員 ID 沒有共用契約,把目前的 `code` 帶過去會落到
-   不存在的資料；因此跨聯賽只保留頁型,清掉詳情識別碼。當使用者點目前
-   聯賽的標籤時則保留 code,讓連結仍回到正在看的詳情頁。單場分析的 id
-   也只屬於原聯賽,切換時回到目標聯賽賽程表。 */
-export function leagueSwitchLink(targetLeague) {
-  const here = currentPage();
-  const currentLeague = league();
-  if (here === 'analysis') return link('index', { league: targetLeague });
-  if (here === 'teams' || here === 'players') {
-    const code = targetLeague === currentLeague ? qs('code') : null;
-    return link(here, { league: targetLeague, code });
-  }
-  return link(here, { league: targetLeague });
-}
-
 /* ── 球隊 ───────────────────────────── */
 let TEAMS = new Map();
 // 顯示用的名稱登錄要涵蓋所有出現過的球隊(含已降級的),不然歷史表格會只剩三碼代號
@@ -952,7 +935,7 @@ const SITE_PAGES = [
    原本的分法是「跨聯賽 / 這個聯賽 / 分析組」—— 那是**資料來源**的分法,讀者看不見:桌機上兩組被推到左右兩端、
    聯賽切換只影響右半邊卻獨佔一行,手機上兩組擠進同一條橫捲列而右邊被切掉,「分析」那五頁內容前面是 255px 的導覽。
    現在照**讀者要做的事**分五區,每個聯賽同一組:比賽、球隊、球員、賽事、更多。頂列五格,子列是目前那一區的頁
-   (只有一頁的區不畫子列);聯賽切換收成品牌旁邊的一個下拉;手機上五區搬到固定在底部的一列。
+   (只有一頁的區不畫子列);聯賽切換收成品牌旁邊的一個下拉(2026-11-07 起併進賽事子列的「聯賽」格);手機上五區搬到固定在底部的一列。
 
    - 網址一個都沒改:區只是把既有的頁分組。探索的三個分頁(知識 / 模擬 / 球員搜尋)各自掛進該去的區,
      連結帶 ?view=,explore.html 本身照舊是它們的宿主。
@@ -1056,25 +1039,30 @@ export function nav() {
   const top = sections.map(s =>
     `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}"${s === hereSection ? ' aria-current="true"' : ''}>${s.label}</a>`).join('');
   // 子列:目前那一區有兩頁以上才畫(只有一頁的區,子列只是把頂列那一格再印一次)
+  /* 聯賽切換併進「聯賽」那一格(2026-11-07,使用者:「聯賽選擇按鈕 整合進聯賽」,選了「只在聯賽格切換」):
+     品牌旁那顆下拉拿掉,賽事子列的「聯賽」格本身寫目前聯賽(「英超 ▾」),點開是六個聯賽、各連到那個聯賽的聯賽頁。
+     球隊 / 球員 / 更多那幾區沒有切換鈕 —— 選好的聯賽照舊帶在網址上,品牌也寫著目前是哪個聯賽(「西甲戰情室」)。
+     清單**不放在子列的 nav 裡**:手機上子列是 overflow-x 捲動 + 右緣 mask,絕對定位的清單會被裁掉,
+     所以清單掛在 .subbar .inner(nav 外面),由 JS 依按鈕的位置擺。 */
+  const isLeagueItem = it => it.page === 'index' && hereSection?.key === 'comp';
+  const leagueList = `<div class="league-list" id="leagueList" role="menu" hidden>${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
+      `<a role="menuitem" href="${link('index', { league: k })}" class="${lg === k ? 'on' : ''}"${lg === k ? ' aria-current="true"' : ''}>${v.zh}</a>`).join('')}${
+        BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
+          ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div>`;
+  const subItem = it => isLeagueItem(it)
+    ? `<button type="button" class="league-pick${isHere(it) ? ' on' : ''}" aria-haspopup="menu" aria-expanded="false" aria-controls="leagueList" aria-label="聯賽:${L.zh}(切換聯賽)"${isHere(it) ? ' aria-current="page"' : ''}>${esc(L.zh)}<span class="caret" aria-hidden="true"></span></button>`
+    : `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`;
   const sub = hereSection && hereSection.items.length > 1
     ? `<div class="subbar"><div class="inner"><span class="sub-label">${hereSection.label}</span>
-        <nav class="tabs sub" aria-label="${hereSection.label}">${hereSection.items.map(it =>
-          `<a href="${itemLink(it)}" class="${isHere(it) ? 'on' : ''}"${isHere(it) ? ' aria-current="page"' : ''}>${esc(itemLabel(it))}</a>`).join('')}</nav>
+        <nav class="tabs sub" aria-label="${hereSection.label}">${hereSection.items.map(subItem).join('')}</nav>
+        ${hereSection.items.some(isLeagueItem) ? leagueList : ''}
       </div></div>`
     : '';
-  // 聯賽切換收成一個下拉(六顆 → 一個)。用 details/summary:不用 JS 也打得開,單檔版的 hash 連結照樣能點
-  const leagueMenu = `<details class="league-menu"><summary aria-label="切換聯賽">${L.zh}<span class="caret" aria-hidden="true"></span></summary>
-      <div class="league-list" role="menu">${Object.entries(LEAGUES).filter(([k]) => bundledLeague(k)).map(([k, v]) =>
-        `<a role="menuitem" href="${leagueSwitchLink(k)}" class="${lg === k ? 'on' : ''}">${v.zh}</a>`).join('')}${
-          BUNDLE && Object.keys(LEAGUES).some(k => !bundledLeague(k))
-            ? '<span class="hint" style="display:block;padding:6px 10px">單檔版只含英超;其他聯賽請開網站</span>' : ''}</div></details>`;
-
   document.body.insertAdjacentHTML('afterbegin', `
     <header class="topbar"><div class="inner">
       ${/* 站名連到**總覽**(2026-09-30,使用者要求):五區之後總覽收在「賽事」裡要點兩下,而它是全站的入口 ——
            品牌是每一頁都在同一個位置的那一個連結,給它最合適。聯賽首頁在「賽事」區的第二格(「聯賽」)。 */''}
       <a class="brand" href="${link('overview')}" title="回總覽"><span class="dot"></span>${L.brand}<small>${L.en}</small></a>
-      ${leagueMenu}
       <nav class="tabs sections" aria-label="主選單">${top}</nav>
     </div>${sub}</header>`);
   /* 手機的底部五格(桌機 display:none)。單檔版換頁時連同 .topbar 一起拿掉(bundle.mjs),這裡先清舊的,不會疊兩條。 */
@@ -1082,13 +1070,31 @@ export function nav() {
   document.body.insertAdjacentHTML('beforeend', `<nav class="bottombar" aria-label="主選單">${sections.map(s =>
     `<a href="${secLink(s)}" class="${s === hereSection ? 'on' : ''}">${icon(s.icon)}<span>${s.label}</span></a>`).join('')}</nav>`);
 
-  /* 下拉點外面就收起來(details 預設不會)。掛一次就好:單檔版每次換頁都重畫導覽列。 */
-  if (!globalThis.__leagueMenuClose) {
-    globalThis.__leagueMenuClose = true;
+  /* 聯賽格的下拉:點按鈕開關、點外面或按 Esc 收起。委派掛在 document 一次就好(單檔版每次換頁都重畫導覽列)。
+     清單在 nav 外面,打開時照按鈕的位置擺(相對 .subbar .inner);子列橫捲過的話位置也跟著按鈕。 */
+  if (!globalThis.__leaguePick) {
+    globalThis.__leaguePick = true;
+    const close = () => {
+      const list = document.getElementById('leagueList');
+      if (list && !list.hidden) { list.hidden = true; document.querySelector('.league-pick')?.setAttribute('aria-expanded', 'false'); }
+    };
     document.addEventListener('click', e => {
-      const m = document.querySelector('.league-menu[open]');
-      if (m && !m.contains(e.target)) m.removeAttribute('open');
+      const btn = e.target.closest?.('.league-pick');
+      const list = document.getElementById('leagueList');
+      if (btn && list) {
+        if (!list.hidden) return close();
+        const inner = btn.closest('.inner');
+        const b = btn.getBoundingClientRect(), r = inner.getBoundingClientRect();
+        list.hidden = false;
+        list.style.top = `${b.bottom - r.top + 6}px`;
+        list.style.left = `${Math.max(0, Math.min(b.left - r.left, r.width - list.offsetWidth))}px`;
+        btn.setAttribute('aria-expanded', 'true');
+        return;
+      }
+      if (list && !list.contains(e.target)) close();
     });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    addEventListener('scroll', close, { passive: true });
   }
 
   /* 手機上子列是一條橫向捲動列,作用中的那一格可能在可視範圍外 —— 把它捲進視野。
@@ -1098,7 +1104,7 @@ export function nav() {
 
   /* 手機上往下捲就收品牌列(2026-09-27,C1)。量過:375px 寬的導覽列 131px 而且 sticky,佔 812px 螢幕的 16%,
      捲到哪裡都跟著;品牌那一行(站名 + 切換聯賽)在讀內容時用不到。往下捲超過 120px 就加 `compact`
-     (CSS 把品牌列收起,分頁列留著),往上捲一點或回到頂端就放回來 —— 切換聯賽是常按的東西,要一捲回來就在。
+     (CSS 把品牌列收起,分頁列留著),往上捲一點或回到頂端就放回來。(切換聯賽 2026-11-07 起在子列的「聯賽」格,收合時仍看得到。)
      桌機不收(高度本來就只有 61px)。監聽只掛一次:單檔版每次換頁都重畫導覽列,handler 每次都重新找 .topbar。
      順便把導覽列的實際高度寫進 --topbar-h:分析頁那條 sticky 的分頁列以前寫死 top: 61px(桌機的高度),
      手機上一直是錯的,現在收合時高度還會變。 */
