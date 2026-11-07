@@ -64859,9 +64859,33 @@
       "phase": "1",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 68128,
+      "team": 9,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 75543,
+      "team": 9,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
      {
       "type": "PS",
       "min": 0,
@@ -64873,11 +64897,17 @@
       "min": 45,
       "label": "45+7'00",
       "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "45+7'00"
+   "clock": "45'00"
   }
  },
- "fetchedAt": "2026-11-07T13:35:20.040Z"
+ "fetchedAt": "2026-11-07T13:37:36.489Z"
 }
