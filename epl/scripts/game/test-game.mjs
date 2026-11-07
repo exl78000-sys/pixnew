@@ -304,6 +304,29 @@ console.log('\n▶ 模擬遊玩:直接紅牌(真實比率、同一個亂數、�
     JSON.stringify({ card, onPitch, restart: sim.state().restart }));
 }
 
+console.log('\n▶ 模擬遊玩:受傷的資料(因傷換人旗標,2026-11-07 起收)');
+{
+  /* 受傷要有真實比率才做(鐵則三)。FotMob 換人事件帶 `injuredPlayerOut`(10-31 探測),而轉接器原本把它丟掉。
+     現在留下來,場次上標 injuryFlag;側寫只數有標記的場次。引擎的受傷等樣本夠了才接 —— 這一節守資料那一半。 */
+  const AD = await import(pathToFileURL(join(ROOT, 'scripts', 'lib', 'adapters', 'fotmob-match.mjs')));
+  const raw = { content: { matchFacts: { events: { events: [
+    { type: 'Substitution', time: 30, isHome: true, swap: [{ name: 'A', id: 1 }, { name: 'B', id: 2 }], injuredPlayerOut: true },
+    { type: 'Substitution', time: 60, isHome: false, swap: [{ name: 'C', id: 3 }, { name: 'D', id: 4 }] },
+  ] } } } };
+  const ev = AD.fotmobEvents(raw, { homeCode: 'ARS', awayCode: 'LIV' });
+  check('轉接器留下因傷換人的旗標(true 才算;沒有這個鍵 = 不是)',
+    ev.length === 2 && ev[0].injured === true && ev[1].injured === false, JSON.stringify(ev.map(e => e.injured)));
+  const fetchSrc = readFileSync(join(ROOT, 'scripts', 'game', 'fetch-fotmob-epl.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const profSrc = readFileSync(join(ROOT, 'scripts', 'game', 'lib', 'profile.mjs'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  check('逐場抓取存 injured 與場次記號 injuryFlag,而且沒有為此 +1 EXTRACT_VERSION(那會重抓舊場次)',
+    /\{ injured: e\.injured === true \}/.test(fetchSrc) && /injuryFlag: true,/.test(fetchSrc) && /EXTRACT_VERSION = 2;/.test(fetchSrc));
+  check('側寫只數有記號的場次(沒讀過旗標的場次不進分母)',
+    /const known = fm\.filter\(m => m\.injuryFlag === true\);/.test(profSrc) && /known\.length \* 2/.test(profSrc));
+  const inj = read(join(ROOT, 'web', 'data', 'game', 'pl.json')).league_?.injurySubs;
+  check('側寫有 injurySubs(樣本數照實寫,0 場就是 null 不是 0)',
+    inj && Number.isInteger(inj.matches) && (inj.matches === 0 ? inj.perTeamGame === null : inj.perTeamGame >= 0), JSON.stringify(inj));
+}
+
 console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
 {
   /* **2026-09-25 從退役的回合制那一套搬過來。** 舊的 `game-engine.js`(回合制引擎)與

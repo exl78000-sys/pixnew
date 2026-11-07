@@ -262,6 +262,7 @@ function extract(raw, fixture) {
   const stats = fotmobTeamStats(raw);
   const events = fotmobEvents(raw, { homeCode, awayCode }).map(e => ({
     minute: e.minute, extra: e.extra, team: e.team, type: e.type, detail: e.detail, player: e.player,
+    ...(e.type === 'subst' ? { injured: e.injured === true } : {}),
   }));
   const shots = (raw?.content?.shotmap?.shots ?? []).map(s => ({
     min: numOrNull(s.min), extra: numOrNull(s.minAdded), team: sideOf(s.teamId), player: s.playerName ?? null,
@@ -296,6 +297,9 @@ function extract(raw, fixture) {
     /* shotmap 的進球數跟比分對不上就標出來 —— 不丟整場(控球還是對的),但用射門資料
        的人要知道那一場的射門不完整。 */
     checks: { shotmapGoals: shotGoals, shotmapComplete: shotGoals === fixture.fh + fixture.fa },
+    /* 換人的 `injured` 是 2026-11-07 起才讀的。不 +1 EXTRACT_VERSION(那會讓舊場次被重抓,使用者不要大量抓),
+       改在場次上標一個記號:有這個記號的場次,換人沒有 injured = 不是因傷;沒有記號的場次 = 不知道。 */
+    injuryFlag: true,
     extractVersion: EXTRACT_VERSION, fetchedAt: new Date().toISOString(),
   };
 }

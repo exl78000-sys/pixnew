@@ -322,6 +322,13 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
      同一場、同一隊、同一個人在紅牌之前已經吃過黃牌 → 兩黃,否則直接紅牌。
      界線:吃過黃牌的人後來又吃**直接**紅牌(少見)會被算成兩黃 —— 所以 direct 是下限、secondYellow 是上限。
      單位是**每隊每場**(引擎是逐隊抽的),不是每場。 */
+  /* 因傷換人(2026-11-07 起才收,見 fetch-fotmob-epl 的 injuryFlag):只數**有讀過這個旗標**的場次,
+     沒讀過的場次不算進分母(那些不是「沒有人受傷」,是「不知道」)。模擬遊玩的受傷等這個樣本夠了才接。 */
+  const injurySubs = (() => {
+    const known = fm.filter(m => m.injuryFlag === true);
+    const n = known.flatMap(m => m.events.filter(e => e.type === 'subst' && e.injured === true)).length;
+    return { matches: known.length, injured: n, perTeamGame: known.length ? r3(n / (known.length * 2)) : null };
+  })();
   const redSplit = (() => {
     let direct = 0, second = 0;
     for (const m of fm) {
@@ -467,6 +474,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
       subs: { countHist: hist(subCountByTeamMatch, 1, 5), minuteHist5: hist(subsOn.map(e => e.minute), 5), n: subsOn.length,
         offPos, offN },
       reds: { perMatch: fm.length ? r3(cardEv.filter(e => e.detail === 'Red Card').length / fm.length) : null, n: fm.length, ...redSplit },
+      injurySubs,
       blockedShare,
       ownGoalShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Own Goal').length / goalEv.length) : null,
       penaltyShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Penalty').length / goalEv.length) : null,

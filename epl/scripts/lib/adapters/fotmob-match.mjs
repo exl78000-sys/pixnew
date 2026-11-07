@@ -301,6 +301,9 @@ export function fotmobEvents(raw, { homeCode, awayCode }) {
         player: e.swap?.[0]?.name ?? e.player?.name ?? null,
         playerId: e.swap?.[0]?.id ?? e.player?.id ?? null,
         assist: null, assistId: null,
+        /* 換人是不是因傷(`injuredPlayerOut`,2026-10-31 探測見過;只在 true 時可靠 —— 沒有這個鍵就當不是)。
+           2026-11-07 起留下來給模擬遊玩的「受傷」用;在那之前抓的場次沒有這一欄,用的人要看場次層的標記。 */
+        injured: e.injuredPlayerOut === true,
       });
     }
   }
