@@ -988,6 +988,15 @@ const OFFSIDE_MARGIN = 0.8;                    // 貼著線站(公尺)
    對照:倉庫裡 323 場的下半場,最後一個帶補時標記的事件平均在 90+**4.77**
    (那是補時的**下限**,不是裁判宣布的分鐘數);上半場本站的擷取裡一場都沒有帶補時標記的事件。 */
 const HALF_SECS = 45 * 60;
+/* 換人規則(2026-11-07,使用者:「依照推薦順序依序製作」第一項)。這是**規則**不是校準出來的參數 ——
+   IFAB 與英超現行:每隊最多換 **5 人**、比賽中最多 **3 次換人機會**,中場休息時換的不佔機會。
+   (腦震盪替補是另一條規則,本站沒有受傷,不做。)
+   **只在死球時換**:比賽中按下換人會先排隊,下一次死球才換 —— 真的比賽也是這樣,
+   而且不排隊的話被換下的人會在跑動中途憑空消失(連續引擎不剪接)。同一次死球裡換的幾個人算**同一次機會**。 */
+const MAX_SUBS = 5, MAX_SUB_WINDOWS = 3;
+/* 排隊的換人在哪幾種死球執行:角球與十二碼**不換**,等下一次 —— 角球的站位表是照場上的人排好的
+   (cornerSpots 以球員代碼為鍵),那一刻換人,新上來的人沒有站位;十二碼主罰者已經走到點上。 */
+const SUB_RESTARTS = new Set(['throwin', 'goalkick', 'freekick', 'kickoff']);
 const STOP_FACTOR = 1.0;
 const STOP_MIN = 60, STOP_MAX = 9 * 60;
 /* 犯規與牌。`FOUL_ON_TACKLE` 從階段 1 就宣告在這裡而**從來沒有被用到** ——
@@ -2009,6 +2018,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     cornerShotBins: { header: new Array(7).fill(0), foot: new Array(7).fill(0) },
     cornerShotXg: { header: 0, foot: 0 },
     corners: { home: 0, away: 0 }, throwIns: 0, goalKicks: 0, fouls: { home: 0, away: 0 }, cards: { home: 0, away: 0 }, reds: { home: 0, away: 0 }, subs: { home: 0, away: 0 },
+    /* 換人規則的狀態:每隊用了幾次機會、上一次機會是在哪一個死球(deadSeq)、排隊中的換人。
+       deadSeq 每進一次死球 +1 —— 同一個死球裡的換人算同一次機會。atBreak:中場休息(換人不佔機會)。 */
+    subWindows: { home: 0, away: 0 }, subWindowSeq: { home: -1, away: -1 }, subQueue: { home: [], away: [] },
+    deadSeq: 0, atBreak: false,
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
     shotsBy: { home: 0, away: 0 }, onTargetBy: { home: 0, away: 0 }, blockedBy: { home: 0, away: 0 },
@@ -3108,6 +3121,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   /* 一個固定時步。所有決策都在這裡發生,沒有任何東西是事先寫好的。 */
   function tick(dt) {
     st.t += dt; st.halfT += dt;
+    if (st.atBreak && st.halfT > 0.5) st.atBreak = false;
+    /* 排隊的換人在**死球**時執行(角球與十二碼除外,見 SUB_RESTARTS)。執行的那一刻要**重驗** ——
+       排隊之後那個人可能被罰下了(「先決定、後執行,中間隔著會改名單的步驟,就要在執行時重驗」那條坑)。 */
+    if (st.phase === 'dead' && !st.over && SUB_RESTARTS.has(st.restart?.kind)) {
+      for (const side of ['home', 'away']) if (st.subQueue[side].length) flushSubs(side);
+    }
     if (st.phase === 'dead') st.deadSec += dt;
     if (!ball.holder) ball.airMax = Math.max(ball.airMax ?? 0, ball.z);   // 見 noteAerial
     /* 半場與完場。**補時在時間到的時候才算**(這一半死了多少球時間),而且要等到
@@ -3890,7 +3909,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     ball.shot = null;
     /* 進球之後的死球時間放長:真的比賽慶祝加回中圈要幾十秒,而這段時間**畫面上大家是走回去的**。
        這不是「等」,是讓重新站位有時間連續地發生 —— 不然就得瞬移。 */
-    st.phase = 'dead'; st.deadT = 22 + rng() * 12;
+    st.phase = 'dead'; st.deadT = 22 + rng() * 12; st.deadSeq++;
     st.restart = { kind: 'kickoff', side: side === 'home' ? 'away' : 'home' };
   }
 
@@ -3986,6 +4005,43 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     closeChain('out', ball.x);
     deadBall({ kind: 'goalkick', side, taker: s.gk, x: s.att > 0 ? 5.5 : PITCH_W - 5.5, y: PITCH_H / 2, wait: 1.6 + rng() * 1.4 });
   }
+  /* 換人能不能**現在**做:中場休息、或死球而且是能換人的那幾種(SUB_RESTARTS)。 */
+  function canSubNow() {
+    return st.atBreak || (st.phase === 'dead' && !st.over && SUB_RESTARTS.has(st.restart?.kind));
+  }
+  /* 真的換。換上來的人接手原本那個位置的 slot —— 不然他會從場邊瞬移到一個陣型算出來的新位置。
+     機會的計數也在這裡(不在 substitute):排隊的換人在這裡才真的發生。 */
+  function doSub(side, offCode, onCode) {
+    const s = sideOf(side);
+    const i = s.players.findIndex(p => p.code === offCode && !p.off);
+    const spare = s.bench?.get(onCode);
+    if (i < 0 || !spare || spare.used) return false;
+    if (!st.atBreak && st.subWindowSeq[side] !== st.deadSeq) { st.subWindows[side]++; st.subWindowSeq[side] = st.deadSeq; }
+    const out = s.players[i];
+    spare.used = true;
+    /* 換上場的人 `dist` 從 0 開始,所以 `vmax` 也要回到新鮮值 ——
+       少這一行的話生力軍會繼承替補席上那個(沒跑過所以本來就是滿的)值,
+       看起來對,但只要以後有「熱身也算跑動」之類的東西就會靜靜錯掉。 */
+    const now = { ...spare.p, side, slot: out.slot, role: out.role,
+      x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0,
+      fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax };
+    s.players[i] = now;
+    if (ball.holder === out) ball.holder = now;
+    // 死球的主罰者剛好被換下:換上來的人接手(不然重新開球的是一個已經不在場上的人)
+    if (st.restart?.taker === out) st.restart.taker = now;
+    if (s.gk === out) s.gk = now;
+    st.subs[side]++;
+    emit({ type: 'sub', side, off: offCode, on: onCode, name: now.name, offName: out.name });
+    return true;
+  }
+  /* 排隊的換人在死球時一次執行;執行前重驗,換不了的(那個人被罰下了、名額用完)丟掉並記一筆給畫面講。 */
+  function flushSubs(side) {
+    const q = st.subQueue[side].splice(0);
+    for (const x of q) {
+      const ok = st.subs[side] < MAX_SUBS && doSub(side, x.off, x.on);
+      if (!ok) emit({ type: 'subVoid', side, off: x.off, on: x.on });
+    }
+  }
   /* 中場休息與完場。中場**換邊** —— 只要把兩隊的進攻方向對調,shapeOf 與門將位置都是從 att 算的,
      所以整條陣型會自己翻過去,不必另外搬人。下半場由上半場**沒有開球**的那一隊開球。 */
   function endHalf() {
@@ -3993,6 +4049,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (st.half === 1) {
       emit({ type: 'half', side: null });
       st.half = 2; st.halfT = 0; st.deadSec = 0; st.added = 0;
+      st.atBreak = true;   // 中場休息:畫面停在這裡時換的人不佔換人機會;下半場一開踢(halfT > 0)就結束
       H.att = -H.att; A.att = -A.att;
       for (const p of all()) { p.yellowShown = p.yellow ?? 0; }
       kickoff(st.firstKick === 'home' ? 'away' : 'home', { place: true });
@@ -4291,7 +4348,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     const s = sideOf(side);
     st.crossLive = null;                       // 5r:傳中直接出界 / 死球 = 沒有找到人
     ball.holder = null; ball.vx = 0; ball.vy = 0; ball.vz = 0; ball.z = 0; ball.x = x; ball.y = y; ball.shot = null;
-    st.phase = 'dead'; st.deadT = wait;
+    st.phase = 'dead'; st.deadT = wait; st.deadSeq++;
     st.restart = { kind, side, taker: taker ?? s.players[1], x, y, spots };
     st.pendingOrigin = { kind, side };   // 下一串進攻的來源與**是誰的**(見 openChain)
     st.outs++;
@@ -4369,19 +4426,24 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   return {
     /* 畫面要跑多快就給多少秒 —— 物理照固定時步走,所以倍速不會改變結果的物理正確性。
        這是「連續播放」的基礎:不用剪接也能把 90 分鐘壓進十分鐘。 */
-    advance(seconds) {
+    /* `stopAtBreak`:推到上半場結束那一格就停(畫面在中場休息自動暫停、讓人換人用)。
+       不給就照舊推滿 —— 量測台與「跳到結果」不受影響;停下來只是少推幾格,不消耗亂數、不改任何狀態。 */
+    advance(seconds, { stopAtBreak = false } = {}) {
       if (st.over) return 0;                 // 完場之後再叫也不動 —— 不然畫面會繼續跑一個不存在的比賽
       let left = Math.max(0, seconds), steps = 0;
       while (left > 1e-9 && steps < MAX_STEPS) {
         const dt = Math.min(SIM_DT, left);
         if (ball.holder) st.lastTouch = ball.holder.side;
+        const before = st.half;
         tick(dt);
         left -= dt; steps++;
+        if (stopAtBreak && st.half !== before) break;
       }
       return steps;
     },
     state: () => ({
       t: st.t, phase: st.phase, half: st.half, halfT: st.halfT, over: st.over,
+      restart: st.restart?.kind ?? null,   // 死球是哪一種(換人規則的測試要知道現在能不能換;純讀)
       clock: clockOf(), added: Math.round(st.added / 60),
       ball: { x: ball.x, y: ball.y, z: ball.z, vx: ball.vx, vy: ball.vy, holder: ball.holder?.code ?? null, holderSide: ball.holder?.side ?? null },
       players: all().map(p => ({ code: p.code, side: p.side, name: p.name, role: p.role, x: p.x, y: p.y, vx: p.vx, vy: p.vy, vmax: p.vmax, vmaxReal: p.vmaxReal })),
@@ -4537,27 +4599,40 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       return true;
     },
     formationOf: side => sideOf(side).spec,
-    /* 換人。**規則檢查在這裡做,不是在畫面**:下場的人要在場上、上場的人要在板凳上。
-       換上來的人接手原本那個位置的 slot —— 不然他會從場邊瞬移到一個陣型算出來的新位置。 */
+    /* 換人。**規則檢查在這裡做,不是在畫面**:下場的人要在場上、上場的人要在板凳上,
+       而且照 MAX_SUBS / MAX_SUB_WINDOWS 的規則(2026-11-07)。回傳 `{ ok, queued, reason }`:
+       死球或中場休息時立刻換;比賽進行中先排隊,下一次死球才換(queued)。`reason` 是給畫面直接印的一句話。 */
     substitute(side, offCode, onCode) {
-      const s = sideOf(side);
-      const i = s.players.findIndex(p => p.code === offCode && !p.off);
+      const s = sideOf(side), q = st.subQueue[side];
+      const no = reason => ({ ok: false, queued: false, reason });
+      if (st.over) return no('比賽已經結束');
+      const out = s.players.find(p => p.code === offCode && !p.off);
+      if (!out) return no('那個人不在場上');
       const spare = s.bench?.get(onCode);
-      if (i < 0 || !spare || spare.used) return false;
-      const out = s.players[i];
-      spare.used = true;
-      /* 換上場的人 `dist` 從 0 開始,所以 `vmax` 也要回到新鮮值 ——
-         少這一行的話生力軍會繼承替補席上那個(沒跑過所以本來就是滿的)值,
-         看起來對,但只要以後有「熱身也算跑動」之類的東西就會靜靜錯掉。 */
-      const now = { ...spare.p, side, slot: out.slot, role: out.role,
-        x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0,
-        fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax };
-      s.players[i] = now;
-      if (ball.holder === out) ball.holder = now;
-      st.subs[side]++;
-      emit({ type: 'sub', side, off: offCode, on: onCode, name: now.name, offName: out.name });
+      if (!spare || spare.used) return no('那位替補已經上過場,或不在替補席');
+      if (q.some(x => x.off === offCode)) return no('那個人已經在等著被換下');
+      if (q.some(x => x.on === onCode)) return no('那位替補已經在等著上場');
+      if (st.subs[side] + q.length >= MAX_SUBS) return no(`換人名額用完了(每隊最多 ${MAX_SUBS} 人)`);
+      const now = canSubNow();
+      /* 要不要多用一次換人機會:中場休息不用;這一個死球已經換過(或排隊裡已經有人等同一次死球)就併進同一次 */
+      const newWindow = !st.atBreak && !q.length && !(now && st.subWindowSeq[side] === st.deadSeq);
+      if (newWindow && st.subWindows[side] >= MAX_SUB_WINDOWS) return no(`換人機會用完了(比賽中最多 ${MAX_SUB_WINDOWS} 次,中場休息不算)`);
+      if (now) { doSub(side, offCode, onCode); return { ok: true, queued: false, reason: '換上場了' }; }
+      q.push({ off: offCode, on: onCode });
+      return { ok: true, queued: true, reason: '下一次死球換上場(比賽進行中不能換)' };
+    },
+    /* 取消排隊中的換人(還沒執行的才取消得了) */
+    cancelSub(side, offCode) {
+      const q = st.subQueue[side], i = q.findIndex(x => x.off === offCode);
+      if (i < 0) return false;
+      q.splice(i, 1);
       return true;
     },
+    /* 換人規則的現況,畫面照它印(不要自己再數一次) */
+    subStatus: side => ({
+      used: st.subs[side], max: MAX_SUBS, windows: st.subWindows[side], maxWindows: MAX_SUB_WINDOWS,
+      pending: st.subQueue[side].map(x => ({ ...x })), atBreak: st.atBreak,
+    }),
     // spec 用 getter:比賽中換陣型(setFormation)之後讀到的要是現在的,不是開賽那一刻的
     teams: { home: { code: H.code, get spec() { return H.spec; } }, away: { code: A.code, get spec() { return A.spec; } } },
     /* λ 錨的來源要**看得到**:哪一項是真實資料、哪一項是遊戲模型,畫面與測試都讀這裡。

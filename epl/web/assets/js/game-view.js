@@ -1,7 +1,7 @@
 import * as C from './core.js?v=e883428c';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=b835ac67';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=22e3abfe';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels } from './game-live.js?v=3b81a026';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -183,6 +183,8 @@ export async function renderGame(app) {
       if (running && pitch && match) pitch.cue(e, match.pitch());
       if (e.type === 'goal') { disp.score = [...e.score]; disp.lastGoalAt = performance.now(); }
       if (e.type === 'half') disp.half = 2;
+      if (e.type === 'sub' && /^下一次死球/.test(subMsg[e.side] ?? '')) subMsg[e.side] = '';
+      if (e.type === 'subVoid') subMsg[e.side] = '排隊的換人沒換成:那個人已經不在場上,或名額用完了';
       if (e.type === 'full') disp.finished = true;
       const L = disp.lineup[e.side];
       if (!L) return;
@@ -223,6 +225,7 @@ export async function renderGame(app) {
       match = createLiveMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed, neutral: state.neutral,
         setup: { home: { ...setupOf('home') }, away: { ...setupOf('away') } } });
       disp = freshDisp();
+      subPick = { home: null, away: null }; subMsg = { home: '', away: '' };
       if (tab === 'recap') tab = 'stats';
       paused = false; running = true;
       box.innerHTML = `<div class="duel-stage">
@@ -296,8 +299,15 @@ export async function renderGame(app) {
       const real = lastTs ? Math.min(0.5, (now - lastTs) / 1000) : 0;
       lastTs = now;
       if (!paused && !disp.finished) {
-        const evs = match.advance(real * (LIVE_SPEEDS[state.speed]?.mult ?? 8));
+        const evs = match.advance(real * (LIVE_SPEEDS[state.speed]?.mult ?? 8), { stopAtBreak: true });
         for (const e of evs) applyEvent(e);
+        /* 中場休息自動暫停,打開陣容分頁:這時換的人不佔比賽中的三次換人機會(規則見 game-sim 的 MAX_SUB_WINDOWS)。
+           引擎在上半場結束那一格就停(stopAtBreak),所以停下來的那一刻真的還在中場。 */
+        if (evs.some(e => e.type === 'half') && !disp.finished) {
+          paused = true; lastTs = 0;
+          document.getElementById('gPause').textContent = '開始下半場';
+          tab = 'lineup'; renderTabs(); renderPanel();
+        }
         if (evs.length) { frame(); if (disp.finished) finish(); }
       }
       pitch.draw(match.pitch());
@@ -340,7 +350,9 @@ export async function renderGame(app) {
       const label = `${m.min}${m.extra ? `+${m.extra}` : ''}`;
       const minEl = $('gMin');
       if (minEl) {
-        minEl.innerHTML = disp.finished ? '完場' : `<span class="livedot"></span>第 ${label} 分鐘${paused ? '(暫停)' : ''}`;
+        minEl.innerHTML = disp.finished ? '完場'
+          : paused && match?.subStatus('home').atBreak ? '中場休息'
+          : `<span class="livedot"></span>第 ${label} 分鐘${paused ? '(暫停)' : ''}`;
         minEl.className = `pill ${disp.finished ? '' : 'bad'}`;
       }
       /* 勝率條走站上的即時模型(`predict-core.js`),吃的是 λ 的錨與現在的比分 / 紅牌。
@@ -408,6 +420,8 @@ export async function renderGame(app) {
         case 'corner': return `${m} ${t} 角球`;
         case 'card': return `${m} ${e.card === 'red' ? '🟥' : '🟨'} ${t} ${who}${e.card === 'red' ? ' 兩黃罰下' : ' 黃牌'}`;
         case 'sub': return `${m} 🔁 ${t} ${who} 換 ${C.esc(e.offName ?? '')}`;
+        /* 排隊的換人到了死球卻換不了(那個人在等的時候被罰下了)—— 不講的話你按過的換人就靜靜消失 */
+        case 'subVoid': return `${m} <span class="dim">${t} 排隊的換人取消了(${C.esc(playerName(e.side, e.off))} 已經不在場上)</span>`;
         case 'formation': return `${m} 🧩 ${t} 改踢 <b>${C.esc(e.spec)}</b>`;
         case 'offside': return `${m} <span class="dim">${t} ${who} 越位</span>`;
         case 'foul': return null;            // 犯規太多,只進統計不進播報(一場二十次,印出來會把進球洗掉)
@@ -454,11 +468,12 @@ export async function renderGame(app) {
     function renderPanel() {
       const host = document.getElementById('gPanel');
       if (!host || !match || !disp) return;
-      if (tab === 'stats') host.innerHTML = statsHtml();
-      else if (tab === 'events') host.innerHTML = eventsHtml();
-      else if (tab === 'lineup') host.innerHTML = lineupHtml();
-      else if (tab === 'recap') host.innerHTML = recapHtml();
-      else host.innerHTML = tacticsHtml();
+      const html = tab === 'stats' ? statsHtml() : tab === 'events' ? eventsHtml() : tab === 'lineup' ? lineupHtml()
+        : tab === 'recap' ? recapHtml() : tacticsHtml();
+      /* frame() 每 250 毫秒叫一次這裡。內容沒變就**不重寫** —— 重寫的話按鈕每 250 毫秒換一顆新的,
+         滑鼠按下與放開落在不同的兩顆上就不算一次點擊(2026-11-07 換人那一輪在中場暫停時實際點不到)。 */
+      if (host.dataset.tab === tab && host.__html === html) return;
+      host.innerHTML = html; host.__html = html; host.dataset.tab = tab;
       if (tab === 'lineup') bindSubs();
       if (tab === 'tactics') bindTactics();
     }
@@ -524,6 +539,8 @@ export async function renderGame(app) {
       return `<div style="display:grid;gap:2px">${evs.slice().reverse().map(e => `<div class="stat-line">${commentary(e) ?? ''}</div>`).join('')}</div>`;
     }
     let subPick = { home: null, away: null };
+    /* 換人按鈕回的那一句(引擎的 reason)。存在狀態裡、畫進 html —— 直接寫進 DOM 的話,下一次內容一變就被洗掉 */
+    let subMsg = { home: '', away: '' };
     function lineupHtml() {
       const side = sd => {
         const L = disp.lineup[sd], sq = squadOf(sd);
@@ -532,20 +549,31 @@ export async function renderGame(app) {
           return `<button class="btn tiny${where === 'on' ? ' on' : ''}${subPick[sd]?.[where] === c ? ' primary' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}">${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${p?.role ?? p?.pos ?? ''}</span>${y ? ' 🟨' : ''}</button>`;
         };
         const reds = L.off.length - L.subs;
+        /* 換人規則的現況由引擎給(subStatus),畫面不自己數 —— 自己數的話排隊中的那幾個就對不上 */
+        const S = match?.subStatus?.(sd) ?? null;
+        const pend = S?.pending ?? [];
+        const full = S && (S.used + pend.length >= S.max);
         return `<div class="card" style="margin-bottom:8px">
-          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${match?.formationOf?.(sd) ?? setupOf(sd).formation}・換人 ${L.subs} 次${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${match?.formationOf?.(sd) ?? setupOf(sd).formation}・${
+            S ? `換人 ${S.used} / ${S.max}・換人機會 ${S.windows} / ${S.maxWindows}` : `換人 ${L.subs} 次`}${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          ${pend.length ? `<div class="tiny" style="margin:4px 0">等下一次死球:${pend.map(x => `${C.esc(playerName(sd, x.on))} 換 ${C.esc(playerName(sd, x.off))}
+            <button class="btn tiny" data-cancel-sub="${sd}" data-cancel-off="${C.esc(x.off)}">取消</button>`).join('、')}</div>` : ''}
           <div class="tiny dim">場上</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.on.map(c => btn(c, 'on')).join('')}</div>
           <div class="tiny dim">替補席</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.bench.map(c => btn(c, 'bench')).join('')}</div>
           ${L.off.length ? `<div class="tiny dim">已下場:${L.off.map(c => C.esc(sq.get(c)?.name ?? c)).join('、')}</div>` : ''}
-          <div class="row" style="gap:6px;margin-top:6px"><button class="btn tiny" data-do-sub="${sd}">換人(點一個場上、一個替補)</button><span class="tiny dim" id="gSubMsg-${sd}"></span></div>
+          <div class="row" style="gap:6px;margin-top:6px">${full
+            ? `<span class="tiny dim">換人名額用完了(每隊最多 ${S.max} 人)</span>`
+            : `<button class="btn tiny" data-do-sub="${sd}">換人(點一個場上、一個替補)</button>`}<span class="tiny dim" id="gSubMsg-${sd}">${C.esc(subMsg[sd])}</span></div>
         </div>`;
       };
       return side('home') + side('away')
-        + `<div class="tiny dim">換人<b>立刻</b>生效:換上來的人接手原本那個位置,下一格就在場上跑。
+        + `<div class="tiny dim">換上來的人接手原本那個位置,換好的那一格就在場上。
           這個引擎裡換人不改 λ —— 影響是從場上長出來的:他的最高速度、他站的位置,
           以及他的<b>體能是滿的</b>(場上的人跑得越多、跑得出來的速度越低,換上來的人從零開始算)。
           <b>刻意不做</b>:自動換人 —— 換誰、什麼時候換是你的決定,引擎不會替你換。
-          <b>還沒做的</b>:換人次數與窗口的規則(所以上面只數你換了幾次,沒有上限)。</div>`;
+          <b>換人規則</b>(2026-11-07 起照正式規則):每隊最多換 5 人、比賽中最多 3 次換人機會,中場休息時換的不佔機會;
+          比賽進行中按下的換人會<b>等到下一次死球</b>才換(界外球、球門球、自由球、開球;角球與十二碼不換),
+          同一次死球換的幾個人算同一次機會。上半場結束時比賽<b>自動暫停在中場休息</b>,換好再按「開始下半場」。</div>`;
     }
     function bindSubs() {
       document.querySelectorAll('[data-sub-code]').forEach(b => {
@@ -557,14 +585,20 @@ export async function renderGame(app) {
       document.querySelectorAll('[data-do-sub]').forEach(b => {
         b.onclick = () => {
           const sd = b.dataset.doSub, pk = subPick[sd] ?? {};
-          const msg = document.getElementById(`gSubMsg-${sd}`);
-          if (!pk.on || !pk.bench) { msg.textContent = '要先點一個場上的人和一個替補'; return; }
+          if (!pk.on || !pk.bench) { subMsg[sd] = '要先點一個場上的人和一個替補'; renderPanel(); return; }
           /* 合法性檢查在引擎裡(下場的人要在場上、上場的人要在板凳而且沒被用過)——
              畫面只負責把結果講出來,不要自己再寫一份規則。 */
-          const ok = match.sub(sd, pk.on, pk.bench);
-          msg.textContent = ok ? '換上場了' : '換不了(那個人不在場上,或替補已經用過)';
-          if (ok) { subPick[sd] = null; renderPanel(); }
+          const r = match.sub(sd, pk.on, pk.bench);
+          if (r.ok) subPick[sd] = null;
+          /* 立刻換的那一筆(死球或中場暫停時)事件已經在引擎裡了,但畫面只在推進時收事件 ——
+             暫停中不收的話,引擎說換了、陣容面板還是舊名單。推 0 秒只收事件,比賽一格都不動。 */
+          if (r.ok && !r.queued) for (const e of match.advance(0)) applyEvent(e);
+          subMsg[sd] = r.reason;
+          renderPanel();
         };
+      });
+      document.querySelectorAll('[data-cancel-sub]').forEach(b => {
+        b.onclick = () => { if (match.cancelSub(b.dataset.cancelSub, b.dataset.cancelOff)) renderPanel(); };
       });
     }
     /* 戰術指令。**只列連續引擎真的接得到、而且量過方向對的軸** ——
@@ -670,7 +704,7 @@ export async function renderGame(app) {
           <li><b>補時比真實的短</b>,不是 bug:這裡死球只等一兩秒,補時照這一半實際死掉的時間補回去。</li>
           <li><b>進球情境</b>只分運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼;
             直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。</li>
-          <li><b>還沒做的</b>:直接紅牌(只做兩黃)、受傷、換人次數與窗口的規則;
+          <li><b>還沒做的</b>:直接紅牌(只做兩黃)、受傷;
             戰術的心態 / 寬度 / 節奏 / 直接度(引擎接得動,但量下去只有直接度改的是踢法、其餘三軸改的是強弱,所以都還沒掛上來)。
             <b>刻意不做</b>:自動換人(換人是玩家的決定)。沒做的一律不放欄位。</li>
           <li><b>跟真實管線只有一條關係</b>:沒有任何改動時,N 場的平均進球回得到站上的 λ

@@ -180,6 +180,91 @@ console.log('\n▶ 模擬遊玩:側寫對得回來源');
   }
 }
 
+console.log('\n▶ 模擬遊玩:換人規則(5 人、3 次機會、中場不算、比賽中排隊到死球)');
+{
+  /* 2026-11-07(使用者:「依照推薦順序依序製作」第一項)。規則照 IFAB / 英超現行,在引擎裡檢查(畫面只印 reason)。
+     驗的是**規則本身**,一格一格推到需要的那一種狀態再按換人 —— 不靠某個種子剛好在第幾分有死球。 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const PRED = { xgHome: 1.99, xgAway: 0.70 };
+  const STEP = 1 / 60, LIMIT = Math.round(110 * 60 / STEP);
+  const OK_RESTART = new Set(['throwin', 'goalkick', 'freekick', 'kickoff']);
+  const mk = seed => SM.createSim({ profile, home: 'ARS', away: 'LIV', seed, pred: PRED });
+  /* 推到「下一個可以換人的死球」:先離開目前的死球,再等到下一個能換的(同一個死球不算新機會) */
+  const toNextDead = sim => {
+    let i = 0;
+    while (i++ < LIMIT && !sim.state().over && sim.state().phase === 'dead') sim.advance(STEP);
+    while (i++ < LIMIT && !sim.state().over && !(sim.state().phase === 'dead' && OK_RESTART.has(sim.state().restart))) sim.advance(STEP);
+    return !sim.state().over;
+  };
+  const toLive = sim => { let i = 0; while (i++ < LIMIT && sim.state().phase === 'dead') sim.advance(STEP); };
+  const outfield = (sim, n) => sim.state().players.filter(p => p.side === 'home' && p.role !== 'GK').slice(0, n).map(p => p.code);
+  const bench = sim => sim.benchOf('home').map(b => b.code);
+
+  // ① 一次死球換兩個 = 一次機會;再兩次死球各換一個 = 三次機會、四人;第五人在比賽中排隊,第三次機會已用完 → 拒絕
+  const a = mk(2);
+  toNextDead(a);
+  let o = outfield(a, 6), b = bench(a);
+  const r1 = a.substitute('home', o[0], b[0]), r2 = a.substitute('home', o[1], b[1]);
+  const s1 = a.subStatus('home');
+  toNextDead(a); o = outfield(a, 6); b = bench(a);
+  const r3 = a.substitute('home', o[2], b[0]);
+  toNextDead(a); o = outfield(a, 6); b = bench(a);
+  const r4 = a.substitute('home', o[3], b[0]);
+  const s4 = a.subStatus('home');
+  toLive(a); o = outfield(a, 6); b = bench(a);
+  const r5 = a.substitute('home', o[4], b[0]);
+  check('同一次死球換兩人只用一次機會;死球時立刻換', r1.ok && !r1.queued && r2.ok && !r2.queued && s1.used === 2 && s1.windows === 1,
+    JSON.stringify(s1));
+  check('三次機會用完,比賽中再按換人被拒絕(講得出原因)', r3.ok && r4.ok && s4.windows === 3 && s4.used === 4
+    && r5.ok === false && /機會用完/.test(r5.reason), JSON.stringify({ s4, r5 }));
+
+  // ② 比賽中排隊兩個人 → 下一次死球一起換、只算一次機會;五人用完之後再換被拒絕
+  const c = mk(3);
+  toLive(c); o = outfield(c, 6); b = bench(c);
+  const q1 = c.substitute('home', o[0], b[0]), q2 = c.substitute('home', o[1], b[1]);
+  const pend = c.subStatus('home').pending.length;
+  toNextDead(c); c.advance(STEP);
+  const sQ = c.subStatus('home');
+  toNextDead(c); o = outfield(c, 6); b = bench(c);
+  const r6 = c.substitute('home', o[2], b[0]), r7 = c.substitute('home', o[3], b[1]), r8 = c.substitute('home', o[4], b[2]);
+  toNextDead(c); o = outfield(c, 6); b = bench(c);
+  const r9 = c.substitute('home', o[5], b[0]);
+  check('比賽中按的換人先排隊,下一次死球一起換、只算一次機會', q1.queued && q2.queued && pend === 2
+    && sQ.used === 2 && sQ.windows === 1 && sQ.pending.length === 0, JSON.stringify(sQ));
+  check('五人用完之後不能再換(第六人被拒絕)', r6.ok && r7.ok && r8.ok && c.subStatus('home').used === 5
+    && r9.ok === false && /名額用完/.test(r9.reason), JSON.stringify({ used: c.subStatus('home').used, r9 }));
+
+  // ③ 中場休息換的不佔機會;排隊的換人可以取消
+  const d = mk(4);
+  let i = 0;
+  while (i++ < LIMIT && !d.subStatus('home').atBreak && !d.state().over) d.advance(STEP);
+  o = outfield(d, 6); b = bench(d);
+  const rh = d.substitute('home', o[0], b[0]);
+  const sh = d.subStatus('home');
+  toLive(d); d.advance(1); toLive(d);
+  o = outfield(d, 6); b = bench(d);
+  const rq = d.substitute('home', o[1], b[0]);
+  const cancelled = d.cancelSub('home', o[1]) && d.subStatus('home').pending.length === 0;
+  check('中場休息時換人立刻生效而且不佔換人機會', rh.ok && !rh.queued && sh.used === 1 && sh.windows === 0, JSON.stringify(sh));
+  check('排隊中的換人可以取消', rq.queued && cancelled);
+
+  // ④ 畫面在中場自動暫停靠的是 advance 的 stopAtBreak:推到上半場結束那一格就停,而且停下來不改比賽(同種子照樣是同一場)
+  const e1 = mk(5), e2 = mk(5);
+  let stops = 0, guard = 0;
+  while (guard++ < 4000 && !e1.state().over) {
+    const h = e1.state().half;
+    e1.advance(30, { stopAtBreak: true });
+    if (e1.state().half !== h) { stops++; if (!e1.subStatus('home').atBreak || e1.state().halfT > 1e-9) stops = -99; }
+  }
+  guard = 0;
+  while (guard++ < 4000 && !e2.state().over) e2.advance(30);
+  /* 不比 t:完場那一次 advance 會照樣推滿剩下的格(st.over 只在呼叫開頭擋),所以 t 跟呼叫怎麼切有關,比賽內容無關 */
+  const sig = sim => { const c = sim.state().counts; return JSON.stringify([sim.state().score, c.shots, c.passes, c.tackles, c.outs, c.loose]); };
+  check('stopAtBreak 剛好停在中場那一格(halfT = 0、atBreak),而且同種子的比賽跟不停的一模一樣',
+    stops === 1 && sig(e1) === sig(e2), `停了 ${stops} 次・${sig(e1)} vs ${sig(e2)}`);
+}
+
 console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
 {
   /* **2026-09-25 從退役的回合制那一套搬過來。** 舊的 `game-engine.js`(回合制引擎)與
@@ -211,17 +296,23 @@ console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
       const st0 = sim.state();
       const off = st0.players.find(p => p.side === 'home' && p.role !== 'GK')?.code;
       const on = sim.benchOf('home')[0]?.code;
-      subbed = { off, on, ok: sim.substitute('home', off, on) };
+      /* 2026-11-07 起比賽進行中按下的換人**先排隊**,下一次死球才換(MAX_SUBS 那一段)——
+         所以這裡按下去之後一格一格推,換人事件出來的**那一格**才看人在不在場上 */
+      subbed = { off, on, r: sim.substitute('home', off, on), at: null };
+      subbed.ok = subbed.r.ok;
+      /* 同一個替補不能排兩次;已經被換下(或正在等著被換下)的人不能再換 */
+      const other = sim.state().players.find(p => p.side === 'home' && p.role !== 'GK' && p.code !== off)?.code;
+      subbed.again = sim.substitute('home', other, on).ok;
+      subbed.back = sim.substitute('home', off, sim.benchOf('home')[1]?.code).ok;
+    }
+    sim.advance(STEP);
+    if (subbed && subbed.at == null && sim.events().some(e => e.type === 'sub')) {
       /* 換完**當下**就看:上場的人在場上、下場的人不在(標題講的就是這兩件事 ——
          第一版只看完場時下場的人不在,把換人寫成「拿掉一個人」的錯它看不出來,只有人數那一條紅) */
       const after = new Set(sim.state().players.map(p => p.code));
-      subbed.onAfter = after.has(on); subbed.offAfter = after.has(off);
-      /* 同一個替補不能上場兩次;已經下場的人不在替補席,也不能再換回來 */
-      const other = sim.state().players.find(p => p.side === 'home' && p.role !== 'GK' && p.code !== on)?.code;
-      subbed.again = sim.substitute('home', other, on);
-      subbed.back = sim.substitute('home', other, off);
+      subbed.onAfter = after.has(subbed.on); subbed.offAfter = after.has(subbed.off);
+      subbed.at = sim.state();
     }
-    sim.advance(STEP);
     frames++;
     const s = sim.state();
     const on = new Set(s.players.map(p => p.code));
@@ -260,7 +351,9 @@ console.log('\n▶ 模擬遊玩:連續引擎的結構不變量');
   check('換人成功:事件記下來、下場的人原本在場上、上場的人換完在場上',
     !!subbed?.ok && subLog.some(e => e.off === subbed.off && e.on === subbed.on) && subbed.onAfter && !subbed.offAfter,
     subbed ? `${subbed.off} → ${subbed.on}` : '沒有換到人');
-  check('同一個替補不能上場兩次、下場的人不能再換回來', subbed?.again === false && subbed?.back === false);
+  check('同一個替補不能上場兩次、等著被換下的人不能再換一次', subbed?.again === false && subbed?.back === false);
+  check('比賽進行中按下的換人先排隊,死球時才換(換上場那一格是死球)',
+    subbed?.r?.queued === true && subbed?.at?.phase === 'dead', JSON.stringify({ q: subbed?.r?.queued, phase: subbed?.at?.phase }));
   /* 可重現:同種子、同設定,前 10 分鐘的事件流逐字相同(整場跑兩次太貴,事件流的前綴已經足夠抓到
      「偷用 Math.random / 牆上時鐘」那一類錯)。跨設定**不保證**可比 —— 那是 4f 那條坑,不是這裡守的事。 */
   /* 一格一格推:`advance()` 一次最多走 MAX_STEPS 格,一口氣叫 advance(600) 只會走到那個上限 */
@@ -1784,7 +1877,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
           `STAM_FADE ${totG} 處(漏出去 ${strayG})・fatigue ${totF} 處(漏出去 ${strayF})`);
         /* 換上場的人 `dist` 從 0 開始,所以 `vmax` 也要回到新鮮值 ——
            **手動換人的價值就是這個**,少這一行生力軍就跟被換下的人一樣累。 */
-        const sub0 = bare.indexOf('substitute(side, offCode, onCode)');
+        const sub0 = bare.indexOf('function doSub(');
         const subSeg = sub0 >= 0 ? bare.slice(sub0, sub0 + 900) : '';
         check('換上場的人體能是滿的(換人那一段把 fatigue 與 vmax 一起重設)',
           /dist: 0/.test(subSeg) && /fatigue: 1/.test(subSeg) && /vmax: spare\.p\.vmax0/.test(subSeg),

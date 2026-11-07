@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim, tacticDefaults, profileFormation } from './game-sim.js?v=6245ca56';
+import { createSim, tacticDefaults, profileFormation } from './game-sim.js?v=e09ab276';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -73,7 +73,7 @@ export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {
 
   return {
     /* 推進 `sec` 秒的比賽時間,回傳這一段新長出來的事件(照發生順序)。 */
-    advance(sec) { sim.advance(sec); return drain(); },
+    advance(sec, opt) { sim.advance(sec, opt); return drain(); },
     /* 給球場繪製用的那一刻(`game-pitch.js` 的 draw 吃這個) */
     pitch: () => sim.state(),
     state() {
@@ -95,7 +95,10 @@ export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {
     possTarget: () => sim.possTarget(),
     playerOf: (side, code) => squads[side]?.get(code) ?? null,
     benchOf: side => sim.benchOf(side),
+    // 回 { ok, queued, reason }:比賽進行中按下的換人先排隊,下一次死球才換(規則在引擎,見 MAX_SUBS)
     sub: (side, off, on) => sim.substitute(side, off, on),
+    cancelSub: (side, off) => sim.cancelSub(side, off),
+    subStatus: side => sim.subStatus(side),
     setTactics: (side, levels) => sim.setTactics(side, levels),
     // 比賽中換陣型(2026-10-17):規則檢查在引擎(人數加起來要 10、格式要對),這裡只轉交
     setFormation: (side, spec) => sim.setFormation(side, spec),
