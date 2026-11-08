@@ -338,7 +338,26 @@ const JOCKEY_R = 2.4;                          // 逼搶者維持的距離(公�
    這次沒出現,因為那幾次都只做了一半,而且都還留著 `SHOT_PRESSED` 的懲罰。一起重量的常數:`SHOT_PRESSED`、
    `SHOT_URGE`、`SHOT_ALPHA`、`DUEL_P`、`DUEL_FOUL_FIT`、`BOX_CARE`、`SELECT_FIX`、`SHOT_THROUGH`(各自的註解有數字)。 */
 const PRESS_TRACK = SIM_RUN;
-const CARRY_SPEED = 0.92;                      // 帶球速度佔自己最高速的比例(真人帶球比空跑慢一點)
+/* **第一時間射門 + 帶球不再是衝刺**(2026-11-08,階段 5t;補齊規劃「帶球狂奔」那一列)。
+   量出來(ARS 主場對 LIV,40 場):衝刺 4.32 次/分(兩隊真實 2.44),**87% 是持球者帶球** ——
+   帶球是最高速的 0.92 倍(~8 m/s),一律超過 7 m/s 的衝刺門檻。而直接把帶球放慢(5t 第一次試過)
+   進攻就垮:這個引擎的射門要先控球、再一路帶進禁區,扣扳機是在帶球的途中一次一次抽的 ——
+   禁區內運動戰腳下的射門有 39% 是帶了 20 m 以上才射(StatsBomb 真實 12%)、第一時間射門 0%(真實 44%)。
+   **兩件事一起改,缺一不可**(跟 5n 同一個形狀):
+     ① 在對方禁區裡接到**隊友的傳球**,當下就決定、以 `FIRST_P` 的機率第一時間出腳(走角球第二球同一條 snap 路),
+        機率乘上這一隊扣扳機傾向的平方(`urgeOf / SHOT_URGE` 的 `FIRST_POW` 次方)——
+        不乘的話弱隊多出來的射門比強隊多(它原本帶不進禁區),兩隊的射門數往中間靠(C1:ARS 11.9 / LIV 11.0,預算 14.1 / 9.5)。
+     ② 帶球速度 0.92 → `CARRY_SPEED` 0.76 倍最高速(大多數人 < 7 m/s)。0.80 量過:衝刺回到 3.6 次/分(門檻效應)。
+   只做 ①(決策提前、不給第一時間的機率)量過沒用:第一時間 7~13%、帶球的分佈不動、進球少了 —— 每一次決策的扣扳機機率很小,
+   提早決定只是提早傳球。只做 ② 是 5t 第一次那個否定。
+   掃描(各 40 場,同一批種子;接球到射門 < 1 s / 帶球 < 5 m / 帶球 20 m+ / 第一時間,真實 48 / 55 / 12 / 44%):
+     現況                         29 / 29 / 39 / 0    衝刺 4.32   進球 2.30 / 0.82
+     B2 0.4、不分隊、0.76         61 / 62 / 18 / 53   衝刺 1.95   1.88 / 0.78(LIV 射門 12.0,預算 9.5)
+     C1 0.3 × 傾向、0.76          50 / 51 / 24 / 43   衝刺 1.90   1.75 / 0.85
+     D1 0.3 × 傾向²、0.76(採用) 50 / 51 / 24 / 42   衝刺 1.90   1.85 / 0.80(λ 1.99 / 0.70)
+   **強弱**(九組配對 × 兩方向,check-strength):見變更紀錄 2026-11-08。 */
+const FIRST_P = 0.3, FIRST_POW = 2;
+const CARRY_SPEED = 0.76;                      // 帶球速度佔自己最高速的比例(5t:0.92 → 0.76,見上面那一段)
 /* 射門:沒有射門的話進攻沒有終點 —— 實測階段 1 的第一版帶球的人一路推到底線就停在那裡,
    球的 x 分佈兩頭各堆 40%、中場每段只剩 3.6%,整場球在兩條底線之間卡住。
    「這一腳進不進」在階段 2 校準過了(k = λ ÷ 期望射門 ÷ 每球 xG),所以現在會有比分。
@@ -2005,7 +2024,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     run: { why: {}, role: {}, dist: { home: 0, away: 0 }, secs: 0,
            shapeD: {}, shapeT: {}, shapeGo: {}, shapeN: {}, shape0: {}, shapeNet: {}, focus: 0,
            phase0: {}, phaseT: {}, phaseD: {}, phaseN: {}, jumpD: 0, jumpN: 0, loosePass: 0, looseFree: 0,
-           sprints: { home: 0, away: 0 }, sprintDist: { home: 0, away: 0 }, sprintDistAll: { home: 0, away: 0 } },
+           sprints: { home: 0, away: 0 }, sprintsHold: { home: 0, away: 0 }, sprintDist: { home: 0, away: 0 }, sprintDistAll: { home: 0, away: 0 } },
     boxVisit: { home: null, away: null },
     boxFollow: { visits: 0, cand: 0, near: 0, ceil: 0, came: 0, dwell: 0, missWho: {}, missV: 0, missD: 0, missN: 0, ceilRun: 0, missTgt: 0, missTgtN: 0, missTgtNear: 0 },
     events: [], possSec: { home: 0, away: 0 }, touches: { home: 0, away: 0 },
@@ -2624,6 +2643,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         if (!p.sprOn && p.sprT >= SPRINT_T) {
           // 剛跨過 1 秒門檻:這一次算一趟衝刺,**前面那一秒的距離要補記**
           p.sprOn = true; st.run.sprints[p.side]++; st.run.sprintDist[p.side] += p.sprD;
+          if (ball.holder === p) st.run.sprintsHold[p.side]++;   // 5t:這一趟衝刺是持球者帶球(純計數)
         } else if (p.sprOn) st.run.sprintDist[p.side] += d;
       } else { p.sprT = 0; p.sprD = 0; p.sprOn = false; }
     }
@@ -2720,6 +2740,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     if (!head && p.recvAt != null) {
       r.recvN++; r.recv[pressBin(PRESS_BINS.recv, st.t - p.recvAt)]++;
       r.carryN++; r.carry[pressBin(PRESS_BINS.carry, hypot(p.x - p.recvX, p.y - p.recvY))]++;
+      /* 第一時間射門(5t):接到隊友的傳球、還沒帶就射(StatsBomb 的 `first_time` 是同一件事)。純計數。 */
+      if (p.gotFrom === 'teamPass' && st.t - p.recvAt < 0.1) r.first = (r.first ?? 0) + 1;
     }
     if (ball.shot) ball.shot.press = { r, b, ox: p.x, oy: p.y };
   }
@@ -2794,9 +2816,10 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     /* **每一次接球都要覆寫它**,不是只有第二球的時候設 true —— 他拿到球之後還沒決定
        就被抄走的話,這個旗標會留著,下一次在完全不同的情況下決策時才發作。 */
     p.snap = false;
+    if (FIRST_P > 0 && from && from.side === p.side && inBoxAt(p.x, p.y, s0.att > 0 ? PITCH_W : 0)) { p.snap = cl(FIRST_P * Math.pow(urgeOf(s0) / SHOT_URGE, FIRST_POW), 0, 0.9); decideIn = 0; }   // 第一時間射門(5t,見 FIRST_P)
     if (second) {
       const gx = s0.att > 0 ? PITCH_W : 0;
-      if (hypot(gx - p.x, PITCH_H / 2 - p.y) < SHOOT_RANGE) { p.snap = true; decideIn = 0; }
+      if (hypot(gx - p.x, PITCH_H / 2 - p.y) < SHOOT_RANGE) { p.snap = CORNER_SNAP; decideIn = 0; }
     }
   }
 
@@ -2959,8 +2982,8 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       /* 角球第二球的一腳出手(見 CORNER_SNAP):**只換機率,其餘完全一樣**。
          `oppBins` 是「要生出真實分佈,每一格的機率得是多少」的回推用的 ——
          這一條路的機率不是 urge,所以那個回推在角球那一段會被它拉高,引用時要記得。 */
-      const snap = p.snap === true; p.snap = false;
-      if (rng() < (snap ? CORNER_SNAP : cl(urge, 0, 0.9))) {
+      const snap = typeof p.snap === 'number' ? p.snap : null; p.snap = false;
+      if (rng() < (snap != null ? snap : cl(urge, 0, 0.9))) {
         st.oppBins.shot[oppBin]++;
         st.decBy[p.side].shot[oppBin]++;
         st.decShot[oppBin]++; st.decShotOcc[oppBin] += dl.occ; st.decShotFar[oppBin] += dl.far;
@@ -4533,7 +4556,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
           shape0: { ...st.run.shape0 }, shapeNet: { ...st.run.shapeNet }, focus: st.run.focus,
           phase0: { ...st.run.phase0 }, phaseT: { ...st.run.phaseT }, phaseD: { ...st.run.phaseD }, phaseN: { ...st.run.phaseN },
           jumpD: st.run.jumpD, jumpN: st.run.jumpN, loosePass: st.run.loosePass, looseFree: st.run.looseFree,
-          sprints: { ...st.run.sprints }, sprintDist: { ...st.run.sprintDist }, sprintDistAll: { ...st.run.sprintDistAll } },
+          sprints: { ...st.run.sprints }, sprintsHold: { ...st.run.sprintsHold }, sprintDist: { ...st.run.sprintDist }, sprintDistAll: { ...st.run.sprintDistAll } },
         boxFollow: { ...st.boxFollow, missWho: { ...st.boxFollow.missWho } },
         shotBox: { open: { ...st.shotBox.open }, corner: { ...st.shotBox.corner } },
         shotsBy: { ...st.shotsBy }, onTargetBy: { ...st.onTargetBy }, blockedBy: { ...st.blockedBy },

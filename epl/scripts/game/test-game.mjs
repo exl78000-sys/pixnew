@@ -892,6 +892,23 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
         `PASS_ERR ${pe}・成功率 ${(100 * ok / by).toFixed(1)}%・對方半場 ${(100 * opp / (own + opp)).toFixed(1)}%`);
     }
 
+    /* 第一時間射門與帶球速度(2026-11-08,5t)。改前:禁區內運動戰腳下的射門第一時間 0%(真實 44%)、
+       衝刺 87% 是持球者帶球(帶球 0.92 倍最高速,一律超過 7 m/s 的門檻)。守兩件會長期成立的事,不守會漂的比例:
+       ① 池子這幾場**真的有**第一時間射門,而且不是全部;② 持球者帶球不再佔衝刺的大半(改前 87%、改後約 76%,門檻放在 85%)。 */
+    {
+      let first = 0, fn = 0, spr = 0, hold = 0;
+      for (const seed of POOL_SEEDS) {
+        const c = (await full(seed)).state().counts;
+        const f = c.shotPress?.open?.foot ?? {};
+        first += f.first ?? 0; fn += f.n ?? 0;
+        spr += (c.run?.sprints?.home ?? 0) + (c.run?.sprints?.away ?? 0);
+        hold += (c.run?.sprintsHold?.home ?? 0) + (c.run?.sprintsHold?.away ?? 0);
+      }
+      check('有第一時間射門(禁區內運動戰腳下,不是 0 也不是全部),持球者帶球不再佔衝刺的大半',
+        fn > 0 && first > 0 && first < fn && spr > 0 && hold / spr < 0.85,
+        `${POOL_SEEDS.length} 場:第一時間 ${first} / ${fn} 腳・衝刺 ${spr} 趟裡持球者 ${(100 * hold / Math.max(1, spr)).toFixed(0)}%`);
+    }
+
     /* 撲救發生在門將身上(2026-10-17,使用者列的動畫四項之「撲救」)。
        改前量到的樣子:6 場 31 次撲救,球過門線那一刻門將離它 6.8 m(中位)—— 球越過門將飛到門線上才被判撲出,
        然後瞬間交到他手上;畫面上是一顆看起來進了、卻被記成撲出的球。守兩件事:
@@ -1323,12 +1340,26 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
       /* 出手要走 decide() 原本那一條 —— 換的只有扣扳機的機率。另外寫一份的話
          xG、情境分類、事件與統計就有兩個來源,而那是本站踩過的坑。 */
       const snapUse = bare.match(/CORNER_SNAP/g) ?? [];
+      /* 2026-11-08(5t):snap 從布林改成「這一次出手的機率」—— 第一時間射門(FIRST_P)走同一條。
+         守的性質不變:出手走 decide() 原本那一條,換的只有扣扳機的機率。 */
       check('第二球只換扣扳機的機率,不另外寫一份射門程式',
-        /rng\(\) < \(snap \? CORNER_SNAP : cl\(urge/.test(bare) && snapUse.length === 2,
+        /rng\(\) < \(snap != null \? snap : cl\(urge/.test(bare) && snapUse.length === 2 && /p\.snap = CORNER_SNAP;/.test(giveSrc),
         `CORNER_SNAP 出現 ${snapUse.length} 次(宣告 + 用一次)`);
       /* 旗標每次接球都要覆寫:拿到球還沒決定就被抄走的話,它會留到下一次完全不同的情況。 */
-      check('接球時一律覆寫第二球的旗標(不是只在第二球時設 true)',
-        /p\.snap = false;/.test(giveSrc) && /p\.snap = true;/.test(giveSrc));
+      check('接球時一律覆寫第二球的旗標(不是只在第二球時設)',
+        /p\.snap = false;/.test(giveSrc) && giveSrc.indexOf('p.snap = false;') < giveSrc.indexOf('p.snap = CORNER_SNAP;'));
+      /* 第一時間射門(5t):只給**在對方禁區裡接到隊友傳球**的那一刻,機率乘這一隊扣扳機傾向的 FIRST_POW 次方
+         (不乘的話弱隊多出來的射門比強隊多,強弱會往中間靠 —— 量過);而且它寫在第二球**之前**,角球的第二球照舊用 CORNER_SNAP。 */
+      const ft = giveSrc.indexOf('p.snap = cl(FIRST_P');
+      check('第一時間射門只給禁區裡接到隊友的傳球,機率照這一隊的扣扳機傾向,第二球蓋過它',
+        ft > 0 && /FIRST_P > 0 && from && from\.side === p\.side && inBoxAt\(p\.x, p\.y,/.test(giveSrc)
+          && /Math\.pow\(urgeOf\(s0\) \/ SHOT_URGE, FIRST_POW\)/.test(giveSrc) && ft < giveSrc.indexOf('p.snap = CORNER_SNAP;'),
+        `位置 ${ft}`);
+      check('第一時間射門有計數(接到隊友的傳球、0.1 秒內出腳),而且吐給 shotPress',
+        /if \(p\.gotFrom === 'teamPass' && st\.t - p\.recvAt < 0\.1\) r\.first = /.test(bare));
+      /* 帶球不再是衝刺:持球者帶球的那一趟衝刺有自己的計數(check-sim 印佔比,5t 之前 87%) */
+      check('衝刺裡持球者帶球的那一份有計數,而且吐給 counts.run',
+        /if \(ball\.holder === p\) st\.run\.sprintsHold\[p\.side\]\+\+;/.test(bare) && /sprintsHold: \{ \.\.\.st\.run\.sprintsHold \}/.test(bare));
       const counts = ['cornerSrc', 'cornerFirst', 'cornerShot', 'cornerNext', 'clearWhy'];
       check('角球的來源分類計數器都吐給 counts',
         counts.every(k => new RegExp(k + ': \\{ \\.\\.\\.st\\.' + k + ' \\}').test(bare)));

@@ -1,7 +1,7 @@
 import * as C from './core.js?v=e883428c';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=b835ac67';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=5cb6b944';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=91b2323d';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -508,7 +508,7 @@ export async function renderGame(app) {
           (退的速度上限是「跑」,帶得快的人甩得掉他),以及球在飛的時候,離飛行線三公尺內的人會<b>撲上去擋</b>。
           拿來對的是射門那一瞬間的站位(StatsBomb 開放資料):最近的防守者站在射手與球門之間的,
           真實約五成、這裡約四分之一;球的路上有人,真實約五成、這裡一成多。
-          剩下的差距還沒有拆清楚,已知不同的一項是射門的方式:真實有四成多是接到球就射,這裡的射門一律要先控住球。
+          剩下的差距還沒有拆清楚。射門的方式:在對方禁區裡接到隊友的傳球,會有一部分直接第一時間出腳(真實約四成多,這裡照那個比例校準;機率是遊戲規則)。
           紅牌含<b>直接紅牌</b>(每次犯規照聯盟真實比率抽${profile.league_?.reds?.direct ? `,英超約每 ${Math.round(1 / (profile.league_.reds.direct * 2))} 場一張` : ''})與兩黃罰下;門將被罰下的話由場上離球門最近的人代守門,要換替補門將照一般換人。</div>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。

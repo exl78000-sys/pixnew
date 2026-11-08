@@ -1472,9 +1472,8 @@ if (simShots && realShots) {
     row(`三角形裡的人數 0/1/2/3+`, shares(eng.cone, eng.n), shares(real?.cone, real?.n));
     row('　擋下的比例(依人數)', blkBy(eng.coneBlk, eng.cone), blkBy(real?.coneBlk, real?.cone));
     row(`接球到射門 ${B ? '<' + B.recv.join('/') + '+ s' : ''}`, shares(eng.recv, eng.recvN), shares(real?.recv, real?.recvN));
-    /* 真實有很大一塊是**第一時間射門**(StatsBomb 的 `first_time`),而引擎的射門一律要先控住球
-       (`snap` 掛在 `giveTo` 上,4l-6 那一條)—— 所以「< 1 s」那一格引擎本來就湊不滿,照實講。 */
-    if (real) console.log(`  ${'　　真實裡第一時間射門'.padEnd(24, '\u3000')} ${one(real.first, real.n)}(引擎的射門一律要先控住球,沒有這一類)`);
+    /* **第一時間射門**(StatsBomb 的 `first_time`)。2026-11-08(5t)起引擎也有:在禁區裡接到隊友的傳球當下出腳(見 FIRST_P)。 */
+    row('第一時間射門', one(eng.first ?? 0, eng.n), real ? one(real.first, real.n) : '—');
     row(`接球點到射門點 ${B ? '<' + B.carry.join('/') + '+ m' : ''}`, shares(eng.carry, eng.carryN), shares(real?.carry, real?.carryN));
     row(`封阻點離射手 ${B ? '<' + B.blockAt.join('/') + '+ m' : ''}`, shares(eng.blockAt, eng.blk), shares(real?.blockAt, real?.blk));
     console.log('  　「·」= 那一格不到 10 腳,不印比例。真值是形狀的錨(比引擎校準的季早十年);封阻率本身對 FotMob 那一份。');
@@ -1700,6 +1699,8 @@ line('站著的比例', `${mean(rows.map(r => 100 * r.still / r.samples)).toFixe
   if (mins > 0 && rows[0].st.counts.run) {
     const realS = (profile.teams[HOME]?.pace?.sprintsPerMin ?? 0) + (profile.teams[AWAY]?.pace?.sprintsPerMin ?? 0);
     const realD = (profile.teams[HOME]?.pace?.sprintDistPerMin ?? 0) + (profile.teams[AWAY]?.pace?.sprintDistPerMin ?? 0);
+    line('衝刺裡持球者帶球的', `${(100 * sum('sprintsHold') / Math.max(1, sum('sprints'))).toFixed(0)}%`,
+      '真實沒有這一項(只回報)—— 5t 之前 87%:帶球一律超過衝刺門檻');
     line('衝刺次數(兩隊合計)', `${(sum('sprints') / mins).toFixed(2)} 次/分`,
       realS ? `真實 ${realS.toFixed(2)}(${HOME} ${profile.teams[HOME].pace.sprintsPerMin} + ${AWAY} ${profile.teams[AWAY].pace.sprintsPerMin})・≥ 7.0 m/s 持續 ≥ 1 秒` : '');
     line('衝刺距離(兩隊合計)', `${(sum('sprintDist') / mins).toFixed(1)} m/分`,
