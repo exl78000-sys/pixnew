@@ -125979,16 +125979,1344 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-07T20:06:44.823Z",
    "heat": null
+  },
+  "PSG|TRO": {
+   "key": "PSG|TRO",
+   "season": "2026-27",
+   "date": "2026-11-07",
+   "matchId": "5802987",
+   "home": "PSG",
+   "away": "TRO",
+   "score": [
+    1,
+    0
+   ],
+   "providerScore": [
+    1,
+    0
+   ],
+   "teamStats": {
+    "PSG": {
+     "possession": 73,
+     "shots": 15,
+     "shotsOn": 7,
+     "shotsOff": 5,
+     "blockedShots": 3,
+     "blocksMade": 2,
+     "corners": 5,
+     "offsides": 1,
+     "fouls": 6,
+     "saves": 3,
+     "passes": 893,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.06
+    },
+    "TRO": {
+     "possession": 27,
+     "shots": 8,
+     "shotsOn": 3,
+     "shotsOff": 3,
+     "blockedShots": 2,
+     "blocksMade": 3,
+     "corners": 1,
+     "offsides": 6,
+     "fouls": 7,
+     "saves": 6,
+     "passes": 327,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.65
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "PSG": {
+     "touches_opp_box": 29,
+     "big_chance": 7,
+     "big_chance_missed_title": 7,
+     "yellow_cards": 1,
+     "shots_woodwork": 2,
+     "shots_inside_box": 12,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 1.65,
+     "expected_goals_set_play": 0.41,
+     "expected_goals_non_penalty": 2.06,
+     "expected_goals_on_target": 2.96,
+     "own_half_passes": 389,
+     "opposition_half_passes": 446,
+     "long_balls_accurate": 38,
+     "long_balls_accurate_pct": 68,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 19,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 9,
+     "clearances": 10,
+     "duel_won": 29,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 52,
+     "aerials_won": 3,
+     "aerials_won_pct": 30,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    },
+    "TRO": {
+     "touches_opp_box": 12,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 5,
+     "shots_outside_box": 3,
+     "expected_goals_open_play": 0.64,
+     "expected_goals_set_play": 0.01,
+     "expected_goals_non_penalty": 0.65,
+     "expected_goals_on_target": 0.47,
+     "own_half_passes": 163,
+     "opposition_half_passes": 109,
+     "long_balls_accurate": 28,
+     "long_balls_accurate_pct": 54,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 25,
+     "player_throws": 10,
+     "matchstats.headers.tackles": 14,
+     "interceptions": 13,
+     "clearances": 21,
+     "duel_won": 31,
+     "ground_duels_won": 24,
+     "ground_duels_won_pct": 48,
+     "aerials_won": 7,
+     "aerials_won_pct": 70,
+     "dribbles_succeeded": 4,
+     "dribbles_succeeded_pct": 40,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     73,
+     27
+    ],
+    "h1": [
+     79,
+     21
+    ],
+    "h2": [
+     67,
+     33
+    ]
+   },
+   "events": [
+    {
+     "minute": 34,
+     "extra": null,
+     "team": "PSG",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ilya Zabarnyi"
+    },
+    {
+     "minute": 39,
+     "extra": null,
+     "team": "PSG",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Ilya Zabarnyi"
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jérémy Le Douaron",
+     "injured": false
+    },
+    {
+     "minute": 62,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hugo Picard",
+     "injured": false
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "João Neves",
+     "injured": false
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Quentin Ndjantou",
+     "injured": false
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Idrissa Soukouna",
+     "injured": false
+    },
+    {
+     "minute": 73,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Yvann Titi",
+     "injured": false
+    },
+    {
+     "minute": 79,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Jérémy Le Douaron"
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Timothé Nkada",
+     "injured": false
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lucas Beraldo",
+     "injured": false
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "PSG",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dro Fernández",
+     "injured": false
+    },
+    {
+     "minute": 86,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Antoine Mille"
+    }
+   ],
+   "shots": [
+    {
+     "min": 4,
+     "extra": null,
+     "team": "PSG",
+     "player": "Senny Mayulu",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.274,
+     "xgot": 0.697,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.7,
+     "y": 36.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 5,
+     "extra": null,
+     "team": "PSG",
+     "player": "Senny Mayulu",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.152,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.6,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "Miss",
+     "situation": "FreeKick",
+     "xg": 0.052,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.6,
+     "y": 47.1,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 14,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.047,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 41.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "PSG",
+     "player": "Fabián Ruiz",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 74.8,
+     "y": 36,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 22,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 44.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.031,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 19,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ilya Zabarnyi",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.077,
+     "xgot": 0.645,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95,
+     "y": 36.9,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.071,
+     "xgot": 0.052,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97,
+     "y": 39.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.153,
+     "xgot": 0.141,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 43.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 39,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ilya Zabarnyi",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.127,
+     "xgot": 0.787,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 32,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.373,
+     "xgot": 0.321,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 2,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.153,
+     "xgot": 0.062,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96,
+     "y": 23.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.273,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.1,
+     "y": 27.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 58,
+     "extra": null,
+     "team": "TRO",
+     "player": "Merwan Ifnaou",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.9,
+     "y": 17,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 59,
+     "extra": null,
+     "team": "PSG",
+     "player": "Warren Zaïre-Emery",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.193,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.8,
+     "y": 31.9,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.089,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.1,
+     "y": 41.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 66,
+     "extra": null,
+     "team": "PSG",
+     "player": "Mika Godts",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.099,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.8,
+     "y": 28.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "PSG",
+     "player": "Ferrán Torres",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.303,
+     "xgot": 0.313,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 33,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "TRO",
+     "player": "Ismaël Boura",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.087,
+     "xgot": 0.405,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.3,
+     "y": 40.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "PSG",
+     "player": "Désiré Doué",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.023,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 21.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "PSG",
+     "player": "Senny Mayulu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 43.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TRO",
+     "player": "Dermane Karim",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.014,
+     "xgot": 0.009,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 25.9,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     22
+    ],
+    [
+     2,
+     27
+    ],
+    [
+     3,
+     49
+    ],
+    [
+     4,
+     100
+    ],
+    [
+     5,
+     100
+    ],
+    [
+     6,
+     100
+    ],
+    [
+     7,
+     54
+    ],
+    [
+     8,
+     38
+    ],
+    [
+     9,
+     38
+    ],
+    [
+     10,
+     16
+    ],
+    [
+     11,
+     22
+    ],
+    [
+     12,
+     38
+    ],
+    [
+     13,
+     46
+    ],
+    [
+     14,
+     19
+    ],
+    [
+     15,
+     8
+    ],
+    [
+     16,
+     -11
+    ],
+    [
+     17,
+     11
+    ],
+    [
+     18,
+     22
+    ],
+    [
+     19,
+     33
+    ],
+    [
+     20,
+     33
+    ],
+    [
+     21,
+     -11
+    ],
+    [
+     22,
+     0
+    ],
+    [
+     23,
+     11
+    ],
+    [
+     24,
+     65
+    ],
+    [
+     25,
+     54
+    ],
+    [
+     26,
+     38
+    ],
+    [
+     27,
+     24
+    ],
+    [
+     28,
+     -8
+    ],
+    [
+     29,
+     -8
+    ],
+    [
+     30,
+     -8
+    ],
+    [
+     31,
+     30
+    ],
+    [
+     32,
+     35
+    ],
+    [
+     33,
+     33
+    ],
+    [
+     34,
+     49
+    ],
+    [
+     35,
+     38
+    ],
+    [
+     36,
+     33
+    ],
+    [
+     37,
+     14
+    ],
+    [
+     38,
+     30
+    ],
+    [
+     39,
+     65
+    ],
+    [
+     40,
+     57
+    ],
+    [
+     41,
+     52
+    ],
+    [
+     42,
+     38
+    ],
+    [
+     43,
+     46
+    ],
+    [
+     44,
+     41
+    ],
+    [
+     45,
+     24
+    ],
+    [
+     45.5,
+     28
+    ],
+    [
+     46,
+     0
+    ],
+    [
+     47,
+     0
+    ],
+    [
+     48,
+     5
+    ],
+    [
+     49,
+     11
+    ],
+    [
+     50,
+     16
+    ],
+    [
+     51,
+     11
+    ],
+    [
+     52,
+     11
+    ],
+    [
+     53,
+     22
+    ],
+    [
+     54,
+     -38
+    ],
+    [
+     55,
+     -38
+    ],
+    [
+     56,
+     -54
+    ],
+    [
+     57,
+     27
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     43
+    ],
+    [
+     60,
+     27
+    ],
+    [
+     61,
+     38
+    ],
+    [
+     62,
+     19
+    ],
+    [
+     63,
+     43
+    ],
+    [
+     64,
+     0
+    ],
+    [
+     65,
+     -30
+    ],
+    [
+     66,
+     -16
+    ],
+    [
+     67,
+     68
+    ],
+    [
+     68,
+     43
+    ],
+    [
+     69,
+     0
+    ],
+    [
+     70,
+     -35
+    ],
+    [
+     71,
+     27
+    ],
+    [
+     72,
+     38
+    ],
+    [
+     73,
+     22
+    ],
+    [
+     74,
+     -11
+    ],
+    [
+     75,
+     0
+    ],
+    [
+     76,
+     16
+    ],
+    [
+     77,
+     54
+    ],
+    [
+     78,
+     33
+    ],
+    [
+     79,
+     22
+    ],
+    [
+     80,
+     0
+    ],
+    [
+     81,
+     11
+    ],
+    [
+     82,
+     -16
+    ],
+    [
+     83,
+     -16
+    ],
+    [
+     84,
+     -27
+    ],
+    [
+     85,
+     5
+    ],
+    [
+     86,
+     0
+    ],
+    [
+     87,
+     3
+    ],
+    [
+     88,
+     -3
+    ],
+    [
+     89,
+     -16
+    ],
+    [
+     90,
+     -27
+    ],
+    [
+     90.5,
+     -12
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "PSG": {
+     "team": "PSG",
+     "formation": "4-3-3",
+     "coach": "Luis Enrique",
+     "xi": [
+      {
+       "name": "Matvey Safonov",
+       "shirt": 39,
+       "pos": "G"
+      },
+      {
+       "name": "Warren Zaïre-Emery",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Ilya Zabarnyi",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Willian Pacho",
+       "shirt": 51,
+       "pos": "D"
+      },
+      {
+       "name": "Lucas Hernández",
+       "shirt": 21,
+       "pos": "D"
+      },
+      {
+       "name": "Senny Mayulu",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Vítinha",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Fabián Ruiz",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Désiré Doué",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Ferrán Torres",
+       "shirt": 9,
+       "pos": "F"
+      },
+      {
+       "name": "Mika Godts",
+       "shirt": 22,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "João Neves",
+       "shirt": 87,
+       "pos": "?"
+      },
+      {
+       "name": "Quentin Ndjantou",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Dro Fernández",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Beraldo",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Alessandro Longoni",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Chevalier",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "David Boly",
+       "shirt": 42,
+       "pos": "?"
+      },
+      {
+       "name": "Lucas Digne",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Younes Idder",
+       "shirt": 46,
+       "pos": "?"
+      }
+     ]
+    },
+    "TRO": {
+     "team": "TRO",
+     "formation": "4-5-1",
+     "coach": "Stéphane Dumont",
+     "xi": [
+      {
+       "name": "Hillel Konaté",
+       "shirt": 40,
+       "pos": "G"
+      },
+      {
+       "name": "Lucas Maronnier",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Adrien Monfray",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Michel Diaz",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Ismaël Boura",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Merwan Ifnaou",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Antoine Mille",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Dermane Karim",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Mouhamed Diop",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Kandet Diawara",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Renaud Ripart",
+       "shirt": 20,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Hugo Picard",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Jérémy Le Douaron",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Yvann Titi",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Idrissa Soukouna",
+       "shirt": 36,
+       "pos": "?"
+      },
+      {
+       "name": "Timothé Nkada",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Patrick Beach",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Paolo Gozzi",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Alexandre Phliponeau",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Iron Gomis",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 36,
+      "center": 31,
+      "right": 33
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 31,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 30,
+      "right": 28
+     }
+    },
+    "away": {
+     "total": {
+      "left": 35,
+      "center": 24,
+      "right": 41
+     },
+     "firstHalf": {
+      "left": 39,
+      "center": 19,
+      "right": 42
+     },
+     "secondHalf": {
+      "left": 33,
+      "center": 26,
+      "right": 41
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 1,
+    "shotmapComplete": true
+   },
+   "injuryFlag": true,
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-08T04:57:10.846Z",
+   "heat": null
   }
  },
  "attempts": {
   "PSG|LYO": {
-   "at": "2026-11-07T20:06:44.204Z",
+   "at": "2026-11-08T04:57:10.223Z",
    "reason": "日期不一致(FotMob 2026-10-26)",
    "matchId": "5802972",
    "label": "PSG–LYO"
   }
  },
- "updatedAt": "2026-11-07T20:19:12.638Z",
+ "updatedAt": "2026-11-08T04:57:10.848Z",
  "deferred": {}
 }
