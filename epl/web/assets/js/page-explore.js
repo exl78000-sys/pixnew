@@ -29,7 +29,7 @@ const VIEWS = [
   /* 足球知識 2026-11-07 搬去「說明」頁(model.html?view=knowledge,跟模型驗證合成一格);舊網址在下面轉走 */
   /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
      模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
-  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=4c131f47')).renderGame(body) },
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=653f07c5')).renderGame(body) },
 ];
 
 const app = document.getElementById('app');
