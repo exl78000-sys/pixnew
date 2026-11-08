@@ -192744,16 +192744,1844 @@
      }
     ]
    }
+  },
+  "ELC|BET": {
+   "key": "ELC|BET",
+   "season": "2026-27",
+   "date": "2026-11-08",
+   "matchId": "5868123",
+   "home": "ELC",
+   "away": "BET",
+   "score": [
+    0,
+    2
+   ],
+   "providerScore": [
+    0,
+    2
+   ],
+   "teamStats": {
+    "ELC": {
+     "possession": 48,
+     "shots": 13,
+     "shotsOn": 1,
+     "shotsOff": 7,
+     "blockedShots": 5,
+     "blocksMade": 3,
+     "corners": 9,
+     "offsides": 4,
+     "fouls": 12,
+     "saves": 7,
+     "passes": 487,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.21
+    },
+    "BET": {
+     "possession": 52,
+     "shots": 18,
+     "shotsOn": 9,
+     "shotsOff": 6,
+     "blockedShots": 3,
+     "blocksMade": 5,
+     "corners": 8,
+     "offsides": 3,
+     "fouls": 7,
+     "saves": 1,
+     "passes": 530,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.03
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "ELC": {
+     "touches_opp_box": 15,
+     "big_chance": 2,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 4,
+     "shots_woodwork": 0,
+     "shots_inside_box": 7,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 0.79,
+     "expected_goals_set_play": 0.42,
+     "expected_goals_non_penalty": 1.21,
+     "expected_goals_on_target": 0.12,
+     "own_half_passes": 221,
+     "opposition_half_passes": 208,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 55,
+     "accurate_crosses": 3,
+     "accurate_crosses_pct": 13,
+     "player_throws": 13,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 11,
+     "clearances": 29,
+     "duel_won": 38,
+     "ground_duels_won": 33,
+     "ground_duels_won_pct": 56,
+     "aerials_won": 5,
+     "aerials_won_pct": 36,
+     "dribbles_succeeded": 11,
+     "dribbles_succeeded_pct": 65,
+     "red_cards": 0
+    },
+    "BET": {
+     "touches_opp_box": 34,
+     "big_chance": 5,
+     "big_chance_missed_title": 3,
+     "yellow_cards": 0,
+     "shots_woodwork": 1,
+     "shots_inside_box": 13,
+     "shots_outside_box": 5,
+     "expected_goals_open_play": 1.64,
+     "expected_goals_set_play": 0.39,
+     "expected_goals_non_penalty": 2.03,
+     "expected_goals_on_target": 3.37,
+     "own_half_passes": 234,
+     "opposition_half_passes": 236,
+     "long_balls_accurate": 26,
+     "long_balls_accurate_pct": 59,
+     "accurate_crosses": 10,
+     "accurate_crosses_pct": 38,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 8,
+     "interceptions": 16,
+     "clearances": 23,
+     "duel_won": 35,
+     "ground_duels_won": 26,
+     "ground_duels_won_pct": 44,
+     "aerials_won": 9,
+     "aerials_won_pct": 64,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     48,
+     52
+    ],
+    "h1": [
+     50,
+     50
+    ],
+    "h2": [
+     46,
+     54
+    ]
+   },
+   "events": [
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Grady Diangana",
+     "injured": true
+    },
+    {
+     "minute": 58,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Martín Anselmi"
+    },
+    {
+     "minute": 59,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Federico Redondo"
+    },
+    {
+     "minute": 68,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Grady Diangana"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dani Ceballos",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Aitor Ruibal",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tete Morente",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Abiel Osorio",
+     "injured": false
+    },
+    {
+     "minute": 70,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Facundo Buonanotte",
+     "injured": false
+    },
+    {
+     "minute": 77,
+     "extra": 0,
+     "team": "ELC",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Pedro Bigas",
+     "injured": false
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Rodrigo Riquelme",
+     "injured": false
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "José Antonio Morante",
+     "injured": false
+    },
+    {
+     "minute": 81,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Rodrigo Riquelme"
+    },
+    {
+     "minute": 82,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Martim Neto"
+    },
+    {
+     "minute": 83,
+     "extra": 0,
+     "team": "BET",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nelson Deossa",
+     "injured": false
+    },
+    {
+     "minute": 84,
+     "extra": null,
+     "team": "ELC",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Javi Morcillo"
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "BET",
+     "type": "Goal",
+     "detail": "Header",
+     "player": "Marc Bartra"
+    }
+   ],
+   "shots": [
+    {
+     "min": 11,
+     "extra": null,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 42.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.039,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.221,
+     "xgot": 0.257,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.1,
+     "y": 27.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 17,
+     "extra": null,
+     "team": "BET",
+     "player": "Troy Parrott",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.108,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.4,
+     "y": 28.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 20,
+     "extra": null,
+     "team": "ELC",
+     "player": "Ali Houary",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.009,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 71.7,
+     "y": 32.8,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "ELC",
+     "player": "Germán Valera",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.018,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.3,
+     "y": 49.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 30,
+     "extra": null,
+     "team": "ELC",
+     "player": "Germán Valera",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.273,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.7,
+     "y": 38.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "ELC",
+     "player": "Fer Niño",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.103,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.3,
+     "y": 34.5,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "ELC",
+     "player": "Lucas Cepeda",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.027,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.3,
+     "y": 47.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 41,
+     "extra": null,
+     "team": "ELC",
+     "player": "Rubén Sánchez",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.25,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.4,
+     "y": 22,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 3,
+     "team": "ELC",
+     "player": "Federico Redondo",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.309,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 33.1,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "BET",
+     "player": "Fran García",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0.061,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 51.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "BET",
+     "player": "Troy Parrott",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.5,
+     "y": 24,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.037,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 35.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 48,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.014,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.6,
+     "y": 19.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 51,
+     "extra": null,
+     "team": "BET",
+     "player": "Antony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.084,
+     "xgot": 0.108,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.8,
+     "y": 46,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 56,
+     "extra": null,
+     "team": "ELC",
+     "player": "Grady Diangana",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0.125,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.2,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 60,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.053,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.8,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "ELC",
+     "player": "Lucas Cepeda",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.1,
+     "y": 48.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 65,
+     "extra": null,
+     "team": "BET",
+     "player": "Pablo Fornals",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 20.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "ELC",
+     "player": "Lucas Cepeda",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.019,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.9,
+     "y": 18.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.029,
+     "xgot": 0.087,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.3,
+     "y": 47.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BET",
+     "player": "Abdessamad Ezzalzouli",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.316,
+     "xgot": 0.394,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 29.5,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "ELC",
+     "player": "Germán Valera",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 40.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 72,
+     "extra": null,
+     "team": "BET",
+     "player": "Isco",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0.221,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.3,
+     "y": 34.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BET",
+     "player": "José Antonio Morante",
+     "type": "Post",
+     "situation": "RegularPlay",
+     "xg": 0.277,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 30.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 81,
+     "extra": null,
+     "team": "BET",
+     "player": "Rodrigo Riquelme",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.511,
+     "xgot": 0.661,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 35.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "ELC",
+     "player": "Martim Neto",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.2,
+     "y": 47,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "BET",
+     "player": "Aitor Ruibal",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.028,
+     "xgot": 0.668,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.7,
+     "y": 50.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 89,
+     "extra": null,
+     "team": "BET",
+     "player": "Marc Bartra",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.205,
+     "xgot": 0.917,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.8,
+     "y": 31.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "BET",
+     "player": "Rodrigo Riquelme",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.097,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.6,
+     "y": 42.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     14
+    ],
+    [
+     4,
+     19
+    ],
+    [
+     5,
+     30
+    ],
+    [
+     6,
+     3
+    ],
+    [
+     7,
+     -19
+    ],
+    [
+     8,
+     -33
+    ],
+    [
+     9,
+     -11
+    ],
+    [
+     10,
+     5
+    ],
+    [
+     11,
+     33
+    ],
+    [
+     12,
+     11
+    ],
+    [
+     13,
+     16
+    ],
+    [
+     14,
+     -19
+    ],
+    [
+     15,
+     -24
+    ],
+    [
+     16,
+     -41
+    ],
+    [
+     17,
+     -100
+    ],
+    [
+     18,
+     -71
+    ],
+    [
+     19,
+     -49
+    ],
+    [
+     20,
+     19
+    ],
+    [
+     21,
+     24
+    ],
+    [
+     22,
+     -14
+    ],
+    [
+     23,
+     -14
+    ],
+    [
+     24,
+     41
+    ],
+    [
+     25,
+     79
+    ],
+    [
+     26,
+     57
+    ],
+    [
+     27,
+     -16
+    ],
+    [
+     28,
+     -22
+    ],
+    [
+     29,
+     27
+    ],
+    [
+     30,
+     100
+    ],
+    [
+     31,
+     100
+    ],
+    [
+     32,
+     100
+    ],
+    [
+     33,
+     76
+    ],
+    [
+     34,
+     16
+    ],
+    [
+     35,
+     16
+    ],
+    [
+     36,
+     -24
+    ],
+    [
+     37,
+     -19
+    ],
+    [
+     38,
+     -41
+    ],
+    [
+     39,
+     -33
+    ],
+    [
+     40,
+     -24
+    ],
+    [
+     41,
+     14
+    ],
+    [
+     42,
+     30
+    ],
+    [
+     43,
+     27
+    ],
+    [
+     44,
+     -3
+    ],
+    [
+     45,
+     3
+    ],
+    [
+     45.5,
+     4
+    ],
+    [
+     46,
+     -14
+    ],
+    [
+     47,
+     -27
+    ],
+    [
+     48,
+     -57
+    ],
+    [
+     49,
+     -49
+    ],
+    [
+     50,
+     -30
+    ],
+    [
+     51,
+     -46
+    ],
+    [
+     52,
+     -35
+    ],
+    [
+     53,
+     -60
+    ],
+    [
+     54,
+     -3
+    ],
+    [
+     55,
+     -8
+    ],
+    [
+     56,
+     52
+    ],
+    [
+     57,
+     46
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     -24
+    ],
+    [
+     60,
+     -62
+    ],
+    [
+     61,
+     -22
+    ],
+    [
+     62,
+     -16
+    ],
+    [
+     63,
+     11
+    ],
+    [
+     64,
+     -5
+    ],
+    [
+     65,
+     -16
+    ],
+    [
+     66,
+     -38
+    ],
+    [
+     67,
+     -38
+    ],
+    [
+     68,
+     -16
+    ],
+    [
+     69,
+     11
+    ],
+    [
+     70,
+     16
+    ],
+    [
+     71,
+     -16
+    ],
+    [
+     72,
+     -33
+    ],
+    [
+     73,
+     -11
+    ],
+    [
+     74,
+     11
+    ],
+    [
+     75,
+     33
+    ],
+    [
+     76,
+     11
+    ],
+    [
+     77,
+     -11
+    ],
+    [
+     78,
+     -38
+    ],
+    [
+     79,
+     -54
+    ],
+    [
+     80,
+     -100
+    ],
+    [
+     81,
+     -100
+    ],
+    [
+     82,
+     -90
+    ],
+    [
+     83,
+     0
+    ],
+    [
+     84,
+     0
+    ],
+    [
+     85,
+     0
+    ],
+    [
+     86,
+     11
+    ],
+    [
+     87,
+     33
+    ],
+    [
+     88,
+     14
+    ],
+    [
+     89,
+     -57
+    ],
+    [
+     90,
+     -38
+    ],
+    [
+     90.5,
+     -19
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "ELC": {
+     "team": "ELC",
+     "formation": "4-3-3",
+     "coach": "Martín Anselmi",
+     "xi": [
+      {
+       "name": "Matías Dituro",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Rubén Sánchez",
+       "shirt": 22,
+       "pos": "D"
+      },
+      {
+       "name": "Federico Redondo",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Víctor Chust",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Roy Revivo",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Martim Neto",
+       "shirt": 16,
+       "pos": "M"
+      },
+      {
+       "name": "Javi Morcillo",
+       "shirt": 47,
+       "pos": "M"
+      },
+      {
+       "name": "Ali Houary",
+       "shirt": 29,
+       "pos": "M"
+      },
+      {
+       "name": "Lucas Cepeda",
+       "shirt": 21,
+       "pos": "F"
+      },
+      {
+       "name": "Fer Niño",
+       "shirt": 14,
+       "pos": "F"
+      },
+      {
+       "name": "Germán Valera",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Grady Diangana",
+       "shirt": 19,
+       "pos": "?"
+      },
+      {
+       "name": "Tete Morente",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Abiel Osorio",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Facundo Buonanotte",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Pedro Bigas",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Alejandro Iturbe",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Bambo Diaby",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Kevin Lomónaco",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Matia Barzić",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Josan",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Alvaro Padilla",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Ezequiel Ponce",
+       "shirt": 9,
+       "pos": "?"
+      }
+     ]
+    },
+    "BET": {
+     "team": "BET",
+     "formation": "4-2-3-1",
+     "coach": "Manuel Pellegrini",
+     "xi": [
+      {
+       "name": "Álvaro Vallés",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Héctor Bellerín",
+       "shirt": 2,
+       "pos": "D"
+      },
+      {
+       "name": "Marc Bartra",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Natan",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Fran García",
+       "shirt": 11,
+       "pos": "D"
+      },
+      {
+       "name": "Pablo Fornals",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Marc Roca",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Antony",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Isco",
+       "shirt": 22,
+       "pos": "M"
+      },
+      {
+       "name": "Abdessamad Ezzalzouli",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Troy Parrott",
+       "shirt": 19,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Aitor Ruibal",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Dani Ceballos",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "José Antonio Morante",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Rodrigo Riquelme",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Nelson Deossa",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Conde",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Ángel Ortiz",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Diego Llorente",
+       "shirt": 3,
+       "pos": "?"
+      },
+      {
+       "name": "Júnior Firpo",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Valentín Gómez",
+       "shirt": 16,
+       "pos": "?"
+      },
+      {
+       "name": "Álvaro Fidalgo",
+       "shirt": 15,
+       "pos": "?"
+      },
+      {
+       "name": "Iker Losada",
+       "shirt": 14,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 46,
+      "center": 26,
+      "right": 28
+     },
+     "firstHalf": {
+      "left": 49,
+      "center": 22,
+      "right": 29
+     },
+     "secondHalf": {
+      "left": 42,
+      "center": 30,
+      "right": 28
+     }
+    },
+    "away": {
+     "total": {
+      "left": 36,
+      "center": 28,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 33,
+      "center": 22,
+      "right": 45
+     },
+     "secondHalf": {
+      "left": 39,
+      "center": 33,
+      "right": 28
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 2,
+    "shotmapComplete": true
+   },
+   "injuryFlag": true,
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-08T16:29:22.588Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "ELC",
+      "name": "Martim Neto",
+      "n": 67,
+      "cx": 53.7,
+      "cy": 40.7,
+      "spread": 32.8,
+      "grid": "0,0,1,0,5,4,2,3,4,3,4,0,2,1,6,3,1,0,1,13,4,4,3,3"
+     },
+     {
+      "team": "ELC",
+      "name": "Matías Dituro",
+      "n": 66,
+      "cx": 8.3,
+      "cy": 35,
+      "spread": 9.2,
+      "grid": "0,0,0,0,0,0,30,5,0,0,0,0,27,1,0,0,0,0,2,1,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Natan",
+      "n": 74,
+      "cx": 28.5,
+      "cy": 21.8,
+      "spread": 19.5,
+      "grid": "3,9,9,2,0,0,16,12,15,3,0,0,1,0,1,0,0,0,2,1,0,0,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Fer Niño",
+      "n": 30,
+      "cx": 60.5,
+      "cy": 32.2,
+      "spread": 27.2,
+      "grid": "0,0,1,2,1,0,2,1,3,3,2,3,0,0,4,1,2,1,0,0,0,2,2,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Rubén Sánchez",
+      "n": 61,
+      "cx": 45.4,
+      "cy": 56.8,
+      "spread": 29,
+      "grid": "0,0,0,0,0,1,0,0,1,0,0,0,5,1,1,1,1,2,4,14,13,7,6,4"
+     },
+     {
+      "team": "ELC",
+      "name": "Javi Morcillo",
+      "n": 74,
+      "cx": 47.7,
+      "cy": 35.3,
+      "spread": 23.8,
+      "grid": "1,0,0,5,2,0,0,14,3,8,1,0,3,5,8,8,7,0,1,1,1,6,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Isco",
+      "n": 86,
+      "cx": 64.7,
+      "cy": 33.5,
+      "spread": 29.4,
+      "grid": "1,1,3,12,6,4,0,4,3,2,5,1,0,0,6,4,10,1,0,1,7,8,3,4"
+     },
+     {
+      "team": "ELC",
+      "name": "Lucas Cepeda",
+      "n": 57,
+      "cx": 60.9,
+      "cy": 49,
+      "spread": 28.9,
+      "grid": "0,1,0,1,1,0,0,0,0,4,6,1,0,1,0,2,2,2,3,4,9,8,10,2"
+     },
+     {
+      "team": "BET",
+      "name": "Troy Parrott",
+      "n": 48,
+      "cx": 63.2,
+      "cy": 35.2,
+      "spread": 29.1,
+      "grid": "0,2,0,4,0,1,1,3,1,5,0,4,0,0,5,1,11,2,0,1,2,2,2,1"
+     },
+     {
+      "team": "ELC",
+      "name": "Federico Redondo",
+      "n": 83,
+      "cx": 33.5,
+      "cy": 44.3,
+      "spread": 21.1,
+      "grid": "0,0,0,0,0,0,3,7,3,1,0,0,10,17,10,6,1,1,4,12,3,5,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Víctor Chust",
+      "n": 115,
+      "cx": 36.2,
+      "cy": 23.7,
+      "spread": 27.7,
+      "grid": "7,9,5,7,0,5,18,14,14,14,0,1,7,4,4,0,1,0,0,3,1,0,1,0"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Roca",
+      "n": 80,
+      "cx": 46.8,
+      "cy": 32.3,
+      "spread": 22.7,
+      "grid": "0,2,1,5,2,0,2,10,14,8,0,0,1,6,8,4,5,2,0,1,4,5,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Fran García",
+      "n": 77,
+      "cx": 51.3,
+      "cy": 10,
+      "spread": 31.5,
+      "grid": "4,13,9,16,8,9,6,2,0,2,1,3,3,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Álvaro Vallés",
+      "n": 53,
+      "cx": 12,
+      "cy": 35.8,
+      "spread": 13.7,
+      "grid": "2,0,2,0,0,0,15,2,0,0,0,0,25,4,0,0,0,0,0,3,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Marc Bartra",
+      "n": 87,
+      "cx": 38.5,
+      "cy": 47.1,
+      "spread": 22.2,
+      "grid": "0,0,0,0,0,0,0,1,0,1,0,0,11,14,23,12,1,2,3,6,7,4,2,0"
+     },
+     {
+      "team": "BET",
+      "name": "Héctor Bellerín",
+      "n": 71,
+      "cx": 50,
+      "cy": 60.3,
+      "spread": 28.8,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,4,12,5,20,12,8,5"
+     },
+     {
+      "team": "BET",
+      "name": "Abdessamad Ezzalzouli",
+      "n": 47,
+      "cx": 67.9,
+      "cy": 18.7,
+      "spread": 28.6,
+      "grid": "0,0,2,13,6,7,0,2,3,4,0,3,2,0,0,0,0,2,0,0,0,3,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Germán Valera",
+      "n": 50,
+      "cx": 61.9,
+      "cy": 10,
+      "spread": 29.8,
+      "grid": "4,5,8,7,12,6,1,1,0,0,2,3,0,0,0,0,0,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Ali Houary",
+      "n": 41,
+      "cx": 58.7,
+      "cy": 21.3,
+      "spread": 24.9,
+      "grid": "0,1,1,6,8,2,0,6,6,2,3,0,0,1,1,0,3,0,0,0,0,0,0,1"
+     },
+     {
+      "team": "ELC",
+      "name": "Roy Revivo",
+      "n": 57,
+      "cx": 47,
+      "cy": 11.4,
+      "spread": 26.9,
+      "grid": "4,21,2,8,7,3,1,3,1,2,4,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Pablo Fornals",
+      "n": 77,
+      "cx": 57.9,
+      "cy": 41.7,
+      "spread": 26.3,
+      "grid": "0,1,2,3,0,1,0,2,3,8,1,0,2,3,6,9,9,3,1,1,6,11,2,3"
+     },
+     {
+      "team": "BET",
+      "name": "Antony",
+      "n": 50,
+      "cx": 64.5,
+      "cy": 51.1,
+      "spread": 26.4,
+      "grid": "0,0,0,0,1,0,0,3,0,2,0,1,0,2,3,2,8,1,0,5,1,9,7,5"
+     },
+     {
+      "team": "ELC",
+      "name": "Grady Diangana",
+      "n": 32,
+      "cx": 53.8,
+      "cy": 42.1,
+      "spread": 28.5,
+      "grid": "0,1,0,2,0,0,0,0,4,3,0,0,0,0,2,2,7,0,2,4,1,1,3,0"
+     },
+     {
+      "team": "BET",
+      "name": "Dani Ceballos",
+      "n": 35,
+      "cx": 55.6,
+      "cy": 27.7,
+      "spread": 27.1,
+      "grid": "0,1,4,6,1,1,0,1,1,6,1,0,1,4,0,3,2,0,0,0,2,0,0,1"
+     },
+     {
+      "team": "BET",
+      "name": "Aitor Ruibal",
+      "n": 18,
+      "cx": 62.1,
+      "cy": 31.4,
+      "spread": 36.1,
+      "grid": "0,0,4,1,1,1,0,0,0,0,0,3,1,0,0,0,0,0,0,2,0,0,5,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Facundo Buonanotte",
+      "n": 22,
+      "cx": 60.6,
+      "cy": 39.2,
+      "spread": 26.2,
+      "grid": "0,0,0,0,1,0,2,0,0,2,2,0,0,0,2,3,2,2,0,0,3,3,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Tete Morente",
+      "n": 18,
+      "cx": 74.7,
+      "cy": 8.4,
+      "spread": 21.9,
+      "grid": "0,3,0,2,8,4,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Abiel Osorio",
+      "n": 10,
+      "cx": 53.5,
+      "cy": 32.4,
+      "spread": 24.9,
+      "grid": "0,0,0,0,0,0,1,2,1,2,1,0,0,0,0,1,2,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Rodrigo Riquelme",
+      "n": 15,
+      "cx": 72.6,
+      "cy": 15.6,
+      "spread": 26.9,
+      "grid": "0,3,0,3,2,1,0,0,0,0,2,4,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "José Antonio Morante",
+      "n": 5,
+      "cx": 64.1,
+      "cy": 48.9,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,1,0,0"
+     },
+     {
+      "team": "BET",
+      "name": "Nelson Deossa",
+      "n": 8,
+      "cx": 49.6,
+      "cy": 53,
+      "spread": 14.6,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,3,2,0,0"
+     },
+     {
+      "team": "ELC",
+      "name": "Pedro Bigas",
+      "n": 12,
+      "cx": 52.1,
+      "cy": 12.1,
+      "spread": 16.3,
+      "grid": "0,0,4,4,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {
   "SEV|OSA": {
-   "at": "2026-11-08T06:44:47.418Z",
+   "at": "2026-11-08T16:29:21.955Z",
    "reason": "日期不一致(FotMob 2026-10-26)",
    "matchId": "5868109",
    "label": "SEV–OSA"
   }
  },
- "updatedAt": "2026-11-08T06:44:47.419Z",
+ "updatedAt": "2026-11-08T16:29:23.270Z",
  "deferred": {}
 }
