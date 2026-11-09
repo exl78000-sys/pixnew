@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-11-08T17:45:05.647Z",
+ "retrievedAt": "2026-11-09T05:04:15.039Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-11-08T16:28:06.477Z",
+   "retrievedAt": "2026-11-09T05:04:15.039Z",
    "matches": [
     {
      "id": "6469281",
@@ -1374,7 +1374,7 @@
      "id": "6469309",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-08T12:00:00.000Z",
+     "kickoff": "2026-11-08T12:00:00Z",
      "home": {
       "name": "Stafford Rangers",
       "shortName": "Stafford Rangers",
@@ -1415,7 +1415,7 @@
      "id": "6469299",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-08T14:15:00.000Z",
+     "kickoff": "2026-11-08T14:15:00Z",
      "home": {
       "name": "Cray Wanderers",
       "shortName": "Cray Wanderers",
@@ -1433,19 +1433,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      2,
+      3
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
-     "liveScore": [
-      2,
-      2
-     ],
-     "state": "LIVE",
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
      "stateKnown": true,
-     "reason": null,
+     "reason": "AET",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/stockport-county-vs-cray-wanderers/81dvxvs#6469299",
      "unknownReasons": []
     },
@@ -1453,7 +1453,7 @@
      "id": "6469305",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-08T15:00:00.000Z",
+     "kickoff": "2026-11-08T15:00:00Z",
      "home": {
       "name": "Wimborne Town",
       "shortName": "Wimborne Town",
@@ -1471,19 +1471,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
-      1,
+     "final": [
+      2,
       0
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": false,
+     "liveScore": null,
+     "state": "FT",
      "stateKnown": true,
-     "reason": null,
+     "reason": "FT",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/crawley-town-vs-wimborne-town/jg9eciy#6469305",
      "unknownReasons": []
     },
@@ -1491,7 +1491,7 @@
      "id": "6469282",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-08T17:15:00.000Z",
+     "kickoff": "2026-11-08T17:15:00Z",
      "home": {
       "name": "Oldham Athletic",
       "shortName": "Oldham",
@@ -1509,16 +1509,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
+     "final": [
+      2,
+      1
+     ],
      "pens": null,
      "pensWinner": null,
-     "aet": null,
+     "aet": true,
      "liveScore": null,
-     "state": "NS",
+     "state": "AET",
      "stateKnown": true,
-     "reason": null,
+     "reason": "AET",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/oldham-athletic-vs-sheffield-wednesday/3agut3#6469282",
      "unknownReasons": []
     },
@@ -1526,7 +1529,7 @@
      "id": "6469292",
      "stage": null,
      "roundKey": null,
-     "kickoff": "2026-11-09T19:30:00Z",
+     "kickoff": "2026-11-09T19:30:00.000Z",
      "home": {
       "name": "Plymouth Parkway",
       "shortName": "Plymouth Parkway",
