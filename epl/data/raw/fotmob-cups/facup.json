@@ -5,7 +5,7 @@
  "leagueId": 132,
  "schemaVersion": 1,
  "source": "FotMob",
- "retrievedAt": "2026-11-09T22:02:25.620Z",
+ "retrievedAt": "2026-11-10T06:21:58.717Z",
  "availableSeasons": [
   "2026/2027",
   "2025/2026",
@@ -35,7 +35,7 @@
    "label": "2026-27",
    "sourceSeason": "2026/2027",
    "current": true,
-   "retrievedAt": "2026-11-09T22:02:25.620Z",
+   "retrievedAt": "2026-11-10T06:21:58.717Z",
    "matches": [
     {
      "id": "6469281",
@@ -1529,7 +1529,7 @@
      "id": "6469292",
      "stage": "Round 1",
      "roundKey": "1",
-     "kickoff": "2026-11-09T19:30:00.000Z",
+     "kickoff": "2026-11-09T19:30:00Z",
      "home": {
       "name": "Plymouth Parkway",
       "shortName": "Plymouth Parkway",
@@ -1547,19 +1547,19 @@
      "ht": null,
      "ft90": null,
      "et": null,
-     "final": null,
-     "pens": null,
-     "pensWinner": null,
-     "aet": null,
-     "liveScore": [
+     "final": [
       2,
       1
      ],
-     "state": "LIVE",
+     "pens": null,
+     "pensWinner": null,
+     "aet": true,
+     "liveScore": null,
+     "state": "AET",
      "stateKnown": true,
-     "reason": null,
+     "reason": "AET",
      "awarded": false,
-     "played": false,
+     "played": true,
      "pageUrl": "/matches/plymouth-parkway-vs-berkhamsted/fesld1p8#6469292",
      "unknownReasons": []
     },
@@ -1884,12 +1884,11 @@
      "roundKey": "2",
      "kickoff": "2026-12-05T18:00:00Z",
      "home": {
-      "name": "Plymouth Parkway/Berkhamsted",
-      "shortName": "Plymouth Parkway/Berkhamsted",
+      "name": "Plymouth Parkway",
+      "shortName": "Plymouth Parkway",
       "code": null,
-      "sourceId": "2449382",
-      "imageUrl": null,
-      "tbd": true
+      "sourceId": "674304",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/674304.png"
      },
      "away": {
       "name": "Barnet",
@@ -1911,7 +1910,7 @@
      "reason": null,
      "awarded": false,
      "played": false,
-     "pageUrl": "/matches/barnet-vs-plymouth-parkwayberkhamsted/12j9vn3au#6615120",
+     "pageUrl": "/matches/barnet-vs-plymouth-parkway/2yzk6k53#6615120",
      "unknownReasons": []
     },
     {
@@ -2032,11 +2031,11 @@
       "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8119.png"
      },
      "away": {
-      "name": "Bristol City",
-      "shortName": "Bristol City",
+      "name": "Bristol Rovers",
+      "shortName": "Bristol Rovers",
       "code": null,
-      "sourceId": "8427",
-      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/8427.png"
+      "sourceId": "10104",
+      "imageUrl": "https://images.fotmob.com/image_resources/logo/teamlogo/10104.png"
      },
      "ht": null,
      "ft90": null,
@@ -2051,7 +2050,7 @@
      "reason": null,
      "awarded": false,
      "played": false,
-     "pageUrl": "/matches/rotherham-united-vs-bristol-city/29ia2m#6615133",
+     "pageUrl": "/matches/rotherham-united-vs-bristol-rovers/2qv5pb#6615133",
      "unknownReasons": []
     },
     {
@@ -2308,7 +2307,7 @@
    "label": "2025-26",
    "sourceSeason": "2025/2026",
    "current": false,
-   "retrievedAt": "2026-11-03T05:47:48.813Z",
+   "retrievedAt": "2026-11-10T06:21:58.717Z",
    "matches": [
     {
      "id": "5010617",
