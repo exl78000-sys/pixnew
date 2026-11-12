@@ -6601,6 +6601,38 @@ function checkAssetStamps() {
         && !/teamsViewSwitch|viewSwitch/.test(core) && !/teamsViewSwitch/.test(tm),
         '戰術頁只剩轉址(單檔版不接 #);「球隊 / 戰術」切換拿掉');
     }
+    {
+      /* 版面整理(2026-11-12,core.js 的 tidyPage)。守性質,不守寫法:
+         ① 「真的該處理了」的 .note.warn / .note.bad 不收(鐵則四:異常直接在畫面上);
+         ② 收表格只給頁首標了 data-fold-detail 的頁,而標的只有模型頁 —— 球隊總表、積分榜那種「表就是內容」的頁被收掉,
+            畫面照樣正常,只是少了十幾列;
+         ③ 沒有真 DOM 就不掛(測試會塞假的 document 載這支模組);
+         ④ 球隊詳情分成分頁之後,原本的每一個區塊都還在某一個分頁裡(一個都不能掉,也不能出現兩次);
+         ⑤ 單場頁賽前分頁:外電排在模型預測與陣容之後(使用者 2026-11-12 同意的順序)。 */
+      const strip = x => x.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+      const js = f => strip(readFileSync(join(ROOT, 'web', 'assets', 'js', f), 'utf8'));
+      const co = js('core.js'), tmS = js('page-teams.js'), an = js('page-analysis.js');
+      const tidy = co.slice(co.indexOf('export function tidyPage('), co.indexOf('function tidySpy('));
+      ok(tidy.length > 200 && /\.note:not\(\.warn\):not\(\.bad\)/.test(tidy) && !/querySelectorAll\('\.note[,']/.test(tidy),
+        '版面整理:.note.warn 與 .note.bad 不收(異常直接在畫面上)');
+      const foldAt = tidy.indexOf("root.querySelector('[data-fold-detail]')"), tfoldAt = tidy.indexOf("classList.add('tfold')");
+      const marked = readdirSync(join(ROOT, 'web', 'assets', 'js')).filter(f => f.endsWith('.js') && f !== 'core.js' && /data-fold-detail/.test(js(f)));
+      ok(foldAt > 0 && tfoldAt > foldAt && tidy.split("classList.add('tfold')").length === 2 && marked.join() === 'model-view.js',
+        '版面整理:收表格只在標了 data-fold-detail 的頁,而標的只有模型頁', marked.join('、'));
+      ok(/typeof document\.getElementById === 'function' && typeof MutationObserver !== 'undefined' && !globalThis\.__tidy/.test(co),
+        '版面整理:沒有真 DOM 就不掛(假 document 載模組不會炸)');
+      const det = tmS.slice(tmS.indexOf('const panes = ['), tmS.indexOf('C.startCountdowns()'));
+      const blocks = ['kpiRow(t)', 'recentCard(t)', 'h2hCard(t, h2hDefault)', 'nextFixturesBlock(t, next, nextFew)', 'unavailableCard(t)', 'coachCard(co)',
+        'scheduleBlock(t)', 'matchStatsBlock(t)', 'eloBlock(t)', 'squadSection(t)', 'loansCard(t)', 'lastSeasonBlock(t)', 'goalSection(t)', 'styleBlock(t)',
+        'styleTrendCard(t)', 'goalSituationCard(t.tactics)', 'takersBlock(t.tactics)', 'seasonHistorySection(t)'];
+      const off = blocks.filter(b => det.split(b).length !== 2);
+      ok(det.length > 200 && off.length === 0 && /\.filter\(p => String\(p\.html \?\? ''\)\.trim\(\)\)/.test(det) && /s\.hidden = s\.dataset\.pane !== /.test(det),
+        '球隊詳情的分頁:原本的十八個區塊各出現一次,空的分頁不畫,切換只改 hidden', off.join('、'));
+      const pre = an.slice(an.indexOf('id="panel-pre"'), an.indexOf('id="panel-post"'));
+      ok(pre.indexOf('lineupSection(f)') > 0 && pre.indexOf('opinionSections(f, expertRows)') > pre.indexOf('formSection(f)')
+        && pre.indexOf('formSection(f)') > pre.indexOf('lineupSection(f)') && pre.indexOf('opinionSections(f, expertRows)') < pre.indexOf('這份分析怎麼來的'),
+        '單場頁賽前分頁:模型與陣容 → 近況 → … → 外電 → 方法');
+    }
     // 聯賽沒開的頁不列(例:德甲沒有戰術與實時)
     const bad = [];
     for (const lg of Object.keys(NV.LEAGUES)) {

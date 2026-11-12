@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 
 /* 國家隊 2026-11-07 併進「盃賽」那一頁的一個分頁(使用者:「國家隊 整合進杯賽」)。
    這支原本是 page-intl.js 整頁,現在是盃賽頁呼叫的 renderIntlView(host, { team }) —— 畫在 host 裡,
@@ -195,7 +195,7 @@ function pendingBlock(now) {
     /* 分鐘是**拿開球時間推的**,不是即時資料 —— 所以不畫即時的紅點(那個點在別頁代表「資料在動」) */
     const status = min < C.MATCH_WINDOW_MIN
       ? `<span class="pill tiny warn" title="依開球時間推算;國家隊沒有即時比分,本站的賽程是 ${intlEsc(C.ageText(c?.retrievedAt))}抓的">開球後 ${min} 分鐘</span>`
-      : `<span class="pill tiny warn" title="時間上早該結束,但本站還沒有這一場的賽果:可能是比分還沒進來(賽程是 ${intlEsc(C.ageText(c?.retrievedAt))}抓的),也可能延期了 —— 本站分不出是哪一種">已過 ${Math.round(min / 60)} 小時・還沒有賽果</span>`;
+      : `<span class="pill tiny warn" title="時間上早該結束,但本站還沒有這一場的賽果:可能是比分還沒進來(賽程是 ${intlEsc(C.ageText(c?.retrievedAt))}抓的),也可能延期了 —— 本站分不出是哪一種">已過 ${Math.round(min / 60)} 小時</span>`;
     return `<div class="stat-line tie-leg intl-row">
       <span class="leg-when tiny dim mono">${timeOf(f.kickoff)}</span>
       <span class="leg-home">${teamHtml(f.home, { flagAfter: true })}</span>
@@ -206,7 +206,11 @@ function pendingBlock(now) {
   }).join('');
   return `<div class="section"><h2>已開賽・等待賽果</h2>
       <span class="hint">國家隊沒有即時比分:賽程與賽果跟著每天兩次的部署更新</span></div>
-    <div class="card"><div style="display:grid;gap:2px">${rows}</div></div>`;
+    <div class="card">${/* 「還沒有賽果」原本每一列各印一次(2026-11-12 收成這一句):同一句話印幾十次,真正逐列不同的只有過了多久。
+           兩種可能都要講(比分還沒進來 / 延期),本站分不出是哪一種 —— 那條坑的說法照舊,只是講一次。 */''}
+      ${xs.some(f => now - Date.parse(f.kickoff) >= C.MATCH_WINDOW_MIN * 60000)
+        ? `<div class="small muted" data-no-tidy style="margin-bottom:8px">標「已過 N 小時」的場次時間上早該結束,但<b>本站還沒有賽果</b>:可能是比分還沒進來,也可能延期了,本站分不出是哪一種。</div>` : ''}
+      <div style="display:grid;gap:2px">${rows}</div></div>`;
 }
 
 function upcomingBlock(now) {

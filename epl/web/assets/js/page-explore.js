@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 /* 模擬遊玩那一支**不在這裡 import**(2026-09-26,B4):game-view → game-live → game-sim,引擎本身 314 KB,
    而知識與球員搜尋兩個分頁根本用不到(那兩個現在都搬走了)—— 原本三個分頁都揹著它(explore.html 的 modulepreload 也一起預載)。
    改成點到那個分頁才 `import()`(見 VIEWS)。stamp-assets 照樣給那個字面路徑戳,但 modulepreload 只收靜態 import;
@@ -29,7 +29,7 @@ const VIEWS = [
   /* 足球知識 2026-11-07 搬去「說明」頁(model.html?view=knowledge,跟模型驗證合成一格);舊網址在下面轉走 */
   /* 模擬遊玩(2026-09-03)取代了對戰模擬;view 鍵留 duel,舊書籤不斷。
      模組點到才載(B4);載入失敗會走 show() 的 catch,畫面講「載入失敗」而不是空白。 */
-  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=653f07c5')).renderGame(body) },
+  { key: 'duel', zh: '模擬遊玩', render: async body => (await import('./game-view.js?v=874f732d')).renderGame(body) },
 ];
 
 const app = document.getElementById('app');

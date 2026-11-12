@@ -1,6 +1,6 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 import { followStar, bindFollowStars } from './follow.js?v=02130043';
-import { tacticsGroups, tacticsStamps, tacticsBoundaries, mountTactics, tacticsColumns, coverageNote } from './tactics-view.js?v=51cdd123';
+import { tacticsGroups, tacticsStamps, tacticsBoundaries, mountTactics, tacticsColumns, coverageNote } from './tactics-view.js?v=27e34cce';
 
 const app = document.getElementById('app');
 
@@ -759,7 +759,9 @@ try {
           : '<span class="dim">—</span>'],
     ];
     const coachName = t.coach?.zh ?? t.coach?.name ?? null;
-    return `<a class="card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
+    /* .team-card:手機上只留隊徽、名字與四個數字(app.css 的 media query)。原本一張 290px、二十張就是六千 px,
+       總表要捲過七屏半才到;收掉的那幾行(本季陣型、風格標籤、Elo、教練、傷停)在總表與各隊頁都有。 */
+    return `<a class="card team-card" href="${C.link('teams', { code: t.code })}" style="text-decoration:none;color:inherit;display:block">
       <div class="row" style="gap:11px">${C.badge(t.code, 'lg')}
         <div><div style="font-weight:800;font-size:16px">${C.esc(t.en)}</div>
           <div class="tiny dim">${C.esc(t.zh)}${t.venue ? `・${C.esc(t.venue)}` : ''}</div></div></div>
@@ -1393,26 +1395,38 @@ try {
       ? (next[0].home === t.code ? next[0].away : next[0].home)
       : teams.find(x => x.code !== t.code)?.code;
 
+    /* 頁內分頁(2026-11-12,使用者同意):這一頁原本二十幾個區塊一路排到底(英超 Arsenal 桌機 8,898px、手機 12,559px),
+       想看陣容要捲過上季剖析、進球來源、逐場統計。分成五組,**區塊與順序都沒動**,只是一次顯示一組;
+       每個區塊照舊自己判斷資料在不在,整組都沒有東西的分頁不畫(不留空分頁)。
+       切換只改 hidden、不重畫:h2h 的下拉與陣容表畫完之後綁過事件,重畫會掉。選過的分頁記在這次瀏覽裡,
+       換一隊看同一個分頁(比兩隊的陣容不必每次再點一次)。 */
+    const panes = [
+      { key: 'overview', label: '概況', html: `${kpiRow(t)}
+        <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
+        ${nextFixturesBlock(t, next, nextFew)}
+        ${unavailableCard(t)}
+        ${coachCard(co)}` },
+      { key: 'matches', label: '賽程與逐場', html: `${scheduleBlock(t)}${matchStatsBlock(t)}${eloBlock(t)}` },
+      { key: 'squad', label: '陣容', html: `${squadSection(t)}${loansCard(t)}` },
+      { key: 'style', label: '戰術與數據', html: `${lastSeasonBlock(t)}${goalSection(t)}${styleBlock(t)}${styleTrendCard(t)}${goalSituationCard(t.tactics)}${takersBlock(t.tactics)}` },
+      { key: 'history', label: '歷史', html: seasonHistorySection(t) },
+    ].filter(p => String(p.html ?? '').trim());
+    let savedPane = null;
+    try { savedPane = sessionStorage.getItem('teamPane'); } catch { /* 私密視窗:不記就是了 */ }
+    const activePane = panes.some(p => p.key === savedPane) ? savedPane : panes[0]?.key;
     app.innerHTML = `
     ${detailHead(t, co)}
-    ${kpiRow(t)}
-    <div class="grid g2" style="margin-top:16px">${recentCard(t)}${h2hCard(t, h2hDefault)}</div>
-    ${nextFixturesBlock(t, next, nextFew)}
-    ${unavailableCard(t)}
-    ${seasonHistorySection(t)}
-    ${lastSeasonBlock(t)}
-    ${coachCard(co)}
-    ${goalSection(t)}
-    ${styleBlock(t)}
-    ${styleTrendCard(t)}
-    ${goalSituationCard(t.tactics)}
-    ${takersBlock(t.tactics)}
-    ${matchStatsBlock(t)}
-    ${eloBlock(t)}
-    ${scheduleBlock(t)}
-    ${loansCard(t)}
-    ${squadSection(t)}
+    <div data-own-nav>${C.tabs(panes.map(p => ({ key: p.key, label: p.label })), activePane, { attr: 'data-team-pane', cls: 'team-tabs', label: '球隊頁的分頁' })}</div>
+    ${panes.map(p => `<section class="team-pane" data-pane="${p.key}"${p.key === activePane ? '' : ' hidden'}>${p.html}</section>`).join('')}
     ${C.foot(meta)}`;
+    for (const b of app.querySelectorAll('[data-team-pane]')) b.onclick = () => {
+      for (const s of app.querySelectorAll('.team-pane')) s.hidden = s.dataset.pane !== b.dataset.teamPane;
+      try { sessionStorage.setItem('teamPane', b.dataset.teamPane); } catch { /* 同上 */ }
+      // 分頁列是吸附的:切過去時把新的那一組捲回分頁列下面,不然會停在上一組的捲動深度(可能是一片空白)
+      const bar = app.querySelector('.team-tabs');
+      if (bar && bar.getBoundingClientRect().top <= (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 61) + 1)
+        app.querySelector('.team-pane:not([hidden])')?.scrollIntoView();
+    };
 
     /* 倒數要會走 —— 不叫這一支的話,數字停在載入當下,
        讀者坐在頁面上看著一個慢慢變錯的時間。核心那支自己會清掉上一個計時器。 */

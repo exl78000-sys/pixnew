@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 
 const app = document.getElementById('app');
 
@@ -188,7 +188,6 @@ try {
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
     ${/* 未賽的場次:外電與專家觀點放賽前分頁(2026-09-03)。賽前才是外電最有用的時候
          (轉會、傷停、教練談話),原本只掛在已完賽面板裡。已完賽的照舊在賽後分頁,不重複畫。 */''}
-    ${!f.played ? opinionSections(f, expertRows) : ''}
     ${articleCard(preArt, '賽前觀察', 'pre')}
 
     ${f.postFit ? `<div class="note warn" style="margin-top:12px"><b>這一場已經踢完,下面這組機率是「目前模型」的看法,不是當時的賽前預測。</b>
@@ -255,6 +254,8 @@ try {
 
     ${lineupSection(f)}
 
+    ${formSection(f)}
+
     ${p.grid ? `<div class="section"><h2>比分機率分佈</h2><span class="hint">顏色越亮代表越可能</span></div>
       <div class="card">${C.scoreHeat(p.grid, f.home, f.away)}</div>` : ''}
 
@@ -277,7 +278,6 @@ try {
         <div class="tiny dim" style="margin-top:6px">標籤是上季全季統計歸納出的風格,右側為平均站位。</div>
       </div>` : ''}
 
-    ${formSection(f)}
 
     <div class="grid g2" style="margin-top:16px">
       <div class="card"><h3>歷來交手</h3><div class="tiny dim" style="margin:-4px 0 8px">涵蓋 ${meta.h2hSeasons?.length ?? 0} 個賽季(${C.esc(meta.h2hSeasons?.[0] ?? "?")} 起)</div>${h2hHtml(f, rec)}</div>
@@ -285,6 +285,12 @@ try {
         <div class="grid g2">${squadHtml(f.home)}${squadHtml(f.away)}</div>
       </div>
     </div>
+
+    ${/* 外電與專家觀點排在本站自己的內容之後(2026-11-12,使用者同意的順序:
+         勝率 → 陣容 → 近況與傷停 → 比分分佈 → 外電 → 方法)。原本在分頁最上面,
+         讀者點進單場頁先看到的是一長串機器比對的外電標題,模型預測要捲過它才到。
+         已完賽的照舊在賽後分頁,不重複畫。 */''}
+    ${!f.played ? opinionSections(f, expertRows) : ''}
 
     <div class="card" style="margin-top:16px">
       <h2>這份分析怎麼來的</h2>
@@ -571,8 +577,6 @@ try {
 
     <section class="analysis-panel" id="panel-pre" role="tabpanel">
       <div class="section"><h2>賽前分析</h2><span class="hint">${meta.lastSeason} 球隊背景・不調整賽後結論</span></div>
-      ${/* 未賽場次的外電與專家觀點(同英超那一頁的做法,2026-09-03) */''}
-      ${!f.played ? opinionSections(f, expertRows) : ''}
       ${/* 本站文章(2026-09-04 起西甲也有):跟英超同一個 articleCard、同一個位置 */''}
       ${articleCard(preArticleFor(f), '賽前觀察', 'pre')}
       ${preForecast}
@@ -589,6 +593,8 @@ try {
           <div class="tiny dim" style="margin:-4px 0 8px">本季已取得的整季彙總</div>
           <div class="grid g2">${squadCard(f.home)}${squadCard(f.away)}</div></div>
       </div>
+      ${/* 未賽場次的外電與專家觀點:排在本站自己的內容之後(同英超那一頁,2026-11-12) */''}
+      ${!f.played ? opinionSections(f, expertRows) : ''}
       <div class="card" style="margin-top:16px">
         <h2>這份分析怎麼來的</h2>
         <div class="small muted" style="display:grid;gap:8px">

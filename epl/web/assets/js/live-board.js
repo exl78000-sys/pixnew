@@ -1,6 +1,6 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 import { followedIn } from './follow.js?v=02130043';
-import { mountSimTable } from './sim-table.js?v=1cd4cd1e';
+import { mountSimTable } from './sim-table.js?v=80521fa0';
 
 /* 聯賽頁的「比賽現況」與積分榜(2026-11-07,使用者:「聯賽跟實時戰況如何簡化合併?」→「併成一頁」)。
 
@@ -370,15 +370,17 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
 
   function countdownCard(f) {
     const p = f.prediction;
-    return `<a class="card matchcard" href="${C.link('analysis', { id: f.id })}">
+    /* 手機上收緊(2026-11-12,.cd-card 的 media query):一輪十張、一張 210px,倒數區自己就佔兩屏半,積分榜要捲過它才到。
+       窄螢幕把間距收掉、倒數縮小、預期比分那一行不印(點進單場頁就有);桌機不變。 */
+    return `<a class="card matchcard cd-card" href="${C.link('analysis', { id: f.id })}">
       <div class="spread">
         <span class="pill info">第 ${f.round} 輪</span>
         <span class="small">${C.kickoffLocal(f.kickoff)}</span>
       </div>
-      <div style="margin:10px 0">${scoreLine(f.home, f.away, '<span class="dim" style="font-size:16px">vs</span>')}</div>
-      <div class="center" style="font-size:19px;font-weight:700">${C.countdown(f.kickoff)}</div>
-      <div style="margin-top:10px">${C.probBar(p)}</div>
-      <div class="tiny dim center" style="margin-top:5px">賽前預期比分 ${p.xgHome} : ${p.xgAway}</div>
+      <div class="cd-teams">${scoreLine(f.home, f.away, '<span class="dim" style="font-size:16px">vs</span>')}</div>
+      <div class="center cd-clock">${C.countdown(f.kickoff)}</div>
+      <div class="cd-bar">${C.probBar(p)}</div>
+      <div class="tiny dim center cd-xg">賽前預期比分 ${p.xgHome} : ${p.xgAway}</div>
     </a>`;
   }
 

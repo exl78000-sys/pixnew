@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 
 /* 模型驗證(2026-11-07 抽出來;page-model.js 依 view 畫它或足球知識,兩個都是聯賽分頁的一格)。
    內容原樣搬過來,只是改成 render 函式、畫進呼叫端給的容器 —— 跟 knowledge-view / ucl-view 同一個做法。
@@ -598,7 +598,7 @@ try {
   }
 
   app.innerHTML = `
-  <div class="page-head">
+  <div class="page-head" data-fold-detail>
     <h1>模型驗證</h1>
     <p>這個平台沒有付費的進階數據當賣點,所以「預測到底準不準」就是它唯一該被檢驗的地方。
        這一頁把驗證過程完整攤開:方法、數字、以及模型錯得最離譜的那幾場。</p>

@@ -650,6 +650,12 @@ page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list
 stamp-assets 的 modulepreload 只收靜態 import(`staticImportsOf`);bundle.mjs 把 `import('./x.js')` 換成攤平後匯出的
 `Promise.resolve({…})`(x 要在 SHARED 清單裡);註解裡不要寫那個字面路徑(字面替換連註解都會戳)。`npm test` 守著。
 
+**版面整理是共用的一支(2026-11-12,`core.js` 的 `tidyPage`)。** 畫完之後它照標記整理 DOM:`.page-head` 的介紹收一行、`.stamp-row` 只留種類、
+四個以上 `.section > h2` 長出吸附的區段鈕、長的 `.note` / `p.small` 收兩行。新頁照這幾個標記寫就自動有;不要各頁再寫一套「展開」。
+**`.note.warn` / `.note.bad` 永遠不收**(異常直接在畫面上);不想被收的主要內容標 `data-no-tidy`;頁面自己有吸附的分頁列就包一層 `data-own-nav`(不疊第二排)。
+收表格只給頁首標 `data-fold-detail` 的頁,目前只有模型頁 —— 「表就是內容」的頁不可以標。球隊詳情是頁內分頁(五組,切換只改 hidden):加新區塊要放進 `panes` 的某一組。
+`npm test` 守這幾條。
+
 **首頁與總覽先畫框再填(B3)。** `C.nav()` 在任何 `await C.load` 之前;只要 meta 就畫得出來的區塊先畫,要賽程或動態的
 區塊放 `C.skel()` 骨架,資料到了再填。骨架只是佔位,**不寫任何數字** —— 骨架上不能有看起來像答案的東西。
 兩件事不能忘:**逐場檔必須逐次建置位元組相同**(部署一天兩次整份重寫,有時間戳就每次塞

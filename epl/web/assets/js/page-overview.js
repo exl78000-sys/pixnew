@@ -1,4 +1,4 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 
 const app = document.getElementById('app');
 
@@ -588,8 +588,11 @@ try {
     聯賽場次點對戰直接進賽前分析,歐冠場次進歐冠單場頁(賽前對比、勝率與賽後報告都在那一頁);盃賽場次開盃賽頁的對應分頁。${
       upcoming.some(u => u.compKey.startsWith('intl:')) ? '國家隊場次開國家隊頁(勝率在那一頁);國家隊一天只更新兩次,沒有即時比分,開賽之後這裡不印比分。' : ''}
     只列已公布日期的場次;盃賽只列本站聯賽名冊裡的球隊,足總盃的低級別資格賽不在此列。</div></div>`
-  : `<div class="note"><b>${partial ? '勾選的賽事' : ''}未來 7 天沒有已排定的比賽。</b>${offLine}${beyond.length
-      ? `${partial ? '' : '本站涵蓋的賽事'}接下來是 —— ${beyond.map(C.esc).join(';')}。`
+  /* 空窗時的樣子(2026-11-12):原本是一整段黃底長句,把每個賽事的下一批用分號串在一起,手機上佔掉半屏還要逐字找自己的聯賽。
+     改成一句話 + 一個賽事一列;字一個都沒少(beyond 的每一筆照舊是 beyondOf 給的那一句)。 */
+  : `<div class="card next-empty" data-no-tidy><b>${partial ? '勾選的賽事' : ''}未來 7 天沒有已排定的比賽。</b>${offLine}${beyond.length
+      ? `<div class="small muted" style="margin-top:6px">${partial ? '' : '本站涵蓋的賽事'}接下來是:</div>
+         <ul class="next-list">${beyond.map(x => `<li>${C.esc(x)}</li>`).join('')}</ul>`
       : (partial ? '而且勾選的賽事,下一場都還沒公布日期。' : '而且每個賽事的下一場都還沒公布日期。')}
     <div class="tiny dim" style="margin-top:6px">場次的日期來自賽程資料源;<b>沒有場次不等於資料沒更新</b> ——
       國際賽週、盃賽的輪次之間都會出現這種空窗。改期而上游還沒給新日期的場次不算在上面那幾批裡。</div></div>`);

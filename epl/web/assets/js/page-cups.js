@@ -1,7 +1,7 @@
-import * as C from './core.js?v=e883428c';
+import * as C from './core.js?v=1404e5d4';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=fd19bb4a';
-import { renderIntlView } from './intl-view.js?v=633b7279';
+import { renderUclView } from './ucl-view.js?v=17153341';
+import { renderIntlView } from './intl-view.js?v=56f68aa6';
 
 const app = document.getElementById('app');
 
@@ -148,7 +148,18 @@ const winner = m => {
   return m.final[0] > m.final[1] ? 'home' : 'away';
 };
 
-function roundCard(round) {
+/* open:這一輪預設展不展開(2026-11-12)。逐輪賽果原本每一輪都攤開 —— 聯賽盃手機 14,594px、整頁 85 顆按鈕,
+   要看的多半是最新那一輪。現在最新一輪展開,其餘只留標題那一行(輪次名、幾場、延長與 PK),點了才展開;
+   用原生的 details,不重畫、鍵盤也能開。資料一場都沒少。 */
+/* 讀者自己開 / 關過的輪次記在這次瀏覽裡:比賽夜這一頁拿到新比分會重畫,不記的話剛展開的那一輪會自己闔上 */
+const ROUND_OPEN = new Map();
+if (typeof document !== 'undefined' && !globalThis.__roundFold) {
+  globalThis.__roundFold = true;
+  document.addEventListener('toggle', e => { const d = e.target; if (d.classList?.contains('round-fold')) ROUND_OPEN.set(d.dataset.round, d.open); }, true);
+}
+function roundCard(round, i = 0) {
+  const roundKey = `${C.qs('cup') ?? ''}|${C.qs('season') ?? ''}|${round.stage}`;
+  const openByDefault = ROUND_OPEN.get(roundKey) ?? i === 0;
   const rows = round.matches.map(m => {
     const w = winner(m);
     const strong = side => (w === side ? 'font-weight:700' : w ? 'opacity:.62' : '');
@@ -172,11 +183,11 @@ function roundCard(round) {
     round.aet ? `延長 ${round.aet}` : '',
     round.shootouts ? `PK ${round.shootouts}` : '',
   ].filter(Boolean).join('・');
-  return `<div class="card" style="margin-top:12px">
-    <div class="spread"><h3 style="margin:0">${C.esc(round.stage)}</h3>
-      <span class="dim tiny">${marks}</span></div>
+  return `<details class="card round-fold" data-round="${C.esc(roundKey)}" style="margin-top:12px"${openByDefault ? ' open' : ''}>
+    <summary class="spread"><h3 style="margin:0">${C.esc(round.stage)}</h3>
+      <span class="dim tiny">${marks}</span></summary>
     <div style="display:grid;gap:2px;margin-top:10px">${rows}</div>
-  </div>`;
+  </details>`;
 }
 
 /* 資格賽的開關。足總盃從第九級打起 —— 2025-26 整季 871 場、745 支球隊,
@@ -499,7 +510,7 @@ try {
         ${qualifyingToggle({ ...season, __showQual: showQualifying })}
         ${cupLeaderBoards(CUP_PLAYERS?.[cup.key]?.[season.label], cup.zh, season.label)}
         <div class="section"><h2>逐輪賽果</h2>
-          <span class="hint">最新的排在最上面(決賽 → 第一輪)・輪次順序依開球時間,不是照上游的輪次編號</span></div>
+          <span class="hint">最新的排在最上面(決賽 → 第一輪)・最新一輪展開,其餘點標題展開・輪次順序依開球時間,不是照上游的輪次編號</span></div>
         ${/* **先切再倒。** 資格賽是用「從第幾輪開始」這個索引切掉的;
               先倒過來的話那個索引指的就變成另一頭,會把決賽那幾輪切掉。 */''}
         ${visibleRounds(season, showQualifying).slice().reverse().map(roundCard).join('')}`;

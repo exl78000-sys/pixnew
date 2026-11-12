@@ -771,6 +771,159 @@ export function tabs(items, active, { attr = 'data-tab', label = '', max = 0, cl
     : '';
   return `<div class="seg${cls ? ' ' + cls : ''}"${id ? ` id="${esc(id)}"` : ''} role="tablist"${label ? ` aria-label="${esc(label)}"` : ''}>${shown.map(btn).join('')}${more}</div>`;
 }
+/* ── 版面整理(2026-11-12,使用者:「目標更直觀介面」)──────────
+   量過全站 15 種頁面:手機上國家隊頁 21,278px、球隊總覽 18,495px(一屏 800px)而只有球隊總覽有跳轉鈕;
+   聯賽首頁、球員頁的手機第一屏整個是「頁首介紹 + 時效標記」;模型頁的灰字說明 6,181 字常駐展開。
+   各頁的標記本來就一致(.page-head、.stamp-row、.section > h2、.note),所以收成一支,畫完之後整理 DOM:
+     ① 頁首介紹收成一行、時效標記只留種類(點「時效明細」看全部);
+     ② 四個以上 .section 的頁,頁首下面多一排吸附的區段鈕(只捲動,不是分頁);
+     ③ 長說明(.note、p.small)收成兩行,點「展開」看全文。
+   **.note.warn 與 .note.bad 不收** —— 那是「真的該處理了」的狀態(資料過期、核對沒過),鐵則四要它直接在畫面上;
+   收起來的也一個字都沒刪,只是預設不展開。展開過的在這次瀏覽裡記著(頁面每 20 秒重畫一次的那幾頁才不會一直彈回去)。
+   由 #app 的 MutationObserver 觸發:整理自己造成的變動會再觸發一次,所以每一步都要冪等(data-tidy 標記、區段鈕比對簽名)。 */
+const TIDY_OPEN = new Set();
+const tidyKey = el => `${typeof location !== 'undefined' ? location.pathname + location.search + location.hash : ''}|${el.textContent.trim().slice(0, 48)}`;
+function tidyClamp(el, lines) {
+  if (el.dataset.tidy || !el.textContent.trim()) return;   // 空的是晚一拍才填的(盃賽頁首的介紹),填了會再觸發一次
+  el.dataset.tidy = '1';
+  if (el.closest('.clamp, details, .drawer, [data-no-tidy]')) return;
+  el.style.setProperty('--clamp-lines', lines);
+  el.classList.add('clamp');
+  // 看得到的量實際高度;看不到的(收起來的分頁裡)量不到,退回看字數
+  const over = el.offsetParent ? el.scrollHeight > el.clientHeight + 6 : el.textContent.trim().length > 60 * lines;
+  if (!over) { el.classList.remove('clamp'); return; }
+  const open = TIDY_OPEN.has(tidyKey(el));
+  el.classList.toggle('open', open);
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'clamp-more'; b.dataset.tidyMore = '1';
+  b.setAttribute('aria-expanded', String(open));
+  b.textContent = open ? '收起' : '展開說明';
+  el.insertAdjacentElement('afterend', b);
+}
+export function tidyPage(root = typeof document !== 'undefined' ? document.getElementById('app') : null) {
+  if (!root) return;
+  for (const head of root.querySelectorAll('.page-head')) {
+    const p = head.querySelector('p');   // 不限直接子元素:盃賽頁的介紹包在一層會換內容的 div 裡
+    if (p) tidyClamp(p, 1);
+  }
+  // 時效標記不一定在 .page-head 裡(國家隊分頁的在盃賽頁首之後),所以整個 #app 找
+  for (const row of root.querySelectorAll('.stamp-row:not([data-tidy])')) {
+    row.dataset.tidy = '1';
+    if (row.querySelectorAll('.stamp').length < 2) continue;
+    row.classList.add('compact');
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'clamp-more'; b.dataset.tidyStamps = '1'; b.setAttribute('aria-expanded', 'false');
+    b.textContent = '時效明細';
+    row.appendChild(b);
+  }
+  for (const el of root.querySelectorAll('.note:not(.warn):not(.bad):not([data-tidy]), p.small:not([data-tidy])')) tidyClamp(el, 2);
+  /* 頁首標了 data-fold-detail 的頁(模型驗證:14 張表、手機 13,898px):每一區先給結論與圖,明細點了才展開 ——
+     八列以上的表只露前六列(用 class 收,排序重畫 tbody 也不會跑掉),卡片裡的長段落收成三行。
+     **只給標了的頁**:球隊總表、積分榜、球員表那種「表就是內容」的頁不可以收。 */
+  if (root.querySelector('[data-fold-detail]')) {
+    for (const el of root.querySelectorAll('.card > p:not([data-tidy]), .card > div.small:not([data-tidy])')) tidyClamp(el, 3);
+    root.querySelectorAll('table').forEach((tb, i) => {
+      const n = tb.tBodies[0]?.rows.length ?? 0;
+      if (tb.dataset.tidy || !n) return;   // 還沒填的表(C.table 晚一拍才畫)下一輪再看
+      tb.dataset.tidy = '1';
+      if (n < 8) return;
+      const key = `${location.pathname}${location.search}|table|${i}`;
+      tb.dataset.tidyKey = key;
+      tb.classList.add('tfold');
+      tb.classList.toggle('open', TIDY_OPEN.has(key));
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'clamp-more'; b.dataset.tidyRows = '1';
+      b.textContent = tb.classList.contains('open') ? '只看前 6 列' : `顯示全部 ${n} 列`;
+      (tb.closest('.table-wrap, .tbl-wrap') ?? tb).insertAdjacentElement('afterend', b);
+      b._table = tb;
+    });
+  }
+  // 區段導覽:只收看得到的頂層區段;頁面自己有分頁時,換分頁會重畫,簽名變了這裡就跟著重排
+  /* 頁面自己排了跳轉鈕(球隊總覽的 .jump-bar:球隊 / 總表 / 戰術各組 / 教練,比逐個標題粗、也比較好讀)就照它的,
+     原本那一排藏起來;沒有的才從標題收 */
+  if (root.querySelector('[data-own-nav]')) { root.querySelector('.sec-nav')?.remove(); return; }   // 頁面自己有吸附的分頁列(球隊詳情),不疊第二排
+  const own = [...root.querySelectorAll('.jump-bar [data-jump]')];
+  const heads = own.length ? [] : [...root.querySelectorAll('.section > h2')].filter(h => h.offsetParent && !h.closest('.card, details'));
+  const sig = own.length > 1 ? 'own|' + own.map(b => b.dataset.jump).join('|') : heads.length >= 4 ? heads.map(h => h.textContent.trim()).join('|') : '';
+  let nav = root.querySelector('.sec-nav');
+  if (!sig) { nav?.remove(); return; }
+  heads.forEach((h, i) => { const id = `sec-${i}`; if (h.parentElement.dataset.sec !== id) h.parentElement.dataset.sec = id; });
+  if (nav?.dataset.sig === sig) return;
+  if (!nav) {
+    nav = document.createElement('div');
+    nav.className = 'sec-nav'; nav.setAttribute('aria-label', '跳到這一頁的區段');
+    const first = root.querySelector('.page-head');
+    if (first) first.insertAdjacentElement('afterend', nav); else root.prepend(nav);
+  }
+  nav.dataset.sig = sig;
+  nav.innerHTML = own.length
+    ? own.map(b => `<button type="button" class="sec-nav-item" data-jump="${esc(b.dataset.jump)}">${esc(b.textContent.trim())}</button>`).join('')
+    : heads.map((h, i) => `<button type="button" class="sec-nav-item" data-sec-to="sec-${i}">${esc(h.textContent.trim())}</button>`).join('');
+  if (own.length) own[0].closest('.jump-bar').hidden = true;
+  tidySpy();
+}
+// 捲到哪一段就亮哪一顆,並把那一顆捲進區段列看得到的地方(手機上那一列是橫向捲動的)
+function tidySpy() {
+  const nav = document.querySelector('#app .sec-nav');
+  if (!nav) return;
+  const line = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 61) + nav.offsetHeight + 24;
+  let cur = null;
+  for (const b of nav.children) {
+    const t = b.dataset.jump ? document.getElementById(b.dataset.jump) : document.querySelector(`#app [data-sec="${b.dataset.secTo}"]`);
+    if (t && t.getBoundingClientRect().top <= line) cur = b;
+  }
+  for (const b of nav.children) {
+    const on = b === cur;
+    if (b.classList.contains('on') !== on) {
+      b.classList.toggle('on', on);
+      if (on) nav.scrollTo({ left: b.offsetLeft - nav.clientWidth / 2 + b.offsetWidth / 2 });
+    }
+  }
+}
+/* 測試會塞一個只有幾個方法的假 document 進來載這支模組,所以看的是「真的有 DOM」而不是「有 document 這個名字」 */
+if (typeof document !== 'undefined' && typeof document.getElementById === 'function' && typeof MutationObserver !== 'undefined' && !globalThis.__tidy) {
+  globalThis.__tidy = true;
+  let pending = false, spying = false;
+  const kick = () => { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; tidyPage(); }); } };
+  const start = () => {
+    const app = document.getElementById('app');
+    if (!app) return;
+    new MutationObserver(kick).observe(app, { childList: true, subtree: true });
+    kick();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  addEventListener('scroll', () => { if (!spying) { spying = true; requestAnimationFrame(() => { spying = false; tidySpy(); }); } }, { passive: true });
+  document.addEventListener('click', e => {
+    const more = e.target.closest?.('[data-tidy-more]');
+    if (more) {
+      const el = more.previousElementSibling, open = !el.classList.contains('open');
+      el.classList.toggle('open', open);
+      more.setAttribute('aria-expanded', String(open));
+      more.textContent = open ? '收起' : '展開說明';
+      TIDY_OPEN[open ? 'add' : 'delete'](tidyKey(el));
+      return;
+    }
+    const rows = e.target.closest?.('[data-tidy-rows]');
+    if (rows?._table) {
+      const tb = rows._table, open = !tb.classList.contains('open');
+      tb.classList.toggle('open', open);
+      rows.textContent = open ? '只看前 6 列' : `顯示全部 ${tb.tBodies[0]?.rows.length ?? 0} 列`;
+      TIDY_OPEN[open ? 'add' : 'delete'](tb.dataset.tidyKey);
+      return;
+    }
+    const st = e.target.closest?.('[data-tidy-stamps]');
+    if (st) {
+      const compact = st.parentElement.classList.toggle('compact');
+      st.setAttribute('aria-expanded', String(!compact));
+      st.textContent = compact ? '時效明細' : '收起';
+      return;
+    }
+    const to = e.target.closest?.('[data-sec-to]');
+    if (to) document.querySelector(`#app [data-sec="${to.dataset.secTo}"]`)
+      ?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+}
+
 if (typeof document !== 'undefined' && !globalThis.__segClick) {
   globalThis.__segClick = true;
   document.addEventListener('click', e => {
