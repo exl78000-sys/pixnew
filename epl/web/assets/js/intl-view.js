@@ -1,4 +1,4 @@
-import * as C from './core.js?v=1404e5d4';
+import * as C from './core.js?v=b87face5';
 
 /* 國家隊 2026-11-07 併進「盃賽」那一頁的一個分頁(使用者:「國家隊 整合進杯賽」)。
    這支原本是 page-intl.js 整頁,現在是盃賽頁呼叫的 renderIntlView(host, { team }) —— 畫在 host 裡,

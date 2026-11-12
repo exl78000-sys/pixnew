@@ -1048,9 +1048,15 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 /* viewSwitch 的每一格是連結(球隊 / 戰術):不要底線 */
 /* 球隊頁頁首的跳轉列(2026-11-07 戰術併進球隊頁):按鈕只捲到那一段,不是分頁所以不亮 .on。
    .tm-anchor 讓出 sticky 導覽列的高度,捲過去時標題不會被蓋住 */
-.jump-bar { margin-top: 12px; }
-.tm-anchor { scroll-margin-top: calc(var(--topbar-h, 64px) + 58px); }
-.jump-bar[hidden] { display: none; }
+.jump-bar { margin-top: 10px; display: flex; flex-wrap: nowrap; gap: 2px 14px; overflow-x: auto; scrollbar-width: none;
+  background: none; border: 0; padding: 0; align-items: baseline; }
+.jump-bar::-webkit-scrollbar { display: none; }
+.jump-bar::before { content: "跳到"; flex: 0 0 auto; font-size: 12px; color: var(--ink-3, var(--ink-2)); }
+/* 跳轉是連結的長相、一行(放不下就橫向捲),不是一排分頁鈕 —— 使用者 2026-11-12:手機上不要再多一層分頁 */
+.jump-bar .seg-item { flex: 0 0 auto; white-space: nowrap; min-height: 0; padding: 4px 0; border: 0; border-radius: 0; background: none;
+  font-size: 13px; font-weight: 500; color: var(--accent-3); }
+.jump-bar .seg-item:hover { text-decoration: underline; background: none; }
+.tm-anchor { scroll-margin-top: calc(var(--topbar-h, 64px) + 12px); }
 .seg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .seg-more { position: relative; }
 .seg-more > summary::-webkit-details-marker { display: none; }
@@ -1071,21 +1077,10 @@ input:focus-visible, tbody tr.clickable:focus-visible {
 .clamp-more { appearance: none; font: inherit; font-size: 12px; cursor: pointer; background: none; border: 0; padding: 4px 0;
   color: var(--accent-3); display: inline-block; }
 .clamp-more:hover { text-decoration: underline; }
-.clamp-more:focus-visible, .sec-nav-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.clamp-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .stamp-row.compact { gap: 6px 8px; align-items: center; }
 .stamp-row.compact .stamp .dim { display: none; }
 .stamp-row .clamp-more { padding: 0 4px; }
-/* 區段導覽:吸在導覽列下面,一列橫向捲動(不換行 —— 換行的話手機上會佔掉三行) */
-.sec-nav { position: sticky; top: var(--topbar-h, 61px); z-index: 14; display: flex; gap: 6px; overflow-x: auto;
-  margin: 0 -4px 6px; padding: 8px 4px; background: #120b1af2; backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line); scrollbar-width: none; }
-.sec-nav::-webkit-scrollbar { display: none; }
-.sec-nav-item { appearance: none; font: inherit; cursor: pointer; flex: 0 0 auto; white-space: nowrap;
-  min-height: 30px; padding: 3px 12px; border: 1px solid var(--line); border-radius: 999px; background: #ffffff08;
-  color: var(--ink-2); font-size: 12.5px; font-weight: 600; }
-.sec-nav-item:hover { color: var(--ink); background: #ffffff12; }
-.sec-nav-item.on { color: var(--ink); border-color: var(--accent); background: #00ff8718; }
-[data-sec] { scroll-margin-top: calc(var(--topbar-h, 61px) + 58px); }
 @media (max-width: 640px) {
   /* 手機上數字卡一張佔一列,四張就用掉整個第一屏(球隊詳情、國家隊、模型頁);改兩欄 */
   .grid.g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -1108,13 +1103,6 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   .cd-bar { margin-top: 6px; }
   .cd-xg { display: none; }
 }
-/* 球隊詳情的頁內分頁:吸在導覽列下面;[hidden] 要壓過 section 可能被別的規則給的 display */
-.team-tabs { position: sticky; top: var(--topbar-h, 61px); z-index: 14; margin: 4px -4px 10px; padding: 8px 4px;
-  background: #120b1af2; backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-.team-tabs::-webkit-scrollbar { display: none; }
-.team-tabs .seg-item { flex: 0 0 auto; white-space: nowrap; }
-.team-pane[hidden] { display: none !important; }
-.team-pane { scroll-margin-top: calc(var(--topbar-h, 61px) + 58px); }
 table.tfold:not(.open) tbody tr:nth-child(n+7) { display: none; }
 @media (max-width: 640px) {
   .team-card { padding: 12px 14px; }

@@ -838,52 +838,13 @@ export function tidyPage(root = typeof document !== 'undefined' ? document.getEl
       b._table = tb;
     });
   }
-  // 區段導覽:只收看得到的頂層區段;頁面自己有分頁時,換分頁會重畫,簽名變了這裡就跟著重排
-  /* 頁面自己排了跳轉鈕(球隊總覽的 .jump-bar:球隊 / 總表 / 戰術各組 / 教練,比逐個標題粗、也比較好讀)就照它的,
-     原本那一排藏起來;沒有的才從標題收 */
-  if (root.querySelector('[data-own-nav]')) { root.querySelector('.sec-nav')?.remove(); return; }   // 頁面自己有吸附的分頁列(球隊詳情),不疊第二排
-  const own = [...root.querySelectorAll('.jump-bar [data-jump]')];
-  const heads = own.length ? [] : [...root.querySelectorAll('.section > h2')].filter(h => h.offsetParent && !h.closest('.card, details'));
-  const sig = own.length > 1 ? 'own|' + own.map(b => b.dataset.jump).join('|') : heads.length >= 4 ? heads.map(h => h.textContent.trim()).join('|') : '';
-  let nav = root.querySelector('.sec-nav');
-  if (!sig) { nav?.remove(); return; }
-  heads.forEach((h, i) => { const id = `sec-${i}`; if (h.parentElement.dataset.sec !== id) h.parentElement.dataset.sec = id; });
-  if (nav?.dataset.sig === sig) return;
-  if (!nav) {
-    nav = document.createElement('div');
-    nav.className = 'sec-nav'; nav.setAttribute('aria-label', '跳到這一頁的區段');
-    const first = root.querySelector('.page-head');
-    if (first) first.insertAdjacentElement('afterend', nav); else root.prepend(nav);
-  }
-  nav.dataset.sig = sig;
-  nav.innerHTML = own.length
-    ? own.map(b => `<button type="button" class="sec-nav-item" data-jump="${esc(b.dataset.jump)}">${esc(b.textContent.trim())}</button>`).join('')
-    : heads.map((h, i) => `<button type="button" class="sec-nav-item" data-sec-to="sec-${i}">${esc(h.textContent.trim())}</button>`).join('');
-  if (own.length) own[0].closest('.jump-bar').hidden = true;
-  tidySpy();
-}
-// 捲到哪一段就亮哪一顆,並把那一顆捲進區段列看得到的地方(手機上那一列是橫向捲動的)
-function tidySpy() {
-  const nav = document.querySelector('#app .sec-nav');
-  if (!nav) return;
-  const line = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 61) + nav.offsetHeight + 24;
-  let cur = null;
-  for (const b of nav.children) {
-    const t = b.dataset.jump ? document.getElementById(b.dataset.jump) : document.querySelector(`#app [data-sec="${b.dataset.secTo}"]`);
-    if (t && t.getBoundingClientRect().top <= line) cur = b;
-  }
-  for (const b of nav.children) {
-    const on = b === cur;
-    if (b.classList.contains('on') !== on) {
-      b.classList.toggle('on', on);
-      if (on) nav.scrollTo({ left: b.offsetLeft - nav.clientWidth / 2 + b.offsetWidth / 2 });
-    }
-  }
+  /* 不長「區段鈕列」(2026-11-12 使用者:不要第三層子分頁)。同一天稍早這裡會在頁首下面插一排吸附的區段鈕,
+     手機上就是導覽、聯賽分頁之外再疊一排,擠掉正文 —— 已拿掉,頁面的層級只到聯賽分頁為止。 */
 }
 /* 測試會塞一個只有幾個方法的假 document 進來載這支模組,所以看的是「真的有 DOM」而不是「有 document 這個名字」 */
 if (typeof document !== 'undefined' && typeof document.getElementById === 'function' && typeof MutationObserver !== 'undefined' && !globalThis.__tidy) {
   globalThis.__tidy = true;
-  let pending = false, spying = false;
+  let pending = false;
   const kick = () => { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; tidyPage(); }); } };
   const start = () => {
     const app = document.getElementById('app');
@@ -892,7 +853,6 @@ if (typeof document !== 'undefined' && typeof document.getElementById === 'funct
     kick();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
-  addEventListener('scroll', () => { if (!spying) { spying = true; requestAnimationFrame(() => { spying = false; tidySpy(); }); } }, { passive: true });
   document.addEventListener('click', e => {
     const more = e.target.closest?.('[data-tidy-more]');
     if (more) {
@@ -918,9 +878,6 @@ if (typeof document !== 'undefined' && typeof document.getElementById === 'funct
       st.textContent = compact ? '時效明細' : '收起';
       return;
     }
-    const to = e.target.closest?.('[data-sec-to]');
-    if (to) document.querySelector(`#app [data-sec="${to.dataset.secTo}"]`)
-      ?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   });
 }
 

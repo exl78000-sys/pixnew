@@ -1,8 +1,8 @@
-import * as C from './core.js?v=1404e5d4';
-import { mountFixtureList } from './fixture-list.js?v=d61c91a9';
+import * as C from './core.js?v=b87face5';
+import { mountFixtureList } from './fixture-list.js?v=e008df40';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
-import { mountLiveBoard } from './live-board.js?v=cb19647f';
-import { renderNewsView } from './news-view.js?v=295a93f8';
+import { mountLiveBoard } from './live-board.js?v=9a7c1b52';
+import { renderNewsView } from './news-view.js?v=fc882310';
 
 const app = document.getElementById('app');
 
