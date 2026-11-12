@@ -1,4 +1,4 @@
-import * as C from './core.js?v=b87face5';
+import * as C from './core.js?v=2e9f0bce';
 
 /* 國家隊 2026-11-07 併進「盃賽」那一頁的一個分頁(使用者:「國家隊 整合進杯賽」)。
    這支原本是 page-intl.js 整頁,現在是盃賽頁呼叫的 renderIntlView(host, { team }) —— 畫在 host 裡,
@@ -313,8 +313,10 @@ function standingsBlock(now) {
   if (!list.some(x => x.comp === S.stand)) S.stand = nearestComp(list, now);
   const cur = list.find(x => x.comp === S.stand);
   const c = COMPS.get(cur.comp);
+  /* 選賽事用下拉,不用一排分頁鈕(2026-11-12 使用者:不要第三層子分頁 —— 盃賽分頁底下再疊一排,手機上擠掉正文) */
   const tabs = list.length > 1
-    ? C.tabs(list.map(x => ({ key: x.comp, label: COMPS.get(x.comp)?.short ?? x.comp })), cur.comp, { attr: 'data-stand', label: '積分榜', max: 5 }) : '';
+    ? `<label class="small dim intl-pick">賽事 <select id="intlStand" aria-label="分組積分榜的賽事">${list.map(x =>
+      `<option value="${intlEsc(x.comp)}"${x.comp === cur.comp ? ' selected' : ''}>${intlEsc(COMPS.get(x.comp)?.short ?? x.comp)}</option>`).join('')}</select></label>` : '';
   const legend = new Map();
   for (const g of cur.groups) for (const l of g.legend) if (!legend.has(l.key)) legend.set(l.key, l);
   const n = k => cur.groups.filter(g => g.status === k).length;
@@ -537,7 +539,8 @@ function render() {
       <div class="sub">${h ? `± ${h.se}・${h.n} 場・${D.model.passed ? '通過' : '沒通過'}` : '沒有驗收結果'}</div></div>
   </div>
 
-  ${C.tabs([{ key: 'all', label: '全部' }, ...D.families.map(f => ({ key: f.key, label: f.zh }))], S.fam, { attr: 'data-fam', label: '賽事', max: 5 })}
+  <label class="small dim intl-pick">只看 <select id="intlFam" aria-label="只看哪一類賽事">${[{ key: 'all', zh: '全部賽事' }, ...D.families].map(f =>
+    `<option value="${intlEsc(f.key)}"${f.key === S.fam ? ' selected' : ''}>${intlEsc(f.zh)}</option>`).join('')}</select></label>
 
   ${pendingBlock(now)}
   ${upcomingBlock(now)}
@@ -553,8 +556,9 @@ function render() {
   </div>`;
   window.scrollTo(0, y);
 
-  for (const b of intlApp.querySelectorAll('[data-fam]')) b.onclick = () => { S.fam = b.dataset.fam; render(); };
-  for (const b of intlApp.querySelectorAll('[data-stand]')) b.onclick = () => { S.stand = b.dataset.stand; render(); };
+  const pick = (id, fn) => { const el = document.getElementById(id); if (el) el.onchange = () => { fn(el.value); render(); }; };
+  pick('intlFam', v => { S.fam = v; });
+  pick('intlStand', v => { S.stand = v; });
   const on = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = () => { fn(); render(); }; };
   on('moreAhead', () => { S.ahead += STEP_DAYS; });
   on('moreBack', () => { S.back += STEP_DAYS; });

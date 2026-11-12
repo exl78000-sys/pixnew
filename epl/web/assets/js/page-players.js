@@ -1,6 +1,6 @@
-import * as C from './core.js?v=b87face5';
+import * as C from './core.js?v=2e9f0bce';
 
-import { renderCrossLeague, otherHits, playerLeagues } from './allplayers-view.js?v=cd202138';
+import { renderCrossLeague, otherHits, playerLeagues } from './allplayers-view.js?v=f3611ddd';
 
 const app = document.getElementById('app');
 

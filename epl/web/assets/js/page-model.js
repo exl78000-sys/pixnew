@@ -1,6 +1,6 @@
-import * as C from './core.js?v=b87face5';
-import { renderModelView } from './model-view.js?v=6e8632d4';
-import { renderKnowledge } from './knowledge-view.js?v=a0025f8d';
+import * as C from './core.js?v=2e9f0bce';
+import { renderModelView } from './model-view.js?v=03e65739';
+import { renderKnowledge } from './knowledge-view.js?v=4b6fd0db';
 
 /* 模型驗證與足球知識(model.html,?view=knowledge 是知識)。
  *

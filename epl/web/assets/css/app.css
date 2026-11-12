@@ -1114,3 +1114,57 @@ table.tfold:not(.open) tbody tr:nth-child(n+7) { display: none; }
 .round-fold > summary h3::before { content: "▸ "; color: var(--ink-3); }
 .round-fold[open] > summary h3::before { content: "▾ "; }
 .round-fold > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+/* 國家隊的賽事篩選:下拉、一行,不是一排分頁鈕 */
+.intl-pick { display: inline-flex; align-items: center; gap: 6px; margin: 10px 0 4px; }
+.intl-pick select { max-width: 70vw; }
+/* 一行就好的分頁列:手機上不折成兩行(折了就是多一排疊在正文上面),放不下就橫向滑 */
+.seg.seg-one { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.seg.seg-one::-webkit-scrollbar { display: none; }
+.seg.seg-one .seg-item { flex: 0 0 auto; white-space: nowrap; }
+
+/* 模擬遊玩 2026-11-12 版面整理:開賽後設定收成一行、控制列在球場正下方、球場上緣的提示條、換人兩步、戰術每軸一行 */
+.game-sum { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.game-sum .crest { width: 22px; height: 22px; }
+#gStage { scroll-margin-top: calc(var(--topbar-h, 61px) + 8px); }
+.game-score { margin: 0 0 8px; }
+.game-score .center { display: grid; justify-items: center; gap: 4px; }
+.game-pitchbox { position: relative; }
+.game-flash { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.game-toast { position: absolute; left: 50%; top: 8px; transform: translate(-50%, -6px); max-width: calc(100% - 16px);
+  padding: 5px 12px; border-radius: 999px; background: #0b0814e6; border: 1px solid var(--line); color: var(--ink);
+  font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+.game-toast.on { opacity: 1; transform: translate(-50%, 0); }
+.game-toast.goal { border-color: #00ff85; }
+.game-toast.red { border-color: #ff4d6d; }
+.game-ctrl { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.game-ctrl select { min-width: 0; flex: 0 1 auto; }
+.game-help { margin: 6px 0 8px; }
+.game-help > summary { cursor: pointer; font-size: 12px; color: var(--accent-3); }
+.sub-quota { display: flex; gap: 14px; flex-wrap: wrap; margin: 2px 0 6px; color: var(--ink-2); }
+.sub-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--ink-3); margin-right: 2px; vertical-align: middle; }
+.sub-dot.used { background: var(--ink-2); border-color: var(--ink-2); }
+.sub-dot.queued { background: linear-gradient(90deg, var(--ink-2) 50%, transparent 50%); border-color: var(--ink-2); }
+.sub-cand { outline: 1.5px solid #ff9f1c; outline-offset: 1px; }
+.sub-hint { margin-top: 6px; color: #ffcf8a; }
+.tac-row { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.tac-opts { display: flex; gap: 3px; overflow-x: auto; scrollbar-width: none; }
+.tac-opts::-webkit-scrollbar { display: none; }
+.tac-opts .btn { flex: 0 0 auto; white-space: nowrap; }
+@media (max-width: 700px) {
+  /* 手機:球場用滿寬度;球場與控制列吸在頂端,往下捲到換人 / 戰術時比賽還看得到 */
+  .game-card { padding: 8px; }
+  .duel-stage { padding: 8px; margin: 0 -4px; }
+  .game-pitch { display: contents; }
+  .game-sticky { position: sticky; top: var(--topbar-h, 61px); z-index: 6; background: #0a0812; padding-bottom: 4px; }
+  .game-score .side b { font-size: 13px; }
+}
+@media (max-width: 700px) {
+  .game-card { padding: 6px; margin: 0 -8px; }
+  .duel-stage { padding: 6px; margin: 0; }
+  .game-ctrl { flex-wrap: nowrap; }
+  .game-ctrl select { flex: 1 1 0; width: 0; }
+  .game-ctrl .btn { flex: 0 0 auto; padding-left: 8px; padding-right: 8px; }
+}
+.game-sum[hidden] { display: none; }
+@media (max-width: 700px) { .game-panel #gPanel { max-height: none; overflow: visible; } }

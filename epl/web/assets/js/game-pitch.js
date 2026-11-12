@@ -71,6 +71,8 @@ export function mountPitch(canvas, opts = {}) {
   const GK = pickKeeperKits(home[0], away[0]);
   const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
   let cues = [];
+  /* 換人時選中的那個人(2026-11-12):在球場上圈出來,換人的時候不必去對背號。只畫,不改任何狀態 */
+  let marked = null;
   const trail = [];                              // 球最近的位置(畫尾巴用)
 
   function pitch() {
@@ -209,6 +211,10 @@ export function mountPitch(canvas, opts = {}) {
       g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2);
       g.fillStyle = fill; g.fill();
       g.lineWidth = 2; g.strokeStyle = edge; g.stroke();
+      if (marked && p.code === marked) {
+        g.lineWidth = 3; g.strokeStyle = '#ff9f1c'; g.setLineDash([4, 3]);
+        g.beginPath(); g.arc(x, y, r + 7, 0, Math.PI * 2); g.stroke(); g.setLineDash([]);
+      }
       if (p.code === st.ball.holder) {
         g.lineWidth = 2.5; g.strokeStyle = '#ffe36b';
         g.beginPath(); g.arc(x, y, r + 4, 0, Math.PI * 2); g.stroke();
@@ -228,5 +234,5 @@ export function mountPitch(canvas, opts = {}) {
   }
 
   draw(null);
-  return { draw, cue, colors: () => ({ ...COL }), keeperColors: () => ({ ...GK }), clashed: () => clashed };
+  return { draw, cue, mark: code => { marked = code ?? null; }, colors: () => ({ ...COL }), keeperColors: () => ({ ...GK }), clashed: () => clashed };
 }

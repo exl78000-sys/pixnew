@@ -1,4 +1,4 @@
-import * as C from './core.js?v=b87face5';
+import * as C from './core.js?v=2e9f0bce';
 import { followedIn } from './follow.js?v=02130043';
 
 /* 動態(2026-11-07 併進聯賽的「比賽」頁,使用者選了「建議二」):原本 news.html 一整頁,現在是比賽頁底下那個摺疊區塊的內容。

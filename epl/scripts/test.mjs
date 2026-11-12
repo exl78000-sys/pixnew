@@ -6633,6 +6633,10 @@ function checkAssetStamps() {
       const bareCss = readFileSync(join(ROOT, 'web', 'assets', 'css', 'app.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
       ok(!/sec-nav|data-own-nav/.test(co) && !/\.sec-nav|\.team-tabs/.test(bareCss) && !/data-own-nav|data-team-pane/.test(tmS),
         '全站不留第三層:tidyPage 不長區段鈕列,也沒有吸附的頁內分頁列');
+      /* 國家隊在盃賽分頁底下:它的賽事篩選與積分榜的賽事選擇是下拉,不是再一排分頁鈕(手機上就是第三排) */
+      const iv = js('intl-view.js');
+      ok(!/C\.tabs\(/.test(iv) && /id="intlFam"/.test(iv) && /id="intlStand"/.test(iv),
+        '國家隊的賽事篩選是下拉,不是盃賽分頁底下再一排分頁鈕');
       const pre = an.slice(an.indexOf('id="panel-pre"'), an.indexOf('id="panel-post"'));
       ok(pre.indexOf('lineupSection(f)') > 0 && pre.indexOf('opinionSections(f, expertRows)') > pre.indexOf('formSection(f)')
         && pre.indexOf('formSection(f)') > pre.indexOf('lineupSection(f)') && pre.indexOf('opinionSections(f, expertRows)') < pre.indexOf('這份分析怎麼來的'),

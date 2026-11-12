@@ -1,7 +1,7 @@
-import * as C from './core.js?v=b87face5';
+import * as C from './core.js?v=2e9f0bce';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=e56a1e44';
-import { renderIntlView } from './intl-view.js?v=8126a3e1';
+import { renderUclView } from './ucl-view.js?v=e525ea6e';
+import { renderIntlView } from './intl-view.js?v=b802cddf';
 
 const app = document.getElementById('app');
 
@@ -418,7 +418,7 @@ try {
     <h1>盃賽</h1>
     <div id="compIntro"></div>
   </div>
-  ${C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽' })}
+  ${C.tabs(COMPS.map(c => ({ key: c.key, html: `${C.compBadge(c.key)}${C.esc(c.zh)}` })), comp, { attr: 'data-comp', label: '盃賽', cls: 'seg-one' })}
   <div id="compBody"></div>
   <div id="compFoot"></div>`;
 

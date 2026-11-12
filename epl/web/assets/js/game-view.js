@@ -1,6 +1,6 @@
-import * as C from './core.js?v=b87face5';
+import * as C from './core.js?v=2e9f0bce';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
-import { mountPitch } from './game-pitch.js?v=b835ac67';
+import { mountPitch } from './game-pitch.js?v=cea8f765';
 import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=361233a7';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
@@ -90,7 +90,10 @@ export async function renderGame(app) {
     function renderControls() {
       const host = document.getElementById('gameBody');
       const sel = (id, cur) => `<select id="${id}">${teams.map(t => `<option value="${t.code}"${t.code === cur ? ' selected' : ''}>${C.esc(t.zh ?? t.en)}</option>`).join('')}</select>`;
+      /* 開賽後收起來(2026-11-12):選隊、勝率條與兩行說明原本整場都留在球場上面,
+         球場在桌機要捲到 564px、手機 742px 才出現。收成 gSum 那一行,按「重新設定」再打開。 */
       host.innerHTML = `
+        <div id="gPre">
         <div class="row" style="gap:10px;flex-wrap:wrap;align-items:center">
           <span class="small">主隊 ${sel('gHome', state.home)}</span>
           <button class="btn" id="gSwap" title="交換主客">⇄</button>
@@ -104,7 +107,9 @@ export async function renderGame(app) {
           <button class="btn tiny" id="gLineup">賽前調整先發與陣型</button>
         </div>
         <div id="gSetup"></div>
-        <div id="gStage" style="margin-top:12px"></div>`;
+        </div>
+        <div id="gSum" class="game-sum" hidden></div>
+        <div id="gStage"></div>`;
       document.getElementById('gPred').innerHTML = predHtml();
       const bind = (id, ev, fn) => { const n = document.getElementById(id); if (n) n[ev] = fn; };
       const reset = () => { state.setup = { home: null, away: null }; document.getElementById('gPred').innerHTML = predHtml(); document.getElementById('gSetup').innerHTML = ''; };
@@ -181,6 +186,7 @@ export async function renderGame(app) {
       /* 球場上的事件提示(2026-10-23):在事件發生的位置畫一下。只在正常播放時給 ——
          「跳到結果」一口氣套幾百個事件,畫出來也沒有人看得到。 */
       if (running && pitch && match) pitch.cue(e, match.pitch());
+      if (running) toast(e);
       if (e.type === 'goal') { disp.score = [...e.score]; disp.lastGoalAt = performance.now(); }
       if (e.type === 'half') disp.half = 2;
       if (e.type === 'sub' && /^下一次死球/.test(subMsg[e.side] ?? '')) subMsg[e.side] = '';
@@ -195,6 +201,25 @@ export async function renderGame(app) {
         if (e.card === 'yellow') L.yellows.set(e.player, (L.yellows.get(e.player) ?? 0) + 1);
         else { L.on = L.on.filter(c => c !== e.player); L.off.push(e.player); }
       }
+    }
+    /* 球場上緣的提示條(2026-11-12):進球、紅牌、十二碼、換人。普通射門只進事件流 ——
+       每一腳都彈的話,真正重要的那幾件反而看不出來。只講引擎吐出來的事件,不加任何推論。 */
+    let toastTimer = 0;
+    function toast(e) {
+      const t = e.team ? nameOf(e.team) : '';
+      const m = `${e.min}${e.extra ? `+${e.extra}` : ''}'`;
+      const who = e.name ?? (e.player ? playerName(e.side, e.player) : '');
+      const text = e.type === 'goal' ? `⚽ ${m} ${t} 進球 ${who ? `・${who}` : ''}・${e.score[0]}:${e.score[1]}`
+        : e.type === 'card' && e.card === 'red' ? `🟥 ${m} ${t} ${who} ${e.direct ? '直接紅牌' : '兩黃罰下'}`
+        : e.type === 'penalty' ? `${m} ${t} 獲得十二碼`
+        : e.type === 'sub' ? `🔁 ${m} ${t} ${who} 換 ${e.offName ?? ''}`
+        : null;
+      const el = document.getElementById('gToast');
+      if (!text || !el) return;
+      el.textContent = text;
+      el.className = `game-toast on${e.type === 'goal' ? ' goal' : e.type === 'card' ? ' red' : ''}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.className = 'game-toast'; }, 3200);
     }
     function statsOf(side) {
       const ev = disp.events.filter(e => e.side === side);
@@ -230,23 +255,39 @@ export async function renderGame(app) {
       subPick = { home: null, away: null }; subMsg = { home: '', away: '' };
       if (tab === 'recap') tab = 'stats';
       paused = false; running = true;
+      const pre = document.getElementById('gPre'), sum = document.getElementById('gSum');
+      if (pre) pre.hidden = true;
+      if (sum) {
+        sum.hidden = false;
+        sum.innerHTML = `<span class="row" style="gap:6px;align-items:center;min-width:0">${crest(state.home)}<b>${C.esc(nameOf(state.home))}</b>
+          <span class="dim">${state.neutral ? '中立場' : 'vs'}</span><b>${C.esc(nameOf(state.away))}</b>${crest(state.away)}</span>
+          <button class="btn tiny" id="gReset">重新設定</button>`;
+        document.getElementById('gReset').onclick = () => {
+          stop(); match = null; disp = null; box.innerHTML = '';
+          if (pre) pre.hidden = false; sum.hidden = true;
+        };
+      }
+      /* 控制列合一,放在球場正下方(手機上跟球場一起吸在頂端,換人時兩樣都看得到) */
       box.innerHTML = `<div class="duel-stage">
-        <div class="spread">
-          <span class="pill bad" id="gMin"></span>
-          <span class="tiny dim row" style="gap:6px;flex-wrap:wrap">
-            <button class="btn tiny" id="gPause">暫停</button>
-            速度 <select id="gSpeed">${Object.entries(LIVE_SPEEDS).map(([k, v]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${v.zh}</option>`).join('')}</select>
-            <button class="btn tiny" id="gSkip">跳到結果</button>
-          </span>
-        </div>
-        <div class="scoreline" style="margin:8px 0">
+        <div class="scoreline game-score">
           <div class="side">${crest(state.home)}<b>${C.esc(nameOf(state.home))}</b></div>
-          <div class="sc" id="gScore">0 : 0</div>
+          <div class="center"><div class="sc" id="gScore">0 : 0</div><span class="pill bad" id="gMin"></span></div>
           <div class="side away">${crest(state.away)}<b>${C.esc(nameOf(state.away))}</b></div>
         </div>
-        <div id="gFlash" class="center"></div>
         <div class="game-main">
-          <div class="game-pitch"><canvas id="gCanvas" width="920" height="596" style="width:100%;height:auto;display:block;border-radius:10px"></canvas>
+          <div class="game-pitch">
+            <div class="game-sticky">
+              <div class="game-pitchbox"><canvas id="gCanvas" width="920" height="596" style="width:100%;height:auto;display:block;border-radius:10px"></canvas>
+                <div id="gToast" class="game-toast" aria-live="polite"></div>
+                <div id="gFlash" class="game-flash"></div>
+              </div>
+              <div class="game-ctrl">
+                <button class="btn tiny" id="gPause">暫停</button>
+                <select id="gSpeed" aria-label="播放速度">${Object.entries(LIVE_SPEEDS).map(([k, v]) => `<option value="${k}"${k === state.speed ? ' selected' : ''}>${v.zh}</option>`).join('')}</select>
+                <button class="btn tiny" id="gSkip">跳到結果</button>
+                <button class="btn tiny" id="gReplay2" title="用同一顆種子重踢這一場">重播</button>
+              </div>
+            </div>
             <div class="tiny dim" id="gSeq" style="margin-top:4px;min-height:1.2em"></div>
             <div id="gProb" style="margin-top:8px"></div>
             <div class="tiny dim center" id="gNext" style="margin-top:4px"></div>
@@ -280,6 +321,9 @@ export async function renderGame(app) {
         uiTick();
       };
       document.getElementById('gSkip').onclick = skipToEnd;
+      document.getElementById('gReplay2').onclick = () => start();
+      /* 開賽後把球場捲進第一屏(上面的設定已經收起來了) */
+      box.scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
       frame();
       loop();
       /* 面板與播報不必每一格重畫(一秒六十次會讓瀏覽器忙著排版)。
@@ -497,7 +541,7 @@ export async function renderGame(app) {
         ${H.pens + A.pens ? row('十二碼', H.pens, A.pens, 'xG 0.79・本站量到的') : ''}
         ${row('助攻', H.assists, A.assists, '進球前一腳')}
         ${row('λ(遊戲的錨)', l.home.toFixed(2), l.away.toFixed(2), '整場不變')}
-        <div class="tiny dim" style="margin-top:6px">全部由<b>畫面上已經發生的事件</b>累計 —— 這個引擎不會算到未來,所以不會提前洩露還沒演的射門。
+        <details class="game-help"><summary>這些數字怎麼算</summary><div class="tiny dim" style="margin-top:6px">全部由<b>畫面上已經發生的事件</b>累計 —— 這個引擎不會算到未來,所以不會提前洩露還沒演的射門。
           控球 = 兩隊各持球多久(秒);目標那一欄是從兩隊<b>真實的主客控球率</b>推的,
           引擎只是把每一隊的護球能力接上去,實際踢出來多少是它自己的結果(所以會偏)。
           xG 是每一腳射門當下由距離與張角算的,水準校準到聯盟每球平均。
@@ -509,7 +553,7 @@ export async function renderGame(app) {
           拿來對的是射門那一瞬間的站位(StatsBomb 開放資料):最近的防守者站在射手與球門之間的,
           真實約五成、這裡約四分之一;球的路上有人,真實約五成、這裡一成多。
           剩下的差距還沒有拆清楚。射門的方式:在對方禁區裡接到隊友的傳球,會有一部分直接第一時間出腳(真實約四成多,這裡照那個比例校準;機率是遊戲規則)。
-          紅牌含<b>直接紅牌</b>(每次犯規照聯盟真實比率抽${profile.league_?.reds?.direct ? `,英超約每 ${Math.round(1 / (profile.league_.reds.direct * 2))} 場一張` : ''})與兩黃罰下;門將被罰下的話由場上離球門最近的人代守門,要換替補門將照一般換人。</div>`;
+          紅牌含<b>直接紅牌</b>(每次犯規照聯盟真實比率抽${profile.league_?.reds?.direct ? `,英超約每 ${Math.round(1 / (profile.league_.reds.direct * 2))} 場一張` : ''})與兩黃罰下;門將被罰下的話由場上離球門最近的人代守門,要換替補門將照一般換人。</div></details>`;
     }
     /* 賽後解讀。判讀與敘述都在 game-diag.js(純函式,測得到);這裡只負責畫。
        讀的是 disp,不是 match.state() —— 完場之後兩者相同,但規矩只有一條才不會有人抄錯。 */
@@ -547,56 +591,64 @@ export async function renderGame(app) {
     function lineupHtml() {
       const side = sd => {
         const L = disp.lineup[sd], sq = squadOf(sd);
-        const btn = (c, where) => {
-          const p = sq.get(c); const y = L.yellows.get(c);
-          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${subPick[sd]?.[where] === c ? ' primary' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}">${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${L.gk === c ? '代守門' : (p?.role ?? p?.pos ?? '')}</span>${y ? ' 🟨' : ''}</button>`;
-        };
-        const reds = L.off.length - L.subs;
         /* 換人規則的現況由引擎給(subStatus),畫面不自己數 —— 自己數的話排隊中的那幾個就對不上 */
         const S = match?.subStatus?.(sd) ?? null;
         const pend = S?.pending ?? [];
         const full = S && (S.used + pend.length >= S.max);
+        /* 換人兩步(2026-11-12):先點場上要換下的人(球場上也圈出來),替補席就亮起來,再點一位替補就送出。
+           原本是「點一個場上、點一個替補、再按換人」三下,而且中間沒有任何提示該點哪裡。 */
+        const pk = subPick[sd] ?? {};
+        const btn = (c, where) => {
+          const p = sq.get(c); const y = L.yellows.get(c);
+          const picked = pk[where] === c;
+          const cand = where === 'bench' && pk.on && !full;
+          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${picked ? ' primary' : ''}${cand ? ' sub-cand' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}"${full ? ' disabled' : ''}>${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${L.gk === c ? '代守門' : (p?.role ?? p?.pos ?? '')}</span>${y ? ' 🟨' : ''}</button>`;
+        };
+        /* 名額與機會用圓點講(實心 = 用掉、半實心 = 排隊中);數字照樣寫在旁邊,不靠顏色 */
+        const dots = (used, queued, max) => Array.from({ length: max }, (_, i) =>
+          `<span class="sub-dot${i < used ? ' used' : i < used + queued ? ' queued' : ''}"></span>`).join('');
+        const reds = L.off.length - L.subs;
         return `<div class="card" style="margin-bottom:8px">
-          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${match?.formationOf?.(sd) ?? setupOf(sd).formation}・${
-            S ? `換人 ${S.used} / ${S.max}・換人機會 ${S.windows} / ${S.maxWindows}` : `換人 ${L.subs} 次`}${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          <h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">${match?.formationOf?.(sd) ?? setupOf(sd).formation}${reds > 0 ? `・紅牌 ${reds}` : ''}</span></h3>
+          ${S ? `<div class="tiny sub-quota"><span>換人 ${dots(S.used, pend.length, S.max)} ${S.used} / ${S.max}</span>
+            <span>機會 ${dots(S.windows, 0, S.maxWindows)} ${S.windows} / ${S.maxWindows}</span></div>` : `<div class="tiny dim">換人 ${L.subs} 次</div>`}
           ${pend.length ? `<div class="tiny" style="margin:4px 0">等下一次死球:${pend.map(x => `${C.esc(playerName(sd, x.on))} 換 ${C.esc(playerName(sd, x.off))}
             <button class="btn tiny" data-cancel-sub="${sd}" data-cancel-off="${C.esc(x.off)}">取消</button>`).join('、')}</div>` : ''}
           <div class="tiny dim">場上</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.on.map(c => btn(c, 'on')).join('')}</div>
           <div class="tiny dim">替補席</div><div class="row" style="gap:4px;flex-wrap:wrap;margin:4px 0">${L.bench.map(c => btn(c, 'bench')).join('')}</div>
           ${L.off.length ? `<div class="tiny dim">已下場:${L.off.map(c => C.esc(sq.get(c)?.name ?? c)).join('、')}</div>` : ''}
-          <div class="row" style="gap:6px;margin-top:6px">${full
-            ? `<span class="tiny dim">換人名額用完了(每隊最多 ${S.max} 人)</span>`
-            : `<button class="btn tiny" data-do-sub="${sd}">換人(點一個場上、一個替補)</button>`}<span class="tiny dim" id="gSubMsg-${sd}">${C.esc(subMsg[sd])}</span></div>
+          <div class="tiny sub-hint" id="gSubMsg-${sd}">${full ? `換人名額用完了(每隊最多 ${S.max} 人)`
+            : C.esc(subMsg[sd] || (pk.on ? `換下 ${playerName(sd, pk.on)}:點一位替補` : '點場上要換下的人,再點一位替補'))}</div>
         </div>`;
       };
       return side('home') + side('away')
-        + `<div class="tiny dim">換上來的人接手原本那個位置,換好的那一格就在場上。
+        + `<details class="game-help"><summary>換人怎麼運作</summary><div class="tiny dim">換上來的人接手原本那個位置,換好的那一格就在場上。
           這個引擎裡換人不改 λ —— 影響是從場上長出來的:他的最高速度、他站的位置,
           以及他的<b>體能是滿的</b>(場上的人跑得越多、跑得出來的速度越低,換上來的人從零開始算)。
           <b>刻意不做</b>:自動換人 —— 換誰、什麼時候換是你的決定,引擎不會替你換。
           <b>換人規則</b>(2026-11-07 起照正式規則):每隊最多換 5 人、比賽中最多 3 次換人機會,中場休息時換的不佔機會;
           比賽進行中按下的換人會<b>等到下一次死球</b>才換(界外球、球門球、自由球、開球;角球與十二碼不換),
-          同一次死球換的幾個人算同一次機會。上半場結束時比賽<b>自動暫停在中場休息</b>,換好再按「開始下半場」。</div>`;
+          同一次死球換的幾個人算同一次機會。上半場結束時比賽<b>自動暫停在中場休息</b>,換好再按「開始下半場」。</div></details>`;
     }
     function bindSubs() {
+      const markOnPitch = code => { if (pitch && match) { pitch.mark(code); pitch.draw(match.pitch()); } };
       document.querySelectorAll('[data-sub-code]').forEach(b => {
         b.onclick = () => {
           const { subSide: sd, subCode: c, subWhere: w } = b.dataset;
-          subPick[sd] ??= {}; subPick[sd][w] = subPick[sd][w] === c ? null : c; renderPanel();
-        };
-      });
-      document.querySelectorAll('[data-do-sub]').forEach(b => {
-        b.onclick = () => {
-          const sd = b.dataset.doSub, pk = subPick[sd] ?? {};
-          if (!pk.on || !pk.bench) { subMsg[sd] = '要先點一個場上的人和一個替補'; renderPanel(); return; }
-          /* 合法性檢查在引擎裡(下場的人要在場上、上場的人要在板凳而且沒被用過)——
-             畫面只負責把結果講出來,不要自己再寫一份規則。 */
-          const r = match.sub(sd, pk.on, pk.bench);
-          if (r.ok) subPick[sd] = null;
-          /* 立刻換的那一筆(死球或中場暫停時)事件已經在引擎裡了,但畫面只在推進時收事件 ——
-             暫停中不收的話,引擎說換了、陣容面板還是舊名單。推 0 秒只收事件,比賽一格都不動。 */
-          if (r.ok && !r.queued) for (const e of match.advance(0)) applyEvent(e);
-          subMsg[sd] = r.reason;
+          subPick[sd] ??= {}; subPick[sd][w] = subPick[sd][w] === c ? null : c;
+          subMsg[sd] = '';
+          if (w === 'on') markOnPitch(subPick[sd].on);
+          const pk = subPick[sd];
+          if (pk.on && pk.bench) {
+            /* 合法性檢查在引擎裡(下場的人要在場上、上場的人要在板凳而且沒被用過)——
+               畫面只負責把結果講出來,不要自己再寫一份規則。 */
+            const r = match.sub(sd, pk.on, pk.bench);
+            if (r.ok) { subPick[sd] = null; markOnPitch(null); } else pk.bench = null;
+            /* 立刻換的那一筆(死球或中場暫停時)事件已經在引擎裡了,但畫面只在推進時收事件 ——
+               暫停中不收的話,引擎說換了、陣容面板還是舊名單。推 0 秒只收事件,比賽一格都不動。 */
+            if (r.ok && !r.queued) for (const e of match.advance(0)) applyEvent(e);
+            subMsg[sd] = r.reason;
+          } else if (pk.bench && !pk.on) subMsg[sd] = `換上 ${playerName(sd, pk.bench)}:再點場上要換下的人`;
           renderPanel();
         };
       });
@@ -620,10 +672,10 @@ export async function renderGame(app) {
       const t = profile.teams[state[sd]], used = new Set(t.formation.options);
       const cur = match.formationOf(sd);
       const list = [...t.formation.options, ...FORMATION_COMMON.filter(f => !used.has(f))];
-      return `<div class="tac-row" style="display:grid;grid-template-columns:52px 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)">
+      /* 2026-11-12:每軸一行,說明移到提示(title)與面板頂端的「指令怎麼運作」裡;選項太多就橫向滑,不折成好幾行 */
+      return `<div class="tac-row" title="立刻生效:每個人換到新陣型裡離自己最近的那一格,跑過去(不瞬移)。標「本季」的是真實用過的;其餘是遊戲加的選項。">
         <span class="small"><b>陣型</b></span>
-        <span class="row" style="gap:3px;flex-wrap:wrap">${list.map(f => `<button class="btn tiny${f === cur ? ' on' : ''}" data-form-side="${sd}" data-form-spec="${f}">${f}${used.has(f) ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
-        <span></span><span class="tiny dim">立刻生效:每個人換到新陣型裡離自己最近的那一格,<b>跑過去</b>(不瞬移)。標「本季」的是真實用過的;其餘是遊戲加的選項。</span>
+        <span class="tac-opts">${list.map(f => `<button class="btn tiny${f === cur ? ' on' : ''}" data-form-side="${sd}" data-form-spec="${f}">${f}${used.has(f) ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
       </div>`;
     }
     function tacticsPanelHtml(sd) {
@@ -633,12 +685,15 @@ export async function renderGame(app) {
       const todo = TACTIC_TODO.map(k => axes[k]?.zh ?? k).join('、');
       return `<div class="card" style="margin-bottom:8px"><h3>${C.esc(nameOf(state[sd]))} <span class="dim tiny">戰術指令</span></h3>
         ${formationRowHtml(sd)}
-        ${LIVE_TACTICS.map(k => { const a = axes[k] ?? { zh: k, levels: ['1', '2', '3', '4', '5'] }; const st = t.style?.[k]; return `
-          <div class="tac-row" style="display:grid;grid-template-columns:52px 1fr;gap:6px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)">
+        ${LIVE_TACTICS.map(k => { const a = axes[k] ?? { zh: k, levels: ['1', '2', '3', '4', '5'] }; const st = t.style?.[k];
+          const real = `本季實際:${st?.value != null ? `${st.value}${st.unit ?? ''}(${st.basis},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}${k === 'mentality' ? ' —— 這一隊本季的進攻傾向已經在它的射門資料裡,「平衡」就是照本季踢,其他級是在那之上多壓或少壓(所以不標「本季」)' : ''}`;
+          return `
+          <div class="tac-row" title="${C.esc(real)}">
             <span class="small"><b>${C.esc(a.zh)}</b></span>
-            <span class="row" style="gap:3px;flex-wrap:wrap">${a.levels.map((z, i) => `<button class="btn tiny${cur[k] === i + 1 ? ' on' : ''}" data-tac-side="${sd}" data-tac-key="${k}" data-tac-level="${i + 1}">${C.esc(z)}${def[k] === i + 1 && k !== 'mentality' ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
-            <span></span><span class="tiny dim">本季實際:${st?.value != null ? `${st.value}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}${k === 'mentality' ? ' —— 這一隊本季的進攻傾向已經在它的射門資料裡,「平衡」就是照本季踢,其他級是在那之上多壓或少壓(所以不標「本季」)' : ''}</span>
+            <span class="tac-opts">${a.levels.map((z, i) => `<button class="btn tiny${cur[k] === i + 1 ? ' on' : ''}" data-tac-side="${sd}" data-tac-key="${k}" data-tac-level="${i + 1}">${C.esc(z)}${def[k] === i + 1 && k !== 'mentality' ? '<span class="dim">・本季</span>' : ''}</button>`).join('')}</span>
           </div>`; }).join('')}
+        <details class="game-help"><summary>本季實際數字</summary><div class="tiny dim">${LIVE_TACTICS.map(k => { const st = t.style?.[k];
+          return `<div><b>${C.esc(axes[k]?.zh ?? k)}</b>:${st?.value != null ? `${C.esc(String(st.value))}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}</div>`; }).join('')}</div></details>
         <div class="tiny dim" style="margin-top:6px">還沒掛上來的指令:${C.esc(todo)} —— 引擎裡的旋鈕接了,但量下去<b>方向不對或幅度離譜</b>(寬度拉寬反而自己射門砍半、節奏 ±20% 換來 3.3 倍的射門),所以不放按鈕。</div>
       </div>`;
     }
@@ -677,17 +732,17 @@ export async function renderGame(app) {
         </div>`;
       };
       return tacticsPanelHtml('home') + tacticsPanelHtml('away')
-        + `<div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫與直接度的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶 / 出長傳,選自己那一級等於沒下指令。防線與心態引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。<b>心態只改有球時整隊壓得多前</b>(每級 ${MENT_STEP} 公尺,遊戲規則;沒球時站位不動):壓得越前,自己的機會多一點,丟球時身後的空間也大一點 —— 量過,進攻的心態讓兩隊都多進一點、淨勝球不變,保守則是自己少進、失球沒有跟著少(這個引擎的防守還不會因為人多在後面而擋下更多球)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。</div>`
+        + `<details class="game-help"><summary>指令怎麼運作(哪些是遊戲規則)</summary><div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫與直接度的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶 / 出長傳,選自己那一級等於沒下指令。防線與心態引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。<b>心態只改有球時整隊壓得多前</b>(每級 ${MENT_STEP} 公尺,遊戲規則;沒球時站位不動):壓得越前,自己的機會多一點,丟球時身後的空間也大一點 —— 量過,進攻的心態讓兩隊都多進一點、淨勝球不變,保守則是自己少進、失球沒有跟著少(這個引擎的防守還不會因為人多在後面而擋下更多球)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。每一軸「本季實際」的數字,把滑鼠停在那一行上就看得到。</div></details>`
         + side('home') + side('away') + `<div class="tiny dim">下面這些是真資料(逐場 CSV、FotMob、Understat、FPL),唯讀。</div>`;
     }
 
     /* 底下「這張圖哪些是真的」原本是一整段近千字的牆,還夾著 npm 指令;
        2026-09-24 全站掃描時拆成清單,內容一項不少(測試釘著的那幾句原字保留)。 */
     app.innerHTML = `
-      <h1>模擬遊玩 <span class="dim">英超</span></h1>
+      <div class="page-head"><h1>模擬遊玩 <span class="dim">英超</span></h1>
       <p class="lede">選兩隊、調先發與陣型、開賽後隨時換人。球與二十二個人是<b>連續時間模擬</b>出來的 ——
-        沒有劇本、沒有剪接,播放速度只是時間倍率。</p>
-      <div class="card"><div id="gameBody"></div></div>
+        沒有劇本、沒有剪接,播放速度只是時間倍率。</p></div>
+      <div class="card game-card"><div id="gameBody"></div></div>
       <div class="note" style="margin-top:12px"><b>這張圖哪些是真的。</b>
         <ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:4px">
           <li><b>真資料</b>:名單、背號、角色、陣型選項、<b>逐人最高速度</b>(FotMob,當成跑速上限)、
