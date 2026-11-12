@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-12T11:11:04.023Z",
+ "retrievedAt": "2026-11-12T18:23:53.350Z",
  "matches": [
   {
    "id": "5181825",
@@ -794,7 +794,7 @@
     "shortName": "Belgium",
     "fmId": "8263"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1162,9 +1162,23 @@
      "live": null
     },
     {
+     "fmId": "8263",
+     "name": "Belgium",
+     "idx": 2,
+     "played": 5,
+     "wins": 3,
+     "draws": 0,
+     "losses": 2,
+     "gf": 8,
+     "ga": 6,
+     "pts": 9,
+     "deduction": null,
+     "live": "5181796"
+    },
+    {
      "fmId": "8204",
      "name": "Italy",
-     "idx": 2,
+     "idx": 3,
      "played": 4,
      "wins": 2,
      "draws": 1,
@@ -1176,32 +1190,18 @@
      "live": null
     },
     {
-     "fmId": "8263",
-     "name": "Belgium",
-     "idx": 3,
-     "played": 4,
-     "wins": 2,
-     "draws": 0,
-     "losses": 2,
-     "gf": 6,
-     "ga": 5,
-     "pts": 6,
-     "deduction": null,
-     "live": null
-    },
-    {
      "fmId": "6595",
      "name": "Turkiye",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
-     "gf": 2,
-     "ga": 11,
+     "losses": 5,
+     "gf": 3,
+     "ga": 13,
      "pts": 0,
      "deduction": null,
-     "live": null
+     "live": "5181796"
     }
    ]
   },
