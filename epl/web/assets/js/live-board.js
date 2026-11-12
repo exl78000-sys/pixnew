@@ -429,6 +429,13 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
 
   async function openReport(m) {
     if (!m) return;
+    /* 第一次畫面是瘦版(沒有 advanced);feed 覆蓋通常幾秒內就換成整份,但讀者可能更快點開、或 feed 沒有變所以沒換 ——
+       報告卡要的就是 advanced,缺的時候在這裡補抓整份,抓不到就照瘦版畫(卡片自己判斷資料在不在) */
+    if (!m.advanced && (m.finished || m.started)) {
+      const full = await C.fetchFeed(C.liveFeeds(meta)).catch(() => null);
+      const fm = (full?.matches ?? []).find(x => x.key === m.key);
+      if (fm && (!full.fetchedAt || !live.fetchedAt || Date.parse(full.fetchedAt) >= Date.parse(live.fetchedAt))) m = fm;
+    }
     // 報告本體不重複儲存大型 base64 圖片，點開報告時才與本機球員庫合併頭貼。
     try { m = C.reportWithPlayerPhotos(m, await getPlayerByCode()); } catch { /* 圖片失敗仍顯示報告 */ }
     const p = m.finished ? m.preMatch : m.inplay;

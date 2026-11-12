@@ -639,7 +639,7 @@ page-players.js」。要在哪一頁多用一個球員欄位,先去 players-list
 
 **官方逐場資料是索引 + 逐場檔(2026-09-27 起)。** `official.json` 只有索引與 managers,本體在 `official/{HOME}-{AWAY}.json`
 (`lib/official-files.mjs`);Node 端要讀先發或時間軸一律走 `readOfficialMatches(dir)`,不要自己讀 official.json 找 timeline —— 那裡已經沒有了。
-單場頁讀 `live-lite.json`(沒有 advanced)與 overview 的名冊;實時頁的報告抽屜才讀整份 live。依 league 的預載只給那一頁真的載的那幾份
+單場頁與聯賽首頁(2026-11-12 起)的第一次畫面讀 `live-lite.json`(沒有 advanced),之後走 feed 覆蓋;比賽現況的報告抽屜缺 advanced 才補抓整份 live。**整份 `live.json` 不准進任何一頁的主清單** —— 它一輪踢完會長到六百多 KB,合併當天量不出來(首頁因此超預算、部署連紅四天)。依 league 的預載只給那一頁真的載的那幾份
 (`preloadDatasetsFor`),頁面改了主清單,預載會自己跟著變。
 總覽的 HTML 預載是依頁面的(`stamp-assets` 的 `preloadScriptFor`):它不依 league,預載六份 overview.json 與跨聯賽摘要,不預載 teams.json。
 

@@ -1,7 +1,7 @@
 import * as C from './core.js?v=1404e5d4';
 import { mountFixtureList } from './fixture-list.js?v=d61c91a9';
 import { followedIn, bindFollowStars, followStar } from './follow.js?v=02130043';
-import { mountLiveBoard } from './live-board.js?v=2d9b1fcb';
+import { mountLiveBoard } from './live-board.js?v=cb19647f';
 import { renderNewsView } from './news-view.js?v=295a93f8';
 
 const app = document.getElementById('app');
@@ -140,8 +140,12 @@ try {
   /* ── 第二段:賽程、動態、往季賽果與報告索引到了,填那幾塊 ────────────
      live / table / sim 是 2026-11-07 跟實時戰況合併時加回來的:比賽現況要即時快照,
      兩張積分榜(目前 / 預測)要 table 與 sim。 */
-  const { fixtures, news, results, reports, analysis, live, table, sim } =
-    await C.load('fixtures', 'news', 'results', 'reports', 'analysis', 'live', 'table', 'sim');
+  /* 第一次畫面讀 live-lite(2026-11-12):整份 live.json 每踢完一場多 41 KB 的 advanced(報告抽屜才用),一輪踢完 678 KB ——
+     11-07 把實時戰況併進這一頁時載的是整份,11-08 那一輪踢完首頁就超過 1.5 MB 的資料預算,部署連紅九輪。
+     卡片只用比分、分鐘、勝率與進球者,瘦版都有;畫完之後 live-board 照舊走 feed 覆蓋(那一份是整份),抽屜要 advanced 時自己補抓。
+     跟單場頁 2026-09-27 的做法同一條。 */
+  const { fixtures, news, results, reports, analysis, 'live-lite': live, table, sim } =
+    await C.load('fixtures', 'news', 'results', 'reports', 'analysis', 'live-lite', 'table', 'sim');
   fixturesAll = fixtures;
 
   /* 比賽現況與積分榜(原實時戰況頁):輪詢、先畫再覆蓋、走鐘都在 live-board.js 裡 */

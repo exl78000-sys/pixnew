@@ -364,13 +364,36 @@ console.log('\n▶ 國家隊:中立場的賽前推論(只看開賽前、驗收�
     const guess = makeVenueModel(mj, VP);
     const TOUR = new Map(FOTMOB_INTL.map(c => [c.key, c.tournament]));
     const r4 = x => Math.round(x * 1e4) / 1e4;
-    const wrong = withProb.filter(f => {
+    /* 兩隊都沒有暫定賽果的場次:評分就是只用 martj42 的那一份,這裡獨立重算。
+       **有暫定賽果的場次不能拿這一份評分重算**(2026-11-12):暫定更新 10-10 上線時這一條沒跟著改 —— 它一律用 martj42 的評分,
+       而 build 對那幾場用的是接上 FotMob 賽果之後的評分。暫定更新啟用、而且那一隊還有未賽場次的第一天(11-11,吉爾吉斯一場)就紅,
+       部署被擋。那幾場改成拿同一份 raw 把整個組裝重跑一次比對(暫定評分的來源只有那一條路,在這裡另寫一份就是複製 build)。 */
+    const hasProv = f => (f.prov ?? []).some(n => n > 0);
+    const wrong = withProb.filter(f => !hasProv(f)).filter(f => {
       const q = vm2.passes ? guess({ home: f.home.key, tournament: TOUR.get(f.comp), date: (f.kickoff ?? D.builtAt).slice(0, 10) }).q : 0;
       const p = venueProbs(rating.get(f.home.key), rating.get(f.away.key), q, P);
       return [p.home, p.draw, p.away].some((x, i) => r4(x) !== f.prob[i]) || (f.venue && Math.abs(f.venue.q - q) > 5e-4);
     });
-    check('每一場給出去的勝率,拿同一個推論重算對得回來', withProb.length > 0 && wrong.length === 0,
-      wrong.slice(0, 3).map(f => `${f.home.key}-${f.away.key}`).join('、') || `${withProb.length} 場`);
+    check('每一場給出去的勝率,拿同一個推論重算對得回來(沒有暫定賽果的場次)', withProb.length > 0 && wrong.length === 0,
+      wrong.slice(0, 3).map(f => `${f.home.key}-${f.away.key}`).join('、') || `${withProb.filter(f => !hasProv(f)).length} 場`);
+    const provFx = withProb.filter(hasProv);
+    if (provFx.length) {
+      const RAW2 = join(ROOT, 'data', 'raw', 'fotmob-intl');
+      const re2 = existsSync(RAW2) ? assembleIntl({ mj, params, table: loadIntlTeamTable(ROOT), raws: loadRaws(RAW2), builtAt: D.builtAt }) : null;
+      // raw 比產物新(本機沒重建)時兩邊的暫定場數不同,那不是算錯 —— 只回報
+      const same = re2 && re2.model.provisional.n === D.model.provisional.n && re2.model.ratingsAsOf === D.model.ratingsAsOf;
+      if (!same) console.log(`  · 有暫定賽果的 ${provFx.length} 場這一輪沒有重算(${re2 ? 'raw 與產物不是同一批' : '沒有 raw'}),只回報`);
+      else {
+        const byId = new Map(re2.fixtures.map(f => [f.id, f]));
+        const off2 = provFx.filter(f => JSON.stringify(byId.get(f.id)?.prob) !== JSON.stringify(f.prob) || JSON.stringify(byId.get(f.id)?.elo) !== JSON.stringify(f.elo));
+        check('有暫定賽果的場次:從同一份 raw 重新組裝,勝率與評分對得回產物', off2.length === 0,
+          off2.slice(0, 3).map(f => `${f.home.key}-${f.away.key}`).join('、') || `${provFx.length} 場`);
+        // 而且它們真的用了暫定評分:至少一場的勝率跟只用 martj42 重算的不同(不然等於暫定更新沒接上)
+        const moved = provFx.filter(f => { const q = f.venue?.q ?? 0; const p = venueProbs(rating.get(f.home.key), rating.get(f.away.key), q, P);
+          return [p.home, p.draw, p.away].some((x, i) => Math.abs(x - f.prob[i]) > 1e-4); });
+        check('有暫定賽果的場次,勝率真的跟只用 martj42 的不同(至少一場)', moved.length > 0, `${moved.length} / ${provFx.length} 場`);
+      }
+    }
     const BASES = new Set(['team', 'prior', 'host', 'edition']);
     check('每一場的推論依據都是四種之一、q 在 0~1 之間', withProb.every(f => !f.venue || (BASES.has(f.venue.basis) && f.venue.q >= 0 && f.venue.q <= 1)));
   }
