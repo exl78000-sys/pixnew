@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-11-12T06:10:49.361Z",
+ "retrievedAt": "2026-11-12T11:11:12.022Z",
  "matches": [
   {
    "id": "5120889",
@@ -9238,10 +9238,13 @@
     "shortName": "India",
     "fmId": "6329"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    5,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9541,6 +9544,27 @@
    "group": null
   },
   {
+   "id": "6633209",
+   "kickoff": "2026-11-14T05:30:00Z",
+   "home": {
+    "name": "Tahiti",
+    "shortName": "Tahiti",
+    "fmId": "5927"
+   },
+   "away": {
+    "name": "Cook Islands",
+    "shortName": "Cook Islands",
+    "fmId": "287880"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
    "id": "6539349",
    "kickoff": "2026-11-14T06:00:00Z",
    "home": {
@@ -9552,6 +9576,27 @@
     "name": "Yemen",
     "shortName": "Yemen",
     "fmId": "5892"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6633216",
+   "kickoff": "2026-11-14T09:00:00Z",
+   "home": {
+    "name": "Oman",
+    "shortName": "Oman",
+    "fmId": "5824"
+   },
+   "away": {
+    "name": "Tajikistan",
+    "shortName": "Tajikistan",
+    "fmId": "5898"
    },
    "state": "NS",
    "final": null,
@@ -9594,6 +9639,27 @@
     "name": "Malaysia",
     "shortName": "Malaysia",
     "fmId": "5823"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6633217",
+   "kickoff": "2026-11-14T12:30:00Z",
+   "home": {
+    "name": "Thailand",
+    "shortName": "Thailand",
+    "fmId": "5788"
+   },
+   "away": {
+    "name": "Brunei",
+    "shortName": "Brunei",
+    "fmId": "178671"
    },
    "state": "NS",
    "final": null,
