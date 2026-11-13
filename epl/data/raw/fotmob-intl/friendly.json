@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-11-13T05:32:39.708Z",
+ "retrievedAt": "2026-11-13T19:21:06.841Z",
  "matches": [
   {
    "id": "5120889",
@@ -9322,27 +9322,6 @@
    "group": null
   },
   {
-   "id": "6539351",
-   "kickoff": "2026-11-13T12:00:00.000Z",
-   "home": {
-    "name": "Chinese Taipei",
-    "shortName": "Chinese Taipei",
-    "fmId": "5896"
-   },
-   "away": {
-    "name": "Kyrgyzstan",
-    "shortName": "Kyrgyzstan",
-    "fmId": "5893"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
    "id": "6539341",
    "kickoff": "2026-11-13T12:00:00.000Z",
    "home": {
@@ -9355,10 +9334,37 @@
     "shortName": "Paraguay",
     "fmId": "6724"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    4
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6539345",
+   "kickoff": "2026-11-13T14:15:00.000Z",
+   "home": {
+    "name": "UAE",
+    "shortName": "UAE",
+    "fmId": "5789"
+   },
+   "away": {
+    "name": "Honduras",
+    "shortName": "Honduras",
+    "fmId": "5808"
+   },
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9376,10 +9382,13 @@
     "shortName": "South Korea",
     "fmId": "7804"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9397,10 +9406,13 @@
     "shortName": "Australia",
     "fmId": "6716"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9418,31 +9430,13 @@
     "shortName": "Lebanon",
     "fmId": "5897"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
-   "id": "6539345",
-   "kickoff": "2026-11-13T16:10:00.000Z",
-   "home": {
-    "name": "UAE",
-    "shortName": "UAE",
-    "fmId": "5789"
-   },
-   "away": {
-    "name": "Honduras",
-    "shortName": "Honduras",
-    "fmId": "5808"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9460,10 +9454,13 @@
     "shortName": "Syria",
     "fmId": "6320"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9669,6 +9666,27 @@
     "name": "Malaysia",
     "shortName": "Malaysia",
     "fmId": "5823"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6539351",
+   "kickoff": "2026-11-14T12:00:00Z",
+   "home": {
+    "name": "Chinese Taipei",
+    "shortName": "Chinese Taipei",
+    "fmId": "5896"
+   },
+   "away": {
+    "name": "Kyrgyzstan",
+    "shortName": "Kyrgyzstan",
+    "fmId": "5893"
    },
    "state": "NS",
    "final": null,

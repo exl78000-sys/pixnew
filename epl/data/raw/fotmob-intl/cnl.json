@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-11-13T05:32:35.623Z",
+ "retrievedAt": "2026-11-13T19:21:03.411Z",
  "matches": [
   {
    "id": "5991938",
@@ -1946,7 +1946,7 @@
     "shortName": "Saint Lucia",
     "fmId": "127408"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1956,7 +1956,7 @@
   },
   {
    "id": "6375168",
-   "kickoff": "2026-11-13T20:00:00.000Z",
+   "kickoff": "2026-11-13T19:00:00.000Z",
    "home": {
     "name": "Grenada",
     "shortName": "Grenada",
@@ -1967,7 +1967,7 @@
     "shortName": "St. Kitts and Nevis",
     "fmId": "5924"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1977,7 +1977,7 @@
   },
   {
    "id": "6375161",
-   "kickoff": "2026-11-13T20:00:00.000Z",
+   "kickoff": "2026-11-13T19:00:00.000Z",
    "home": {
     "name": "Puerto Rico",
     "shortName": "Puerto Rico",
@@ -1988,7 +1988,7 @@
     "shortName": "Dominica",
     "fmId": "287980"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -2519,40 +2519,40 @@
      "fmId": "5756",
      "name": "Puerto Rico",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 3,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
      "gf": 6,
      "ga": 1,
-     "pts": 9,
+     "pts": 10,
      "deduction": null,
-     "live": null
+     "live": "6375161"
+    },
+    {
+     "fmId": "287980",
+     "name": "Dominica",
+     "idx": 3,
+     "played": 5,
+     "wins": 0,
+     "draws": 2,
+     "losses": 3,
+     "gf": 2,
+     "ga": 15,
+     "pts": 2,
+     "deduction": null,
+     "live": "6375161"
     },
     {
      "fmId": "287982",
      "name": "Cayman Islands",
-     "idx": 3,
+     "idx": 4,
      "played": 5,
      "wins": 0,
      "draws": 1,
      "losses": 4,
      "gf": 0,
      "ga": 12,
-     "pts": 1,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "287980",
-     "name": "Dominica",
-     "idx": 4,
-     "played": 4,
-     "wins": 0,
-     "draws": 1,
-     "losses": 3,
-     "gf": 2,
-     "ga": 15,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -2580,9 +2580,23 @@
    ],
    "rows": [
     {
+     "fmId": "127408",
+     "name": "Saint Lucia",
+     "idx": 1,
+     "played": 5,
+     "wins": 4,
+     "draws": 0,
+     "losses": 1,
+     "gf": 10,
+     "ga": 4,
+     "pts": 12,
+     "deduction": null,
+     "live": "6375163"
+    },
+    {
      "fmId": "5886",
      "name": "Barbados",
-     "idx": 1,
+     "idx": 2,
      "played": 5,
      "wins": 3,
      "draws": 1,
@@ -2590,20 +2604,6 @@
      "gf": 10,
      "ga": 7,
      "pts": 10,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "127408",
-     "name": "Saint Lucia",
-     "idx": 2,
-     "played": 4,
-     "wins": 3,
-     "draws": 0,
-     "losses": 1,
-     "gf": 9,
-     "ga": 4,
-     "pts": 9,
      "deduction": null,
      "live": null
     },
@@ -2625,15 +2625,15 @@
      "fmId": "5943",
      "name": "Bermuda",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
+     "losses": 5,
      "gf": 5,
-     "ga": 13,
+     "ga": 14,
      "pts": 0,
      "deduction": null,
-     "live": null
+     "live": "6375163"
     }
    ]
   },
@@ -2675,15 +2675,15 @@
      "fmId": "5924",
      "name": "St. Kitts and Nevis",
      "idx": 2,
-     "played": 4,
-     "wins": 2,
+     "played": 5,
+     "wins": 3,
      "draws": 2,
      "losses": 0,
-     "gf": 10,
+     "gf": 11,
      "ga": 6,
-     "pts": 8,
+     "pts": 11,
      "deduction": null,
-     "live": null
+     "live": "6375168"
     },
     {
      "fmId": "929188",
@@ -2703,15 +2703,15 @@
      "fmId": "6548",
      "name": "Grenada",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 1,
      "draws": 0,
-     "losses": 3,
+     "losses": 4,
      "gf": 4,
-     "ga": 12,
+     "ga": 13,
      "pts": 3,
      "deduction": null,
-     "live": null
+     "live": "6375168"
     }
    ]
   },
