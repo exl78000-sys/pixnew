@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-12T18:23:55.674Z",
+ "retrievedAt": "2026-11-13T05:32:32.943Z",
  "matches": [
   {
    "id": "5181921",
@@ -783,7 +783,7 @@
   },
   {
    "id": "5181929",
-   "kickoff": "2026-11-12T17:00:00.000Z",
+   "kickoff": "2026-11-12T17:00:00Z",
    "home": {
     "name": "Armenia",
     "shortName": "Armenia",
@@ -794,17 +794,20 @@
     "shortName": "Cyprus",
     "fmId": "5793"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "2"
   },
   {
    "id": "5181902",
-   "kickoff": "2026-11-12T19:45:00.000Z",
+   "kickoff": "2026-11-12T19:45:00Z",
    "home": {
     "name": "Albania",
     "shortName": "Albania",
@@ -815,17 +818,20 @@
     "shortName": "Finland",
     "fmId": "7871"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
   },
   {
    "id": "5181930",
-   "kickoff": "2026-11-12T19:45:00.000Z",
+   "kickoff": "2026-11-12T19:45:00Z",
    "home": {
     "name": "Montenegro",
     "shortName": "Montenegro",
@@ -836,17 +842,20 @@
     "shortName": "Latvia",
     "fmId": "5795"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "2"
   },
   {
    "id": "5181903",
-   "kickoff": "2026-11-12T19:45:00.000Z",
+   "kickoff": "2026-11-12T19:45:00Z",
    "home": {
     "name": "San Marino",
     "shortName": "San Marino",
@@ -857,17 +866,20 @@
     "shortName": "Belarus",
     "fmId": "10057"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
   },
   {
    "id": "5181941",
-   "kickoff": "2026-11-13T17:00:00Z",
+   "kickoff": "2026-11-13T17:00:00.000Z",
    "home": {
     "name": "Moldova",
     "shortName": "Moldova",
@@ -888,7 +900,7 @@
   },
   {
    "id": "5181957",
-   "kickoff": "2026-11-13T19:45:00Z",
+   "kickoff": "2026-11-13T19:45:00.000Z",
    "home": {
     "name": "Bulgaria",
     "shortName": "Bulgaria",
@@ -909,7 +921,7 @@
   },
   {
    "id": "5181958",
-   "kickoff": "2026-11-13T19:45:00Z",
+   "kickoff": "2026-11-13T19:45:00.000Z",
    "home": {
     "name": "Luxembourg",
     "shortName": "Luxembourg",
@@ -930,7 +942,7 @@
   },
   {
    "id": "5181942",
-   "kickoff": "2026-11-13T19:45:00Z",
+   "kickoff": "2026-11-13T19:45:00.000Z",
    "home": {
     "name": "Slovakia",
     "shortName": "Slovakia",
@@ -1143,13 +1155,13 @@
      "fmId": "10024",
      "name": "Albania",
      "idx": 1,
-     "played": 4,
-     "wins": 3,
+     "played": 5,
+     "wins": 4,
      "draws": 0,
      "losses": 1,
-     "gf": 8,
+     "gf": 10,
      "ga": 3,
-     "pts": 9,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
@@ -1157,13 +1169,13 @@
      "fmId": "10057",
      "name": "Belarus",
      "idx": 2,
-     "played": 4,
-     "wins": 2,
+     "played": 5,
+     "wins": 3,
      "draws": 1,
      "losses": 1,
-     "gf": 5,
+     "gf": 7,
      "ga": 2,
-     "pts": 7,
+     "pts": 10,
      "deduction": null,
      "live": null
     },
@@ -1171,12 +1183,12 @@
      "fmId": "7871",
      "name": "Finland",
      "idx": 3,
-     "played": 4,
+     "played": 5,
      "wins": 2,
      "draws": 1,
-     "losses": 1,
+     "losses": 2,
      "gf": 9,
-     "ga": 2,
+     "ga": 4,
      "pts": 7,
      "deduction": null,
      "live": null
@@ -1185,12 +1197,12 @@
      "fmId": "6035",
      "name": "San Marino",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
+     "losses": 5,
      "gf": 1,
-     "ga": 16,
+     "ga": 18,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -1221,13 +1233,13 @@
      "fmId": "49437",
      "name": "Montenegro",
      "idx": 1,
-     "played": 4,
-     "wins": 3,
+     "played": 5,
+     "wins": 4,
      "draws": 1,
      "losses": 0,
-     "gf": 7,
-     "ga": 4,
-     "pts": 10,
+     "gf": 9,
+     "ga": 5,
+     "pts": 13,
      "deduction": null,
      "live": null
     },
@@ -1243,7 +1255,7 @@
      "ga": 4,
      "pts": 8,
      "deduction": null,
-     "live": "5181929"
+     "live": null
     },
     {
      "fmId": "6583",
@@ -1257,18 +1269,18 @@
      "ga": 6,
      "pts": 5,
      "deduction": null,
-     "live": "5181929"
+     "live": null
     },
     {
      "fmId": "5795",
      "name": "Latvia",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 1,
-     "losses": 3,
-     "gf": 2,
-     "ga": 6,
+     "losses": 4,
+     "gf": 3,
+     "ga": 8,
      "pts": 1,
      "deduction": null,
      "live": null
