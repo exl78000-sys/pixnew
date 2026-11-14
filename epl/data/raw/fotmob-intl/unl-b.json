@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-13T19:21:00.433Z",
+ "retrievedAt": "2026-11-14T05:23:24.264Z",
  "matches": [
   {
    "id": "5181812",
@@ -783,7 +783,7 @@
   },
   {
    "id": "5181784",
-   "kickoff": "2026-11-13T19:45:00.000Z",
+   "kickoff": "2026-11-13T19:45:00Z",
    "home": {
     "name": "Scotland",
     "shortName": "Scotland",
@@ -794,17 +794,20 @@
     "shortName": "North Macedonia",
     "fmId": "8260"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
   },
   {
    "id": "5181785",
-   "kickoff": "2026-11-13T19:45:00.000Z",
+   "kickoff": "2026-11-13T19:45:00Z",
    "home": {
     "name": "Slovenia",
     "shortName": "Slovenia",
@@ -815,17 +818,20 @@
     "shortName": "Switzerland",
     "fmId": "6717"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
   },
   {
    "id": "5181820",
-   "kickoff": "2026-11-14T14:00:00Z",
+   "kickoff": "2026-11-14T14:00:00.000Z",
    "home": {
     "name": "Kosovo",
     "shortName": "Kosovo",
@@ -846,7 +852,7 @@
   },
   {
    "id": "5181808",
-   "kickoff": "2026-11-14T17:00:00Z",
+   "kickoff": "2026-11-14T17:00:00.000Z",
    "home": {
     "name": "Georgia",
     "shortName": "Georgia",
@@ -867,7 +873,7 @@
   },
   {
    "id": "5181821",
-   "kickoff": "2026-11-14T19:45:00Z",
+   "kickoff": "2026-11-14T19:45:00.000Z",
    "home": {
     "name": "Austria",
     "shortName": "Austria",
@@ -888,7 +894,7 @@
   },
   {
    "id": "5181809",
-   "kickoff": "2026-11-14T19:45:00Z",
+   "kickoff": "2026-11-14T19:45:00.000Z",
    "home": {
     "name": "Northern Ireland",
     "shortName": "Northern Ireland",
@@ -909,7 +915,7 @@
   },
   {
    "id": "5181845",
-   "kickoff": "2026-11-14T19:45:00Z",
+   "kickoff": "2026-11-14T19:45:00.000Z",
    "home": {
     "name": "Romania",
     "shortName": "Romania",
@@ -930,7 +936,7 @@
   },
   {
    "id": "5181846",
-   "kickoff": "2026-11-14T19:45:00Z",
+   "kickoff": "2026-11-14T19:45:00.000Z",
    "home": {
     "name": "Sweden",
     "shortName": "Sweden",
@@ -1150,13 +1156,13 @@
      "fmId": "6717",
      "name": "Switzerland",
      "idx": 1,
-     "played": 4,
+     "played": 5,
      "wins": 4,
-     "draws": 0,
+     "draws": 1,
      "losses": 0,
      "gf": 11,
      "ga": 1,
-     "pts": 12,
+     "pts": 13,
      "deduction": null,
      "live": null
     },
@@ -1164,13 +1170,13 @@
      "fmId": "5787",
      "name": "Slovenia",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 2,
-     "draws": 1,
+     "draws": 2,
      "losses": 1,
      "gf": 5,
      "ga": 3,
-     "pts": 7,
+     "pts": 8,
      "deduction": null,
      "live": null
     },
@@ -1178,13 +1184,13 @@
      "fmId": "8498",
      "name": "Scotland",
      "idx": 3,
-     "played": 4,
-     "wins": 1,
+     "played": 5,
+     "wins": 2,
      "draws": 1,
      "losses": 2,
-     "gf": 3,
-     "ga": 5,
-     "pts": 4,
+     "gf": 5,
+     "ga": 6,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -1192,12 +1198,12 @@
      "fmId": "8260",
      "name": "North Macedonia",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
-     "gf": 0,
-     "ga": 10,
+     "losses": 5,
+     "gf": 1,
+     "ga": 12,
      "pts": 0,
      "deduction": null,
      "live": null
