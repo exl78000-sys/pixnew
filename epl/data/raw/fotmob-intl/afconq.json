@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-11-14T05:23:28.937Z",
+ "retrievedAt": "2026-11-14T17:46:30.130Z",
  "matches": [
   {
    "id": "5224974",
@@ -1975,7 +1975,7 @@
     "shortName": "Botswana",
     "fmId": "5887"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -4058,9 +4058,23 @@
    ],
    "rows": [
     {
+     "fmId": "5890",
+     "name": "Uganda",
+     "idx": 1,
+     "played": 3,
+     "wins": 1,
+     "draws": 2,
+     "losses": 0,
+     "gf": 3,
+     "ga": 2,
+     "pts": 5,
+     "deduction": null,
+     "live": "6040349"
+    },
+    {
      "fmId": "6328",
      "name": "Libya",
-     "idx": 1,
+     "idx": 2,
      "played": 3,
      "wins": 1,
      "draws": 1,
@@ -4072,32 +4086,18 @@
      "live": null
     },
     {
-     "fmId": "5890",
-     "name": "Uganda",
-     "idx": 2,
-     "played": 2,
-     "wins": 1,
-     "draws": 1,
-     "losses": 0,
-     "gf": 2,
-     "ga": 1,
-     "pts": 4,
-     "deduction": null,
-     "live": null
-    },
-    {
      "fmId": "5887",
      "name": "Botswana",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 0,
-     "draws": 2,
+     "draws": 3,
      "losses": 0,
-     "gf": 4,
-     "ga": 4,
-     "pts": 2,
+     "gf": 5,
+     "ga": 5,
+     "pts": 3,
      "deduction": null,
-     "live": null
+     "live": "6040349"
     },
     {
      "fmId": "6719",

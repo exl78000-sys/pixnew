@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-14T05:23:24.264Z",
+ "retrievedAt": "2026-11-14T17:46:25.368Z",
  "matches": [
   {
    "id": "5181812",
@@ -842,10 +842,13 @@
     "shortName": "Israel",
     "fmId": "8567"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "3"
@@ -863,7 +866,7 @@
     "shortName": "Hungary",
     "fmId": "8565"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1255,15 +1258,15 @@
      "fmId": "8565",
      "name": "Hungary",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 2,
-     "draws": 1,
+     "draws": 2,
      "losses": 1,
      "gf": 3,
      "ga": 2,
-     "pts": 7,
+     "pts": 8,
      "deduction": null,
-     "live": null
+     "live": "5181808"
     },
     {
      "fmId": "6718",
@@ -1283,15 +1286,15 @@
      "fmId": "8268",
      "name": "Georgia",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
-     "draws": 2,
+     "draws": 3,
      "losses": 2,
      "gf": 0,
      "ga": 2,
-     "pts": 2,
+     "pts": 3,
      "deduction": null,
-     "live": null
+     "live": "5181808"
     }
    ]
   },
@@ -1340,13 +1343,13 @@
      "fmId": "430156",
      "name": "Kosovo",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 1,
-     "draws": 2,
+     "draws": 3,
      "losses": 1,
      "gf": 3,
      "ga": 4,
-     "pts": 5,
+     "pts": 6,
      "deduction": null,
      "live": null
     },
@@ -1368,13 +1371,13 @@
      "fmId": "8567",
      "name": "Israel",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
-     "draws": 2,
+     "draws": 3,
      "losses": 2,
      "gf": 2,
      "ga": 7,
-     "pts": 2,
+     "pts": 3,
      "deduction": null,
      "live": null
     }
