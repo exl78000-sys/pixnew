@@ -16,7 +16,7 @@
   "2012/2013",
   "2010/2011"
  ],
- "retrievedAt": "2026-11-14T17:46:30.130Z",
+ "retrievedAt": "2026-11-15T05:19:43.988Z",
  "matches": [
   {
    "id": "5224974",
@@ -1964,7 +1964,7 @@
   },
   {
    "id": "6040349",
-   "kickoff": "2026-11-14T16:00:00.000Z",
+   "kickoff": "2026-11-14T16:00:00Z",
    "home": {
     "name": "Uganda",
     "shortName": "Uganda",
@@ -1975,17 +1975,20 @@
     "shortName": "Botswana",
     "fmId": "5887"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "H"
   },
   {
    "id": "6040360",
-   "kickoff": "2026-11-14T19:00:00.000Z",
+   "kickoff": "2026-11-14T19:00:00Z",
    "home": {
     "name": "Algeria",
     "shortName": "Algeria",
@@ -1996,17 +1999,20 @@
     "shortName": "Togo",
     "fmId": "7740"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "I"
   },
   {
    "id": "6040216",
-   "kickoff": "2026-11-14T19:00:00.000Z",
+   "kickoff": "2026-11-14T19:00:00Z",
    "home": {
     "name": "Angola",
     "shortName": "Angola",
@@ -2017,10 +2023,13 @@
     "shortName": "South Sudan",
     "fmId": "408231"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "3",
    "group": "B"
@@ -3643,13 +3652,13 @@
      "fmId": "6712",
      "name": "Angola",
      "idx": 2,
-     "played": 2,
-     "wins": 1,
+     "played": 3,
+     "wins": 2,
      "draws": 1,
      "losses": 0,
-     "gf": 3,
+     "gf": 5,
      "ga": 1,
-     "pts": 4,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -3671,12 +3680,12 @@
      "fmId": "408231",
      "name": "South Sudan",
      "idx": 4,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 0,
-     "losses": 2,
+     "losses": 3,
      "gf": 1,
-     "ga": 7,
+     "ga": 9,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -4069,7 +4078,7 @@
      "ga": 2,
      "pts": 5,
      "deduction": null,
-     "live": "6040349"
+     "live": null
     },
     {
      "fmId": "6328",
@@ -4097,7 +4106,7 @@
      "ga": 5,
      "pts": 3,
      "deduction": null,
-     "live": "6040349"
+     "live": null
     },
     {
      "fmId": "6719",
@@ -4133,13 +4142,13 @@
      "fmId": "6317",
      "name": "Algeria",
      "idx": 1,
-     "played": 2,
-     "wins": 1,
+     "played": 3,
+     "wins": 2,
      "draws": 1,
      "losses": 0,
-     "gf": 5,
+     "gf": 6,
      "ga": 3,
-     "pts": 4,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -4161,12 +4170,12 @@
      "fmId": "7740",
      "name": "Togo",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 1,
      "draws": 0,
-     "losses": 1,
+     "losses": 2,
      "gf": 1,
-     "ga": 2,
+     "ga": 3,
      "pts": 3,
      "deduction": null,
      "live": null
