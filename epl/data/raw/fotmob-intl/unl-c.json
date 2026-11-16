@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-15T18:36:25.561Z",
+ "retrievedAt": "2026-11-16T05:17:55.722Z",
  "matches": [
   {
    "id": "5181921",
@@ -975,7 +975,7 @@
   },
   {
    "id": "5181931",
-   "kickoff": "2026-11-15T14:00:00.000Z",
+   "kickoff": "2026-11-15T14:00:00Z",
    "home": {
     "name": "Cyprus",
     "shortName": "Cyprus",
@@ -999,7 +999,7 @@
   },
   {
    "id": "5181932",
-   "kickoff": "2026-11-15T14:00:00.000Z",
+   "kickoff": "2026-11-15T14:00:00Z",
    "home": {
     "name": "Latvia",
     "shortName": "Latvia",
@@ -1023,7 +1023,7 @@
   },
   {
    "id": "5181904",
-   "kickoff": "2026-11-15T17:00:00.000Z",
+   "kickoff": "2026-11-15T17:00:00Z",
    "home": {
     "name": "Belarus",
     "shortName": "Belarus",
@@ -1034,17 +1034,20 @@
     "shortName": "Albania",
     "fmId": "10024"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
   },
   {
    "id": "5181905",
-   "kickoff": "2026-11-15T17:00:00.000Z",
+   "kickoff": "2026-11-15T17:00:00Z",
    "home": {
     "name": "Finland",
     "shortName": "Finland",
@@ -1055,17 +1058,20 @@
     "shortName": "San Marino",
     "fmId": "6035"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    7,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
   },
   {
    "id": "5181943",
-   "kickoff": "2026-11-16T15:00:00Z",
+   "kickoff": "2026-11-16T15:00:00.000Z",
    "home": {
     "name": "Faroe Islands",
     "shortName": "Faroe Islands",
@@ -1086,7 +1092,7 @@
   },
   {
    "id": "5181944",
-   "kickoff": "2026-11-16T15:00:00Z",
+   "kickoff": "2026-11-16T15:00:00.000Z",
    "home": {
     "name": "Kazakhstan",
     "shortName": "Kazakhstan",
@@ -1107,7 +1113,7 @@
   },
   {
    "id": "5181959",
-   "kickoff": "2026-11-16T17:00:00Z",
+   "kickoff": "2026-11-16T17:00:00.000Z",
    "home": {
     "name": "Estonia",
     "shortName": "Estonia",
@@ -1128,7 +1134,7 @@
   },
   {
    "id": "5181960",
-   "kickoff": "2026-11-16T17:00:00Z",
+   "kickoff": "2026-11-16T17:00:00.000Z",
    "home": {
     "name": "Iceland",
     "shortName": "Iceland",
@@ -1181,7 +1187,7 @@
      "ga": 3,
      "pts": 15,
      "deduction": null,
-     "live": "5181904"
+     "live": null
     },
     {
      "fmId": "10057",
@@ -1195,7 +1201,7 @@
      "ga": 4,
      "pts": 10,
      "deduction": null,
-     "live": "5181904"
+     "live": null
     },
     {
      "fmId": "7871",
@@ -1209,7 +1215,7 @@
      "ga": 6,
      "pts": 10,
      "deduction": null,
-     "live": "5181905"
+     "live": null
     },
     {
      "fmId": "6035",
@@ -1223,7 +1229,7 @@
      "ga": 25,
      "pts": 0,
      "deduction": null,
-     "live": "5181905"
+     "live": null
     }
    ]
   },
