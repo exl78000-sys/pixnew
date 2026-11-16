@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-11-12T11:11:08.490Z",
+ "retrievedAt": "2026-11-16T05:17:58.479Z",
  "matches": [
   {
    "id": "5991938",
@@ -1791,7 +1791,7 @@
   },
   {
    "id": "6375162",
-   "kickoff": "2026-11-12T19:00:00.000Z",
+   "kickoff": "2026-11-12T19:00:00Z",
    "home": {
     "name": "Barbados",
     "shortName": "Barbados",
@@ -1802,38 +1802,20 @@
     "shortName": "Guadeloupe",
     "fmId": "5757"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "2"
   },
   {
-   "id": "6375158",
-   "kickoff": "2026-11-12T19:00:00.000Z",
-   "home": {
-    "name": "Cayman Islands",
-    "shortName": "Cayman Islands",
-    "fmId": "287982"
-   },
-   "away": {
-    "name": "Guyana",
-    "shortName": "Guyana",
-    "fmId": "6222"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": "5",
-   "group": "1"
-  },
-  {
    "id": "6375166",
-   "kickoff": "2026-11-12T20:00:00.000Z",
+   "kickoff": "2026-11-12T19:00:00Z",
    "home": {
     "name": "Bonaire",
     "shortName": "Bonaire",
@@ -1844,17 +1826,44 @@
     "shortName": "Cuba",
     "fmId": "5857"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    7
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "3"
   },
   {
+   "id": "6375158",
+   "kickoff": "2026-11-12T19:00:00Z",
+   "home": {
+    "name": "Cayman Islands",
+    "shortName": "Cayman Islands",
+    "fmId": "287982"
+   },
+   "away": {
+    "name": "Guyana",
+    "shortName": "Guyana",
+    "fmId": "6222"
+   },
+   "state": "FT",
+   "final": [
+    0,
+    6
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
+   "awarded": false,
+   "round": "5",
+   "group": "1"
+  },
+  {
    "id": "6422180",
-   "kickoff": "2026-11-12T22:00:00.000Z",
+   "kickoff": "2026-11-12T22:00:00Z",
    "home": {
     "name": "Aruba",
     "shortName": "Aruba",
@@ -1865,17 +1874,20 @@
     "shortName": "Martinique",
     "fmId": "5859"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
   },
   {
    "id": "6422181",
-   "kickoff": "2026-11-12T23:00:00.000Z",
+   "kickoff": "2026-11-12T23:00:00Z",
    "home": {
     "name": "Antigua and Barbuda",
     "shortName": "Antigua and Barbuda",
@@ -1886,17 +1898,20 @@
     "shortName": "Trinidad and Tobago",
     "fmId": "7724"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
   },
   {
    "id": "6391959",
-   "kickoff": "2026-11-13T00:00:00Z",
+   "kickoff": "2026-11-13T00:30:00Z",
    "home": {
     "name": "Curacao",
     "shortName": "Curacao",
@@ -1907,10 +1922,13 @@
     "shortName": "Panama",
     "fmId": "5922"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
@@ -1928,17 +1946,20 @@
     "shortName": "Saint Lucia",
     "fmId": "127408"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "2"
   },
   {
    "id": "6375168",
-   "kickoff": "2026-11-13T20:00:00Z",
+   "kickoff": "2026-11-13T19:00:00Z",
    "home": {
     "name": "Grenada",
     "shortName": "Grenada",
@@ -1949,17 +1970,20 @@
     "shortName": "St. Kitts and Nevis",
     "fmId": "5924"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "3"
   },
   {
    "id": "6375161",
-   "kickoff": "2026-11-13T20:00:00Z",
+   "kickoff": "2026-11-13T19:00:00Z",
    "home": {
     "name": "Puerto Rico",
     "shortName": "Puerto Rico",
@@ -1970,10 +1994,13 @@
     "shortName": "Dominica",
     "fmId": "287980"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
@@ -1991,10 +2018,13 @@
     "shortName": "El Salvador",
     "fmId": "6327"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
@@ -2012,10 +2042,13 @@
     "shortName": "Nicaragua",
     "fmId": "5807"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
@@ -2033,10 +2066,13 @@
     "shortName": "Canada",
     "fmId": "5810"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
@@ -2054,10 +2090,13 @@
     "shortName": "French Guiana",
     "fmId": "835267"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    5
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "4"
@@ -2075,10 +2114,13 @@
     "shortName": "USA",
     "fmId": "6713"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    6
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
@@ -2096,10 +2138,13 @@
     "shortName": "Belize",
     "fmId": "127409"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "4"
@@ -2117,10 +2162,13 @@
     "shortName": "Mexico",
     "fmId": "6710"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
@@ -2138,17 +2186,41 @@
     "shortName": "Curacao",
     "fmId": "287981"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
   },
   {
+   "id": "6375167",
+   "kickoff": "2026-11-16T19:00:00.000Z",
+   "home": {
+    "name": "Cuba",
+    "shortName": "Cuba",
+    "fmId": "5857"
+   },
+   "away": {
+    "name": "Grenada",
+    "shortName": "Grenada",
+    "fmId": "6548"
+   },
+   "state": "NS",
+   "final": null,
+   "reason": null,
+   "reasonLong": null,
+   "awarded": false,
+   "round": "6",
+   "group": "3"
+  },
+  {
    "id": "6375164",
-   "kickoff": "2026-11-16T19:00:00Z",
+   "kickoff": "2026-11-16T19:00:00.000Z",
    "home": {
     "name": "Guadeloupe",
     "shortName": "Guadeloupe",
@@ -2169,7 +2241,7 @@
   },
   {
    "id": "6375160",
-   "kickoff": "2026-11-16T19:00:00Z",
+   "kickoff": "2026-11-16T19:00:00.000Z",
    "home": {
     "name": "Guyana",
     "shortName": "Guyana",
@@ -2187,27 +2259,6 @@
    "awarded": false,
    "round": "6",
    "group": "1"
-  },
-  {
-   "id": "6375167",
-   "kickoff": "2026-11-16T20:00:00Z",
-   "home": {
-    "name": "Cuba",
-    "shortName": "Cuba",
-    "fmId": "5857"
-   },
-   "away": {
-    "name": "Grenada",
-    "shortName": "Grenada",
-    "fmId": "6548"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": "6",
-   "group": "3"
   },
   {
    "id": "6422184",
@@ -2703,13 +2754,13 @@
      "fmId": "6222",
      "name": "Guyana",
      "idx": 1,
-     "played": 4,
-     "wins": 4,
+     "played": 5,
+     "wins": 5,
      "draws": 0,
      "losses": 0,
-     "gf": 16,
+     "gf": 22,
      "ga": 2,
-     "pts": 12,
+     "pts": 15,
      "deduction": null,
      "live": null
     },
@@ -2717,13 +2768,13 @@
      "fmId": "5756",
      "name": "Puerto Rico",
      "idx": 2,
-     "played": 4,
-     "wins": 3,
+     "played": 5,
+     "wins": 4,
      "draws": 0,
      "losses": 1,
-     "gf": 6,
-     "ga": 1,
-     "pts": 9,
+     "gf": 10,
+     "ga": 3,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
@@ -2731,12 +2782,12 @@
      "fmId": "287982",
      "name": "Cayman Islands",
      "idx": 3,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 1,
-     "losses": 3,
+     "losses": 4,
      "gf": 0,
-     "ga": 6,
+     "ga": 12,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -2745,12 +2796,12 @@
      "fmId": "287980",
      "name": "Dominica",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 1,
-     "losses": 3,
-     "gf": 2,
-     "ga": 15,
+     "losses": 4,
+     "gf": 4,
+     "ga": 19,
      "pts": 1,
      "deduction": null,
      "live": null
@@ -2778,30 +2829,30 @@
    ],
    "rows": [
     {
-     "fmId": "5886",
-     "name": "Barbados",
+     "fmId": "127408",
+     "name": "Saint Lucia",
      "idx": 1,
-     "played": 4,
-     "wins": 3,
-     "draws": 1,
-     "losses": 0,
-     "gf": 10,
-     "ga": 4,
-     "pts": 10,
+     "played": 5,
+     "wins": 4,
+     "draws": 0,
+     "losses": 1,
+     "gf": 11,
+     "ga": 5,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "127408",
-     "name": "Saint Lucia",
+     "fmId": "5886",
+     "name": "Barbados",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 3,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 9,
-     "ga": 4,
-     "pts": 9,
+     "gf": 10,
+     "ga": 7,
+     "pts": 10,
      "deduction": null,
      "live": null
     },
@@ -2809,13 +2860,13 @@
      "fmId": "5757",
      "name": "Guadeloupe",
      "idx": 3,
-     "played": 4,
-     "wins": 1,
+     "played": 5,
+     "wins": 2,
      "draws": 1,
      "losses": 2,
-     "gf": 4,
+     "gf": 7,
      "ga": 7,
-     "pts": 4,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -2823,12 +2874,12 @@
      "fmId": "5943",
      "name": "Bermuda",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
-     "gf": 5,
-     "ga": 13,
+     "losses": 5,
+     "gf": 6,
+     "ga": 15,
      "pts": 0,
      "deduction": null,
      "live": null
@@ -2859,13 +2910,13 @@
      "fmId": "5857",
      "name": "Cuba",
      "idx": 1,
-     "played": 4,
-     "wins": 2,
+     "played": 5,
+     "wins": 3,
      "draws": 2,
      "losses": 0,
-     "gf": 10,
-     "ga": 5,
-     "pts": 8,
+     "gf": 17,
+     "ga": 6,
+     "pts": 11,
      "deduction": null,
      "live": null
     },
@@ -2873,40 +2924,40 @@
      "fmId": "5924",
      "name": "St. Kitts and Nevis",
      "idx": 2,
-     "played": 4,
+     "played": 5,
      "wins": 2,
      "draws": 2,
-     "losses": 0,
-     "gf": 10,
-     "ga": 6,
+     "losses": 1,
+     "gf": 12,
+     "ga": 9,
      "pts": 8,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "929188",
-     "name": "Bonaire",
-     "idx": 3,
-     "played": 4,
-     "wins": 1,
-     "draws": 0,
-     "losses": 3,
-     "gf": 7,
-     "ga": 8,
-     "pts": 3,
      "deduction": null,
      "live": null
     },
     {
      "fmId": "6548",
      "name": "Grenada",
-     "idx": 4,
-     "played": 4,
-     "wins": 1,
+     "idx": 3,
+     "played": 5,
+     "wins": 2,
      "draws": 0,
      "losses": 3,
-     "gf": 4,
-     "ga": 12,
+     "gf": 7,
+     "ga": 14,
+     "pts": 6,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "929188",
+     "name": "Bonaire",
+     "idx": 4,
+     "played": 5,
+     "wins": 1,
+     "draws": 0,
+     "losses": 4,
+     "gf": 8,
+     "ga": 15,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -2937,13 +2988,13 @@
      "fmId": "5923",
      "name": "Saint Vincent and The Grenadines",
      "idx": 1,
-     "played": 4,
-     "wins": 4,
+     "played": 5,
+     "wins": 5,
      "draws": 0,
      "losses": 0,
-     "gf": 11,
+     "gf": 12,
      "ga": 3,
-     "pts": 12,
+     "pts": 15,
      "deduction": null,
      "live": null
     },
@@ -2951,13 +3002,13 @@
      "fmId": "835267",
      "name": "French Guiana",
      "idx": 2,
-     "played": 4,
-     "wins": 3,
+     "played": 5,
+     "wins": 4,
      "draws": 0,
      "losses": 1,
-     "gf": 5,
-     "ga": 2,
-     "pts": 9,
+     "gf": 10,
+     "ga": 3,
+     "pts": 12,
      "deduction": null,
      "live": null
     },
@@ -2965,12 +3016,12 @@
      "fmId": "127409",
      "name": "Belize",
      "idx": 3,
-     "played": 4,
+     "played": 5,
      "wins": 1,
      "draws": 0,
-     "losses": 3,
+     "losses": 4,
      "gf": 1,
-     "ga": 4,
+     "ga": 5,
      "pts": 3,
      "deduction": null,
      "live": null
@@ -2979,12 +3030,12 @@
      "fmId": "929190",
      "name": "Sint Maarten",
      "idx": 4,
-     "played": 4,
+     "played": 5,
      "wins": 0,
      "draws": 0,
-     "losses": 4,
-     "gf": 2,
-     "ga": 10,
+     "losses": 5,
+     "gf": 3,
+     "ga": 15,
      "pts": 0,
      "deduction": null,
      "live": null

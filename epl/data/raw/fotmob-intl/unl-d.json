@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-12T11:11:07.353Z",
+ "retrievedAt": "2026-11-16T05:17:56.988Z",
  "matches": [
   {
    "id": "5181874",
@@ -218,10 +218,13 @@
     "shortName": "Gibraltar",
     "fmId": "507764"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "1"
@@ -239,17 +242,20 @@
     "shortName": "Azerbaijan",
     "fmId": "8566"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "5",
    "group": "2"
   },
   {
    "id": "5181885",
-   "kickoff": "2026-11-16T17:00:00Z",
+   "kickoff": "2026-11-16T17:00:00.000Z",
    "home": {
     "name": "Lithuania",
     "shortName": "Lithuania",
@@ -270,7 +276,7 @@
   },
   {
    "id": "5181879",
-   "kickoff": "2026-11-16T19:45:00Z",
+   "kickoff": "2026-11-16T19:45:00.000Z",
    "home": {
     "name": "Gibraltar",
     "shortName": "Gibraltar",
@@ -321,30 +327,30 @@
      "live": null
     },
     {
-     "fmId": "507764",
-     "name": "Gibraltar",
+     "fmId": "10045",
+     "name": "Andorra",
      "idx": 2,
-     "played": 2,
-     "wins": 0,
-     "draws": 2,
-     "losses": 0,
-     "gf": 1,
-     "ga": 1,
-     "pts": 2,
+     "played": 4,
+     "wins": 1,
+     "draws": 1,
+     "losses": 2,
+     "gf": 3,
+     "ga": 3,
+     "pts": 4,
      "deduction": null,
      "live": null
     },
     {
-     "fmId": "10045",
-     "name": "Andorra",
+     "fmId": "507764",
+     "name": "Gibraltar",
      "idx": 3,
      "played": 3,
      "wins": 0,
-     "draws": 1,
-     "losses": 2,
+     "draws": 2,
+     "losses": 1,
      "gf": 1,
      "ga": 3,
-     "pts": 1,
+     "pts": 2,
      "deduction": null,
      "live": null
     }
@@ -369,13 +375,13 @@
      "fmId": "8566",
      "name": "Azerbaijan",
      "idx": 1,
-     "played": 3,
-     "wins": 1,
+     "played": 4,
+     "wins": 2,
      "draws": 2,
      "losses": 0,
-     "gf": 2,
+     "gf": 3,
      "ga": 1,
-     "pts": 5,
+     "pts": 8,
      "deduction": null,
      "live": null
     },
@@ -397,12 +403,12 @@
      "fmId": "5799",
      "name": "Liechtenstein",
      "idx": 3,
-     "played": 2,
+     "played": 3,
      "wins": 0,
      "draws": 1,
-     "losses": 1,
+     "losses": 2,
      "gf": 0,
-     "ga": 2,
+     "ga": 3,
      "pts": 1,
      "deduction": null,
      "live": null
