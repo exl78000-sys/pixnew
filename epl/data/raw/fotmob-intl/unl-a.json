@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-16T05:17:52.780Z",
+ "retrievedAt": "2026-11-16T21:45:30.395Z",
  "matches": [
   {
    "id": "5181825",
@@ -1082,10 +1082,13 @@
     "shortName": "Netherlands",
     "fmId": "6708"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    5,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "2"
@@ -1103,10 +1106,13 @@
     "shortName": "Serbia",
     "fmId": "8205"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "2"
@@ -1270,15 +1276,29 @@
    ],
    "rows": [
     {
-     "fmId": "6708",
-     "name": "Netherlands",
+     "fmId": "8570",
+     "name": "Germany",
      "idx": 1,
-     "played": 5,
+     "played": 6,
      "wins": 3,
      "draws": 2,
-     "losses": 0,
+     "losses": 1,
+     "gf": 11,
+     "ga": 3,
+     "pts": 11,
+     "deduction": null,
+     "live": null
+    },
+    {
+     "fmId": "6708",
+     "name": "Netherlands",
+     "idx": 2,
+     "played": 6,
+     "wins": 3,
+     "draws": 2,
+     "losses": 1,
      "gf": 14,
-     "ga": 5,
+     "ga": 10,
      "pts": 11,
      "deduction": null,
      "live": null
@@ -1286,28 +1306,14 @@
     {
      "fmId": "6383",
      "name": "Greece",
-     "idx": 2,
-     "played": 5,
-     "wins": 2,
-     "draws": 2,
-     "losses": 1,
-     "gf": 5,
-     "ga": 10,
-     "pts": 8,
-     "deduction": null,
-     "live": null
-    },
-    {
-     "fmId": "8570",
-     "name": "Germany",
      "idx": 3,
-     "played": 5,
-     "wins": 2,
+     "played": 6,
+     "wins": 3,
      "draws": 2,
      "losses": 1,
      "gf": 6,
-     "ga": 3,
-     "pts": 8,
+     "ga": 10,
+     "pts": 11,
      "deduction": null,
      "live": null
     },
@@ -1315,12 +1321,12 @@
      "fmId": "8205",
      "name": "Serbia",
      "idx": 4,
-     "played": 5,
+     "played": 6,
      "wins": 0,
      "draws": 0,
-     "losses": 5,
+     "losses": 6,
      "gf": 4,
-     "ga": 11,
+     "ga": 12,
      "pts": 0,
      "deduction": null,
      "live": null

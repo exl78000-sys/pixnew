@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-16T05:17:56.988Z",
+ "retrievedAt": "2026-11-16T21:45:33.315Z",
  "matches": [
   {
    "id": "5181874",
@@ -266,10 +266,13 @@
     "shortName": "Liechtenstein",
     "fmId": "5799"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "2"
@@ -287,10 +290,13 @@
     "shortName": "Malta",
     "fmId": "8495"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
@@ -316,13 +322,13 @@
      "fmId": "8495",
      "name": "Malta",
      "idx": 1,
-     "played": 3,
+     "played": 4,
      "wins": 2,
-     "draws": 1,
+     "draws": 2,
      "losses": 0,
-     "gf": 4,
-     "ga": 2,
-     "pts": 7,
+     "gf": 5,
+     "ga": 3,
+     "pts": 8,
      "deduction": null,
      "live": null
     },
@@ -344,13 +350,13 @@
      "fmId": "507764",
      "name": "Gibraltar",
      "idx": 3,
-     "played": 3,
+     "played": 4,
      "wins": 0,
-     "draws": 2,
+     "draws": 3,
      "losses": 1,
-     "gf": 1,
-     "ga": 3,
-     "pts": 2,
+     "gf": 2,
+     "ga": 4,
+     "pts": 3,
      "deduction": null,
      "live": null
     }
@@ -389,13 +395,13 @@
      "fmId": "8254",
      "name": "Lithuania",
      "idx": 2,
-     "played": 3,
-     "wins": 1,
+     "played": 4,
+     "wins": 2,
      "draws": 1,
      "losses": 1,
-     "gf": 3,
-     "ga": 2,
-     "pts": 4,
+     "gf": 5,
+     "ga": 3,
+     "pts": 7,
      "deduction": null,
      "live": null
     },
@@ -403,12 +409,12 @@
      "fmId": "5799",
      "name": "Liechtenstein",
      "idx": 3,
-     "played": 3,
+     "played": 4,
      "wins": 0,
      "draws": 1,
-     "losses": 2,
-     "gf": 0,
-     "ga": 3,
+     "losses": 3,
+     "gf": 1,
+     "ga": 5,
      "pts": 1,
      "deduction": null,
      "live": null

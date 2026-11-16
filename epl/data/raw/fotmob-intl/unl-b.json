@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-16T05:17:54.261Z",
+ "retrievedAt": "2026-11-16T21:45:31.409Z",
  "matches": [
   {
    "id": "5181812",
@@ -986,10 +986,13 @@
     "shortName": "Slovenia",
     "fmId": "5787"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
@@ -1007,10 +1010,13 @@
     "shortName": "Scotland",
     "fmId": "8498"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
@@ -1174,13 +1180,13 @@
      "fmId": "6717",
      "name": "Switzerland",
      "idx": 1,
-     "played": 5,
-     "wins": 4,
+     "played": 6,
+     "wins": 5,
      "draws": 1,
      "losses": 0,
-     "gf": 11,
+     "gf": 15,
      "ga": 1,
-     "pts": 13,
+     "pts": 16,
      "deduction": null,
      "live": null
     },
@@ -1188,13 +1194,13 @@
      "fmId": "5787",
      "name": "Slovenia",
      "idx": 2,
-     "played": 5,
-     "wins": 2,
+     "played": 6,
+     "wins": 3,
      "draws": 2,
      "losses": 1,
-     "gf": 5,
+     "gf": 8,
      "ga": 3,
-     "pts": 8,
+     "pts": 11,
      "deduction": null,
      "live": null
     },
@@ -1202,12 +1208,12 @@
      "fmId": "8498",
      "name": "Scotland",
      "idx": 3,
-     "played": 5,
+     "played": 6,
      "wins": 2,
      "draws": 1,
-     "losses": 2,
+     "losses": 3,
      "gf": 5,
-     "ga": 6,
+     "ga": 10,
      "pts": 7,
      "deduction": null,
      "live": null
@@ -1216,12 +1222,12 @@
      "fmId": "8260",
      "name": "North Macedonia",
      "idx": 4,
-     "played": 5,
+     "played": 6,
      "wins": 0,
      "draws": 0,
-     "losses": 5,
+     "losses": 6,
      "gf": 1,
-     "ga": 12,
+     "ga": 15,
      "pts": 0,
      "deduction": null,
      "live": null
