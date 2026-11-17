@@ -1,4 +1,4 @@
-import * as C from './core.js?v=2e9f0bce';
+import * as C from './core.js?v=464e2624';
 
 const app = document.getElementById('app');
 
@@ -249,7 +249,7 @@ try {
         rows.push({ kick: m.kickoff, comp: cup.zh ?? cup.en, compKey: cup.key,
           home: C.cupName(m.home, cupIdent), away: C.cupName(m.away, cupIdent),
           hCrest: C.cupCrest(m.home, cupIdent), aCrest: C.cupCrest(m.away, cupIdent),
-          note: m.stage ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), live, link: C.link('cups', { cup: cup.key }) });
+          note: C.cupStageZh(m.stage) ?? '', pending: m.kickoff.endsWith('T00:00:00Z'), live, link: C.link('cups', { cup: cup.key }) });
       }
     }
     /* 歐冠聯賽階段。資料早就在 ucl.json 裡(開球時間齊全、有 matchday),
@@ -339,7 +339,7 @@ try {
         rows.push({ kick: m.kickoff, noTime: m.kickoff.endsWith('T00:00:00Z'), comp: cup.zh ?? cup.en, compKey: cup.key,
           home: C.cupName(m.home, cupIdent), away: C.cupName(m.away, cupIdent),
           hCrest: C.cupCrest(m.home, cupIdent), aCrest: C.cupCrest(m.away, cupIdent),
-          hs: m.final[0], as: m.final[1], pens: Array.isArray(m.pens) ? m.pens : null, tags: extra(m), note: m.stage ?? '', link: C.link('cups', { cup: cup.key }) });
+          hs: m.final[0], as: m.final[1], pens: Array.isArray(m.pens) ? m.pens : null, tags: extra(m), note: C.cupStageZh(m.stage) ?? '', link: C.link('cups', { cup: cup.key }) });
       }
     }
     const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);
@@ -448,7 +448,7 @@ try {
         .map(m => ({ kick: m.kickoff, stage: m.stage })));
       if (!future.length) continue;
       const first = future.sort((a, b) => (a.kick < b.kick ? -1 : 1))[0];
-      out.push(`${cup.zh ?? cup.en} ${first.stage ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`);
+      out.push(`${cup.zh ?? cup.en} ${C.cupStageZh(first.stage) ?? ''}:${C.dateFull(first.kick.slice(0, 10))} 起(${future.length} 場)`);
     }
     // 歐冠也一樣:窗裡沒有歐冠時,用一行講下一批是聯賽階段第幾輪、幾號起
     const uclSeason = (shared.ucl?.seasons ?? []).find(s => s.current);

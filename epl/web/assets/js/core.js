@@ -620,6 +620,16 @@ export async function cupClubs() {
 }
 export const cupCrest = (side, { clubs, crests } = {}) =>
   (side?.code ? clubs?.get(side.code)?.crest : null) ?? crests?.[side?.sourceId] ?? null;
+/* 英格蘭盃賽的輪次名(FotMob 給英文:Round 1~5、Quarter-Finals、Semi-Finals、Final)。
+   2026-11-17 之前整站直接印英文,盃賽頁手機寬度的狀態欄還被切成「晉級 Quarte…」。
+   只翻**見過的**寫法,其餘照上游原樣(跟國家隊 intlRoundZh 同一條規矩:沒見過的不猜)。 */
+const CUP_STAGE_ZH = { 'Quarter-Finals': '八強', 'Semi-Finals': '四強', Final: '決賽' };
+export const cupStageZh = s => {
+  if (s == null) return s;
+  const m = /^Round (\d+)$/.exec(s);
+  return m ? `第 ${m[1]} 輪` : (CUP_STAGE_ZH[s] ?? s);
+};
+
 export const cupName = (side, { clubs } = {}) =>
   (side?.code ? clubs?.get(side.code)?.en : null) ?? side?.name ?? side?.code ?? '?';
 

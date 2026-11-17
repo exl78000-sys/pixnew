@@ -1,4 +1,4 @@
-import * as C from './core.js?v=2e9f0bce';
+import * as C from './core.js?v=464e2624';
 import { followedIn } from './follow.js?v=02130043';
 
 // 有英格蘭盃賽(足總盃/聯賽盃)的聯賽。用集合不用「是不是某一個」的二元式
@@ -322,7 +322,7 @@ export function mountFixtureList({
         <div class="card">
           ${rows.map(r => `<div class="stat-line">
             <span class="small"><span class="pill tiny">${C.esc(r.comp)}</span>
-              ${C.esc(r.stage)}・${r.home ? '主' : '客'} vs ${C.esc(r.opp)}</span>
+              ${C.esc(C.cupStageZh(r.stage))}・${r.home ? '主' : '客'} vs ${C.esc(r.opp)}</span>
             <span class="mono small dim">${r.kickoff ? C.kickoffLocal(r.kickoff)
               : r.dateOnly ? `${C.dateFull(r.dateOnly)}・時間待定` : '時間待定'}</span>
           </div>`).join('')}

@@ -2000,6 +2000,17 @@ async function checkCupDefault() {
 async function checkMatchdayDefault() {
   globalThis.document ??= { addEventListener() {} };
   const V = await import('../web/assets/js/core.js');
+  /* 盃賽輪次名(2026-11-17):整站原本直接印 FotMob 的英文。見過的翻,沒見過的照原樣 */
+  const stageCases = [];
+  {
+    const z = V.cupStageZh;
+    stageCases.push(['盃賽輪次:Round N / 八強 / 四強 / 決賽 翻成中文,沒見過的照上游原樣', z('Round 4') === '第 4 輪' && z('Quarter-Finals') === '八強' && z('Semi-Finals') === '四強'
+      && z('Final') === '決賽' && z('Preliminary Round') === 'Preliminary Round' && z(null) == null]);
+    const cupJs = ['page-cups.js', 'page-overview.js', 'page-cup-match.js']
+      .map(f => readFileSync(join(ROOT, 'web/assets/js', f), 'utf8')).join('\n');
+    stageCases.push(['盃賽頁、總覽、盃賽單場頁印輪次都經過 cupStageZh(不直接印上游英文)',
+      !/C\.esc\((?:round|champ|r|first)\.(?:stage|nextStage|lastPlayedStage|out)\)/.test(cupJs)]);
+  }
   const at = iso => Date.parse(iso);
   const md1 = [
     { matchday: 1, kickoff: '2026-09-08T16:45:00Z', played: true, status: 'FINISHED' },
@@ -2039,6 +2050,7 @@ async function checkMatchdayDefault() {
     ['每一輪都有切換鈕(data-md)—— 東西在但沒有按鈕那一族', /data-md=/.test(src) && /\[data-md\]/.test(src)],
     ['舊規則「還沒踢完的最小輪次」已經拿掉', !/Math\.min\(\.\.\.open\)/.test(src)],
   );
+  cases.push(...stageCases);
   let fail = 0;
   for (const [name, pass, detail] of cases) {
     console.log(`  ${pass ? '✔' : '✗'} ${name}${pass || detail === undefined ? '' : ` —— 得到 ${detail}`}`);

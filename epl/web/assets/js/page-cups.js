@@ -1,7 +1,7 @@
-import * as C from './core.js?v=2e9f0bce';
+import * as C from './core.js?v=464e2624';
 import { followedAnywhere } from './follow.js?v=02130043';
-import { renderUclView } from './ucl-view.js?v=e525ea6e';
-import { renderIntlView } from './intl-view.js?v=b802cddf';
+import { renderUclView } from './ucl-view.js?v=94fac156';
+import { renderIntlView } from './intl-view.js?v=614c9985';
 
 const app = document.getElementById('app');
 
@@ -80,7 +80,7 @@ function teamCell(t, { align = 'left' } = {}) {
        上游本季只發布到英冠,英甲英乙只有上一季的名單。
        不標的話就是拿去年的事實講今年。 */
     const tier = t.tier
-      ? `<span class="pill tiny${t.tierNo >= 3 ? ' warn' : ''}" title="${
+      ? `<span class="pill tiny${t.tierNo >= 3 ? ' warn' : ''}" style="white-space:nowrap;flex:none" title="${
           t.tierSeason ? `${t.tierSeason} 賽季的層級(上游還沒有本季的英甲/英乙名單)` : '當季層級'}"
           >${t.tier}${t.tierSeason ? `·${t.tierSeason.slice(2)}` : ''}</span>`
       : '';
@@ -91,7 +91,12 @@ function teamCell(t, { align = 'left' } = {}) {
       : '';
     if (!img && !tier) return `<span class="small" style="text-align:${align}">${name}</span>`;
     return `<span class="small" style="display:inline-flex;align-items:center;gap:5px;text-align:${align};flex-direction:${
-      align === 'right' ? 'row-reverse' : 'row'}">${img}<span>${name}</span>${tier}${star}</span>`;
+      align === 'right' ? 'row-reverse' : 'row'}">${img}${tier
+      /* 層級標籤疊在隊名下面(2026-11-17):並排的話手機寬度隊名只剩「B…」,
+         標籤自己還被擠成兩行的橢圓 */
+      ? `<span style="display:flex;flex-direction:column;gap:2px;min-width:0;align-items:${
+          align === 'right' ? 'flex-end' : 'flex-start'}"><span>${name}</span>${tier}</span>`
+      : `<span>${name}</span>`}${star}</span>`;
   }
   /* 本站認得的球隊:隊徽也走同一條查法。**這裡以前寫 C.badge(t.code)**,
      而 badge 查的是目前聯賽的名冊 —— 站在西甲時整排變成灰色代碼方塊,
@@ -184,7 +189,7 @@ function roundCard(round, i = 0) {
     round.shootouts ? `PK ${round.shootouts}` : '',
   ].filter(Boolean).join('・');
   return `<details class="card round-fold" data-round="${C.esc(roundKey)}" style="margin-top:12px"${openByDefault ? ' open' : ''}>
-    <summary class="spread"><h3 style="margin:0">${C.esc(round.stage)}</h3>
+    <summary class="spread"><h3 style="margin:0">${C.esc(C.cupStageZh(round.stage))}</h3>
       <span class="dim tiny">${marks}</span></summary>
     <div style="display:grid;gap:2px;margin-top:10px">${rows}</div>
   </details>`;
@@ -280,7 +285,7 @@ function championCard(champ, cupName, seasonLabel) {
     <b>${seasonLabel} ${cupName}冠軍:${C.esc(C.cupName(champ.team, CUP_IDENT))}</b>
     ${(() => { const c = C.cupCrest(champ.team, CUP_IDENT);
       return c ? `<img class="crest" src="${c}" alt="" loading="lazy" width="26" height="26">` : ''; })()}
-    <div class="small" style="margin-top:4px">${C.esc(champ.stage)}・
+    <div class="small" style="margin-top:4px">${C.esc(C.cupStageZh(champ.stage))}・
       ${score} 擊敗 ${C.esc(champ.runnerUp?.name ?? '')}${
         m.aet === true ? '(延長賽)' : ''}${pens ? `,PK ${pens}` : ''}
       <span class="dim tiny">(該場 ${C.esc(m.home?.name ?? '')} ${m.final ? m.final.join('-') : ''} ${C.esc(m.away?.name ?? '')})</span></div>
@@ -298,9 +303,9 @@ function championCard(champ, cupName, seasonLabel) {
 function runsTable(runs) {
   if (!runs.length) return '';
   const status = r => {
-    if (r.out) return `<span class="pill tiny" style="color:var(--loss)">${C.esc(r.out)}出局</span>
+    if (r.out) return `<span class="pill tiny" style="color:var(--loss)">${C.esc(C.cupStageZh(r.out))}出局</span>
       <span class="tiny dim">輸給 ${C.esc(r.outTo ?? '')}</span>`;
-    if (r.nextStage) return `<span class="pill accent tiny">晉級 ${C.esc(r.nextStage)}</span>
+    if (r.nextStage) return `<span class="pill accent tiny">晉級 ${C.esc(C.cupStageZh(r.nextStage))}</span>
       <span class="tiny dim">${r.nextKickoff ? C.kickoffLocal(r.nextKickoff) : '時間待定'}
       ${r.nextOpp ? `・對 ${C.esc(r.nextOpp)}` : ''}</span>`;
     return '<span class="dim small">—</span>';
@@ -312,7 +317,7 @@ function runsTable(runs) {
       render: r => teamCell({ code: r.code, name: r.name, sourceId: r.sourceId }) },
     { key: 'stage', label: '打到哪一輪', value: r => r.lastPlayedOrder, num: true,
       title: '最後一場已完賽比賽所在的輪次',
-      render: r => `<span class="mono small">${C.esc(r.lastPlayedStage ?? '尚未出賽')}</span>` },
+      render: r => `<span class="small nowrap">${C.esc(C.cupStageZh(r.lastPlayedStage) ?? '尚未出賽')}</span>` },
     { key: 'played', label: '已賽', value: r => r.played, num: true },
     { key: 'wins', label: '勝場', value: r => r.wins, num: true,
       title: 'PK 大戰勝出也算勝場 —— 盃賽的晉級就是這樣算的' },

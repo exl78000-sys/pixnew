@@ -9,7 +9,7 @@
    這一頁**只有賽後**,沒有賽前勝率 —— 盃賽沒有本站的模型:
    對手一半是第三、四級球隊,本站沒有它們的賽果,評不出強度(鐵則二:沒有回測證據就不給預測)。
    所以不要在這裡長出一個「賽前分析」分頁,那會是憑空的數字。 */
-import * as C from './core.js?v=2e9f0bce';
+import * as C from './core.js?v=464e2624';
 
 const app = document.getElementById('app');
 
@@ -105,7 +105,7 @@ try {
       ${back}
       <h1 style="margin-top:6px">${C.esc(homeName)} <span class="dim">vs</span> ${C.esc(awayName)}</h1>
       <p class="small muted">${C.esc(cupName)}${seasonLabel ? `・${C.esc(seasonLabel)}` : ''}${
-        stage ? `・${C.esc(stage)}` : ''}・${when}</p>
+        stage ? `・${C.esc(C.cupStageZh(stage))}` : ''}・${when}</p>
     </div>
     <div class="card">
       <div class="scoreline" style="margin:4px 0 10px">
