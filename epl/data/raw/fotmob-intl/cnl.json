@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-11-17T02:36:36.282Z",
+ "retrievedAt": "2026-11-17T06:59:29.260Z",
  "matches": [
   {
    "id": "5991938",
@@ -2330,10 +2330,13 @@
     "shortName": "Guatemala",
     "fmId": "5858"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
