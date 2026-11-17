@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-11-16T21:45:34.363Z",
+ "retrievedAt": "2026-11-17T02:36:36.282Z",
  "matches": [
   {
    "id": "5991938",
@@ -2199,7 +2199,7 @@
   },
   {
    "id": "6375167",
-   "kickoff": "2026-11-16T19:00:00.000Z",
+   "kickoff": "2026-11-16T19:00:00Z",
    "home": {
     "name": "Cuba",
     "shortName": "Cuba",
@@ -2223,7 +2223,7 @@
   },
   {
    "id": "6375164",
-   "kickoff": "2026-11-16T19:00:00.000Z",
+   "kickoff": "2026-11-16T19:00:00Z",
    "home": {
     "name": "Guadeloupe",
     "shortName": "Guadeloupe",
@@ -2247,7 +2247,7 @@
   },
   {
    "id": "6375160",
-   "kickoff": "2026-11-16T19:00:00.000Z",
+   "kickoff": "2026-11-16T19:00:00Z",
    "home": {
     "name": "Guyana",
     "shortName": "Guyana",
@@ -2271,7 +2271,7 @@
   },
   {
    "id": "6422184",
-   "kickoff": "2026-11-17T00:00:00Z",
+   "kickoff": "2026-11-17T00:00:00.000Z",
    "home": {
     "name": "Martinique",
     "shortName": "Martinique",
@@ -2282,17 +2282,20 @@
     "shortName": "Aruba",
     "fmId": "262131"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
   },
   {
    "id": "6422185",
-   "kickoff": "2026-11-17T00:00:00Z",
+   "kickoff": "2026-11-17T00:00:00.000Z",
    "home": {
     "name": "Trinidad and Tobago",
     "shortName": "Trinidad and Tobago",
@@ -2303,17 +2306,20 @@
     "shortName": "Antigua and Barbuda",
     "fmId": "6101"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
   },
   {
    "id": "6391962",
-   "kickoff": "2026-11-17T01:00:00Z",
+   "kickoff": "2026-11-17T01:00:00.000Z",
    "home": {
     "name": "Canada",
     "shortName": "Canada",
@@ -2324,7 +2330,7 @@
     "shortName": "Guatemala",
     "fmId": "5858"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -2334,7 +2340,7 @@
   },
   {
    "id": "6375171",
-   "kickoff": "2026-11-17T19:00:00Z",
+   "kickoff": "2026-11-17T19:00:00.000Z",
    "home": {
     "name": "Belize",
     "shortName": "Belize",
@@ -2355,7 +2361,7 @@
   },
   {
    "id": "6375159",
-   "kickoff": "2026-11-17T19:00:00Z",
+   "kickoff": "2026-11-17T19:00:00.000Z",
    "home": {
     "name": "Dominica",
     "shortName": "Dominica",
@@ -2376,7 +2382,7 @@
   },
   {
    "id": "6375165",
-   "kickoff": "2026-11-17T19:00:00Z",
+   "kickoff": "2026-11-17T19:00:00.000Z",
    "home": {
     "name": "Saint Lucia",
     "shortName": "Saint Lucia",
@@ -2397,7 +2403,7 @@
   },
   {
    "id": "6375169",
-   "kickoff": "2026-11-17T20:00:00Z",
+   "kickoff": "2026-11-17T20:00:00.000Z",
    "home": {
     "name": "St. Kitts and Nevis",
     "shortName": "St. Kitts and Nevis",
