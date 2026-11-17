@@ -11,7 +11,7 @@
   "2020/2021",
   "2018/2019"
  ],
- "retrievedAt": "2026-11-17T06:59:24.675Z",
+ "retrievedAt": "2026-11-17T20:36:08.523Z",
  "matches": [
   {
    "id": "5181825",
@@ -1130,7 +1130,7 @@
     "shortName": "Norway",
     "fmId": "8492"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1151,7 +1151,7 @@
     "shortName": "Portugal",
     "fmId": "8361"
    },
-   "state": "NS",
+   "state": "LIVE",
    "final": null,
    "reason": null,
    "reasonLong": null,
@@ -1451,57 +1451,57 @@
      "fmId": "8361",
      "name": "Portugal",
      "idx": 1,
-     "played": 5,
+     "played": 6,
      "wins": 4,
-     "draws": 0,
+     "draws": 1,
      "losses": 1,
-     "gf": 10,
-     "ga": 8,
-     "pts": 12,
+     "gf": 12,
+     "ga": 10,
+     "pts": 13,
      "deduction": null,
-     "live": null
+     "live": "5181872"
     },
     {
      "fmId": "8238",
      "name": "Denmark",
      "idx": 2,
-     "played": 5,
-     "wins": 3,
+     "played": 6,
+     "wins": 4,
      "draws": 0,
      "losses": 2,
-     "gf": 11,
-     "ga": 8,
-     "pts": 9,
+     "gf": 13,
+     "ga": 9,
+     "pts": 12,
      "deduction": null,
-     "live": null
+     "live": "5181871"
     },
     {
      "fmId": "8492",
      "name": "Norway",
      "idx": 3,
-     "played": 5,
+     "played": 6,
      "wins": 2,
      "draws": 0,
-     "losses": 3,
-     "gf": 9,
-     "ga": 9,
+     "losses": 4,
+     "gf": 10,
+     "ga": 11,
      "pts": 6,
      "deduction": null,
-     "live": null
+     "live": "5181871"
     },
     {
      "fmId": "5790",
      "name": "Wales",
      "idx": 4,
-     "played": 5,
+     "played": 6,
      "wins": 1,
-     "draws": 0,
+     "draws": 1,
      "losses": 4,
-     "gf": 3,
-     "ga": 8,
-     "pts": 3,
+     "gf": 5,
+     "ga": 10,
+     "pts": 4,
      "deduction": null,
-     "live": null
+     "live": "5181872"
     }
    ]
   }
