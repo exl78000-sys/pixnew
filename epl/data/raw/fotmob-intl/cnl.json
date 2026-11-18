@@ -11,7 +11,7 @@
   "2022/2023",
   "2019/2020"
  ],
- "retrievedAt": "2026-11-17T20:36:13.464Z",
+ "retrievedAt": "2026-11-18T06:22:30.221Z",
  "matches": [
   {
    "id": "5991938",
@@ -2271,7 +2271,7 @@
   },
   {
    "id": "6422184",
-   "kickoff": "2026-11-17T00:00:00.000Z",
+   "kickoff": "2026-11-17T00:00:00Z",
    "home": {
     "name": "Martinique",
     "shortName": "Martinique",
@@ -2295,7 +2295,7 @@
   },
   {
    "id": "6422185",
-   "kickoff": "2026-11-17T00:00:00.000Z",
+   "kickoff": "2026-11-17T00:00:00Z",
    "home": {
     "name": "Trinidad and Tobago",
     "shortName": "Trinidad and Tobago",
@@ -2319,7 +2319,7 @@
   },
   {
    "id": "6391962",
-   "kickoff": "2026-11-17T01:00:00.000Z",
+   "kickoff": "2026-11-17T01:00:00Z",
    "home": {
     "name": "Canada",
     "shortName": "Canada",
@@ -2343,7 +2343,7 @@
   },
   {
    "id": "6375171",
-   "kickoff": "2026-11-17T19:00:00.000Z",
+   "kickoff": "2026-11-17T19:00:00Z",
    "home": {
     "name": "Belize",
     "shortName": "Belize",
@@ -2354,17 +2354,20 @@
     "shortName": "Sint Maarten",
     "fmId": "929190"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "4"
   },
   {
    "id": "6375159",
-   "kickoff": "2026-11-17T19:00:00.000Z",
+   "kickoff": "2026-11-17T19:00:00Z",
    "home": {
     "name": "Dominica",
     "shortName": "Dominica",
@@ -2375,17 +2378,20 @@
     "shortName": "Cayman Islands",
     "fmId": "287982"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    5,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "1"
   },
   {
    "id": "6375165",
-   "kickoff": "2026-11-17T19:00:00.000Z",
+   "kickoff": "2026-11-17T19:00:00Z",
    "home": {
     "name": "Saint Lucia",
     "shortName": "Saint Lucia",
@@ -2396,17 +2402,20 @@
     "shortName": "Barbados",
     "fmId": "5886"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "2"
   },
   {
    "id": "6375169",
-   "kickoff": "2026-11-17T19:00:00.000Z",
+   "kickoff": "2026-11-17T19:00:00Z",
    "home": {
     "name": "St. Kitts and Nevis",
     "shortName": "St. Kitts and Nevis",
@@ -2417,17 +2426,20 @@
     "shortName": "Bonaire",
     "fmId": "929188"
    },
-   "state": "LIVE",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "3"
   },
   {
    "id": "6375172",
-   "kickoff": "2026-11-18T00:00:00Z",
+   "kickoff": "2026-11-18T00:00:00.000Z",
    "home": {
     "name": "French Guiana",
     "shortName": "French Guiana",
@@ -2438,17 +2450,20 @@
     "shortName": "Saint Vincent and The Grenadines",
     "fmId": "5923"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "6",
    "group": "4"
   },
   {
    "id": "6391964",
-   "kickoff": "2026-11-18T00:00:00Z",
+   "kickoff": "2026-11-18T00:00:00.000Z",
    "home": {
     "name": "USA",
     "shortName": "USA",
@@ -2459,17 +2474,20 @@
     "shortName": "Haiti",
     "fmId": "5934"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
   },
   {
    "id": "6422186",
-   "kickoff": "2026-11-18T01:00:00Z",
+   "kickoff": "2026-11-18T01:00:00.000Z",
    "home": {
     "name": "El Salvador",
     "shortName": "El Salvador",
@@ -2480,17 +2498,20 @@
     "shortName": "Saint Martin",
     "fmId": "929189"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    3,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
   },
   {
    "id": "6391966",
-   "kickoff": "2026-11-18T02:30:00Z",
+   "kickoff": "2026-11-18T02:30:00.000Z",
    "home": {
     "name": "Mexico",
     "shortName": "Mexico",
@@ -2501,17 +2522,20 @@
     "shortName": "Jamaica",
     "fmId": "5806"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "1/4",
    "group": null
   },
   {
    "id": "6422187",
-   "kickoff": "2026-11-18T03:00:00Z",
+   "kickoff": "2026-11-18T03:00:00.000Z",
    "home": {
     "name": "Nicaragua",
     "shortName": "Nicaragua",
@@ -2522,10 +2546,13 @@
     "shortName": "Montserrat",
     "fmId": "262133"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": "final",
    "group": null
@@ -2592,7 +2619,7 @@
      "ga": 19,
      "pts": 4,
      "deduction": null,
-     "live": "6375159"
+     "live": null
     },
     {
      "fmId": "287982",
@@ -2606,7 +2633,7 @@
      "ga": 17,
      "pts": 1,
      "deduction": null,
-     "live": "6375159"
+     "live": null
     }
    ]
   },
@@ -2638,11 +2665,11 @@
      "wins": 5,
      "draws": 0,
      "losses": 1,
-     "gf": 12,
+     "gf": 13,
      "ga": 5,
      "pts": 15,
      "deduction": null,
-     "live": "6375165"
+     "live": null
     },
     {
      "fmId": "5757",
@@ -2667,10 +2694,10 @@
      "draws": 1,
      "losses": 2,
      "gf": 10,
-     "ga": 8,
+     "ga": 9,
      "pts": 10,
      "deduction": null,
-     "live": "6375165"
+     "live": null
     },
     {
      "fmId": "5943",
@@ -2734,7 +2761,7 @@
      "ga": 11,
      "pts": 11,
      "deduction": null,
-     "live": "6375169"
+     "live": null
     },
     {
      "fmId": "6548",
@@ -2762,7 +2789,7 @@
      "ga": 18,
      "pts": 3,
      "deduction": null,
-     "live": "6375169"
+     "live": null
     }
    ]
   },
@@ -2790,12 +2817,12 @@
      "fmId": "5923",
      "name": "Saint Vincent and The Grenadines",
      "idx": 1,
-     "played": 5,
+     "played": 6,
      "wins": 5,
      "draws": 0,
-     "losses": 0,
+     "losses": 1,
      "gf": 12,
-     "ga": 3,
+     "ga": 4,
      "pts": 15,
      "deduction": null,
      "live": null
@@ -2804,13 +2831,13 @@
      "fmId": "835267",
      "name": "French Guiana",
      "idx": 2,
-     "played": 5,
-     "wins": 4,
+     "played": 6,
+     "wins": 5,
      "draws": 0,
      "losses": 1,
-     "gf": 10,
+     "gf": 11,
      "ga": 3,
-     "pts": 12,
+     "pts": 15,
      "deduction": null,
      "live": null
     },
@@ -2826,7 +2853,7 @@
      "ga": 7,
      "pts": 3,
      "deduction": null,
-     "live": "6375171"
+     "live": null
     },
     {
      "fmId": "929190",
@@ -2840,7 +2867,7 @@
      "ga": 16,
      "pts": 3,
      "deduction": null,
-     "live": "6375171"
+     "live": null
     }
    ]
   },
