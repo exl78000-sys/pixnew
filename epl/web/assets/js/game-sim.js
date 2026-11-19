@@ -907,7 +907,19 @@ const mentPush = (s, inPoss) => mentalityPush(s.ment, inPoss);
      節奏改成決策間隔(÷ tempo,不再改傳球機率)                  慢 2.33 / 0.92(射 14.7、傳中 76)  快 1.38 / 1.05(射 9.1、傳中 35)
    寬度:拉寬自己少進 0.4 球(約 1.7 SE)、傳中**沒有變多** —— 打邊路的那件事沒有發生,只是人站開了。
    節奏:快節奏淨勝球從 1.14 掉到 0.33。這個引擎的進攻靠持球者一路帶進禁區(補齊規劃 5t),出球越快帶得越少,
-   所以「節奏」在這裡是強弱的旋鈕。兩個都等 5t(進攻的組成)改過之後再量;程式沒改,這一段是否定的證據。 */
+   所以「節奏」在這裡是強弱的旋鈕。兩個都等 5t(進攻的組成)改過之後再量;程式沒改,這一段是否定的證據。
+   **2026-11-19 5t 之後重量,寬度掛上、節奏仍不掛**。上面兩個變體這一輪寫進引擎(第 3 級逐場一字不差,驗過):
+   寬度只在有球時張開(死球時只有開球的那一隊)、邊線扣分帶 10 / wide 公尺;節奏改成決策間隔 ÷ tempo、不再乘傳球機率。
+   預先登記(跑之前寫下):強弱 |Δ淨勝| < 2 SE 且宣告的踢法往對的方向動 > 2 SE。ARS 主場對 LIV、只動主隊、種子 1~60:
+     級          進 / 失        淨勝對基準            射門    傳中    每控球分鐘傳球
+     基準 3      1.48 / 1.58    —                     13.3    42.8    27.2
+     寬度 1      1.38 / 1.43    +0.05 ± 0.30(0.2)     13.4    39.9    27.5
+     寬度 5      1.35 / 1.72    −0.27 ± 0.30(−0.9)    13.0    46.0    26.8      傳中 寬 − 窄 +6.1 ± 2.3(2.7 SE)→ 過
+     節奏 1      1.27 / 1.82    −0.45 ± 0.33(−1.4)    14.3    58.3    23.2
+     節奏 5      0.92 / 1.70    −0.68 ± 0.33(−2.04)   11.2    32.2    30.7      強弱那一條沒過
+   (本機側寫是 10-29 那一份,ARS 對 LIV 的基準跟站上不同;比的是同一份側寫上的相對差。)
+   節奏:每分鐘的傳球確實照方向動(+7.5),但快節奏射門少兩腳、xG 1.62 → 1.21 —— 出球越快、持球者帶進禁區越少,
+   它仍然是強弱的旋鈕。程式留著決策間隔的寫法(比乘傳球機率像節奏),畫面不掛。 */
 const WIDE_STEP = 0.07;                        // 寬度每級把 y 偏移放大幾成(±14%)
 const TEMPO_STEP = 0.10;                       // 節奏每級改變出手機率幾成(±20%)
 /* 直接度原本也是「3 = 恆等元、每級 ±0.06」(DIRECT_STEP);5v 起改成跟壓迫同一套 —— 五級是聯盟五分位的真實中位數,
@@ -2954,7 +2966,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
          30 場量到 **53.2%**。0.15 試過 —— 領土過頭到 49.2、禁區觸球塌到 ×0.44、
          λ 主隊 −3.9 SE 而且強弱被壓縮(1.27 : 0.87),所以取 0.30。 */
       const score = forward * (0.30 + dir) + Math.min(marked, 12) * 1.2 - d * (0.55 - dir * 0.5)
-        - Math.max(0, 10 - edge) * 1.1 - Math.max(0, 4 - Math.min(lane, 4)) * 9;
+        - Math.max(0, 10 / (s.wide ?? 1) - edge) * 1.1 - Math.max(0, 4 - Math.min(lane, 4)) * 9;
       if (score > bestScore) { bestScore = score; best = m; }
     }
     /* 進到射程就可能射門 —— 越近越想射,而且沒人逼的時候更想。
@@ -3084,7 +3096,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     }
     /* 邊路、對方三分之一、還沒到底線:少回傳、多往底線帶(5s) */
     const wideRun = Math.abs(goalX - p.x) < CROSS_ZONE_X && Math.abs(goalX - p.x) >= BYLINE_D && Math.abs(p.y - PITCH_H / 2) > CROSS_WIDE;
-    const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (s.tempo ?? 1) * (wideRun ? WIDE_PASS : 1), 0.05, 0.95);
+    const wantPass = best && rng() < cl((pressure < 4.5 ? 0.75 : 0.25) * (wideRun ? WIDE_PASS : 1), 0.05, 0.95);
     if (wantPass) {
       const d = hypot(best.x - p.x, best.y - p.y);
       // 力道:讓球到得了、而且到的時候還控得住
@@ -3213,7 +3225,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
         const sp = st.restart?.spots;
         const spot = sp && (sp.att.get(p.code) ?? sp.def.get(p.code));
         const pos = pen ? { x: st.restart.x, y: st.restart.y }
-          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, st.restart?.side === p.side), wide: s.wide });
+          : spot ?? shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, st.restart?.side === p.side), wide: st.restart?.side === p.side ? s.wide : 1 });
         /* 死球時走回位置**也是跑動**(2026-09-21,階段 5m)。第一版的歸因只掛在活球那一支,
            於是逐分支加起來是 119 m/分・人而畫面上的錨是 129 —— **少了 8%**,
            而它看起來就像「來源列完了」。4h 的規矩是把來源逐類列出來,
@@ -3265,7 +3277,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     // ── 決策 ──
     if (holder) {
       decideIn -= dt;
-      if (decideIn <= 0) { decide(holder); decideIn = 0.8 + rng() * 0.9; }
+      if (decideIn <= 0) { decide(holder); decideIn = (0.8 + rng() * 0.9) / (sideOf(holder.side).tempo ?? 1); }
     }
 
     // ── 每個人要往哪走 ──
@@ -3503,7 +3515,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       } else {
         // 有球的那一隊:前腰與邊後衛往前壓(slot.adv,見 ADV_AM)—— 死球走位那一支不壓,那是排站位
         const inPoss = holder?.side === p.side;
-        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, inPoss) + (inPoss ? (p.slot.adv ?? 0) : 0), wide: s.wide });
+        let pos = shapeOf(p.slot, st.focus, s.att, { push: s.venuePush + mentPush(s, inPoss) + (inPoss ? (p.slot.adv ?? 0) : 0), wide: inPoss ? s.wide : 1 });
         const raw0 = { x: pos.x, y: pos.y };     // 階段 5m:夾之前的原始目標,用來拆「擺動是誰造成的」
         /* 有球的那一隊:前場的人不越過越位線。這一行是「看起來像足球」的另一半 ——
            沒有它前鋒會站到對方底線,防線跟著退,整場擠在門前。 */

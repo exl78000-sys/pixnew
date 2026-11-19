@@ -1,7 +1,7 @@
 import * as C from './core.js?v=662b4d9f';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=cea8f765';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=361233a7';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=36c8e2ca';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -65,11 +65,13 @@ export async function renderGame(app) {
       setup: { home: null, away: null }, speed: 'normal' };
     /* `tactics` 只放**使用者真的改過的那幾軸** —— 預設是空的,開賽時送進引擎的也就是空的。 */
     const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: {} });
-    /* **只列連續引擎真的接得到、而且量過方向對的那三軸**(壓迫、防線高度、直接度;直接度 2026-09-20 掛上來)。
-       其餘三個留著就是拉了會讓球隊踢得很爛的按鈕,那比沒有更糟(鐵則三的同一個道理)。
-       缺的那三個在畫面上列出來說「還沒掛上來」,不要讓讀者自己去猜。 */
-    const LIVE_TACTICS = ['mentality', 'pressing', 'line', 'directness'];
-    const TACTIC_TODO = ['width', 'tempo'];
+    /* **只列連續引擎真的接得到、而且量過方向對的那幾軸**(心態、壓迫、防線高度、寬度、直接度;直接度 2026-09-20、心態 11-07、寬度 11-19 掛上來)。
+       剩下的節奏留著就是拉了會改強弱的按鈕,那比沒有更糟(鐵則三的同一個道理)。
+       缺的那一個在畫面上列出來說「還沒掛上來」,不要讓讀者自己去猜。 */
+    /* 寬度 2026-11-19 掛上(5t 之後重量:只在有球時張開、邊線扣分帶跟著縮;ARS 主場對 LIV 60 場 / 格,
+       淨勝球對基準 +0.2 / −0.9 SE、傳中 寬 − 窄 +6.1 ± 2.3 —— 改踢法不改強弱,數字在引擎 WIDE_STEP 的註解)。 */
+    const LIVE_TACTICS = ['mentality', 'pressing', 'line', 'width', 'directness'];
+    const TACTIC_TODO = ['tempo'];
     /* 兩種「預設」要分開(2026-09-25):**引擎沒收到指令時實際在踢的那一級**(亮起來的就是它,語意由引擎給)
        與**這一隊本季真實所在的那一級**(標「・本季」)。壓迫與直接度(5v 起)兩者相同;防線引擎沒有逐隊的基準,
        引擎的預設是中間那一級。第一版把側寫的級同時當成兩者,而且**建立設定時就塞進 tactics、開賽就送進引擎** ——
@@ -694,7 +696,7 @@ export async function renderGame(app) {
           </div>`; }).join('')}
         <details class="game-help"><summary>本季實際數字</summary><div class="tiny dim">${LIVE_TACTICS.map(k => { const st = t.style?.[k];
           return `<div><b>${C.esc(axes[k]?.zh ?? k)}</b>:${st?.value != null ? `${C.esc(String(st.value))}${C.esc(st.unit ?? '')}(${C.esc(st.basis)},${st.n} 場${st.proxy ? ',代理指標' : ''})` : '沒有資料,預設中'}</div>`; }).join('')}</div></details>
-        <div class="tiny dim" style="margin-top:6px">還沒掛上來的指令:${C.esc(todo)} —— 引擎裡的旋鈕接了,但量下去<b>方向不對或幅度離譜</b>(寬度拉寬反而自己射門砍半、節奏 ±20% 換來 3.3 倍的射門),所以不放按鈕。</div>
+        <div class="tiny dim" style="margin-top:6px">還沒掛上來的指令:${C.esc(todo)} —— 引擎裡的旋鈕接了,但量下去它改的是<b>強弱而不只是踢法</b>(快節奏讓自己少射兩腳、淨勝球少 0.7 球),所以不放按鈕。</div>
       </div>`;
     }
     function bindTactics() {
@@ -732,7 +734,7 @@ export async function renderGame(app) {
         </div>`;
       };
       return tacticsPanelHtml('home') + tacticsPanelHtml('away')
-        + `<details class="game-help"><summary>指令怎麼運作(哪些是遊戲規則)</summary><div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫與直接度的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶 / 出長傳,選自己那一級等於沒下指令。防線與心態引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。<b>心態只改有球時整隊壓得多前</b>(每級 ${MENT_STEP} 公尺,遊戲規則;沒球時站位不動):壓得越前,自己的機會多一點,丟球時身後的空間也大一點 —— 量過,進攻的心態讓兩隊都多進一點、淨勝球不變,保守則是自己少進、失球沒有跟著少(這個引擎的防守還不會因為人多在後面而擋下更多球)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。每一軸「本季實際」的數字,把滑鼠停在那一行上就看得到。</div></details>`
+        + `<details class="game-help"><summary>指令怎麼運作(哪些是遊戲規則)</summary><div class="tiny dim" style="margin-bottom:8px"><b>指令改的是踢法,結果會跟著變。</b>壓迫與直接度的五級是聯盟真實的五分位:選哪一級,就照那一組球隊的中位數逼搶 / 出長傳,選自己那一級等於沒下指令。防線、寬度與心態引擎沒有逐隊的基準,預設是中間那一級,每一級改多少是遊戲規則(沒有資料能校準,刻意做小)。<b>寬度只改有球時拉多開</b>(邊路球員站得更靠邊、傳球也比較肯往邊線給;沒球時站位不動):量過,拉寬的一隊傳中變多、強弱不變。<b>心態只改有球時整隊壓得多前</b>(每級 ${MENT_STEP} 公尺,遊戲規則;沒球時站位不動):壓得越前,自己的機會多一點,丟球時身後的空間也大一點 —— 量過,進攻的心態讓兩隊都多進一點、淨勝球不變,保守則是自己少進、失球沒有跟著少(這個引擎的防守還不會因為人多在後面而擋下更多球)。引擎不會把進球期望調回來 —— 沒下指令時兩隊的預期進球等於站上的 λ,下了就會偏離。標「代理指標」的軸用的是替代量(例如防線用對手越位數)。改了立刻生效。每一軸「本季實際」的數字,把滑鼠停在那一行上就看得到。</div></details>`
         + side('home') + side('away') + `<div class="tiny dim">下面這些是真資料(逐場 CSV、FotMob、Understat、FPL),唯讀。</div>`;
     }
 
@@ -763,7 +765,7 @@ export async function renderGame(app) {
           <li><b>進球情境</b>只分運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼;
             直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。</li>
           <li><b>還沒做的</b>:受傷;
-            戰術的寬度 / 節奏(引擎接得動,但量下去方向不對或幅度離譜,所以還沒掛上來)。
+            戰術的節奏(引擎接得動,但量下去改的是強弱而不只是踢法,所以還沒掛上來)。
             <b>刻意不做</b>:自動換人(換人是玩家的決定)。沒做的一律不放欄位。</li>
           <li><b>跟真實管線只有一條關係</b>:沒有任何改動時,N 場的平均進球回得到站上的 λ
             (統計上相等,不是逐場相等);任何操作都不寫回資料,也不影響站上任何一頁。</li>

@@ -749,6 +749,16 @@ console.log('\n▶ 模擬遊玩:戰術指令的級數(畫面與引擎同一套�
     check('兩個站位呼叫點(活球、死球走位)都走 mentPush 而且帶「這一刻誰持球」;舊的整塊平移 s.push 不在了',
       callSites.length === 2 && !/(?<![\w.])s\.push\b/.test(bareSim) && /const inPoss = holder\?\.side === p\.side;/.test(bareSim),
       `${callSites.length} 處`);
+    /* 寬度(2026-11-19 掛上畫面):只在有球時張開(死球時只有開球的那一隊),邊線扣分帶跟著寬度縮。
+       兩個站位呼叫點都不准再無條件傳 s.wide —— 第一版整塊張開(有球沒球都開),量出來方向是反的(見 WIDE_STEP) */
+    const wideSites = bareSim.match(/wide: (inPoss \? s\.wide : 1|st\.restart\?\.side === p\.side \? s\.wide : 1)\b/g) ?? [];
+    check('寬度只在有球時張開(兩個站位呼叫點)、邊線扣分帶照寬度縮;節奏是決策間隔不是傳球機率',
+      wideSites.length === 2 && !/wide: s\.wide\b/.test(bareSim) && /10 \/ \(s\.wide \?\? 1\) - edge/.test(bareSim)
+        && /decideIn = \(0\.8 \+ rng\(\) \* 0\.9\) \/ \(sideOf\(holder\.side\)\.tempo \?\? 1\)/.test(bareSim) && !/s\.tempo \?\? 1\) \* \(wideRun/.test(bareSim),
+      `${wideSites.length} 處`);
+    const gv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
+    check('畫面上掛的軸:寬度在、節奏仍在「還沒掛上來」(量過改的是強弱)',
+      /const LIVE_TACTICS = \[[^\]]*'width'/.test(gv) && /const TACTIC_TODO = \['tempo'\]/.test(gv));
   }
 
   /* ③ 壓迫的五級:期望值自己從側寫算一次(中位數 + 跟引擎同一條換算,常數從引擎原始碼讀) */
