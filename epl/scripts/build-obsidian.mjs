@@ -226,6 +226,9 @@ function collectPlayers(lg, meta) {
       /* Understat 的球員 id **跨聯賽共用**(understat.com/player/{id}):上季在法甲、本季在德甲的人,
          兩個聯賽的資料裡是同一個 id。同名提醒靠它分得出「同一人」與「只是同名」。 */
       understatId: String(p.id),
+      /* FotMob id(attachFotmobIdentity 掛的,逐場對上 Understat 的那一季才有):傷停名單用它連到球員筆記,不比姓名 */
+      fotmobId: (() => { const s = p.seasons.slice().sort((a, b) => String(b.season).localeCompare(String(a.season)))
+        .find(x => x.fotmobId != null); return s ? String(s.fotmobId) : null; })(),
       code: newest.code ?? String(p.id), tracking: newest.tracking ?? null,   // 逐場紀錄與跑動/熱區/評分(FotMob),跟英超分支一樣
       teamCode: (newest.teamCodes || [])[0] ?? null, pos: newest.pos, posZh: newest.posZh,
       squadNumber: newest.squadNumber, age: newest.age, dob: newest.dateOfBirth,
@@ -1076,7 +1079,7 @@ function renderSim(s, ctx) {
    可用人手只有英超有(官方 FPL 的傷停欄位);其他聯賽的 availability 是 null,整塊不寫。 */
 const RES_ZH = { W: '勝', D: '和', L: '負' };
 
-/* 賽前缺陣名單(英冠 2026-10-31 起,unavailable.json)。跟站上球隊頁那張卡講同一件事:
+/* 賽前缺陣名單(英冠 2026-10-31 起、德義法 2026-11-19 起,unavailable.json)。跟站上球隊頁那張卡講同一件事:
    這是**某一場的賽前名單**,講清楚是哪一場、什麼時候抓的;那一場踢完了就是當時的狀態。
    球員連結用 FotMob id 對,不比姓名。產物沒有這一隊就整段不寫(站上講「還沒抓」,筆記不寫空殼)。 */
 function renderUnavailable(code, ctx) {
@@ -1097,7 +1100,7 @@ function renderUnavailable(code, ctx) {
       out.push(`| ${f ? wl(f) : cellText(p.name ?? '—')} | ${cellText(p.typeZh ?? p.type ?? '原因不明')} | ${cellText(p.returnZh ?? p.expectedReturn ?? '—')} | ${p.season ? `${p.season.matches} 場・${p.season.minutes} 分鐘` : '本季還沒出賽'} |\n`);
     }
   }
-  out.push(`\n> 單一來源(英冠沒有第二份傷停可以核對),每一場開賽前 ${ctx.unavailWindowH} 小時內抓一次。`
+  out.push(`\n> 單一來源(${ctx.lg.zh}沒有第二份傷停可以核對),每一場開賽前 ${ctx.unavailWindowH} 小時內抓一次。`
     + `${u.played ? '那一場已經踢完,這是當時的賽前狀態,不是現在的。' : ''}「出賽成疑」的人不一定缺陣。這一段沒有進預測模型。\n`);
   return { links, text: out.join('') };
 }
@@ -1907,7 +1910,7 @@ for (const { lg, meta, teams, fixturesRaw, players } of allPlayers) {
     /* 英冠:跟著產物講 —— 傷停(賽前缺陣名單)在球隊筆記、年齡看有沒有人有(2026-10-31 起) */
     : lg.key === 'en2' ? [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽',
         '球員 xG 模型(這裡的 xG 是逐射門加總)', `身價${players.some(p => p.age != null) ? '' : '、年齡'}${players.every(p => p.photo) ? '' : players.some(p => p.photo) ? '與一部分人的頭貼(每次部署補一點,逐步補齊)' : '與頭貼'}`]
-      : ['傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)']
+      : [meta.unavailable?.fixtures ? '球員筆記裡的傷停(賽前缺陣名單在球隊筆記,FotMob、單一來源)' : '傷停與停賽', ...(hasDefense ? [] : ['防守數據']), ...(noIdentity ? ['背號、頭貼、出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)']
         /* 德義法 2026-10-31 起有 FotMob 背號與頭貼(逐步補齊),但出生日期與身價仍然沒有 —— 有什麼就不講沒有,沒有的照講 */
         : players.length && players.every(p => p.dob == null) ? [`${players.every(p => p.photo) ? '' : players.some(p => p.photo) ? '一部分人的頭貼、' : '頭貼、'}出生日期與身價(Understat 不給,這個聯賽沒有第二個身分來源)`] : [])];
 

@@ -2970,4 +2970,5 @@ export function absenceRows(list) {
   }).join('');
 }
 export const absenceNote = e => `FotMob 賽前缺陣名單,${kickoffLocal(e.fetchedAt)} 抓的(開賽前 24 小時內每一場抓一次)。`
-  + '單一來源 —— 英冠沒有第二份傷停可以核對;「出賽成疑」的人不一定缺陣。';
+  /* 聯賽名從目前聯賽讀(2026-11-19 德義法接上之前這裡寫死「英冠」,德甲頁就印著英冠) */
+  + `單一來源 —— ${LEAGUES[league()]?.zh ?? '這個聯賽'}沒有第二份傷停可以核對;「出賽成疑」的人不一定缺陣。`;

@@ -1,4 +1,4 @@
-import * as C from './core.js?v=464e2624';
+import * as C from './core.js?v=662b4d9f';
 
 const app = document.getElementById('app');
 
@@ -15,7 +15,7 @@ try {
   const data = await C.load('meta', 'clubs', 'overview', 'fixtures', 'h2h', 'players-list', 'tactics', 'analysis', 'reports', 'experts', 'lineups', 'live-lite', 'shapes', 'official', 'form', 'prob-history', 'news', 'fixture-grids');
   const { meta, clubs, overview, fixtures, h2h, 'players-list': players, tactics, analysis, reports, experts, lineups, 'live-lite': live, shapes, official, form } = data;
   const teams = overview?.teams ?? [];
-  /* 賽前缺陣名單:只有 meta.unavailable 有值的聯賽(英冠)才去載,其他聯賽不發這個請求 */
+  /* 賽前缺陣名單:只有 meta.unavailable 有值的聯賽(英冠、德義法)才去載,其他聯賽不發這個請求 */
   const unavail = meta.unavailable ? (await C.loadFrom(C.league(), ['unavailable'])).data.unavailable ?? null : null;
   /* 比分機率格(2026-09-30,A9):fixtures.json 不再帶 grid,另存 fixture-grids.json(首頁那幾頁不用載它)。
      掛回 prediction.grid / postFit.grid,下面的熱圖一個字沒改;缺檔就沒有熱圖(本來 p.grid 沒有就不畫)。 */

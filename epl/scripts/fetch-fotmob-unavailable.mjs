@@ -19,9 +19,14 @@ import { pickDue, parseUnavailable } from './lib/unavailable.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'pl-war-room/1.0 (football analysis side project)';
 const arg = k => process.argv.find(a => a.startsWith(`--${k}=`))?.split('=').slice(1).join('=');
-/* 只有接上的聯賽在這裡。英超有 FPL 的傷停、西甲與德義法還沒決定要不要接 —— 要接的話加一列,不要改成全部 */
+/* 只有接上的聯賽在這裡。英超有 FPL 的傷停、西甲還沒決定要不要接 —— 要接的話加一列,不要改成全部。
+   德義法 2026-11-19 接上(使用者:「德義法傷停」;三個聯賽一輪約 28 個請求)。dir 是各聯賽 build 的 fotmobDir,
+   scores.json 與快取都在那裡,那三個目錄本來就在部署的回寫清單裡。 */
 const LEAGUES = {
   en2: { dir: 'fotmob-championship', teamFile: 'teams-championship.json' },
+  de1: { dir: 'fotmob-bundesliga', teamFile: 'teams-bundesliga.json' },
+  it1: { dir: 'fotmob-serie-a', teamFile: 'teams-serie-a.json' },
+  fr1: { dir: 'fotmob-ligue-1', teamFile: 'teams-ligue-1.json' },
 };
 const key = arg('league') ?? 'en2';
 const LG = LEAGUES[key];

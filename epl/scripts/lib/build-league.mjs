@@ -31,6 +31,7 @@
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { playedPrematch, prematchKey } from './played-prematch.mjs';
 import { existsSync, readFileSync } from 'node:fs';
+import { buildUnavailable, WINDOW_H } from './unavailable.mjs';
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 
@@ -867,12 +868,45 @@ export async function buildLeague(L) {
     return { coaches: out, skipped, pageFetchedAt: page?.fetchedAt ?? null };
   })();
 
+  /* 賽前缺陣名單(2026-11-19,使用者:「德義法傷停」;英冠 2026-10-31 那一套,規則在 lib/unavailable.mjs、
+     抓取在 fetch-fotmob-unavailable.mjs)。單一來源:這三個聯賽沒有第二份傷停可以對,畫面要講。
+     「本季出賽幾場」直接從 FotMob 本季逐場逐人統計數(上場分鐘 > 0 的場次),用 FotMob id 接、不用姓名接。
+     第一版接的是 Understat 球員身上的 fotmobId —— 那只掛在「逐場跟 Understat 的出場與分鐘對上」的人身上,
+     Understat 落後幾天時本季只有一小部分人有(本機量到德甲 137 人),名單上的人大多印不出場數。同一家供應商的資料自己數,全員都有。 */
+  const unavailable = (() => {
+    const cp = join(ROOT, 'data', 'raw', L.fotmobDir, 'unavailable.json');
+    const cache = existsSync(cp) ? JSON.parse(readFileSync(cp, 'utf8')).matches ?? {} : {};
+    const players = (() => {
+      const pp = join(ROOT, 'data', 'raw', L.fotmobDir, `${CURRENT_SEASON}-player-stats.json`);
+      if (!existsSync(pp)) return [];
+      const raw = JSON.parse(readFileSync(pp, 'utf8'));
+      const by = new Map();
+      for (const m of Object.values(raw.matches ?? raw)) {
+        for (const list of Object.values(m?.players ?? {})) for (const x of list ?? []) {
+          if (x?.providerId == null || !(x.minutes > 0)) continue;
+          const r = by.get(String(x.providerId)) ?? { providerId: String(x.providerId), matches: 0, minutes: 0 };
+          r.matches++; r.minutes += x.minutes; by.set(r.providerId, r);
+        }
+      }
+      return [...by.values()];
+    })();
+    const out = buildUnavailable({ cache, fixtures, players });
+    if (Object.keys(cache).length) console.log(`  ${L.zh}賽前缺陣名單:快取 ${Object.keys(cache).length} 場・掛上本站場次 ${Object.keys(out.fixtures).length} 場・${Object.keys(out.teams).length} 隊`
+      + (out.unmatched.length ? `・對不到本站場次 ${out.unmatched.length} 場(${out.unmatched.slice(0, 3).join('、')})` : ''));
+    return { ...out, source: 'FotMob 賽前缺陣名單(matchDetails 的 lineup.unavailable)', single: true, windowH: WINDOW_H };
+  })();
+  const unavailN = Object.keys(unavailable.fixtures).length;
+
   const meta = {
     /* **不要設 edition**(英冠那條註解同一個理由):那個欄位在前端被當成「是不是西甲」的二元旗標。 */
     league: L.key, leagueLabel: L.zh,
     /* capabilities 是前端用來決定「這一頁要不要畫」的旗標。沒有的一律 false,不要留空不寫。 */
     capabilities: { players: hasPlayers, injuries: false, coaches: coachRoster.coaches.length > 0,
       xg: hasPlayers || reportCount > 0, lineups: reportCount > 0, live: false },
+    /* 賽前缺陣名單是另一個欄位,不是 capabilities.injuries(那個旗標接的是英超的 FPL / 外電形狀;英冠那條註解)。
+       跟英冠一樣一律給:還沒抓到的場次,前端照實講「開賽前 24 小時內才抓」 */
+    unavailable: { source: unavailable.source, single: true, windowH: WINDOW_H,
+      fixtures: unavailN, teams: Object.keys(unavailable.teams).length },
     builtAt: new Date().toISOString(), asOf: AS_OF,
     currentSeason: CURRENT_SEASON, lastSeason: LAST_SEASON,
     h2hSeasons: [...fullSeasons, CURRENT_SEASON],
@@ -887,7 +921,8 @@ export async function buildLeague(L) {
          而且這次是在**加了那個能力的同一支 build 裡**。一律由 hasPlayers 決定。 */
       + (hasPlayers
         ? `球員層走 Understat(整季彙總),目前 ${playersOut.length} 筆 —— 有進球、助攻、xG、xA、`
-          + '射門與關鍵傳球;還沒有的是陣容、傷停與即時比分(下方「目前資料界線」有細節)。'
+          + `射門與關鍵傳球;還沒有的是陣容${unavailN ? '' : '、傷停'}與即時比分(下方「目前資料界線」有細節)。`
+          + (unavailN ? '傷停來自 FotMob 的賽前缺陣名單(單一來源),在單場頁與球隊頁。' : '')
         : '這個聯賽目前只做到球隊與比賽這一層 —— 還沒有球員數據、xG、陣容與傷停。'
           + `${L.zh}是 Understat 有涵蓋的五大聯賽之一,所以球員層是「還沒接」,不是「拿不到」(`
           + '下方「目前資料界線」有細節)。'),
@@ -951,13 +986,25 @@ export async function buildLeague(L) {
         : []),
       /* **由資料決定**(2026-10-09):球隊資料(隊色、城市、球場、容量)接上之後,這一句不能再說「還沒有」。
          來源是單一的(FotMob 球隊頁),名稱是原文,隊色是 FotMob 介面主色 —— 三件事都要講(鐵則四)。
-         教練仍然沒有(FotMob 的教練歷任與正式名單同一家,拿來互相核對是自己核對自己)。 */
+         教練另一行講(下面)。 */
       ...(delivered.size
         ? [`✓ 隊色、城市、球場、容量(${delivered.size} / ${teams.length} 隊):FotMob 球隊頁,過核對器(逐欄位出處、容量量級、隊色對隊徽)。`
           + '單一來源:球場與容量沒有第二個來源可以核對;球場與城市是原文名稱;隊色是 FotMob 介面的主色,不一定是球衣主色',
-          `— 還沒有${delivered.size === teams.length ? '' : '其餘球隊的球隊資料、'}教練與綽號:要另外人工交付並通過核對器,交付之前畫面上不顯示`]
-        : [`— 還沒有隊色、城市、球場${crestCount === teams.length ? '' : '、部分球隊的隊徽'}與教練:`
-          + '那幾樣要另外人工交付並通過核對器,交付之前畫面上不顯示']),
+          ...(delivered.size === teams.length ? [] : ['— 其餘球隊的隊色、城市、球場、容量還沒有:FotMob 球隊頁還沒抓到那幾隊'])]
+        : [`— 還沒有隊色、城市、球場、容量${crestCount === teams.length ? '' : '與部分球隊的隊徽'}:FotMob 球隊頁還沒抓到,抓到並過核對器之前畫面上不顯示`]),
+      /* 教練 2026-10-14 起由 FotMob 供、綽號同日從需求拿掉(沒有任何來源)—— 這裡原本寫「還沒有教練與綽號、要人工交付」,
+         掛了一個月(「有哪一句還在講我們沒有它」)。一律跟著 coachRoster 講 */
+      coachRoster.coaches.length
+        ? `✓ 教練(${coachRoster.coaches.length} / ${teams.length} 隊):FotMob 最新一場正式名單 × 球隊頁逐季紀錄,兩個端點都說是他才發布`
+          + '(同一個供應商的兩個端點,單一來源)'
+          + (coachRoster.skipped.length ? `;${coachRoster.skipped.length} 隊兩邊對不上,暫不顯示` : '')
+        : '— 還沒有教練:FotMob 的正式名單或球隊頁不在',
+      /* 傷停(2026-11-19 接上;英冠那一句同一套說法):句子跟著資料走 —— 一場都還沒抓到時不講「有」 */
+      unavailN
+        ? `✓ 傷停(FotMob 賽前缺陣名單,單一來源 —— ${L.zh}沒有第二份傷停可以對):開賽前 ${WINDOW_H} 小時內每一場抓一次`
+          + `(部署 12 小時一次,所以是賽前 12~${WINDOW_H} 小時的狀態),目前 ${unavailN} 場有名單,在單場頁與球隊頁;`
+          + '類型與回歸時間只翻見過的寫法(受傷、停賽、預計回歸月份…),沒見過的照原文印'
+        : `— 傷停:已接 FotMob 賽前缺陣名單(開賽前 ${WINDOW_H} 小時內每一場抓一次),還沒有任何一場抓到`,
       /* 原本只寫「比分依 openfootball 的更新節奏落地」—— 2026-09-16 起比賽夜迴圈會抓 FotMob 賽果補上晚到的比分
          (標暫定、逐場核對),那句話少講了一半(2026-09-24 全站掃描)。 */
       '— 沒有比賽中的即時比分:完賽比分以 openfootball 為準;它晚到時,比賽夜先用 FotMob 的賽果補上並標「暫定」',
@@ -1015,7 +1062,8 @@ export async function buildLeague(L) {
     players: hasPlayers
       ? { available: true, source: 'understat',
         note: 'Understat 的整季彙總(一季一個請求)。有出賽、進球、助攻、xG、xA、射門、關鍵傳球與牌;'
-          + `沒有${shirtCount ? '' : '背號、'}${photoCount ? '' : '頭貼、'}出生日期、身價與傷停 —— 那幾樣 Understat 就是不給,畫面上不留空欄位。`
+          + `沒有${shirtCount ? '' : '背號、'}${photoCount ? '' : '頭貼、'}出生日期與身價 —— 那幾樣 Understat 就是不給,畫面上不留空欄位。`
+          + (unavailN ? '傷停不在球員層:賽前缺陣名單(FotMob)在球隊頁與單場頁。' : '也沒有傷停。')
           + (shirtCount || photoCount ? `${shirtCount ? '背號' : ''}${shirtCount && photoCount ? '與' : ''}${photoCount ? '頭貼(逐步補齊中)' : ''}由 FotMob 補(單一來源)。` : '')
           + '季中轉隊的人上游只給兩隊合計,所以不掛到單一球隊,另外標記。' }
       : { available: false, source: null,
@@ -1136,7 +1184,8 @@ export async function buildLeague(L) {
        德甲連西甲那層 SportMonks 補充都沒有,所以背號 / 頭貼 / 出生日期全缺,
        「22 歲以下」那張榜因此是空的(ageCoverage 會說出 0 / N)。 */
     missing: [...idGaps.filter(x => x !== '出生日期與身價'), '出生日期與身價(所以年齡與「22 歲以下」那張榜是空的)',
-      '傷停與停賽', ...(hasDefense ? [] : ['防守數據(鏟球/攔截/撲救)'])],
+      unavailN ? '球員頁的傷停(賽前缺陣名單在球隊頁與單場頁,FotMob、單一來源)' : '傷停與停賽',
+      ...(hasDefense ? [] : ['防守數據(鏟球/攔截/撲救)'])],
     /* 有防守數據時講出處與核對方式(形狀跟西甲那一份相同,前端讀 seasons 講涵蓋) */
     ...(hasDefense ? { defense: { source: 'FotMob 逐場統計加總', check: 'Understat 的出場與分鐘', tolMinutes: 90, seasons: defenseCount } } : {}),
     sportmonks: {},
@@ -1161,6 +1210,7 @@ export async function buildLeague(L) {
     seasons: { current: CURRENT_SEASON, last: LAST_SEASON },
     boards: {}, squads: {}, layer: {}, missing: [], nameCheck: [], note: meta.players.note,
   });
+  await write('unavailable', unavailable);   // 單場頁與球隊頁詳情才載(meta.unavailable 有值時)
   await write('coaches', coachRoster.coaches.length ? {
     available: true, season: CURRENT_SEASON,
     source: 'FotMob(逐場正式名單的教練欄 × 球隊頁的逐季教練紀錄)', verifiedAt: coachRoster.pageFetchedAt,

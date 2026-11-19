@@ -28,7 +28,7 @@
 賽後報告與逐場統計走 FotMob 聯賽 id **54**(證明過:從 allLeagues 找 ccode=GER、
 再逐隊比對名冊 18/18 —— **奧地利甲也叫 Bundesliga**,id 38 就在倉庫裡,挑錯照樣回得出
 18 隊與逐場資料而畫面不報錯)。隊徽 **18/18**(`npm run de1:crests`,內嵌 data URI)。
-它**還沒有**的是綽號、傷停與即時比分(教練 2026-10-14 起由 FotMob 供;隊色、城市、球場、容量見上面義甲法甲那一段,三個聯賽同一條路);Understat 本身不給背號、頭貼、
+它**還沒有**的是綽號與即時比分(教練 2026-10-14 起由 FotMob 供;**傷停 2026-11-19 起**跟英冠同一套 FotMob 賽前缺陣名單,`fetch-fotmob-unavailable.mjs --league=de1|it1|fr1`,快取在各自的 `fotmob-*` 目錄;隊色、城市、球場、容量見上面義甲法甲那一段,三個聯賽同一條路);Understat 本身不給背號、頭貼、
 出生日期與身價,所以年齡是 null、「22 歲以下」那張榜是空的 —— 由 `leaders.missing`
 講出來,不留空欄位。**背號與防守數據 2026-10-31 起由 FotMob 逐場補**(`attachFotmobIdentity` / `attachDefense`,
 只掛逐場跟 Understat 的出場與分鐘對上的那一季;頭貼 `fetch-league-photos.mjs`,一人一個請求:榜上的人先,其餘每次部署補 40 人(使用者同意的量,`npm test` 守著),逐步補齊)。**球員進球加總比積分榜少的那幾顆,2026-09-16 回填上一季之後對過了。**

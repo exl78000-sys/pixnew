@@ -606,6 +606,26 @@ export function testLeague(L) {
           && nw.every(x => x.title && /^https?:\/\//.test(x.link) && x.source && !x.titleZh), `${nw.length} 則`);
       }
       check('沒有過時的「要先有球員層與逐場詳情」那句', !/要先有球員層與逐場詳情/.test(JSON.stringify(an)));
+      /* 傷停(2026-11-19,使用者:「德義法傷停」;英冠那一套):meta 一律帶 unavailable(前端看到才載);
+         產物的場次都在賽程裡、計數對得回;界線說「✓ 傷停」若且唯若真的有場次掛上;部署的抓取迴圈有這個聯賽、
+         排在 scores 之後(它的輸入)、這個聯賽的 build 之前 */
+      {
+        check('傷停:meta.unavailable 一律給(單一來源、窗口小時)', meta.unavailable?.single === true && meta.unavailable?.windowH > 0);
+        if (existsSync(join(ROOT, 'web', 'data', 'leagues', L.key, 'unavailable.json'))) {
+          const U = out('unavailable');
+          const ids = new Set(fixtures.map(f => f.id));
+          check('傷停產物:掛上的場次都在賽程裡、meta 計數對得回產物', Object.keys(U.fixtures).every(id => ids.has(id))
+            && meta.unavailable.fixtures === Object.keys(U.fixtures).length && meta.unavailable.teams === Object.keys(U.teams).length);
+          const claims = (meta.boundaries ?? []).some(x => /^✓ 傷停/.test(x));
+          check('傷停產物:界線說「✓ 傷停」若且唯若有場次掛上', claims === Object.keys(U.fixtures).length > 0);
+          check('傷停產物:沒有拿首頁的外電傷停形狀(capabilities.injuries 仍是 false)', meta.capabilities?.injuries === false);
+        }
+        const wf = readFileSync(join(ROOT, '..', '.github', 'workflows', 'epl-live.yml'), 'utf8');
+        const loop = /for lg in ([^;]+); do\s+npm run unavailable:fetch -- --league=\$lg/.exec(wf);
+        const iFetch = wf.indexOf('npm run unavailable:fetch'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf(`npm run ${L.key}:build`);
+        check('傷停:部署的抓取迴圈有這個聯賽,排在 scores 之後、這個聯賽的 build 之前',
+          !!loop && loop[1].split(/\s+/).includes(L.key) && iScores > 0 && iFetch > iScores && iFetch < iBuild, loop?.[1] ?? '沒有迴圈');
+      }
     }
     /* 這幾份沒有內容的一律帶 available:false 與一句為什麼 —— 空殼不解釋等於看起來壞掉 */
     for (const n of ['leaders', 'coaches', 'goals', 'experts', 'official', 'live']) {

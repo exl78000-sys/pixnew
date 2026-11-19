@@ -11,9 +11,9 @@
  *
  * 舊網址 `?view=predict`(書籤、首頁「你的球隊」卡片連的是 `?view=teams`)照樣有效:
  * predict 捲到預測那一段,teams 或沒帶就停在頁首。 */
-import * as C from './core.js?v=464e2624';
-import { renderFollowTeams } from './follow-view.js?v=52799f67';
-import { renderPredict } from './predict-view.js?v=ba61c7f4';
+import * as C from './core.js?v=662b4d9f';
+import { renderFollowTeams } from './follow-view.js?v=24338a79';
+import { renderPredict } from './predict-view.js?v=e2f95b8c';
 
 const app = document.getElementById('app');
 

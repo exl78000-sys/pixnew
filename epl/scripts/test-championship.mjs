@@ -901,12 +901,18 @@ const table = out('table'), results = out('results'), sim = out('sim');
     const src = readFileSync(join(ROOT, 'scripts', 'fetch-league-photos.mjs'), 'utf8');
     check('頭貼一次部署最多 40 人(使用者同意的量)', /const LIMIT = Math\.max\(1, Number\(arg\('limit'\) \|\| 40\)\)/.test(src));
   }
-  const iFetch = wf.indexOf('npm run unavailable:fetch -- --league=en2'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf('npm run en2:build');
-  check('缺陣名單:部署在 scores 之後、en2:build 之前抓', iFetch > iScores && iScores > 0 && iFetch < iBuild);
+  /* 2026-11-19 起英冠與德義法共用一個迴圈(`for lg in en2 de1 it1 fr1`),守的是迴圈裡有 en2,不是字面那一行 */
+  const loop = /for lg in ([^;]+); do\s+npm run unavailable:fetch -- --league=\$lg/.exec(wf);
+  const iFetch = wf.indexOf('npm run unavailable:fetch'), iScores = wf.indexOf('npm run scores:fetch'), iBuild = wf.indexOf('npm run en2:build');
+  check('缺陣名單:部署在 scores 之後、en2:build 之前抓', !!loop && loop[1].split(/\s+/).includes('en2') && iFetch > iScores && iScores > 0 && iFetch < iBuild);
   /* 「每一場恰好有一次部署落在窗口裡」要成立,窗口不能比部署間隔短 —— 間隔從排程讀,不寫死 */
   const every = Number(/cron:\s*'0 \*\/(\d+) \* \* \*'/.exec(wf)?.[1]);
   check('缺陣名單:抓取窗口不短於部署間隔(每一場都會有一次部署落進去)', every > 0 && WINDOW_H >= every, `間隔 ${every} 小時、窗口 ${WINDOW_H}`);
   check('缺陣名單:快取目錄在部署的回寫清單裡', /epl\/data\/raw\/fotmob-championship\/ \\/.test(wf));
+  check('缺陣名單:德義法的快取目錄也在回寫清單裡', ['fotmob-bundesliga', 'fotmob-serie-a', 'fotmob-ligue-1']
+    .every(d => wf.includes(`epl/data/raw/${d}/`)));
+  /* 前端共用的說明句不准寫死聯賽名(德義法接上之前寫死「英冠」,德甲頁就印英冠) */
+  check('缺陣名單:前端的單一來源說明不寫死「英冠」', !/英冠沒有第二份傷停/.test(readFileSync(join(ROOT, 'web', 'assets', 'js', 'core.js'), 'utf8')));
 
   /* 前端:單場頁的關鍵球員卡讀得了逐場累加的形狀(2026-10-31 之前英冠每人都印 0 球 0 助) */
   const pa = readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8');
