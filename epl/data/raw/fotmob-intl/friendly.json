@@ -7,7 +7,7 @@
  "availableSeasons": [
   "2026"
  ],
- "retrievedAt": "2026-11-16T21:45:37.831Z",
+ "retrievedAt": "2026-11-19T06:23:44.609Z",
  "matches": [
   {
    "id": "5120889",
@@ -9824,7 +9824,7 @@
   },
   {
    "id": "6140732",
-   "kickoff": "2026-11-16T18:00:00.000Z",
+   "kickoff": "2026-11-16T18:00:00Z",
    "home": {
     "name": "Andorra",
     "shortName": "Andorra",
@@ -9847,27 +9847,6 @@
    "group": null
   },
   {
-   "id": "6633645",
-   "kickoff": "2026-11-17T05:30:00Z",
-   "home": {
-    "name": "Tahiti",
-    "shortName": "Tahiti",
-    "fmId": "5927"
-   },
-   "away": {
-    "name": "Cook Islands",
-    "shortName": "Cook Islands",
-    "fmId": "287880"
-   },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
-   "awarded": false,
-   "round": null,
-   "group": null
-  },
-  {
    "id": "6539353",
    "kickoff": "2026-11-17T06:00:00Z",
    "home": {
@@ -9880,10 +9859,37 @@
     "shortName": "Yemen",
     "fmId": "5892"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
+   "awarded": false,
+   "round": null,
+   "group": null
+  },
+  {
+   "id": "6633645",
+   "kickoff": "2026-11-17T07:30:00Z",
+   "home": {
+    "name": "Tahiti",
+    "shortName": "Tahiti",
+    "fmId": "5927"
+   },
+   "away": {
+    "name": "Cook Islands",
+    "shortName": "Cook Islands",
+    "fmId": "287880"
+   },
+   "state": "FT",
+   "final": [
+    3,
+    3
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9901,10 +9907,13 @@
     "shortName": "Brazil",
     "fmId": "8256"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    7
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9922,10 +9931,13 @@
     "shortName": "Bahrain",
     "fmId": "5901"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9943,10 +9955,13 @@
     "shortName": "Vietnam",
     "fmId": "5894"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9964,10 +9979,13 @@
     "shortName": "Palestine",
     "fmId": "6333"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -9985,10 +10003,13 @@
     "shortName": "Paraguay",
     "fmId": "6724"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10006,10 +10027,13 @@
     "shortName": "South Korea",
     "fmId": "7804"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10027,10 +10051,13 @@
     "shortName": "Syria",
     "fmId": "6320"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    4,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10048,10 +10075,13 @@
     "shortName": "Uzbekistan",
     "fmId": "8700"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10069,10 +10099,13 @@
     "shortName": "Australia",
     "fmId": "6716"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10090,10 +10123,13 @@
     "shortName": "Venezuela",
     "fmId": "5800"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10111,10 +10147,13 @@
     "shortName": "Iran",
     "fmId": "6711"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    1,
+    1
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10132,10 +10171,13 @@
     "shortName": "Honduras",
     "fmId": "5808"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    2
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10153,10 +10195,13 @@
     "shortName": "Costa Rica",
     "fmId": "6705"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    7,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10174,10 +10219,13 @@
     "shortName": "Colombia",
     "fmId": "8258"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    0,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10195,10 +10243,13 @@
     "shortName": "Bolivia",
     "fmId": "5797"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    2,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
@@ -10216,10 +10267,13 @@
     "shortName": "Dominican Republic",
     "fmId": "262134"
    },
-   "state": "NS",
-   "final": null,
-   "reason": null,
-   "reasonLong": null,
+   "state": "FT",
+   "final": [
+    5,
+    0
+   ],
+   "reason": "FT",
+   "reasonLong": "Full-Time",
    "awarded": false,
    "round": null,
    "group": null
