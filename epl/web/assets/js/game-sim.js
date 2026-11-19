@@ -1044,10 +1044,21 @@ const OFFSIDE_MARGIN = 0.8;                    // 貼著線站(公尺)
 const HALF_SECS = 45 * 60;
 /* 換人規則(2026-11-07,使用者:「依照推薦順序依序製作」第一項)。這是**規則**不是校準出來的參數 ——
    IFAB 與英超現行:每隊最多換 **5 人**、比賽中最多 **3 次換人機會**,中場休息時換的不佔機會。
-   (腦震盪替補是另一條規則,本站沒有受傷,不做。)
+   (腦震盪替補是另一條規則,不做 —— 受傷 2026-11-19 有了,但受傷的人一律走一般換人。)
    **只在死球時換**:比賽中按下換人會先排隊,下一次死球才換 —— 真的比賽也是這樣,
    而且不排隊的話被換下的人會在跑動中途憑空消失(連續引擎不剪接)。同一次死球裡換的幾個人算**同一次機會**。 */
 const MAX_SUBS = 5, MAX_SUB_WINDOWS = 3;
+/* 受傷(2026-11-19,使用者「繼續推薦下一項」)。**發生的頻率是真實資料,受傷之後怎樣是遊戲變數。**
+   頻率:側寫的 `league_.injuryPool.perTeamGame` —— 本站每一份 FotMob 逐場快取裡(六個聯賽 + 盃賽 + 歐冠),
+   有讀過 `injured` 旗標的場次,「因傷換人」每隊每場幾次(2026-11-07 才開始收,樣本很小,畫面照實印場數)。
+   它數的是**因傷被換下**,所以模擬裡受傷的意思也只有這一種:這個人沒辦法照常跑了,該換他下來。
+   在 90 分鐘的正規時間裡均勻發生(樣本太少,看不出時間分佈;每秒機率 = 每隊每場 ÷ 5400 秒,
+   補時那幾分鐘也照同一個率,所以整場期望值會略高一點點,補時越長越多)。
+   受傷的人**最高速剩 INJ_SLOW**(遊戲變數,沒有資料可以校準),而且**不會自動換下** ——
+   換不換、換誰是玩家的決定(自動換人刻意不做);名額用完了他就帶傷踢完。
+   **另一條亂數流**(`injRng`,種子由主種子推):主亂數一個都不多抽,所以沒有人受傷的那幾場跟沒有這個機制時
+   **逐位元相同**,受傷之後才開始分岔。 */
+export const INJ_SLOW = 0.6;
 /* 排隊的換人在哪幾種死球執行:角球與十二碼**不換**,等下一次 —— 角球的站位表是照場上的人排好的
    (cornerSpots 以球員代碼為鍵),那一刻換人,新上來的人沒有站位;十二碼主罰者已經走到點上。 */
 const SUB_RESTARTS = new Set(['throwin', 'goalkick', 'freekick', 'kickoff']);
@@ -1412,7 +1423,7 @@ function movePlayer(p, dt, want) {
      真人再累也還跑得動,而且 0.5 以下會讓畫面變成慢動作。 */
   if (STAM_FADE > 0) {
     p.fatigue = cl(1 - STAM_FADE * p.dist / 10000, 0.5, 1);
-    if (p.vmax0) p.vmax = p.vmax0 * p.fatigue;
+    if (p.vmax0) p.vmax = p.vmax0 * p.fatigue * (p.injured ? INJ_SLOW : 1);
   }
 }
 
@@ -1526,8 +1537,10 @@ export function shapeOf(slot, ball, att, opts = {}) {
  *   home / away —— 隊碼
  *   setup —— { home: { xi, bench, formation }, away: {...} },沒給就用側寫裡的推估先發
  * 回傳的東西只有一種用途:讓畫面把「現在這一刻」畫出來。沒有任何腳本、沒有預先決定的結局。 */
-export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null, neutral = false } = {}) {
+export function createSim({ profile, home, away, seed = 1, setup = {}, pred = null, neutral = false, injuries = true } = {}) {
   const rng = simRng(seed);
+  // 受傷用自己的亂數流(見 INJ_SLOW):主亂數的消耗跟沒有受傷時一樣
+  const injRng = simRng(((seed >>> 0) ^ 0x5bd1e995) >>> 0);
   const teamOf = code => profile.teams[code];
   /* **分主客的真實比率一律從這裡讀**(2026-10-03)。中立場時兩邊都用主客場的加權平均 ——
      在這之前遊戲頁的「中立場」只改了 λ,引擎照樣給「主隊」主場的射門率、控球與犯規,
@@ -2082,6 +2095,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        側寫沒有這一欄(舊的側寫)就是 0 —— 不編一個數字;那時候只會有兩黃罰下。 */
     redPerFoul: (profile.league_?.reds?.direct ?? 0) > 0 && FOUL_LG > 0 ? profile.league_.reds.direct / FOUL_LG : 0,
     deadSeq: 0, atBreak: false,
+    /* 受傷:每秒的機率(見 INJ_SLOW)。側寫沒有這一欄、或樣本是 0 場,就是 0 —— 不編一個數字 */
+    injPerSec: injuries && (profile.league_?.injuryPool?.perTeamGame ?? 0) > 0 ? profile.league_.injuryPool.perTeamGame / (2 * HALF_SECS) : 0,
+    injuries: { home: 0, away: 0 },
     /* 射門三項要**逐隊**記:畫面的統計面板是一隊一欄,而全場一個數字填不進去 ——
        填了就是兩邊印同一個數字,那是在畫面上編數字。 */
     shotsBy: { home: 0, away: 0 }, onTargetBy: { home: 0, away: 0 }, blockedBy: { home: 0, away: 0 },
@@ -3186,6 +3202,9 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
   function tick(dt) {
     st.t += dt; st.halfT += dt;
     if (st.atBreak && st.halfT > 0.5) st.atBreak = false;
+    if (st.injPerSec > 0 && !st.over && !st.atBreak) {
+      for (const side of ['home', 'away']) if (injRng() < st.injPerSec * dt) injure(side);
+    }
     /* 排隊的換人在**死球**時執行(角球與十二碼除外,見 SUB_RESTARTS)。執行的那一刻要**重驗** ——
        排隊之後那個人可能被罰下了(「先決定、後執行,中間隔著會改名單的步驟,就要在執行時重驗」那條坑)。 */
     if (st.phase === 'dead' && !st.over && SUB_RESTARTS.has(st.restart?.kind)) {
@@ -4089,7 +4108,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
        看起來對,但只要以後有「熱身也算跑動」之類的東西就會靜靜錯掉。 */
     const now = { ...spare.p, side, slot: out.slot, role: out.role,
       x: out.x, y: out.y, vx: 0, vy: 0, dist: 0, vtop: 0, off: false, going: false, yellow: 0,
-      fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax };
+      fatigue: 1, vmax: spare.p.vmax0 ?? spare.p.vmax, injured: false };
     s.players[i] = now;
     if (ball.holder === out) ball.holder = now;
     // 死球的主罰者剛好被換下:換上來的人接手(不然重新開球的是一個已經不在場上的人)
@@ -4098,6 +4117,16 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
     st.subs[side]++;
     emit({ type: 'sub', side, off: offCode, on: onCode, name: now.name, offName: out.name });
     return true;
+  }
+  /* 受傷:場上(沒被罰下、還沒受傷)的人裡均勻挑一個,亂數用 injRng。只改他的最高速,其餘照舊 —— 見 INJ_SLOW。 */
+  function injure(side) {
+    const c = sideOf(side).players.filter(p => !p.off && !p.injured);
+    if (!c.length) return;
+    const p = c[Math.floor(injRng() * c.length)];
+    p.injured = true;
+    p.vmax *= INJ_SLOW;   // 這一格先收;下一格起 movePlayer 照 vmax0 × 體能 × INJ_SLOW 重算(體能只在跑動那一層)
+    st.injuries[side]++;
+    emit({ type: 'injury', side, player: p.code, name: p.name, gk: p.role === 'GK' });
   }
   /* 排隊的換人在死球時一次執行;執行前重驗,換不了的(那個人被罰下了、名額用完)丟掉並記一筆給畫面講。 */
   function flushSubs(side) {
@@ -4531,7 +4560,7 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       restart: st.restart?.kind ?? null,   // 死球是哪一種(換人規則的測試要知道現在能不能換;純讀)
       clock: clockOf(), added: Math.round(st.added / 60),
       ball: { x: ball.x, y: ball.y, z: ball.z, vx: ball.vx, vy: ball.vy, holder: ball.holder?.code ?? null, holderSide: ball.holder?.side ?? null },
-      players: all().map(p => ({ code: p.code, side: p.side, name: p.name, role: p.role, x: p.x, y: p.y, vx: p.vx, vy: p.vy, vmax: p.vmax, vmaxReal: p.vmaxReal })),
+      players: all().map(p => ({ code: p.code, side: p.side, name: p.name, role: p.role, x: p.x, y: p.y, vx: p.vx, vy: p.vy, vmax: p.vmax, vmaxReal: p.vmaxReal, injured: !!p.injured })),
       score: [st.goals.home, st.goals.away], xg: { ...st.xg },
       diag: { willScore: st.willScore, crossedLine: st.crossedLine, lostShot: st.lostShot, lostGoal: st.lostGoal, ctlTooFast: st.ctlTooFast ?? 0 },
       poss: { ...st.possSec },
@@ -4712,6 +4741,12 @@ export function createSim({ profile, home, away, seed = 1, setup = {}, pred = nu
       if (i < 0) return false;
       q.splice(i, 1);
       return true;
+    },
+    /* 受傷的出處,畫面照它講(頻率是真實資料、受傷後的影響是遊戲變數)。不要在前端另寫一份 */
+    injuryInfo: () => {
+      const P = profile.league_?.injuryPool;
+      return { on: st.injPerSec > 0, perTeamGame: P?.perTeamGame ?? null, matches: P?.matches ?? 0, injured: P?.injured ?? 0,
+        slow: INJ_SLOW, count: { ...st.injuries } };
     },
     /* 換人規則的現況,畫面照它印(不要自己再數一次) */
     subStatus: side => ({

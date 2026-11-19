@@ -1,7 +1,7 @@
 import * as C from './core.js?v=662b4d9f';
 import { blendPair, inPlaySim, seededRng } from './predict-core.js?v=4403ca81';
 import { mountPitch } from './game-pitch.js?v=cea8f765';
-import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP } from './game-live.js?v=36c8e2ca';
+import { createLiveMatch, defaultSetup, LIVE_SPEEDS, engineTacticLevels, MENT_STEP, INJURY_SLOW } from './game-live.js?v=9247e28a';
 import { tally, diagnose, recap, chainBrief } from './game-diag.js?v=6e21cde7';
 
 /* 模擬遊玩(2026-09-03,取代對戰模擬)。FM24 2D classic 的配置:記分板、球場、右側四個分頁
@@ -60,8 +60,18 @@ export async function renderGame(app) {
     const crest = code => (teamBy.get(code)?.crest ? `<img class="crest" src="${teamBy.get(code).crest}" alt="" width="26" height="26">` : '');
     const nameOf = code => teamBy.get(code)?.zh ?? teamBy.get(code)?.en ?? code;
     const HIDE = `onerror="this.style.display='none'"`;
+    /* 受傷的說明(2026-11-19):頻率是真實資料、受傷之後的影響是遊戲變數,兩件事分開講,數字一律從側寫讀。
+       樣本很小(收集從 2026-11-07 才開始),場數照實印 —— 不印場數的話「每隊每場 0.19 次」看起來像一個穩的數字。 */
+    const injuryNote = () => {
+      const P = profile.league_?.injuryPool;
+      if (!P?.matches) return '側寫裡還沒有任何一場記過「因傷換人」,所以這一場不會有人受傷。';
+      const se = Math.sqrt(P.injured) / (2 * P.matches);
+      return `多常發生是真實資料:本站 FotMob 逐場資料裡有記「因傷換人」的 ${P.matches} 場(各聯賽與盃賽合起來),`
+        + `共 ${P.injured} 次,每隊每場 ${P.perTeamGame.toFixed(2)} 次(±${se.toFixed(2)},2026-11-07 才開始收,樣本很小),在正規時間裡均勻發生。`
+        + `受傷之後怎樣是遊戲規則:他的最高速只剩 ${Math.round(INJURY_SLOW * 100)}%,不會自動換下 —— 換不換是你決定,名額用完他就帶傷踢完。`;
+    };
 
-    const state = { home: teams[0]?.code, away: teams[1]?.code, neutral: false, seed: Math.floor(Math.random() * 1e9),
+    const state = { home: teams[0]?.code, away: teams[1]?.code, neutral: false, injuries: true, seed: Math.floor(Math.random() * 1e9),
       setup: { home: null, away: null }, speed: 'normal' };
     /* `tactics` 只放**使用者真的改過的那幾軸** —— 預設是空的,開賽時送進引擎的也就是空的。 */
     const setupOf = side => (state.setup[side] ??= { ...defaultSetup(profile, state[side]), tactics: {} });
@@ -101,6 +111,7 @@ export async function renderGame(app) {
           <button class="btn" id="gSwap" title="交換主客">⇄</button>
           <span class="small">客隊 ${sel('gAway', state.away)}</span>
           <label class="small" style="margin-left:8px"><input type="checkbox" id="gNeutral"${state.neutral ? ' checked' : ''}> 中立場</label>
+          <label class="small" title="${C.esc(injuryNote())}"><input type="checkbox" id="gInjury"${state.injuries ? ' checked' : ''}> 會有人受傷</label>
         </div>
         <div id="gPred" style="margin-top:12px"></div>
         <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">
@@ -118,6 +129,7 @@ export async function renderGame(app) {
       bind('gHome', 'onchange', e => { state.home = e.target.value; reset(); });
       bind('gAway', 'onchange', e => { state.away = e.target.value; reset(); });
       bind('gNeutral', 'onchange', e => { state.neutral = e.target.checked; document.getElementById('gPred').innerHTML = predHtml(); });
+      bind('gInjury', 'onchange', e => { state.injuries = e.target.checked; });
       bind('gSwap', 'onclick', () => { [state.home, state.away] = [state.away, state.home]; state.setup = { home: null, away: null }; renderControls(); });
       bind('gRun', 'onclick', () => { state.seed = Math.floor(Math.random() * 1e9); start(); });
       bind('gReplay', 'onclick', () => start());
@@ -179,7 +191,7 @@ export async function renderGame(app) {
 
     /* ── 顯示狀態 ─────────────────────────────────── */
     function freshDisp() {
-      const side = sd => ({ on: [...setupOf(sd).xi], bench: [...setupOf(sd).bench], off: [], subs: 0, yellows: new Map() });
+      const side = sd => ({ on: [...setupOf(sd).xi], bench: [...setupOf(sd).bench], off: [], subs: 0, yellows: new Map(), injured: new Set() });
       return { events: [], notes: [], chains: [], score: [0, 0], poss: { home: 0, away: 0 }, seqs: 0, lineup: { home: side('home'), away: side('away') }, lastGoalAt: null, finished: false, half: 1, clock: 0 };
     }
     /* 把一筆事件套進顯示狀態(不畫)。跳到結果時整串事件都走這裡,所以它跟逐筆回報用同一條路。 */
@@ -197,6 +209,10 @@ export async function renderGame(app) {
       const L = disp.lineup[e.side];
       if (!L) return;
       if (e.type === 'keeperSwap') L.gk = e.player;
+      if (e.type === 'injury') {
+        L.injured.add(e.player);
+        subMsg[e.side] = `${playerName(e.side, e.player)} 受傷了(跑不快):點他、再點一位替補就換下來;名額用完的話他就帶傷踢完`;
+      }
       if (e.type === 'sub' && L.gk === e.off) L.gk = null;   // 代守門的人被換下:換上來的人接手他的角色(GK)
       if (e.type === 'sub') { L.on = L.on.map(c => (c === e.off ? e.on : c)); L.bench = L.bench.filter(c => c !== e.on); L.off.push(e.off); L.subs++; }
       if (e.type === 'card') {
@@ -215,11 +231,12 @@ export async function renderGame(app) {
         : e.type === 'card' && e.card === 'red' ? `🟥 ${m} ${t} ${who} ${e.direct ? '直接紅牌' : '兩黃罰下'}`
         : e.type === 'penalty' ? `${m} ${t} 獲得十二碼`
         : e.type === 'sub' ? `🔁 ${m} ${t} ${who} 換 ${e.offName ?? ''}`
+        : e.type === 'injury' ? `🩹 ${m} ${t} ${who} 受傷`
         : null;
       const el = document.getElementById('gToast');
       if (!text || !el) return;
       el.textContent = text;
-      el.className = `game-toast on${e.type === 'goal' ? ' goal' : e.type === 'card' ? ' red' : ''}`;
+      el.className = `game-toast on${e.type === 'goal' ? ' goal' : e.type === 'card' || e.type === 'injury' ? ' red' : ''}`;
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { el.className = 'game-toast'; }, 3200);
     }
@@ -251,7 +268,7 @@ export async function renderGame(app) {
       const box = document.getElementById('gStage');
       if (!box || !p || state.home === state.away) return;
       stop();
-      match = createLiveMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed, neutral: state.neutral,
+      match = createLiveMatch({ profile, home: state.home, away: state.away, pred: p, seed: state.seed, neutral: state.neutral, injuries: state.injuries,
         setup: { home: { ...setupOf('home') }, away: { ...setupOf('away') } } });
       disp = freshDisp();
       subPick = { home: null, away: null }; subMsg = { home: '', away: '' };
@@ -354,6 +371,13 @@ export async function renderGame(app) {
         if (evs.some(e => e.type === 'half') && !disp.finished) {
           paused = true; lastTs = 0;
           document.getElementById('gPause').textContent = '開始下半場';
+          tab = 'lineup'; renderTabs(); renderPanel();
+        }
+        /* 有人受傷也自動暫停、打開陣容分頁(2026-11-19):換不換是你的決定(引擎不會替你換),
+           而比賽在跑的時候你不一定看得到那一行提示。「跳到結果」不停 —— 那時候沒有人在看。 */
+        else if (evs.some(e => e.type === 'injury') && !disp.finished) {
+          paused = true; lastTs = 0;
+          document.getElementById('gPause').textContent = '繼續';
           tab = 'lineup'; renderTabs(); renderPanel();
         }
         if (evs.length) { frame(); if (disp.finished) finish(); }
@@ -470,6 +494,7 @@ export async function renderGame(app) {
         case 'keeperSwap': return `${m} 🧤 ${t} 門將被罰下,${who} 去守門(要換替補門將上來,照一般換人)`;
         case 'sub': return `${m} 🔁 ${t} ${who} 換 ${C.esc(e.offName ?? '')}`;
         /* 排隊的換人到了死球卻換不了(那個人在等的時候被罰下了)—— 不講的話你按過的換人就靜靜消失 */
+        case 'injury': return `${m} 🩹 <b>${t} ${who}${e.gk ? '(門將)' : ''} 受傷</b> <span class="dim">跑不快了,要不要換他下來由你決定</span>`;
         case 'subVoid': return `${m} <span class="dim">${t} 排隊的換人取消了(${C.esc(playerName(e.side, e.off))} 已經不在場上)</span>`;
         case 'formation': return `${m} 🧩 ${t} 改踢 <b>${C.esc(e.spec)}</b>`;
         case 'offside': return `${m} <span class="dim">${t} ${who} 越位</span>`;
@@ -604,7 +629,7 @@ export async function renderGame(app) {
           const p = sq.get(c); const y = L.yellows.get(c);
           const picked = pk[where] === c;
           const cand = where === 'bench' && pk.on && !full;
-          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${picked ? ' primary' : ''}${cand ? ' sub-cand' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}"${full ? ' disabled' : ''}>${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${L.gk === c ? '代守門' : (p?.role ?? p?.pos ?? '')}</span>${y ? ' 🟨' : ''}</button>`;
+          return `<button class="btn tiny${where === 'on' ? ' on' : ''}${picked ? ' primary' : ''}${cand ? ' sub-cand' : ''}" data-sub-side="${sd}" data-sub-code="${c}" data-sub-where="${where}"${full ? ' disabled' : ''}>${p?.shirt ?? '–'} ${C.esc(p?.name ?? c)} <span class="dim">${L.gk === c ? '代守門' : (p?.role ?? p?.pos ?? '')}</span>${y ? ' 🟨' : ''}${L.injured.has(c) ? ' 🩹' : ''}</button>`;
         };
         /* 名額與機會用圓點講(實心 = 用掉、半實心 = 排隊中);數字照樣寫在旁邊,不靠顏色 */
         const dots = (used, queued, max) => Array.from({ length: max }, (_, i) =>
@@ -630,7 +655,8 @@ export async function renderGame(app) {
           <b>刻意不做</b>:自動換人 —— 換誰、什麼時候換是你的決定,引擎不會替你換。
           <b>換人規則</b>(2026-11-07 起照正式規則):每隊最多換 5 人、比賽中最多 3 次換人機會,中場休息時換的不佔機會;
           比賽進行中按下的換人會<b>等到下一次死球</b>才換(界外球、球門球、自由球、開球;角球與十二碼不換),
-          同一次死球換的幾個人算同一次機會。上半場結束時比賽<b>自動暫停在中場休息</b>,換好再按「開始下半場」。</div></details>`;
+          同一次死球換的幾個人算同一次機會。上半場結束時比賽<b>自動暫停在中場休息</b>,換好再按「開始下半場」。
+          <b>受傷</b>(🩹):${C.esc(injuryNote())} 有人受傷時比賽也會自動暫停在這一頁。</div></details>`;
     }
     function bindSubs() {
       const markOnPitch = code => { if (pitch && match) { pitch.mark(code); pitch.draw(match.pitch()); } };
@@ -764,8 +790,8 @@ export async function renderGame(app) {
           <li><b>補時比真實的短</b>,不是 bug:這裡死球只等一兩秒,補時照這一半實際死掉的時間補回去。</li>
           <li><b>進球情境</b>只分運動戰 / 角球 / 快攻 / 界外球 / 定位球 / 十二碼;
             直接罰球射門與個人突破沒有可靠判準,不假裝分得出來。</li>
-          <li><b>還沒做的</b>:受傷;
-            戰術的節奏(引擎接得動,但量下去改的是強弱而不只是踢法,所以還沒掛上來)。
+          <li><b>受傷</b>:${C.esc(injuryNote())}</li>
+          <li><b>還沒做的</b>:戰術的節奏(引擎接得動,但量下去改的是強弱而不只是踢法,所以還沒掛上來)。
             <b>刻意不做</b>:自動換人(換人是玩家的決定)。沒做的一律不放欄位。</li>
           <li><b>跟真實管線只有一條關係</b>:沒有任何改動時,N 場的平均進球回得到站上的 λ
             (統計上相等,不是逐場相等);任何操作都不寫回資料,也不影響站上任何一頁。</li>

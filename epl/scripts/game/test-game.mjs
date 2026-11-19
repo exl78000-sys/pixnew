@@ -265,6 +265,58 @@ console.log('\n▶ 模擬遊玩:換人規則(5 人、3 次機會、中場不算�
     stops === 1 && sig(e1) === sig(e2), `停了 ${stops} 次・${sig(e1)} vs ${sig(e2)}`);
 }
 
+console.log('\n▶ 模擬遊玩:受傷(頻率是真實資料、另一條亂數流、不會自動換人)');
+{
+  /* 2026-11-19。頻率從側寫的 injuryPool 讀(本站每一份 FotMob 逐場快取裡有記號的場次合起來),
+     受傷之後最高速剩 INJ_SLOW(遊戲變數)、不自動換下。守的是性質不是值:樣本每天在長。 */
+  const SM = await import(pathToFileURL(join(ROOT, 'web', 'assets', 'js', 'game-sim.js')));
+  const profile = read(join(ROOT, 'web', 'data', 'game', 'pl.json'));
+  const P = profile.league_?.injuryPool;
+  check('側寫有 injuryPool:場數與次數是整數、0 場就是 null、而且等於各來源加總',
+    P && Number.isInteger(P.matches) && Number.isInteger(P.injured)
+      && (P.matches === 0 ? P.perTeamGame === null : Math.abs(P.perTeamGame - P.injured / (2 * P.matches)) < 0.001)
+      && P.sources.reduce((a, x) => a + x.matches, 0) === P.matches && P.sources.reduce((a, x) => a + x.injured, 0) === P.injured,
+    JSON.stringify({ ...P, sources: P?.sources?.length }));
+  const bare = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-sim.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const inj = bare.slice(bare.indexOf('function injure('), bare.indexOf('function flushSubs('));
+  check('受傷只用 injRng(主亂數一個都不多抽),而且不碰換人(自動換人刻意不做)',
+    inj.length > 100 && !/\brng\(\)/.test(inj) && /injRng\(\)/.test(inj) && !/doSub|subQueue|substitute/.test(inj)
+      && /if \(injRng\(\) < st\.injPerSec \* dt\) injure\(side\)/.test(bare) && /const injRng = simRng\(/.test(bare));
+  check('頻率從側寫讀,沒有就是 0(不編數字);體能那一行把受傷乘上去',
+    /injPerSec: injuries && \(profile\.league_\?\.injuryPool\?\.perTeamGame \?\? 0\) > 0 \? profile\.league_\.injuryPool\.perTeamGame \/ \(2 \* HALF_SECS\) : 0/.test(bare)
+      && /p\.vmax = p\.vmax0 \* p\.fatigue \* \(p\.injured \? INJ_SLOW : 1\)/.test(bare) && /injured: false \}/.test(bare));
+  /* 行為:把頻率拉高讓前十分鐘就有人受傷。受傷之前的事件要跟「沒有受傷」那一場逐筆相同(另一條亂數流的證據),
+     受傷的人跑不超過自己的 INJ_SLOW,而且還在場上(沒有被自動換下) */
+  const hot = structuredClone(profile); hot.league_.injuryPool = { ...hot.league_.injuryPool, perTeamGame: 2, matches: 1 };
+  const PRED = { xgHome: 1.99, xgAway: 0.70 };
+  const a = SM.createSim({ profile: hot, home: 'ARS', away: 'LIV', seed: 3, pred: PRED });
+  const b = SM.createSim({ profile: hot, home: 'ARS', away: 'LIV', seed: 3, pred: PRED, injuries: false });
+  let first = null, over = 0, ratio = null;
+  let seen = 0;
+  for (let i = 0; i < 45 * 3600 && !(first && seen > 600); i++) {
+    a.advance(1 / 60); b.advance(1 / 60);
+    first ??= a.events().find(e => e.type === 'injury');
+    if (first && seen++ > 0) {   // 受傷的那一格不算:速度是那一格之前定的,下一格才收得住
+      const p = a.state().players.find(q => q.code === first.player && q.side === first.side);
+      if (p && Math.hypot(p.vx, p.vy) > p.vmax + 1e-6) over++;
+      // 受傷之後的上限 ÷ 同一個人在沒受傷那一場的上限(兩場跑過的路不同,體能差一點點,所以給 3% 的寬)
+      const q = b.state().players.find(x => x.code === first.player && x.side === first.side);
+      if (p && q && ratio === null) ratio = p.vmax / q.vmax;
+    }
+  }
+  const ea = a.events(), eb = b.events(), k = ea.findIndex(e => e.type === 'injury');
+  check('受傷之前的事件跟關掉受傷的那一場逐筆相同(至少比得到 3 筆)', k >= 3 && JSON.stringify(ea.slice(0, k)) === JSON.stringify(eb.slice(0, k)),
+    `第一次受傷在第 ${k} 筆事件`);
+  const pa = first && a.state().players.find(q => q.code === first.player && q.side === first.side);
+  check(`受傷的人還在場上(不自動換)、標著受傷、最高速是原本的 ${SM.INJ_SLOW} 而且沒有超過`,
+    !!pa && pa.injured && over === 0 && ratio != null && Math.abs(ratio - SM.INJ_SLOW) < 0.03 * SM.INJ_SLOW
+      && !ea.some(e => e.type === 'sub') && !eb.some(e => e.type === 'injury'),
+    `上限比 ${ratio?.toFixed(3)}、超速 ${over} 格`);
+  const gv = readFileSync(join(ROOT, 'web', 'assets', 'js', 'game-view.js'), 'utf8');
+  check('畫面的受傷說明從側寫讀場數與次數,遊戲規則那半句從引擎讀(不寫死)',
+    /profile\.league_\?\.injuryPool/.test(gv) && /P\.matches/.test(gv) && /INJURY_SLOW \* 100/.test(gv) && !/最高速只剩六成/.test(gv));
+}
+
 console.log('\n▶ 模擬遊玩:直接紅牌(真實比率、同一個亂數、黃牌不變)');
 {
   /* 2026-11-07(「依照推薦順序依序製作」第三項)。之前只有兩黃罰下,直接紅牌一張都沒有;
@@ -502,7 +554,7 @@ console.log('\n▶ 模擬遊玩:主場優勢與中立場(2026-10-03)');
   check('遊戲頁把中立場傳進 createLiveMatch,轉接層再傳進 createSim',
     /createLiveMatch\(\{[^}]*neutral: state\.neutral/.test(viewB)
     /* 簽名那一條用 `[^)]*` 不用 `[^}]*`:參數裡有 `setup = {}`,右大括號會讓它在 neutral 之前就停(第一版就是這樣紅的) */
-    && /export function createLiveMatch\(\{[^)]*neutral = false/.test(liveB) && /createSim\(\{[^}]*neutral \}\)/.test(liveB));
+    && /export function createLiveMatch\(\{[^)]*neutral = false/.test(liveB) && /createSim\(\{[^}]*\bneutral(, injuries)? \}\)/.test(liveB));   // 2026-11-19 多傳一個 injuries(受傷的開關)
   /* 只在 venueNote 的本體裡找:「遊戲變數」在這個檔案裡不只出現一次,掃整份的話刪掉這一句照樣綠 */
   const vnAt = viewB.indexOf('function venueNote('), vnEnd = viewB.indexOf('function ', vnAt + 1);
   const vnBody = vnAt >= 0 ? viewB.slice(vnAt, vnEnd > vnAt ? vnEnd : undefined) : '';
@@ -2055,7 +2107,7 @@ console.log('\n▶ 模擬遊玩:賽後判讀');
            心態那一天掛上去。畫面上已經有按鈕的軸(LIVE_TACTICS)與做完的換人規則都不准再出現在「還沒做的」裡。 */
         const live = (view.match(/const LIVE_TACTICS = \[([^\]]*)\]/)?.[1] ?? '').match(/'(\w+)'/g)?.map(x => x.slice(1, -1)) ?? [];
         const ZH = { mentality: '心態', pressing: '壓迫', line: '防線', directness: '直接度', width: '寬度', tempo: '節奏' };
-        const stale = segs.flatMap(t => [...live.map(k => ZH[k]), '換人次數', '換人窗口', '直接紅牌'].filter(z => z && t.includes(z)));
+        const stale = segs.flatMap(t => [...live.map(k => ZH[k]), '換人次數', '換人窗口', '直接紅牌', '受傷'].filter(z => z && t.includes(z)));
         check('「還沒做的」不准再列已經掛上畫面的戰術軸與換人規則',
           live.length >= 4 && live.includes('mentality') && stale.length === 0, stale.join('、') || `已掛 ${live.join('/')}`);
         check('畫面把體能講清楚:沒有真值可校準、而且它不負責後段進球潮',

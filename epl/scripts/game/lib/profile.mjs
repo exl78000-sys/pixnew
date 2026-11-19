@@ -329,6 +329,24 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
     const n = known.flatMap(m => m.events.filter(e => e.type === 'subst' && e.injured === true)).length;
     return { matches: known.length, injured: n, perTeamGame: known.length ? r3(n / (known.length * 2)) : null };
   })();
+  /* 模擬遊玩的受傷率(2026-11-19):**合起來的樣本** —— 英超自己那一份(injurySubs)太小(開始收的頭兩週只有幾場),
+     受傷的頻率也不是英超特有的東西,所以掃本站每一份 FotMob 逐場快取(聯賽、盃賽、歐冠;同一支抓取器寫的,
+     旗標同一個意思),一樣只數有記號的場次。畫面照實印場數與幾次 —— 這是一個樣本會長的數字。 */
+  const injuryPool = (() => {
+    const rawDir = join(root, 'data', 'raw');
+    let matches = 0, injured = 0;
+    const sources = [];
+    for (const d of existsSync(rawDir) ? readdirSync(rawDir).filter(d => d.startsWith('fotmob-')).sort() : []) {
+      for (const f of readdirSync(join(rawDir, d)).filter(f => /-game-details\.json$/.test(f)).sort()) {
+        const known = Object.values(readJson(join(rawDir, d, f)).matches ?? {}).filter(m => m.injuryFlag === true);
+        if (!known.length) continue;
+        const n = known.flatMap(m => (m.events ?? []).filter(e => e.type === 'subst' && e.injured === true)).length;
+        matches += known.length; injured += n;
+        sources.push({ dir: d, file: f, matches: known.length, injured: n });
+      }
+    }
+    return { matches, injured, perTeamGame: matches ? r3(injured / (matches * 2)) : null, sources };
+  })();
   const redSplit = (() => {
     let direct = 0, second = 0;
     for (const m of fm) {
@@ -475,6 +493,7 @@ export function buildGameProfile(root, { league = 'pl' } = {}) {
         offPos, offN },
       reds: { perMatch: fm.length ? r3(cardEv.filter(e => e.detail === 'Red Card').length / fm.length) : null, n: fm.length, ...redSplit },
       injurySubs,
+      injuryPool,
       blockedShare,
       ownGoalShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Own Goal').length / goalEv.length) : null,
       penaltyShare: goalEv.length ? r3(goalEv.filter(e => e.detail === 'Penalty').length / goalEv.length) : null,

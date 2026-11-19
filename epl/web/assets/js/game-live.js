@@ -11,7 +11,7 @@
  *
  * 這一層**不做任何模型上的決定** —— 不改機率、不改 λ、不補事件。它只翻譯。
  */
-import { createSim, tacticDefaults, profileFormation, mentalityPush } from './game-sim.js?v=9186a811';
+import { createSim, tacticDefaults, profileFormation, mentalityPush, INJ_SLOW } from './game-sim.js?v=d923c0e1';
 
 /* 播放速度是**時間倍率**,不是剪接。舊版四檔的差別在「演哪幾段」(cutTo / finishInstant /
    整段跳過),而使用者的原話是「根本沒有在踢球」。現在四檔的差別只有一個:一秒真實時間
@@ -39,11 +39,13 @@ export function defaultSetup(profile, code) {
 export const engineTacticLevels = (profile, code) => tacticDefaults(profile, code);
 /* 心態每一級有球時往前壓幾公尺(遊戲規則,常數在引擎);畫面照這個印,不自己寫一個數字 */
 export const MENT_STEP = mentalityPush(1, true);
+// 受傷之後最高速剩幾成(遊戲變數,定義在引擎);畫面的說明照它印
+export const INJURY_SLOW = INJ_SLOW;
 
 /* `neutral`(2026-10-03):遊戲頁的「中立場」勾選。原本只改了 λ(pred),引擎照樣給主隊主場的射門率、
    控球與犯規 —— 中立場要兩邊都中立,所以一路傳進引擎。 */
-export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {}, neutral = false } = {}) {
-  const sim = createSim({ profile, home, away, seed, setup, pred, neutral });
+export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {}, neutral = false, injuries = true } = {}) {
+  const sim = createSim({ profile, home, away, seed, setup, pred, neutral, injuries });
   const cal = sim.calibration();
   const squads = {
     home: new Map((profile.teams[home]?.squad ?? []).map(p => [p.code, p])),
@@ -101,6 +103,7 @@ export function createLiveMatch({ profile, home, away, pred, seed = 1, setup = {
     sub: (side, off, on) => sim.substitute(side, off, on),
     cancelSub: (side, off) => sim.cancelSub(side, off),
     subStatus: side => sim.subStatus(side),
+    injuryInfo: () => sim.injuryInfo(),
     setTactics: (side, levels) => sim.setTactics(side, levels),
     // 比賽中換陣型(2026-10-17):規則檢查在引擎(人數加起來要 10、格式要對),這裡只轉交
     setFormation: (side, spec) => sim.setFormation(side, spec),
