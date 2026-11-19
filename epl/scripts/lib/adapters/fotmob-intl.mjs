@@ -104,7 +104,9 @@ export function intlTbdLabel(name) {
    海灣盃的 `final` 是決賽(對戰是 Winner SF 1 v Winner SF 2),非洲盃資格賽的 `final` 卻是**三月的預賽**
    (12 場主客兩回合,Eritrea v Eswatini 那一種;run #44 實測)。照字面翻會把預賽講成決賽。
    沒驗證過的非數字輪次不印,不猜。 */
-const ROUND_ZH = { gulf: { '1/2': '準決賽', final: '決賽' } };
+/* 中北美國家聯賽的 bronze / final(2026-11-19 實測 cnl.json):兩場都是 2027-03-28,參賽者都是四強的兩組(Canada/Panama、USA/Mexico)——
+   季軍賽與決賽。不翻的話站上兩列一模一樣、vault 兩則同檔名 */
+const ROUND_ZH = { gulf: { '1/2': '準決賽', final: '決賽' }, cnl: { bronze: '季軍賽', final: '決賽' } };
 export function intlRoundZh(compKey, round) {
   if (round == null) return null;
   if (/^\d+$/.test(String(round))) return `第 ${round} 輪`;

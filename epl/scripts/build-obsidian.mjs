@@ -2893,7 +2893,18 @@ function buildIntl() {
   const sideName = t => (t?.key ? zhOf(t.key) : t?.tbd ? (t.label ?? t.name) : t?.name ?? '待定');
   const sideRef = (t, links) => (t?.key ? ref(t.key, links)
     : t?.tbd ? `${t.label ?? t.name}(對戰還沒決定)` : `${t?.name ?? '待定'}(本站對不上這一隊的身分)`);
-  const matchFile = x => sanitize(`${compZh(x.comp)} ${String(x.kickoff).slice(0, 10)} ${sideName(x.home)}-${sideName(x.away)}`);
+  /* 檔名 = 賽事 + 日期 + 兩邊的名字。**同一天、同兩個「待定」的兩場會撞名**(2026-11-18,中北美國家聯賽的季軍賽與決賽:
+     上游兩場都寫 Canada/Panama 對 USA/Mexico)—— 產生器的同檔名守門擋下來,整個 vault 測試紅、部署連擋兩次。
+     撞到的才加開賽時間(UTC),其餘檔名一個字元都不變(改名會斷掉手寫筆記裡的連結);時間也撞就再加上游 id。 */
+  const baseFile = x => sanitize(`${compZh(x.comp)} ${String(x.kickoff).slice(0, 10)} ${sideName(x.home)}-${sideName(x.away)}`);
+  const fileCount = new Map();
+  for (const x of [...(I.fixtures ?? []), ...(I.results ?? [])]) fileCount.set(baseFile(x), (fileCount.get(baseFile(x)) ?? 0) + 1);
+  const timeCount = new Map();
+  const withTime = x => `${baseFile(x)} ${String(x.kickoff).slice(11, 16).replace(':', '')}UTC`;
+  for (const x of [...(I.fixtures ?? []), ...(I.results ?? [])]) if (fileCount.get(baseFile(x)) > 1) timeCount.set(withTime(x), (timeCount.get(withTime(x)) ?? 0) + 1);
+  const matchFile = x => fileCount.get(baseFile(x)) > 1
+    ? (timeCount.get(withTime(x)) > 1 ? `${withTime(x)} ${sanitize(String(x.id))}` : withTime(x))
+    : baseFile(x);
   const utc = iso => (iso ? String(iso).slice(0, 16).replace('T', ' ') + ' UTC' : '');
   const pc = x => (x * 100).toFixed(1) + '%';
   const tagsOf = x => [x.roundZh, x.groupZh].filter(Boolean).join('・');

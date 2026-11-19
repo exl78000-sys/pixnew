@@ -60,7 +60,16 @@ if (!I) {
   const zhOf = k => I.teams?.[k]?.zh ?? k;
   const sideName = t => (t?.key ? zhOf(t.key) : t?.tbd ? (t.label ?? t.name) : t?.name ?? '待定');
   const compZh = key => (I.comps ?? []).find(c => c.key === key)?.zh ?? key;
-  const matchRel = x => `國家隊/比賽/${sanitize(`${compZh(x.comp)} ${String(x.kickoff).slice(0, 10)} ${sideName(x.home)}-${sideName(x.away)}`)}.md`;
+  /* 檔名規則跟產生器同一條(這裡獨立再寫一次):同一天同兩個「待定」的兩場會撞名(2026-11-18 中北美國聯的季軍賽與決賽),
+     撞到的才加開賽時間 UTC,時間也撞再加 id */
+  const baseRel = x => sanitize(`${compZh(x.comp)} ${String(x.kickoff).slice(0, 10)} ${sideName(x.home)}-${sideName(x.away)}`);
+  const allIntl = [...(I.fixtures ?? []), ...(I.results ?? [])];
+  const nBase = new Map(), nTime = new Map();
+  const timed = x => `${baseRel(x)} ${String(x.kickoff).slice(11, 16).replace(':', '')}UTC`;
+  for (const x of allIntl) nBase.set(baseRel(x), (nBase.get(baseRel(x)) ?? 0) + 1);
+  for (const x of allIntl) if (nBase.get(baseRel(x)) > 1) nTime.set(timed(x), (nTime.get(timed(x)) ?? 0) + 1);
+  const matchRel = x => `國家隊/比賽/${nBase.get(baseRel(x)) > 1
+    ? (nTime.get(timed(x)) > 1 ? `${timed(x)} ${sanitize(String(x.id))}` : timed(x)) : baseRel(x)}.md`;
   const teamKeys = Object.keys(I.teams ?? {});
 
   check('有國家隊首頁', note('國家隊/國家隊.md') !== '');
