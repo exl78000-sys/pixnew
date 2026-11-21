@@ -70933,8 +70933,8 @@
   "MCI|FUL": {
    "fixtureId": 129030,
    "kickoff": "2026-11-21T12:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 1,
     "away": 1
@@ -71363,6 +71363,19 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 117763,
+     "assist": 66657,
+     "team": 34,
+     "min": 16,
+     "label": "16'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 51593,
      "assist": null,
@@ -71581,12 +71594,6 @@
     ],
     "periods": [
      {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
-     {
       "type": "PS",
       "min": 0,
       "label": "00'00",
@@ -71603,10 +71610,23 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "89'00"
+   "clock": "90+4'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-21T14:24:31.197Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   },
   "AVL|SUN": {
    "fixtureId": 129023,
@@ -73594,5 +73614,5 @@
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-21T14:22:10.365Z"
+ "fetchedAt": "2026-11-21T14:24:31.197Z"
 }
