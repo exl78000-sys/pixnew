@@ -70933,7 +70933,7 @@
   "MCI|FUL": {
    "fixtureId": 129030,
    "kickoff": "2026-11-21T12:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
     "home": 0,
@@ -70942,9 +70942,31 @@
    "homeId": 11,
    "awayId": 34,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      22857
+     ],
+     [
+      137371,
+      16431,
+      14569,
+      112948
+     ],
+     [
+      141425,
+      51593
+     ],
+     [
+      31936,
+      14805,
+      54156
+     ],
+     [
+      65970
+     ]
+    ],
     "xi": [
      {
       "id": 141425,
@@ -70978,7 +71000,7 @@
       "playerId": null,
       "name": "Iliman Ndiaye",
       "shirt": 7,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -71023,7 +71045,7 @@
       "playerId": null,
       "name": "Jérémy Doku",
       "shirt": 11,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -71131,9 +71153,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      4985
+     ],
+     [
+      4880,
+      68651,
+      23793,
+      14656
+     ],
+     [
+      21614,
+      75201
+     ],
+     [
+      66657,
+      128976,
+      4717
+     ],
+     [
+      117763
+     ]
+    ],
     "xi": [
      {
       "id": 68651,
@@ -71194,7 +71238,7 @@
       "playerId": null,
       "name": "Alex Iwobi",
       "shirt": 17,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Left/Centre/Right Second Striker",
       "captain": false
      },
@@ -71221,7 +71265,7 @@
       "playerId": null,
       "name": "Ryan Sessegnon",
       "shirt": 30,
-      "pos": "M",
+      "pos": "D",
       "posInfo": "Left/Right Winger",
       "captain": false
      },
@@ -71323,10 +71367,23 @@
    "timeline": {
     "cards": [],
     "subs": [],
-    "periods": []
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     }
+    ]
    },
    "clock": "00'00"
   }
  },
- "fetchedAt": "2026-11-21T12:29:36.643Z"
+ "fetchedAt": "2026-11-21T12:31:56.074Z"
 }
