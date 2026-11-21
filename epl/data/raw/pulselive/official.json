@@ -75182,18 +75182,40 @@
   "NEW|ARS": {
    "fixtureId": 129031,
    "kickoff": "2026-11-21T17:30:00.000Z",
-   "status": "U",
+   "status": "L",
    "final": false,
    "score": {
-    "home": 0,
-    "away": 0
+    "home": 2,
+    "away": 1
    },
    "homeId": 23,
    "awayId": 1,
    "home": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      114689
+     ],
+     [
+      68637,
+      124462,
+      8707,
+      108922
+     ],
+     [
+      303043,
+      117647
+     ],
+     [
+      9662,
+      14446,
+      14716
+     ],
+     [
+      114590
+     ]
+    ],
     "xi": [
      {
       "id": 303043,
@@ -75380,9 +75402,31 @@
     ]
    },
    "away": {
-    "formation": null,
-    "formationRaw": null,
-    "rows": null,
+    "formation": "4-2-3-1",
+    "formationRaw": "4-2-3-1",
+    "rows": [
+     [
+      7975
+     ],
+     [
+      67776,
+      13274,
+      50234,
+      69914
+     ],
+     [
+      74761,
+      15202
+     ],
+     [
+      67407,
+      11419,
+      21584
+     ],
+     [
+      20810
+     ]
+    ],
     "xi": [
      {
       "id": 50234,
@@ -75434,7 +75478,7 @@
       "playerId": null,
       "name": "Noni Madueke",
       "shirt": 20,
-      "pos": "F",
+      "pos": "M",
       "posInfo": "Right Winger",
       "captain": false
      },
@@ -75568,14 +75612,136 @@
      }
     ]
    },
-   "goals": [],
+   "goals": [
+    {
+     "side": "H",
+     "person": 124462,
+     "assist": 14446,
+     "team": 23,
+     "min": 62,
+     "label": "62'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 1
+    }
+   ],
    "timeline": {
-    "cards": [],
-    "subs": [],
-    "periods": []
+    "cards": [
+     {
+      "person": 68637,
+      "team": 23,
+      "min": 23,
+      "label": "23'00",
+      "phase": "1",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 15202,
+      "team": 1,
+      "min": 56,
+      "label": "56'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 14716,
+      "team": 23,
+      "min": 58,
+      "label": "58'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     }
+    ],
+    "subs": [
+     {
+      "person": 19888,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 303043,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49495,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 68637,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49259,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 9662,
+      "team": 23,
+      "min": 45,
+      "label": "45'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     }
+    ],
+    "periods": [
+     {
+      "type": "PE",
+      "min": null,
+      "label": null,
+      "phase": "2"
+     },
+     {
+      "type": "PS",
+      "min": 0,
+      "label": "00'00",
+      "phase": "1"
+     },
+     {
+      "type": "PE",
+      "min": 45,
+      "label": "45+2'00",
+      "phase": "1"
+     },
+     {
+      "type": "PS",
+      "min": 45,
+      "label": "45'00",
+      "phase": "2"
+     }
+    ]
    },
-   "clock": "00'00"
+   "clock": "62'00"
   }
  },
- "fetchedAt": "2026-11-21T17:30:04.001Z"
+ "fetchedAt": "2026-11-21T18:51:41.338Z"
 }
