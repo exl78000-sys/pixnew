@@ -135655,16 +135655,1455 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-09T05:05:41.048Z",
    "heat": null
+  },
+  "TRO|HAV": {
+   "key": "TRO|HAV",
+   "season": "2026-27",
+   "date": "2026-11-20",
+   "matchId": "5802999",
+   "home": "TRO",
+   "away": "HAV",
+   "score": [
+    3,
+    1
+   ],
+   "providerScore": [
+    3,
+    1
+   ],
+   "teamStats": {
+    "TRO": {
+     "possession": 46,
+     "shots": 19,
+     "shotsOn": 7,
+     "shotsOff": 8,
+     "blockedShots": 4,
+     "blocksMade": 3,
+     "corners": 7,
+     "offsides": 3,
+     "fouls": 19,
+     "saves": 1,
+     "passes": 398,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.64
+    },
+    "HAV": {
+     "possession": 54,
+     "shots": 7,
+     "shotsOn": 2,
+     "shotsOff": 2,
+     "blockedShots": 3,
+     "blocksMade": 3,
+     "corners": 0,
+     "offsides": 1,
+     "fouls": 22,
+     "saves": 5,
+     "passes": 478,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.63
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "TRO": {
+     "touches_opp_box": 28,
+     "big_chance": 5,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 2,
+     "shots_woodwork": 0,
+     "shots_inside_box": 13,
+     "shots_outside_box": 6,
+     "expected_goals_open_play": 1.66,
+     "expected_goals_set_play": 0.2,
+     "expected_goals_non_penalty": 1.85,
+     "expected_goals_on_target": 2.92,
+     "own_half_passes": 181,
+     "opposition_half_passes": 133,
+     "long_balls_accurate": 28,
+     "long_balls_accurate_pct": 46,
+     "accurate_crosses": 6,
+     "accurate_crosses_pct": 24,
+     "player_throws": 18,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 9,
+     "clearances": 18,
+     "duel_won": 62,
+     "ground_duels_won": 45,
+     "ground_duels_won_pct": 53,
+     "aerials_won": 17,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 69,
+     "red_cards": 0
+    },
+    "HAV": {
+     "touches_opp_box": 11,
+     "big_chance": 1,
+     "big_chance_missed_title": 0,
+     "yellow_cards": 3,
+     "shots_woodwork": 0,
+     "shots_inside_box": 3,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 0.32,
+     "expected_goals_set_play": 0.31,
+     "expected_goals_non_penalty": 0.63,
+     "expected_goals_on_target": 0.32,
+     "own_half_passes": 240,
+     "opposition_half_passes": 160,
+     "long_balls_accurate": 23,
+     "long_balls_accurate_pct": 34,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 8,
+     "player_throws": 13,
+     "matchstats.headers.tackles": 15,
+     "interceptions": 17,
+     "clearances": 33,
+     "duel_won": 57,
+     "ground_duels_won": 40,
+     "ground_duels_won_pct": 47,
+     "aerials_won": 17,
+     "aerials_won_pct": 50,
+     "dribbles_succeeded": 7,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     46,
+     54
+    ],
+    "h1": [
+     50,
+     50
+    ],
+    "h2": [
+     43,
+     57
+    ]
+   },
+   "events": [
+    {
+     "minute": 3,
+     "extra": null,
+     "team": "HAV",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Josh Maja"
+    },
+    {
+     "minute": 19,
+     "extra": null,
+     "team": "TRO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Antoine Mille"
+    },
+    {
+     "minute": 34,
+     "extra": null,
+     "team": "HAV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Josh Maja"
+    },
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "HAV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Junior Mwanga"
+    },
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Dermane Karim"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Lucas Maronnier",
+     "injured": false
+    },
+    {
+     "minute": 64,
+     "extra": null,
+     "team": "TRO",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ismaël Boura"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "HAV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hakim Dongopandji",
+     "injured": false
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "HAV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Djibril Ouziad",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": null,
+     "team": "TRO",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Antoine Mille"
+    },
+    {
+     "minute": 77,
+     "extra": null,
+     "team": "HAV",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Ahmed Touba"
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Renaud Ripart",
+     "injured": false
+    },
+    {
+     "minute": 78,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hugo Picard",
+     "injured": true
+    },
+    {
+     "minute": 79,
+     "extra": 0,
+     "team": "HAV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Ismaïl Bouneb",
+     "injured": false
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Iron Gomis",
+     "injured": false
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "HAV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bocar Wade",
+     "injured": false
+    },
+    {
+     "minute": 87,
+     "extra": 0,
+     "team": "HAV",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mbwana Samatta",
+     "injured": false
+    },
+    {
+     "minute": 89,
+     "extra": null,
+     "team": "HAV",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "Enzo Koffi"
+    },
+    {
+     "minute": 90,
+     "extra": 3,
+     "team": "TRO",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Timothé Nkada",
+     "injured": false
+    },
+    {
+     "minute": 90,
+     "extra": 8,
+     "team": "TRO",
+     "type": "Goal",
+     "detail": "Penalty",
+     "player": "Renaud Ripart"
+    }
+   ],
+   "shots": [
+    {
+     "min": 3,
+     "extra": null,
+     "team": "HAV",
+     "player": "Josh Maja",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.159,
+     "xgot": 0.152,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87,
+     "y": 30.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 7,
+     "extra": null,
+     "team": "TRO",
+     "player": "Anis Ouzenadji",
+     "type": "Miss",
+     "situation": "IndividualPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.2,
+     "y": 44.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 9,
+     "extra": null,
+     "team": "TRO",
+     "player": "Yvann Titi",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.022,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 19.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.132,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.1,
+     "y": 32.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.168,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 35.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 18,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.171,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101,
+     "y": 41.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.211,
+     "xgot": 0.382,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.5,
+     "y": 28,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.05,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 42.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "TRO",
+     "player": "Kandet Diawara",
+     "type": "AttemptSaved",
+     "situation": "IndividualPlay",
+     "xg": 0.028,
+     "xgot": 0.072,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.9,
+     "y": 43.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 37,
+     "extra": null,
+     "team": "TRO",
+     "player": "Dermane Karim",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.026,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.5,
+     "y": 33.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 38,
+     "extra": null,
+     "team": "TRO",
+     "player": "Yvann Titi",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.7,
+     "y": 30.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "HAV",
+     "player": "Josh Maja",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.07,
+     "xgot": 0.165,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 32.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "TRO",
+     "player": "Lucas Maronnier",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.6,
+     "y": 23.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 47,
+     "extra": null,
+     "team": "HAV",
+     "player": "Josh Maja",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.048,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 34.8,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "HAV",
+     "player": "Ayumu Seko",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 36,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "HAV",
+     "player": "Josh Maja",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.164,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.4,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "TRO",
+     "player": "Jérémy Le Douaron",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.032,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.3,
+     "y": 20.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 69,
+     "extra": null,
+     "team": "TRO",
+     "player": "Antoine Mille",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.409,
+     "xgot": 0.417,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.8,
+     "y": 36,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 79,
+     "extra": null,
+     "team": "TRO",
+     "player": "Mouhamed Diop",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.5,
+     "y": 30.8,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 83,
+     "extra": null,
+     "team": "TRO",
+     "player": "Hugo Picard",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.074,
+     "xgot": 0.147,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 24.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "HAV",
+     "player": "Amir Richardson",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 76.6,
+     "y": 30.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.052,
+     "xgot": 0.417,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 35.1,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 1,
+     "team": "HAV",
+     "player": "Mbwana Samatta",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.045,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 86.6,
+     "y": 31.4,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "TRO",
+     "player": "Iron Gomis",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.168,
+     "xgot": 0.705,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.9,
+     "y": 33,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 6,
+     "team": "TRO",
+     "player": "Hugo Picard",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.137,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.1,
+     "y": 45,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 8,
+     "team": "TRO",
+     "player": "Renaud Ripart",
+     "type": "Goal",
+     "situation": "Penalty",
+     "xg": 0.788,
+     "xgot": 0.78,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94,
+     "y": 34,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -11
+    ],
+    [
+     3,
+     -35
+    ],
+    [
+     4,
+     -30
+    ],
+    [
+     5,
+     -24
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     7,
+     27
+    ],
+    [
+     8,
+     27
+    ],
+    [
+     9,
+     46
+    ],
+    [
+     10,
+     19
+    ],
+    [
+     11,
+     49
+    ],
+    [
+     12,
+     30
+    ],
+    [
+     13,
+     5
+    ],
+    [
+     14,
+     -30
+    ],
+    [
+     15,
+     -35
+    ],
+    [
+     16,
+     -16
+    ],
+    [
+     17,
+     -30
+    ],
+    [
+     18,
+     -3
+    ],
+    [
+     19,
+     62
+    ],
+    [
+     20,
+     92
+    ],
+    [
+     21,
+     71
+    ],
+    [
+     22,
+     5
+    ],
+    [
+     23,
+     16
+    ],
+    [
+     24,
+     76
+    ],
+    [
+     25,
+     87
+    ],
+    [
+     26,
+     98
+    ],
+    [
+     27,
+     33
+    ],
+    [
+     28,
+     49
+    ],
+    [
+     29,
+     16
+    ],
+    [
+     30,
+     22
+    ],
+    [
+     31,
+     0
+    ],
+    [
+     32,
+     16
+    ],
+    [
+     33,
+     3
+    ],
+    [
+     34,
+     8
+    ],
+    [
+     35,
+     -19
+    ],
+    [
+     36,
+     -5
+    ],
+    [
+     37,
+     -22
+    ],
+    [
+     38,
+     11
+    ],
+    [
+     39,
+     27
+    ],
+    [
+     40,
+     60
+    ],
+    [
+     41,
+     27
+    ],
+    [
+     42,
+     11
+    ],
+    [
+     43,
+     -19
+    ],
+    [
+     44,
+     -41
+    ],
+    [
+     45,
+     -38
+    ],
+    [
+     45.5,
+     16
+    ],
+    [
+     46,
+     16
+    ],
+    [
+     47,
+     14
+    ],
+    [
+     48,
+     3
+    ],
+    [
+     49,
+     -43
+    ],
+    [
+     50,
+     -27
+    ],
+    [
+     51,
+     0
+    ],
+    [
+     52,
+     30
+    ],
+    [
+     53,
+     5
+    ],
+    [
+     54,
+     -5
+    ],
+    [
+     55,
+     27
+    ],
+    [
+     56,
+     33
+    ],
+    [
+     57,
+     16
+    ],
+    [
+     58,
+     5
+    ],
+    [
+     59,
+     24
+    ],
+    [
+     60,
+     35
+    ],
+    [
+     61,
+     -27
+    ],
+    [
+     62,
+     -46
+    ],
+    [
+     63,
+     -52
+    ],
+    [
+     64,
+     -11
+    ],
+    [
+     65,
+     -5
+    ],
+    [
+     66,
+     0
+    ],
+    [
+     67,
+     27
+    ],
+    [
+     68,
+     33
+    ],
+    [
+     69,
+     100
+    ],
+    [
+     70,
+     65
+    ],
+    [
+     71,
+     60
+    ],
+    [
+     72,
+     -27
+    ],
+    [
+     73,
+     -46
+    ],
+    [
+     74,
+     -46
+    ],
+    [
+     75,
+     14
+    ],
+    [
+     76,
+     43
+    ],
+    [
+     77,
+     43
+    ],
+    [
+     78,
+     -5
+    ],
+    [
+     79,
+     22
+    ],
+    [
+     80,
+     22
+    ],
+    [
+     81,
+     16
+    ],
+    [
+     82,
+     -5
+    ],
+    [
+     83,
+     0
+    ],
+    [
+     84,
+     0
+    ],
+    [
+     85,
+     11
+    ],
+    [
+     86,
+     5
+    ],
+    [
+     87,
+     14
+    ],
+    [
+     88,
+     3
+    ],
+    [
+     89,
+     3
+    ],
+    [
+     90,
+     19
+    ],
+    [
+     90.5,
+     14
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "TRO": {
+     "team": "TRO",
+     "formation": "4-1-4-1",
+     "coach": "Stéphane Dumont",
+     "xi": [
+      {
+       "name": "Hillel Konaté",
+       "shirt": 40,
+       "pos": "G"
+      },
+      {
+       "name": "Yvann Titi",
+       "shirt": 44,
+       "pos": "D"
+      },
+      {
+       "name": "Adrien Monfray",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Ismaël Boura",
+       "shirt": 14,
+       "pos": "D"
+      },
+      {
+       "name": "Anis Ouzenadji",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Dermane Karim",
+       "shirt": 29,
+       "pos": "?"
+      },
+      {
+       "name": "Merwan Ifnaou",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Antoine Mille",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Mouhamed Diop",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Kandet Diawara",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Jérémy Le Douaron",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Lucas Maronnier",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Hugo Picard",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Renaud Ripart",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Iron Gomis",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Timothé Nkada",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Patrick Beach",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Lassana Simakha",
+       "shirt": 34,
+       "pos": "?"
+      },
+      {
+       "name": "Alexandre Phliponeau",
+       "shirt": 26,
+       "pos": "?"
+      },
+      {
+       "name": "Idrissa Soukouna",
+       "shirt": 36,
+       "pos": "?"
+      }
+     ]
+    },
+    "HAV": {
+     "team": "HAV",
+     "formation": "3-5-2",
+     "coach": "Valérien Ismaël",
+     "xi": [
+      {
+       "name": "Arnaud Bodart",
+       "shirt": 16,
+       "pos": "G"
+      },
+      {
+       "name": "Vincent Sasso",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Ayumu Seko",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "Ahmed Touba",
+       "shirt": 5,
+       "pos": "D"
+      },
+      {
+       "name": "Kaito Mizuta",
+       "shirt": 17,
+       "pos": "M"
+      },
+      {
+       "name": "Simon Ebonog",
+       "shirt": 26,
+       "pos": "M"
+      },
+      {
+       "name": "Amir Richardson",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Junior Mwanga",
+       "shirt": 6,
+       "pos": "M"
+      },
+      {
+       "name": "Enzo Koffi",
+       "shirt": 27,
+       "pos": "M"
+      },
+      {
+       "name": "Rayan Fofana",
+       "shirt": 38,
+       "pos": "F"
+      },
+      {
+       "name": "Josh Maja",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Djibril Ouziad",
+       "shirt": 20,
+       "pos": "?"
+      },
+      {
+       "name": "Hakim Dongopandji",
+       "shirt": 33,
+       "pos": "?"
+      },
+      {
+       "name": "Ismaïl Bouneb",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Bocar Wade",
+       "shirt": 35,
+       "pos": "?"
+      },
+      {
+       "name": "Mbwana Samatta",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Gauthier Gallon",
+       "shirt": 93,
+       "pos": "?"
+      },
+      {
+       "name": "Elias Jelert",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Lamine N'Diaye",
+       "shirt": 97,
+       "pos": "?"
+      },
+      {
+       "name": "Guy Zohouri",
+       "shirt": 24,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 36,
+      "center": 25,
+      "right": 39
+     },
+     "firstHalf": {
+      "left": 38,
+      "center": 27,
+      "right": 35
+     },
+     "secondHalf": {
+      "left": 34,
+      "center": 23,
+      "right": 43
+     }
+    },
+    "away": {
+     "total": {
+      "left": 28,
+      "center": 31,
+      "right": 41
+     },
+     "firstHalf": {
+      "left": 28,
+      "center": 31,
+      "right": 41
+     },
+     "secondHalf": {
+      "left": 28,
+      "center": 31,
+      "right": 41
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "injuryFlag": true,
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-21T06:00:50.587Z",
+   "heat": null
   }
  },
  "attempts": {
   "PSG|LYO": {
-   "at": "2026-11-20T19:45:43.645Z",
+   "at": "2026-11-21T06:00:49.971Z",
    "reason": "日期不一致(FotMob 2026-10-26)",
    "matchId": "5802972",
    "label": "PSG–LYO"
   }
  },
- "updatedAt": "2026-11-20T19:45:43.645Z",
+ "updatedAt": "2026-11-21T06:00:50.588Z",
  "deferred": {}
 }
