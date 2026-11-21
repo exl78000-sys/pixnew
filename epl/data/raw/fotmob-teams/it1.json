@@ -2,7 +2,7 @@
  "league": "it1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-21T06:03:03.828Z",
+ "fetchedAt": "2026-11-21T15:02:09.628Z",
  "teams": [
   {
    "code": "LAZ",
@@ -764,6 +764,151 @@
    "coachHistoryFull": true
   },
   {
+   "code": "COM",
+   "fotmobId": 10171,
+   "fotmobName": "Como",
+   "fetchedAt": "2026-11-08T16:32:42.974Z",
+   "color": "#005ea9",
+   "teamColors": {
+    "darkMode": "#005ea9",
+    "lightMode": "#005ea9",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stadio Giuseppe Sinigaglia",
+   "city": "Como",
+   "location": [
+    "45.813856655",
+    "9.072376192"
+   ],
+   "capacity": 13602,
+   "surface": "Grass",
+   "opened": 1927,
+   "coachHistory": [
+    {
+     "id": 1289486,
+     "name": "Giacomo Gattuso",
+     "season": "2020/2021",
+     "leagueId": 147,
+     "leagueName": "Serie C",
+     "win": 17,
+     "draw": 3,
+     "loss": 8,
+     "pointsPerGame": 1.93,
+     "winPercentage": 0.61
+    },
+    {
+     "id": 1289486,
+     "name": "Giacomo Gattuso",
+     "season": "2021/2022",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 11,
+     "draw": 14,
+     "loss": 13,
+     "pointsPerGame": 1.24,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1289486,
+     "name": "Giacomo Gattuso",
+     "season": "2022/2023",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 0,
+     "draw": 2,
+     "loss": 2,
+     "pointsPerGame": 0.5,
+     "winPercentage": 0
+    },
+    {
+     "id": 22105,
+     "name": "Moreno Longo",
+     "season": "2022/2023",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 10,
+     "draw": 14,
+     "loss": 8,
+     "pointsPerGame": 1.38,
+     "winPercentage": 0.31
+    },
+    {
+     "id": 22105,
+     "name": "Moreno Longo",
+     "season": "2023/2024",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 6,
+     "draw": 3,
+     "loss": 3,
+     "pointsPerGame": 1.75,
+     "winPercentage": 0.5
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2023/2024",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 3,
+     "draw": 1,
+     "loss": 1,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
+    },
+    {
+     "id": 1324876,
+     "name": "Osian Roberts",
+     "season": "2023/2024",
+     "leagueId": 86,
+     "leagueName": "Serie B",
+     "win": 12,
+     "draw": 6,
+     "loss": 3,
+     "pointsPerGame": 2,
+     "winPercentage": 0.57
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2024/2025",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 13,
+     "draw": 10,
+     "loss": 15,
+     "pointsPerGame": 1.29,
+     "winPercentage": 0.34
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2025/2026",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 20,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.87,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 30613,
+     "name": "Cesc Fàbregas",
+     "season": "2026/2027",
+     "leagueId": 55,
+     "leagueName": "Serie A",
+     "win": 7,
+     "draw": 2,
+     "loss": 1,
+     "pointsPerGame": 2.3,
+     "winPercentage": 0.7
+    }
+   ],
+   "coachHistoryFull": true
+  },
+  {
    "code": "MLN",
    "fotmobId": 8564,
    "fotmobName": "Milan",
@@ -1024,151 +1169,6 @@
      "loss": 1,
      "pointsPerGame": 2.1,
      "winPercentage": 0.6
-    }
-   ],
-   "coachHistoryFull": true
-  },
-  {
-   "code": "COM",
-   "fotmobId": 10171,
-   "fotmobName": "Como",
-   "fetchedAt": "2026-11-08T16:32:42.974Z",
-   "color": "#005ea9",
-   "teamColors": {
-    "darkMode": "#005ea9",
-    "lightMode": "#005ea9",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stadio Giuseppe Sinigaglia",
-   "city": "Como",
-   "location": [
-    "45.813856655",
-    "9.072376192"
-   ],
-   "capacity": 13602,
-   "surface": "Grass",
-   "opened": 1927,
-   "coachHistory": [
-    {
-     "id": 1289486,
-     "name": "Giacomo Gattuso",
-     "season": "2020/2021",
-     "leagueId": 147,
-     "leagueName": "Serie C",
-     "win": 17,
-     "draw": 3,
-     "loss": 8,
-     "pointsPerGame": 1.93,
-     "winPercentage": 0.61
-    },
-    {
-     "id": 1289486,
-     "name": "Giacomo Gattuso",
-     "season": "2021/2022",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 11,
-     "draw": 14,
-     "loss": 13,
-     "pointsPerGame": 1.24,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1289486,
-     "name": "Giacomo Gattuso",
-     "season": "2022/2023",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 0,
-     "draw": 2,
-     "loss": 2,
-     "pointsPerGame": 0.5,
-     "winPercentage": 0
-    },
-    {
-     "id": 22105,
-     "name": "Moreno Longo",
-     "season": "2022/2023",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 10,
-     "draw": 14,
-     "loss": 8,
-     "pointsPerGame": 1.38,
-     "winPercentage": 0.31
-    },
-    {
-     "id": 22105,
-     "name": "Moreno Longo",
-     "season": "2023/2024",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 6,
-     "draw": 3,
-     "loss": 3,
-     "pointsPerGame": 1.75,
-     "winPercentage": 0.5
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2023/2024",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 3,
-     "draw": 1,
-     "loss": 1,
-     "pointsPerGame": 2,
-     "winPercentage": 0.6
-    },
-    {
-     "id": 1324876,
-     "name": "Osian Roberts",
-     "season": "2023/2024",
-     "leagueId": 86,
-     "leagueName": "Serie B",
-     "win": 12,
-     "draw": 6,
-     "loss": 3,
-     "pointsPerGame": 2,
-     "winPercentage": 0.57
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2024/2025",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 13,
-     "draw": 10,
-     "loss": 15,
-     "pointsPerGame": 1.29,
-     "winPercentage": 0.34
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2025/2026",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 20,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.87,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 30613,
-     "name": "Cesc Fàbregas",
-     "season": "2026/2027",
-     "leagueId": 55,
-     "leagueName": "Serie A",
-     "win": 7,
-     "draw": 2,
-     "loss": 1,
-     "pointsPerGame": 2.3,
-     "winPercentage": 0.7
     }
    ],
    "coachHistoryFull": true
