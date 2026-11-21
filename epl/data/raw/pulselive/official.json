@@ -108,7 +108,7 @@
    "officialId": 17072
   }
  },
- "managersFetchedAt": "2026-11-20T19:47:43.348Z",
+ "managersFetchedAt": "2026-11-21T19:59:43.047Z",
  "matches": {
   "CRY|MCI": {
    "fixtureId": 128937,
@@ -75182,11 +75182,11 @@
   "NEW|ARS": {
    "fixtureId": 129031,
    "kickoff": "2026-11-21T17:30:00.000Z",
-   "status": "L",
-   "final": false,
+   "status": "C",
+   "final": true,
    "score": {
     "home": 2,
-    "away": 1
+    "away": 2
    },
    "homeId": 23,
    "awayId": 1,
@@ -75614,6 +75614,32 @@
    },
    "goals": [
     {
+     "side": "A",
+     "person": 21584,
+     "assist": 20810,
+     "team": 1,
+     "min": 33,
+     "label": "33'00",
+     "phase": "1",
+     "type": "G",
+     "kind": "G",
+     "hs": 0,
+     "as": 1
+    },
+    {
+     "side": "H",
+     "person": 14716,
+     "assist": 114590,
+     "team": 23,
+     "min": 49,
+     "label": "49'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 1,
+     "as": 1
+    },
+    {
      "side": "H",
      "person": 124462,
      "assist": 14446,
@@ -75625,6 +75651,19 @@
      "kind": "G",
      "hs": 2,
      "as": 1
+    },
+    {
+     "side": "A",
+     "person": 67407,
+     "assist": 11419,
+     "team": 1,
+     "min": 78,
+     "label": "78'00",
+     "phase": "2",
+     "type": "G",
+     "kind": "G",
+     "hs": 2,
+     "as": 2
     }
    ],
    "timeline": {
@@ -75652,6 +75691,33 @@
       "team": 23,
       "min": 58,
       "label": "58'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 8707,
+      "team": 23,
+      "min": 81,
+      "label": "81'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 67407,
+      "team": 1,
+      "min": 81,
+      "label": "81'00",
+      "phase": "2",
+      "kindRaw": "Y",
+      "kind": "黃牌"
+     },
+     {
+      "person": 32728,
+      "team": 1,
+      "min": 90,
+      "label": "90+10'00",
       "phase": "2",
       "kindRaw": "Y",
       "kind": "黃牌"
@@ -75711,15 +75777,135 @@
       "phase": "2",
       "dirRaw": "OFF",
       "dir": "off"
+     },
+     {
+      "person": 11373,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 7975,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 114564,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 74761,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 67704,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 21584,
+      "team": 1,
+      "min": 70,
+      "label": "70'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 117497,
+      "team": 23,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 14446,
+      "team": 23,
+      "min": 83,
+      "label": "83'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 49908,
+      "team": 23,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 108922,
+      "team": 23,
+      "min": 90,
+      "label": "90+2'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 19778,
+      "team": 1,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 11419,
+      "team": 1,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
+     },
+     {
+      "person": 32728,
+      "team": 1,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "ON",
+      "dir": "on"
+     },
+     {
+      "person": 20810,
+      "team": 1,
+      "min": 90,
+      "label": "90+4'00",
+      "phase": "2",
+      "dirRaw": "OFF",
+      "dir": "off"
      }
     ],
     "periods": [
-     {
-      "type": "PE",
-      "min": null,
-      "label": null,
-      "phase": "2"
-     },
      {
       "type": "PS",
       "min": 0,
@@ -75737,11 +75923,24 @@
       "min": 45,
       "label": "45'00",
       "phase": "2"
+     },
+     {
+      "type": "PE",
+      "min": 90,
+      "label": "90+10'00",
+      "phase": "2"
      }
     ]
    },
-   "clock": "62'00"
+   "clock": "90+10'00",
+   "quality": {
+    "complete": true,
+    "checkedAt": "2026-11-21T19:29:57.639Z",
+    "issues": [],
+    "retryCount": 0,
+    "nextRetryAt": null
+   }
   }
  },
- "fetchedAt": "2026-11-21T18:51:41.338Z"
+ "fetchedAt": "2026-11-21T19:59:43.283Z"
 }

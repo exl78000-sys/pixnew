@@ -137080,9 +137080,1547 @@
    "extractVersion": 2,
    "fetchedAt": "2026-11-21T17:28:41.619Z",
    "heat": null
+  },
+  "S04|VFB": {
+   "key": "S04|VFB",
+   "season": "2026-27",
+   "date": "2026-11-21",
+   "matchId": "5881230",
+   "home": "S04",
+   "away": "VFB",
+   "score": [
+    0,
+    0
+   ],
+   "providerScore": [
+    0,
+    0
+   ],
+   "teamStats": {
+    "S04": {
+     "possession": 43,
+     "shots": 21,
+     "shotsOn": 7,
+     "shotsOff": 8,
+     "blockedShots": 6,
+     "blocksMade": 6,
+     "corners": 4,
+     "offsides": 2,
+     "fouls": 9,
+     "saves": 3,
+     "passes": 417,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 1.69
+    },
+    "VFB": {
+     "possession": 57,
+     "shots": 15,
+     "shotsOn": 4,
+     "shotsOff": 6,
+     "blockedShots": 5,
+     "blocksMade": 4,
+     "corners": 5,
+     "offsides": 2,
+     "fouls": 11,
+     "saves": 7,
+     "passes": 551,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.39
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "S04": {
+     "touches_opp_box": 44,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 14,
+     "shots_outside_box": 7,
+     "expected_goals_open_play": 1.55,
+     "expected_goals_set_play": 0.13,
+     "expected_goals_non_penalty": 1.69,
+     "expected_goals_on_target": 1.6,
+     "own_half_passes": 165,
+     "opposition_half_passes": 171,
+     "long_balls_accurate": 19,
+     "long_balls_accurate_pct": 36,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 12,
+     "player_throws": 11,
+     "matchstats.headers.tackles": 23,
+     "interceptions": 12,
+     "clearances": 22,
+     "duel_won": 52,
+     "ground_duels_won": 38,
+     "ground_duels_won_pct": 55,
+     "aerials_won": 14,
+     "aerials_won_pct": 52,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 50,
+     "red_cards": 0
+    },
+    "VFB": {
+     "touches_opp_box": 25,
+     "big_chance": 4,
+     "big_chance_missed_title": 4,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 11,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 2.39,
+     "expected_goals_set_play": 0,
+     "expected_goals_non_penalty": 2.39,
+     "expected_goals_on_target": 1.12,
+     "own_half_passes": 282,
+     "opposition_half_passes": 185,
+     "long_balls_accurate": 49,
+     "long_balls_accurate_pct": 62,
+     "accurate_crosses": 2,
+     "accurate_crosses_pct": 11,
+     "player_throws": 19,
+     "matchstats.headers.tackles": 13,
+     "interceptions": 13,
+     "clearances": 28,
+     "duel_won": 44,
+     "ground_duels_won": 31,
+     "ground_duels_won_pct": 45,
+     "aerials_won": 13,
+     "aerials_won_pct": 48,
+     "dribbles_succeeded": 9,
+     "dribbles_succeeded_pct": 47,
+     "red_cards": 0
+    }
+   },
+   "possession": {
+    "all": [
+     43,
+     57
+    ],
+    "h1": [
+     48,
+     52
+    ],
+    "h2": [
+     39,
+     61
+    ]
+   },
+   "events": [
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Bilal El Khannouss",
+     "injured": false
+    },
+    {
+     "minute": 60,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Dženan Pejčinović",
+     "injured": false
+    },
+    {
+     "minute": 65,
+     "extra": null,
+     "team": "VFB",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Maximilian Mittelstädt"
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "S04",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Moussa Sylla",
+     "injured": false
+    },
+    {
+     "minute": 71,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Nikolas Nartey",
+     "injured": false
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Tiago Tomás",
+     "injured": false
+    },
+    {
+     "minute": 80,
+     "extra": 0,
+     "team": "VFB",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Josha Vagnoman",
+     "injured": false
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "S04",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mertcan Ayhan",
+     "injured": false
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "S04",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Satoshi Tanaka",
+     "injured": false
+    },
+    {
+     "minute": 86,
+     "extra": 0,
+     "team": "S04",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Edin Džeko",
+     "injured": false
+    }
+   ],
+   "shots": [
+    {
+     "min": 2,
+     "extra": null,
+     "team": "VFB",
+     "player": "Deniz Undav",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.312,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.4,
+     "y": 32.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 3,
+     "extra": null,
+     "team": "VFB",
+     "player": "Ermedin Demirović",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.034,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.5,
+     "y": 38.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 4,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.068,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.4,
+     "y": 45.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 11,
+     "extra": null,
+     "team": "S04",
+     "player": "Junior Dina Ebimbe",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.011,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 77.9,
+     "y": 41.8,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.04,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 46,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "S04",
+     "player": "Chukwubuike Adamu",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.124,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.6,
+     "y": 31.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 21,
+     "extra": null,
+     "team": "S04",
+     "player": "Vitalie Becker",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.038,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.6,
+     "y": 47.4,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "VFB",
+     "player": "Deniz Undav",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.236,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 38.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "VFB",
+     "player": "Jamie Leweling",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.391,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98.7,
+     "y": 29.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 24,
+     "extra": null,
+     "team": "VFB",
+     "player": "Grischa Prömel",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.057,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 98,
+     "y": 29.2,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 26,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.096,
+     "xgot": 0.532,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 87.5,
+     "y": 35.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 27,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.582,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.8,
+     "y": 34.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0.16,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.4,
+     "y": 50.4,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 36,
+     "extra": null,
+     "team": "VFB",
+     "player": "Maximilian Mittelstädt",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.062,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 31,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.313,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92,
+     "y": 37.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 44,
+     "extra": null,
+     "team": "S04",
+     "player": "Dejan Ljubičić",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 84.5,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 49,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.146,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 44.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 53,
+     "extra": null,
+     "team": "VFB",
+     "player": "Yanik Spalt",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.024,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.7,
+     "y": 46.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 54,
+     "extra": null,
+     "team": "S04",
+     "player": "Vitalie Becker",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.033,
+     "xgot": 0.051,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.3,
+     "y": 48.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.015,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.3,
+     "y": 24.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 61,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.044,
+     "xgot": 0.056,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 83.7,
+     "y": 43.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "VFB",
+     "player": "Dženan Pejčinović",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.238,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.1,
+     "y": 35.6,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 63,
+     "extra": null,
+     "team": "VFB",
+     "player": "Grischa Prömel",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.151,
+     "xgot": 0.552,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 97.4,
+     "y": 33.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 64,
+     "extra": null,
+     "team": "VFB",
+     "player": "Deniz Undav",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.313,
+     "xgot": 0.265,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 31.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 68,
+     "extra": null,
+     "team": "VFB",
+     "player": "Chris Führich",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.03,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 99.8,
+     "y": 47.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 70,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "Miss",
+     "situation": "FastBreak",
+     "xg": 0.036,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.5,
+     "y": 16.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.104,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.6,
+     "y": 30.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "S04",
+     "player": "Adil Aouchiche",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.113,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 74,
+     "extra": null,
+     "team": "S04",
+     "player": "Kenan Karaman",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.107,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.3,
+     "y": 42.5,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 76,
+     "extra": null,
+     "team": "VFB",
+     "player": "Dženan Pejčinović",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.064,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 85.9,
+     "y": 34.7,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "VFB",
+     "player": "Chris Führich",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.413,
+     "xgot": 0.306,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.9,
+     "y": 44.6,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 82,
+     "extra": null,
+     "team": "VFB",
+     "player": "Maximilian Mittelstädt",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.025,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 82.5,
+     "y": 43.2,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 87,
+     "extra": null,
+     "team": "S04",
+     "player": "Moussa Sylla",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.157,
+     "xgot": 0.121,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.7,
+     "y": 45.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 88,
+     "extra": null,
+     "team": "VFB",
+     "player": "Tiago Tomás",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.041,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.9,
+     "y": 47.3,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "S04",
+     "player": "Mertcan Ayhan",
+     "type": "Miss",
+     "situation": "FromCorner",
+     "xg": 0.054,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 89.1,
+     "y": 30.3,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 3,
+     "team": "S04",
+     "player": "Nikola Katić",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.065,
+     "xgot": 0.102,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 101.5,
+     "y": 41.4,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -27
+    ],
+    [
+     2,
+     -60
+    ],
+    [
+     3,
+     -71
+    ],
+    [
+     4,
+     84
+    ],
+    [
+     5,
+     100
+    ],
+    [
+     6,
+     100
+    ],
+    [
+     7,
+     16
+    ],
+    [
+     8,
+     11
+    ],
+    [
+     9,
+     -8
+    ],
+    [
+     10,
+     8
+    ],
+    [
+     11,
+     24
+    ],
+    [
+     12,
+     24
+    ],
+    [
+     13,
+     -19
+    ],
+    [
+     14,
+     -35
+    ],
+    [
+     15,
+     -49
+    ],
+    [
+     16,
+     8
+    ],
+    [
+     17,
+     8
+    ],
+    [
+     18,
+     24
+    ],
+    [
+     19,
+     11
+    ],
+    [
+     20,
+     16
+    ],
+    [
+     21,
+     76
+    ],
+    [
+     22,
+     54
+    ],
+    [
+     23,
+     3
+    ],
+    [
+     24,
+     -100
+    ],
+    [
+     25,
+     -100
+    ],
+    [
+     26,
+     -100
+    ],
+    [
+     27,
+     41
+    ],
+    [
+     28,
+     41
+    ],
+    [
+     29,
+     14
+    ],
+    [
+     30,
+     -14
+    ],
+    [
+     31,
+     -16
+    ],
+    [
+     32,
+     -16
+    ],
+    [
+     33,
+     -11
+    ],
+    [
+     34,
+     -8
+    ],
+    [
+     35,
+     -46
+    ],
+    [
+     36,
+     -57
+    ],
+    [
+     37,
+     -62
+    ],
+    [
+     38,
+     -24
+    ],
+    [
+     39,
+     -19
+    ],
+    [
+     40,
+     -5
+    ],
+    [
+     41,
+     22
+    ],
+    [
+     42,
+     27
+    ],
+    [
+     43,
+     22
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     45,
+     33
+    ],
+    [
+     45.5,
+     27
+    ],
+    [
+     46,
+     -5
+    ],
+    [
+     47,
+     71
+    ],
+    [
+     48,
+     92
+    ],
+    [
+     49,
+     100
+    ],
+    [
+     50,
+     60
+    ],
+    [
+     51,
+     38
+    ],
+    [
+     52,
+     5
+    ],
+    [
+     53,
+     -8
+    ],
+    [
+     54,
+     -3
+    ],
+    [
+     55,
+     3
+    ],
+    [
+     56,
+     33
+    ],
+    [
+     57,
+     27
+    ],
+    [
+     58,
+     16
+    ],
+    [
+     59,
+     -22
+    ],
+    [
+     60,
+     -22
+    ],
+    [
+     61,
+     0
+    ],
+    [
+     62,
+     5
+    ],
+    [
+     63,
+     -3
+    ],
+    [
+     64,
+     -49
+    ],
+    [
+     65,
+     -57
+    ],
+    [
+     66,
+     -38
+    ],
+    [
+     67,
+     3
+    ],
+    [
+     68,
+     -33
+    ],
+    [
+     69,
+     -49
+    ],
+    [
+     70,
+     -33
+    ],
+    [
+     71,
+     16
+    ],
+    [
+     72,
+     22
+    ],
+    [
+     73,
+     27
+    ],
+    [
+     74,
+     81
+    ],
+    [
+     75,
+     68
+    ],
+    [
+     76,
+     19
+    ],
+    [
+     77,
+     -46
+    ],
+    [
+     78,
+     -49
+    ],
+    [
+     79,
+     -33
+    ],
+    [
+     80,
+     -22
+    ],
+    [
+     81,
+     -5
+    ],
+    [
+     82,
+     -16
+    ],
+    [
+     83,
+     -27
+    ],
+    [
+     84,
+     -38
+    ],
+    [
+     85,
+     -22
+    ],
+    [
+     86,
+     -11
+    ],
+    [
+     87,
+     100
+    ],
+    [
+     88,
+     87
+    ],
+    [
+     89,
+     79
+    ],
+    [
+     90,
+     -38
+    ],
+    [
+     90.5,
+     12
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "S04": {
+     "team": "S04",
+     "formation": "4-3-2-1",
+     "coach": "Miron Muslić",
+     "xi": [
+      {
+       "name": "Loris Karius",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Junior Dina Ebimbe",
+       "shirt": 29,
+       "pos": "D"
+      },
+      {
+       "name": "Nikola Katić",
+       "shirt": 25,
+       "pos": "D"
+      },
+      {
+       "name": "Hasan Kuruçay",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Vitalie Becker",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Soufian El-Faouzi",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Dejan Ljubičić",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Adil Aouchiche",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Hwang Hee-Chan",
+       "shirt": 7,
+       "pos": "M"
+      },
+      {
+       "name": "Kenan Karaman",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Chukwubuike Adamu",
+       "shirt": 20,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Moussa Sylla",
+       "shirt": 9,
+       "pos": "?"
+      },
+      {
+       "name": "Mertcan Ayhan",
+       "shirt": 43,
+       "pos": "?"
+      },
+      {
+       "name": "Satoshi Tanaka",
+       "shirt": 13,
+       "pos": "?"
+      },
+      {
+       "name": "Edin Džeko",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Kevin Müller",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Adrian Gantenbein",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Robin Gosens",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Janik Bachmann",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Bryan Lasme",
+       "shirt": 11,
+       "pos": "?"
+      }
+     ]
+    },
+    "VFB": {
+     "team": "VFB",
+     "formation": "4-2-3-1",
+     "coach": "Sebastian Hoeneß",
+     "xi": [
+      {
+       "name": "Dennis Seimen",
+       "shirt": 41,
+       "pos": "G"
+      },
+      {
+       "name": "Finn Jeltsch",
+       "shirt": 29,
+       "pos": "D"
+      },
+      {
+       "name": "Ramon Hendriks",
+       "shirt": 3,
+       "pos": "D"
+      },
+      {
+       "name": "Jeff Chabot",
+       "shirt": 24,
+       "pos": "D"
+      },
+      {
+       "name": "Maximilian Mittelstädt",
+       "shirt": 7,
+       "pos": "D"
+      },
+      {
+       "name": "Grischa Prömel",
+       "shirt": 21,
+       "pos": "?"
+      },
+      {
+       "name": "Yanik Spalt",
+       "shirt": 47,
+       "pos": "?"
+      },
+      {
+       "name": "Jamie Leweling",
+       "shirt": 18,
+       "pos": "M"
+      },
+      {
+       "name": "Deniz Undav",
+       "shirt": 26,
+       "pos": "M"
+      },
+      {
+       "name": "Chris Führich",
+       "shirt": 10,
+       "pos": "M"
+      },
+      {
+       "name": "Ermedin Demirović",
+       "shirt": 9,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Bilal El Khannouss",
+       "shirt": 11,
+       "pos": "?"
+      },
+      {
+       "name": "Dženan Pejčinović",
+       "shirt": 17,
+       "pos": "?"
+      },
+      {
+       "name": "Nikolas Nartey",
+       "shirt": 28,
+       "pos": "?"
+      },
+      {
+       "name": "Josha Vagnoman",
+       "shirt": 4,
+       "pos": "?"
+      },
+      {
+       "name": "Tiago Tomás",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Fabian Bredlow",
+       "shirt": 1,
+       "pos": "?"
+      },
+      {
+       "name": "Ameen Al Dakhil",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Lorenz Assignon",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Atakan Karazor",
+       "shirt": 16,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": null,
+   "zones": {
+    "home": {
+     "total": {
+      "left": 34,
+      "center": 30,
+      "right": 36
+     },
+     "firstHalf": {
+      "left": 41,
+      "center": 29,
+      "right": 30
+     },
+     "secondHalf": {
+      "left": 26,
+      "center": 30,
+      "right": 44
+     }
+    },
+    "away": {
+     "total": {
+      "left": 43,
+      "center": 20,
+      "right": 37
+     },
+     "firstHalf": {
+      "left": 37,
+      "center": 27,
+      "right": 36
+     },
+     "secondHalf": {
+      "left": 47,
+      "center": 16,
+      "right": 37
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 0,
+    "shotmapComplete": true
+   },
+   "injuryFlag": true,
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-21T19:58:14.818Z",
+   "heat": null
   }
  },
  "attempts": {},
- "updatedAt": "2026-11-21T18:50:22.244Z",
+ "updatedAt": "2026-11-21T19:58:14.820Z",
  "deferred": {}
 }
