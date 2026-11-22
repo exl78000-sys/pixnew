@@ -94,6 +94,12 @@ try {
          (模型擬合資料含本場結果),所以下面會標明它不是當時的預測。 */
     const pre = f.prediction;
     const p = f.postFit ?? f.prediction;
+    /* 頁首那一組(2026-11-22):已賽時**只能是賽前快照**。原本畫的是 `p`(已賽 = 事後擬合,含本場結果),
+       旁邊卻寫「賽前模型預期」「以上是賽前的機率,沒有事後修改」—— NEW–ARS 頁首 20 / 24 / 55%、
+       下面「01・賽前模型」19 / 24 / 57%,同一頁兩組「賽前」,而頁首那一組其實是事後的。
+       沒有快照的已賽場次照舊畫 `p`,但字要講它是事後擬合。 */
+    const headP = f.played ? (pre ?? p) : p;
+    const headIsPre = !f.played || !!pre;
     const preArt = preArticleFor(f);
     const postArt = postArticleFor(f);
     const postReport = await loadReport(f);
@@ -140,15 +146,18 @@ try {
               「比賽完後只剩賽前分析」就是這個畫面。即時快照回來時由 renderLive 蓋掉。 */''}
         <div class="sc" id="headScore" style="font-size:20px">${f.played
           ? `${f.fh} <span class="dim">:</span> ${f.fa}`
-          : `${p.xgHome} <span class="dim">:</span> ${p.xgAway}`}</div>
+          : `${headP.xgHome} <span class="dim">:</span> ${headP.xgAway}`}</div>
         <div class="side away">${C.badge(f.away, 'big')}<b>${C.teamLink(f.away)}</b></div>
       </div>
       <div class="center small dim" id="headNote" style="margin-bottom:10px">${f.played
-        ? `最終比分・賽前模型預期 ${p.xgHome} : ${p.xgAway}` : '模型預期進球'}</div>
-      ${C.probBar(p)}
+        ? (headIsPre ? `最終比分・賽前模型預期 ${headP.xgHome ?? '—'} : ${headP.xgAway ?? '—'}` : `最終比分・目前模型(事後擬合)預期 ${headP.xgHome} : ${headP.xgAway}`)
+        : '模型預期進球'}</div>
+      ${C.probBar(headP)}
       <div class="row small dim" style="justify-content:space-between;margin-top:6px">
-        <span>主勝 ${C.pct(p.home, 0)}</span><span>和局 ${C.pct(p.draw, 0)}</span><span>客勝 ${C.pct(p.away, 0)}</span></div>
-      <div class="tiny dim center" style="margin-top:6px">${f.played ? '以上是賽前的機率,沒有事後修改' : ''}</div>
+        <span>主勝 ${C.pct(headP.home, 0)}</span><span>和局 ${C.pct(headP.draw, 0)}</span><span>客勝 ${C.pct(headP.away, 0)}</span></div>
+      <div class="tiny dim center" style="margin-top:6px">${!f.played ? ''
+        : headIsPre ? '以上是開賽前凍結的機率,沒有事後修改'
+        : '這一場沒有保存賽前快照 —— 以上是目前模型的事後擬合(含本場結果),不是當時的預測'}</div>
       <div class="spread" style="margin-top:14px">
         <span class="small">${f.played ? (() => {
           const ZH = { home: '主勝', draw: '和局', away: '客勝' };

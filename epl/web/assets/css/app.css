@@ -438,8 +438,18 @@ td .team-cell { display: inline-flex; vertical-align: middle; }
   font-variant-numeric: tabular-nums; white-space: nowrap; text-align: center;
 }
 .scoreline .side { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
-.scoreline .side b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 隊名可以折成兩行(2026-11-22):原本單行加刪節號,首頁卡片在 400px 寬 98 個隊名截掉 43 個、
+   1280px(多欄卡片)也截 35 個 —— 「Coventr…」「Crystal …」讀者得自己猜。兩行還放不下才截。 */
+.scoreline .side b {
+  min-width: 0; overflow: hidden; line-height: 1.2; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
 .scoreline .side.away { flex-direction: row-reverse; }
+.scoreline .side.away b { text-align: right; }
+@media (max-width: 520px) {
+  .scoreline { gap: 8px; }
+  .scoreline .sc { font-size: 24px; }
+}
 
 .xi { display: grid; gap: 3px; }
 .xi .p { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 2px 0; }
@@ -575,7 +585,9 @@ a.recent-row:hover { background: #ffffff08; color: var(--ink); }
 a.recent-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .recent-home, .recent-away { display: flex; align-items: center; gap: 6px; min-width: 0; }
 .recent-home { justify-content: flex-end; text-align: right; }
-.recent-home .nm, .recent-away .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 兩行才截(2026-11-22,跟 .scoreline 同一個理由:單行時「Bayer Leverk…」「Paris Saint-G…」) */
+.recent-home .nm, .recent-away .nm { min-width: 0; overflow: hidden; line-height: 1.2; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
 .recent-home.win, .recent-away.win { color: var(--ink); font-weight: 600; }
 .recent-row .crest { width: 18px; height: 18px; flex: none; }
 .recent-row .intl-flag { flex: none; }
@@ -911,8 +923,10 @@ input:focus-visible, tbody tr.clickable:focus-visible {
   .market-row { grid-template-columns: minmax(95px, 1fr) 1.5fr 62px 62px; gap: 7px; }
   .market-row .market-odds { grid-column: 3; }
   .market-row > .pill { grid-column: 4; justify-self: end; }
-  .pre-post-row { grid-template-columns: 1fr auto auto; }
-  .pre-post-row > i { display: none; }
+  /* 手機(2026-11-22):原本把三個小標藏掉、三欄擠,進球掉到下一行,讀者只看到「0.77 1.72 / 2」不知道哪個是哪個。
+     改成隊名一行、三個數字並排、小標在數字下面(grid-auto-flow: column 讓 b / i 一欄一對)。 */
+  .pre-post-row { grid-template-columns: repeat(3, 1fr); grid-template-rows: auto auto auto; grid-auto-flow: column; gap: 2px 8px; }
+  .pre-post-row > span { grid-column: 1 / -1; grid-row: 1; }
   .expert-head { grid-template-columns: auto 1fr; }
   .expert-head > .pill { grid-column: 2; justify-self: start; }
   .expert-source { display: grid; }

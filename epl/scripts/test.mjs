@@ -180,6 +180,12 @@ async function checkInplayKickoff() {
   ok('勝率曲線:沒有 kick 仍講換算法(不畫圓點);第一點不是第 0 分就不講', !/<circle /.test(noK) && noK.includes('換算法') && !notAnchored.includes('第 0 分'));
   const pa = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'page-analysis.js'), 'utf8'));
   ok('單場頁把 kick 傳進勝率曲線', /C\.probCurve\(rec\.pts, \{[^}]*kick: rec\.kick/.test(pa));
+  /* 單場頁頁首(2026-11-22):已賽只能畫賽前快照。原本畫 `p`(已賽 = 事後擬合)而旁邊寫「沒有事後修改」。
+     守三件事:頁首的機率條讀 headP、headP 在已賽時先取 prediction、「沒有事後修改」那句只在 headIsPre 時出現。 */
+  const head = pa.slice(pa.indexOf('id="headScore"'), pa.indexOf('id="headScore"') + 2500);
+  ok('單場頁頁首:已賽畫賽前快照(不是事後擬合),「沒有事後修改」只跟快照一起出現',
+    /const headP = f\.played \? \(pre \?\? p\) : p;/.test(pa) && /C\.probBar\(headP\)/.test(head) && !/C\.probBar\(p\)/.test(head)
+      && /headIsPre \? '以上是開賽前凍結的機率,沒有事後修改'/.test(head) && (pa.match(/沒有事後修改/g) ?? []).length === 1);
 
   // ⑦ 模型頁:那一節的數字全部從 kickoff 讀,結論也跟著資料(不寫死「沒有更準」)
   const pm = strip(readFileSync(join(ROOT, 'web', 'assets', 'js', 'model-view.js'), 'utf8'));
