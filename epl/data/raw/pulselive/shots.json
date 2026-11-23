@@ -1105,21 +1105,40 @@
   },
   "LIV|MUN": {
    "fixtureId": 129029,
-   "fetchedAt": "2026-11-22T17:08:24.622Z",
-   "final": false,
+   "fetchedAt": "2026-11-23T20:19:36.938Z",
+   "final": true,
    "home": {
-    "total": 8,
-    "on": 5,
-    "off": 1,
-    "blocked": 2,
-    "reported": 8
+    "total": 28,
+    "on": 11,
+    "off": 7,
+    "blocked": 10,
+    "reported": 28
    },
    "away": {
-    "total": 5,
+    "total": 10,
+    "on": 3,
+    "off": 5,
+    "blocked": 2,
+    "reported": 10
+   }
+  },
+  "BRE|EVE": {
+   "fixtureId": 129025,
+   "fetchedAt": "2026-11-23T22:04:46.789Z",
+   "final": true,
+   "home": {
+    "total": 21,
+    "on": 7,
+    "off": 4,
+    "blocked": 10,
+    "reported": 21
+   },
+   "away": {
+    "total": 4,
     "on": 2,
-    "off": 2,
+    "off": 1,
     "blocked": 1,
-    "reported": 5
+    "reported": 4
    }
   }
  }
