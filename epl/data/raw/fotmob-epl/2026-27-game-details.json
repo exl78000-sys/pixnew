@@ -217117,10 +217117,1985 @@
      }
     ]
    }
+  },
+  "BRE|EVE": {
+   "key": "BRE|EVE",
+   "season": "2026-27",
+   "date": "2026-11-23",
+   "matchId": "5795517",
+   "home": "BRE",
+   "away": "EVE",
+   "score": [
+    4,
+    0
+   ],
+   "providerScore": [
+    4,
+    0
+   ],
+   "teamStats": {
+    "BRE": {
+     "possession": 72,
+     "shots": 21,
+     "shotsOn": 7,
+     "shotsOff": 4,
+     "blockedShots": 10,
+     "blocksMade": 1,
+     "corners": 6,
+     "offsides": 2,
+     "fouls": 8,
+     "saves": 2,
+     "passes": 771,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 2.57
+    },
+    "EVE": {
+     "possession": 28,
+     "shots": 4,
+     "shotsOn": 2,
+     "shotsOff": 1,
+     "blockedShots": 1,
+     "blocksMade": 10,
+     "corners": 3,
+     "offsides": 0,
+     "fouls": 9,
+     "saves": 3,
+     "passes": 303,
+     "passesAccurate": null,
+     "passAccuracy": null,
+     "xG": 0.23
+    }
+   },
+   "unmappedStats": [
+    "touches_opp_box",
+    "big_chance",
+    "big_chance_missed_title",
+    "yellow_cards",
+    "shots_woodwork",
+    "shots_inside_box",
+    "shots_outside_box",
+    "expected_goals_open_play",
+    "expected_goals_set_play",
+    "expected_goals_non_penalty",
+    "expected_goals_on_target",
+    "physical_metrics_distance_covered",
+    "physical_metrics_running",
+    "physical_metrics_sprinting",
+    "physical_metrics_number_of_sprints",
+    "own_half_passes",
+    "opposition_half_passes",
+    "long_balls_accurate",
+    "accurate_crosses",
+    "player_throws",
+    "matchstats.headers.tackles",
+    "interceptions",
+    "clearances",
+    "duel_won",
+    "ground_duels_won",
+    "aerials_won",
+    "dribbles_succeeded",
+    "red_cards"
+   ],
+   "teamExtra": {
+    "BRE": {
+     "touches_opp_box": 51,
+     "big_chance": 3,
+     "big_chance_missed_title": 2,
+     "yellow_cards": 0,
+     "shots_woodwork": 0,
+     "shots_inside_box": 17,
+     "shots_outside_box": 4,
+     "expected_goals_open_play": 1.41,
+     "expected_goals_set_play": 1.16,
+     "expected_goals_non_penalty": 2.57,
+     "expected_goals_on_target": 2.38,
+     "physical_metrics_distance_covered": 121918,
+     "physical_metrics_running": 24290,
+     "physical_metrics_sprinting": 2391,
+     "physical_metrics_number_of_sprints": 99,
+     "own_half_passes": 267,
+     "opposition_half_passes": 424,
+     "long_balls_accurate": 22,
+     "long_balls_accurate_pct": 52,
+     "accurate_crosses": 8,
+     "accurate_crosses_pct": 26,
+     "player_throws": 17,
+     "matchstats.headers.tackles": 2,
+     "interceptions": 10,
+     "clearances": 13,
+     "duel_won": 32,
+     "ground_duels_won": 16,
+     "ground_duels_won_pct": 35,
+     "aerials_won": 16,
+     "aerials_won_pct": 52,
+     "dribbles_succeeded": 5,
+     "dribbles_succeeded_pct": 42,
+     "red_cards": 0
+    },
+    "EVE": {
+     "touches_opp_box": 6,
+     "big_chance": 1,
+     "big_chance_missed_title": 1,
+     "yellow_cards": 1,
+     "shots_woodwork": 0,
+     "shots_inside_box": 2,
+     "shots_outside_box": 2,
+     "expected_goals_open_play": 0.2,
+     "expected_goals_set_play": 0.04,
+     "expected_goals_non_penalty": 0.23,
+     "expected_goals_on_target": 0.56,
+     "physical_metrics_distance_covered": 109946,
+     "physical_metrics_running": 21671,
+     "physical_metrics_sprinting": 2182,
+     "physical_metrics_number_of_sprints": 95,
+     "own_half_passes": 145,
+     "opposition_half_passes": 65,
+     "long_balls_accurate": 21,
+     "long_balls_accurate_pct": 36,
+     "accurate_crosses": 1,
+     "accurate_crosses_pct": 13,
+     "player_throws": 8,
+     "matchstats.headers.tackles": 16,
+     "interceptions": 15,
+     "clearances": 47,
+     "duel_won": 45,
+     "ground_duels_won": 30,
+     "ground_duels_won_pct": 65,
+     "aerials_won": 15,
+     "aerials_won_pct": 48,
+     "dribbles_succeeded": 6,
+     "dribbles_succeeded_pct": 86,
+     "red_cards": 1
+    }
+   },
+   "possession": {
+    "all": [
+     72,
+     28
+    ],
+    "h1": [
+     65,
+     35
+    ],
+    "h2": [
+     78,
+     22
+    ]
+   },
+   "events": [
+    {
+     "minute": 23,
+     "extra": null,
+     "team": "BRE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Keane Lewis-Potter"
+    },
+    {
+     "minute": 24,
+     "extra": null,
+     "team": "EVE",
+     "type": "Card",
+     "detail": "Yellow Card",
+     "player": "Vitaliy Mykolenko"
+    },
+    {
+     "minute": 25,
+     "extra": null,
+     "team": "BRE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Keane Lewis-Potter"
+    },
+    {
+     "minute": 40,
+     "extra": null,
+     "team": "EVE",
+     "type": "Card",
+     "detail": "Red Card",
+     "player": "James Tarkowski"
+    },
+    {
+     "minute": 46,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Jack Grealish",
+     "injured": false
+    },
+    {
+     "minute": 66,
+     "extra": 0,
+     "team": "BRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Kevin Schade",
+     "injured": false
+    },
+    {
+     "minute": 67,
+     "extra": null,
+     "team": "BRE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Vitaly Janelt"
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Hayden Hackney",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Brennan Johnson",
+     "injured": false
+    },
+    {
+     "minute": 69,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Michael Keane",
+     "injured": false
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "BRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mathias Jensen",
+     "injured": false
+    },
+    {
+     "minute": 74,
+     "extra": 0,
+     "team": "BRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Malick Diouf",
+     "injured": false
+    },
+    {
+     "minute": 81,
+     "extra": 0,
+     "team": "BRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Fábio Carvalho",
+     "injured": false
+    },
+    {
+     "minute": 82,
+     "extra": 0,
+     "team": "BRE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Mamadou Sangaré",
+     "injured": false
+    },
+    {
+     "minute": 85,
+     "extra": 0,
+     "team": "EVE",
+     "type": "subst",
+     "detail": "Substitution",
+     "player": "Christian Nørgaard",
+     "injured": false
+    },
+    {
+     "minute": 90,
+     "extra": null,
+     "team": "BRE",
+     "type": "Goal",
+     "detail": "Normal Goal",
+     "player": "Fábio Carvalho"
+    }
+   ],
+   "shots": [
+    {
+     "min": 8,
+     "extra": null,
+     "team": "BRE",
+     "player": "Jaidon Anthony",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.043,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.1,
+     "y": 44,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 15,
+     "extra": null,
+     "team": "BRE",
+     "player": "Mikkel Damsgaard",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.041,
+     "xgot": 0.208,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 43.9,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 19,
+     "extra": null,
+     "team": "BRE",
+     "player": "Michael Kayode",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.145,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 93.3,
+     "y": 25.3,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 23,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.222,
+     "xgot": 0.349,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 37.7,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "AttemptSaved",
+     "situation": "SetPiece",
+     "xg": 0.115,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91,
+     "y": 36.3,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 25,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "Goal",
+     "situation": "SetPiece",
+     "xg": 0.165,
+     "xgot": 0.683,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.9,
+     "y": 37.7,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 28,
+     "extra": null,
+     "team": "EVE",
+     "player": "Kiernan Dewsbury-Hall",
+     "type": "Miss",
+     "situation": "SetPiece",
+     "xg": 0.016,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 78.2,
+     "y": 26.9,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "BRE",
+     "player": "Callum Wilson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0.034,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 91.1,
+     "y": 32.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 31,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.058,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 95.3,
+     "y": 33,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 35,
+     "extra": null,
+     "team": "EVE",
+     "player": "Harrison Armstrong",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.02,
+     "xgot": 0.087,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 79.9,
+     "y": 40.6,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 42,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.06,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 81.8,
+     "y": 42.2,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 0,
+     "team": "BRE",
+     "player": "Mikkel Damsgaard",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.017,
+     "xgot": 0.068,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.5,
+     "y": 46.5,
+     "foot": "RightFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 1,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "AttemptSaved",
+     "situation": "FromCorner",
+     "xg": 0.104,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 102,
+     "y": 28.3,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 6,
+     "team": "BRE",
+     "player": "Dango Ouattara",
+     "type": "AttemptSaved",
+     "situation": "FreeKick",
+     "xg": 0.065,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 80.2,
+     "y": 28.2,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 8,
+     "team": "BRE",
+     "player": "Dango Ouattara",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.107,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.3,
+     "y": 42.6,
+     "foot": "LeftFoot",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 45,
+     "extra": 11,
+     "team": "EVE",
+     "player": "Thierno Barry",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.115,
+     "xgot": 0.473,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 96.9,
+     "y": 30.8,
+     "foot": "Header",
+     "period": "FirstHalf"
+    },
+    {
+     "min": 46,
+     "extra": null,
+     "team": "BRE",
+     "player": "Keane Lewis-Potter",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.076,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 94.6,
+     "y": 41.7,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 55,
+     "extra": null,
+     "team": "BRE",
+     "player": "Michael Kayode",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.266,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 100.6,
+     "y": 30.1,
+     "foot": "Header",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 67,
+     "extra": null,
+     "team": "BRE",
+     "player": "Vitaly Janelt",
+     "type": "Goal",
+     "situation": "RegularPlay",
+     "xg": 0.02,
+     "xgot": 0.186,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": false,
+     "ownGoal": false,
+     "x": 75.1,
+     "y": 34.8,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 73,
+     "extra": null,
+     "team": "BRE",
+     "player": "Callum Wilson",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.152,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 32.9,
+     "foot": "LeftFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 75,
+     "extra": null,
+     "team": "BRE",
+     "player": "Kevin Schade",
+     "type": "Miss",
+     "situation": "RegularPlay",
+     "xg": 0.035,
+     "xgot": 0,
+     "onTarget": false,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 22.2,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 77,
+     "extra": null,
+     "team": "EVE",
+     "player": "Brennan Johnson",
+     "type": "AttemptSaved",
+     "situation": "FastBreak",
+     "xg": 0.08,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.5,
+     "y": 45.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 78,
+     "extra": null,
+     "team": "BRE",
+     "player": "Kevin Schade",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.069,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 90.8,
+     "y": 35.6,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 86,
+     "extra": null,
+     "team": "BRE",
+     "player": "Fábio Carvalho",
+     "type": "AttemptSaved",
+     "situation": "RegularPlay",
+     "xg": 0.101,
+     "xgot": 0,
+     "onTarget": true,
+     "blocked": true,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 92.3,
+     "y": 40.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    },
+    {
+     "min": 90,
+     "extra": 0,
+     "team": "BRE",
+     "player": "Fábio Carvalho",
+     "type": "Goal",
+     "situation": "FromCorner",
+     "xg": 0.651,
+     "xgot": 0.853,
+     "onTarget": true,
+     "blocked": false,
+     "inBox": true,
+     "ownGoal": false,
+     "x": 103.4,
+     "y": 33.1,
+     "foot": "RightFoot",
+     "period": "SecondHalf"
+    }
+   ],
+   "momentum": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     -5
+    ],
+    [
+     2,
+     -5
+    ],
+    [
+     3,
+     -5
+    ],
+    [
+     4,
+     11
+    ],
+    [
+     5,
+     11
+    ],
+    [
+     6,
+     22
+    ],
+    [
+     7,
+     35
+    ],
+    [
+     8,
+     52
+    ],
+    [
+     9,
+     52
+    ],
+    [
+     10,
+     54
+    ],
+    [
+     11,
+     38
+    ],
+    [
+     12,
+     33
+    ],
+    [
+     13,
+     0
+    ],
+    [
+     14,
+     16
+    ],
+    [
+     15,
+     33
+    ],
+    [
+     16,
+     35
+    ],
+    [
+     17,
+     24
+    ],
+    [
+     18,
+     8
+    ],
+    [
+     19,
+     65
+    ],
+    [
+     20,
+     19
+    ],
+    [
+     21,
+     41
+    ],
+    [
+     22,
+     -8
+    ],
+    [
+     23,
+     76
+    ],
+    [
+     24,
+     54
+    ],
+    [
+     25,
+     49
+    ],
+    [
+     26,
+     5
+    ],
+    [
+     27,
+     0
+    ],
+    [
+     28,
+     0
+    ],
+    [
+     29,
+     0
+    ],
+    [
+     30,
+     0
+    ],
+    [
+     31,
+     46
+    ],
+    [
+     32,
+     41
+    ],
+    [
+     33,
+     41
+    ],
+    [
+     34,
+     -16
+    ],
+    [
+     35,
+     -22
+    ],
+    [
+     36,
+     -27
+    ],
+    [
+     37,
+     11
+    ],
+    [
+     38,
+     22
+    ],
+    [
+     39,
+     27
+    ],
+    [
+     40,
+     0
+    ],
+    [
+     41,
+     0
+    ],
+    [
+     42,
+     16
+    ],
+    [
+     43,
+     16
+    ],
+    [
+     44,
+     33
+    ],
+    [
+     45,
+     16
+    ],
+    [
+     45.5,
+     57
+    ],
+    [
+     46,
+     65
+    ],
+    [
+     47,
+     92
+    ],
+    [
+     48,
+     100
+    ],
+    [
+     49,
+     79
+    ],
+    [
+     50,
+     62
+    ],
+    [
+     51,
+     11
+    ],
+    [
+     52,
+     43
+    ],
+    [
+     53,
+     87
+    ],
+    [
+     54,
+     100
+    ],
+    [
+     55,
+     100
+    ],
+    [
+     56,
+     100
+    ],
+    [
+     57,
+     100
+    ],
+    [
+     58,
+     76
+    ],
+    [
+     59,
+     60
+    ],
+    [
+     60,
+     -16
+    ],
+    [
+     61,
+     -16
+    ],
+    [
+     62,
+     43
+    ],
+    [
+     63,
+     60
+    ],
+    [
+     64,
+     71
+    ],
+    [
+     65,
+     11
+    ],
+    [
+     66,
+     33
+    ],
+    [
+     67,
+     16
+    ],
+    [
+     68,
+     11
+    ],
+    [
+     69,
+     -5
+    ],
+    [
+     70,
+     -3
+    ],
+    [
+     71,
+     3
+    ],
+    [
+     72,
+     19
+    ],
+    [
+     73,
+     100
+    ],
+    [
+     74,
+     100
+    ],
+    [
+     75,
+     100
+    ],
+    [
+     76,
+     19
+    ],
+    [
+     77,
+     5
+    ],
+    [
+     78,
+     16
+    ],
+    [
+     79,
+     22
+    ],
+    [
+     80,
+     52
+    ],
+    [
+     81,
+     38
+    ],
+    [
+     82,
+     35
+    ],
+    [
+     83,
+     46
+    ],
+    [
+     84,
+     52
+    ],
+    [
+     85,
+     49
+    ],
+    [
+     86,
+     76
+    ],
+    [
+     87,
+     49
+    ],
+    [
+     88,
+     76
+    ],
+    [
+     89,
+     38
+    ],
+    [
+     90,
+     100
+    ],
+    [
+     90.5,
+     37
+    ],
+    [
+     90.75,
+     0
+    ]
+   ],
+   "lineups": {
+    "BRE": {
+     "team": "BRE",
+     "formation": "4-2-3-1",
+     "coach": "Keith Andrews",
+     "xi": [
+      {
+       "name": "Caoimhín Kelleher",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Michael Kayode",
+       "shirt": 33,
+       "pos": "D"
+      },
+      {
+       "name": "Kristoffer Ajer",
+       "shirt": 20,
+       "pos": "D"
+      },
+      {
+       "name": "Sepp van den Berg",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Keane Lewis-Potter",
+       "shirt": 23,
+       "pos": "D"
+      },
+      {
+       "name": "Yehor Yarmoliuk",
+       "shirt": 6,
+       "pos": "?"
+      },
+      {
+       "name": "Vitaly Janelt",
+       "shirt": 27,
+       "pos": "?"
+      },
+      {
+       "name": "Dango Ouattara",
+       "shirt": 11,
+       "pos": "M"
+      },
+      {
+       "name": "Mikkel Damsgaard",
+       "shirt": 24,
+       "pos": "M"
+      },
+      {
+       "name": "Jaidon Anthony",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Callum Wilson",
+       "shirt": 13,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Kevin Schade",
+       "shirt": 7,
+       "pos": "?"
+      },
+      {
+       "name": "Malick Diouf",
+       "shirt": 25,
+       "pos": "?"
+      },
+      {
+       "name": "Mathias Jensen",
+       "shirt": 8,
+       "pos": "?"
+      },
+      {
+       "name": "Fábio Carvalho",
+       "shirt": 14,
+       "pos": "?"
+      },
+      {
+       "name": "Mamadou Sangaré",
+       "shirt": 18,
+       "pos": "?"
+      },
+      {
+       "name": "Hákon Rafn Valdimarsson",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Benjamin Fredrick",
+       "shirt": 48,
+       "pos": "?"
+      },
+      {
+       "name": "Jannik Schuster",
+       "shirt": 44,
+       "pos": "?"
+      },
+      {
+       "name": "Gustavo Nunes",
+       "shirt": 39,
+       "pos": "?"
+      }
+     ]
+    },
+    "EVE": {
+     "team": "EVE",
+     "formation": "4-2-3-1",
+     "coach": "David Moyes",
+     "xi": [
+      {
+       "name": "Jordan Pickford",
+       "shirt": 1,
+       "pos": "G"
+      },
+      {
+       "name": "Jake O'Brien",
+       "shirt": 15,
+       "pos": "D"
+      },
+      {
+       "name": "James Tarkowski",
+       "shirt": 6,
+       "pos": "D"
+      },
+      {
+       "name": "Jarrad Branthwaite",
+       "shirt": 4,
+       "pos": "D"
+      },
+      {
+       "name": "Vitaliy Mykolenko",
+       "shirt": 16,
+       "pos": "D"
+      },
+      {
+       "name": "Harrison Armstrong",
+       "shirt": 45,
+       "pos": "?"
+      },
+      {
+       "name": "James Garner",
+       "shirt": 37,
+       "pos": "?"
+      },
+      {
+       "name": "Merlin Röhl",
+       "shirt": 34,
+       "pos": "M"
+      },
+      {
+       "name": "Kiernan Dewsbury-Hall",
+       "shirt": 8,
+       "pos": "M"
+      },
+      {
+       "name": "Tyrique George",
+       "shirt": 19,
+       "pos": "M"
+      },
+      {
+       "name": "Thierno Barry",
+       "shirt": 11,
+       "pos": "F"
+      }
+     ],
+     "bench": [
+      {
+       "name": "Jack Grealish",
+       "shirt": 10,
+       "pos": "?"
+      },
+      {
+       "name": "Michael Keane",
+       "shirt": 5,
+       "pos": "?"
+      },
+      {
+       "name": "Brennan Johnson",
+       "shirt": 22,
+       "pos": "?"
+      },
+      {
+       "name": "Hayden Hackney",
+       "shirt": 30,
+       "pos": "?"
+      },
+      {
+       "name": "Christian Nørgaard",
+       "shirt": 23,
+       "pos": "?"
+      },
+      {
+       "name": "Mark Travers",
+       "shirt": 12,
+       "pos": "?"
+      },
+      {
+       "name": "Ainsley Maitland-Niles",
+       "shirt": 2,
+       "pos": "?"
+      },
+      {
+       "name": "Charly Alcaraz",
+       "shirt": 24,
+       "pos": "?"
+      },
+      {
+       "name": "Tyler Dibling",
+       "shirt": 20,
+       "pos": "?"
+      }
+     ]
+    }
+   },
+   "physical": {
+    "team": {
+     "distance": [
+      121918,
+      109946
+     ],
+     "sprintDistance": [
+      2391,
+      2182
+     ],
+     "sprints": [
+      99,
+      95
+     ],
+     "walking": [
+      null,
+      null
+     ],
+     "running": [
+      24290,
+      21671
+     ]
+    },
+    "players": [
+     {
+      "team": "BRE",
+      "name": "Caoimhín Kelleher",
+      "shirt": 1,
+      "distance": 5799,
+      "topSpeed": 22.200000762939453,
+      "rating": 7.6
+     },
+     {
+      "team": "BRE",
+      "name": "Michael Kayode",
+      "shirt": 33,
+      "distance": 11518,
+      "topSpeed": 32.099998474121094,
+      "rating": 6.8
+     },
+     {
+      "team": "BRE",
+      "name": "Kristoffer Ajer",
+      "shirt": 20,
+      "distance": 10804,
+      "topSpeed": 33.099998474121094,
+      "rating": 7.2
+     },
+     {
+      "team": "BRE",
+      "name": "Sepp van den Berg",
+      "shirt": 4,
+      "distance": 10713,
+      "topSpeed": 29.799999237060547,
+      "rating": 7.8
+     },
+     {
+      "team": "BRE",
+      "name": "Keane Lewis-Potter",
+      "shirt": 23,
+      "distance": 9815,
+      "topSpeed": 30.600000381469727,
+      "rating": 9.1
+     },
+     {
+      "team": "BRE",
+      "name": "Yehor Yarmoliuk",
+      "shirt": 6,
+      "distance": 10009,
+      "topSpeed": 29.799999237060547,
+      "rating": 8.1
+     },
+     {
+      "team": "BRE",
+      "name": "Vitaly Janelt",
+      "shirt": 27,
+      "distance": 10962,
+      "topSpeed": 28.899999618530273,
+      "rating": 8.7
+     },
+     {
+      "team": "BRE",
+      "name": "Dango Ouattara",
+      "shirt": 11,
+      "distance": 7877,
+      "topSpeed": 31.100000381469727,
+      "rating": 6.9
+     },
+     {
+      "team": "BRE",
+      "name": "Mikkel Damsgaard",
+      "shirt": 24,
+      "distance": 11911,
+      "topSpeed": 29.600000381469727,
+      "rating": 8.5
+     },
+     {
+      "team": "BRE",
+      "name": "Jaidon Anthony",
+      "shirt": 19,
+      "distance": 10358,
+      "topSpeed": 32.099998474121094,
+      "rating": 8.6
+     },
+     {
+      "team": "BRE",
+      "name": "Callum Wilson",
+      "shirt": 13,
+      "distance": 10459,
+      "topSpeed": 30.399999618530273,
+      "rating": 6.4
+     },
+     {
+      "team": "BRE",
+      "name": "Kevin Schade",
+      "shirt": 7,
+      "distance": 3196,
+      "topSpeed": 33.099998474121094,
+      "rating": 6.3
+     },
+     {
+      "team": "BRE",
+      "name": "Malick Diouf",
+      "shirt": 25,
+      "distance": 2546,
+      "topSpeed": 31.700000762939453,
+      "rating": 6.5
+     },
+     {
+      "team": "BRE",
+      "name": "Mathias Jensen",
+      "shirt": 8,
+      "distance": 2592,
+      "topSpeed": 27.299999237060547,
+      "rating": 7.3
+     },
+     {
+      "team": "BRE",
+      "name": "Fábio Carvalho",
+      "shirt": 14,
+      "distance": 1668,
+      "topSpeed": 26.899999618530273,
+      "rating": null
+     },
+     {
+      "team": "BRE",
+      "name": "Mamadou Sangaré",
+      "shirt": 18,
+      "distance": 1685,
+      "topSpeed": 24.600000381469727,
+      "rating": null
+     },
+     {
+      "team": "EVE",
+      "name": "Jordan Pickford",
+      "shirt": 1,
+      "distance": 5611,
+      "topSpeed": 26.799999237060547,
+      "rating": 5.6
+     },
+     {
+      "team": "EVE",
+      "name": "Jake O'Brien",
+      "shirt": 15,
+      "distance": 10691,
+      "topSpeed": 30.299999237060547,
+      "rating": 5.7
+     },
+     {
+      "team": "EVE",
+      "name": "James Tarkowski",
+      "shirt": 6,
+      "distance": 3767,
+      "topSpeed": 28,
+      "rating": 4.9
+     },
+     {
+      "team": "EVE",
+      "name": "Jarrad Branthwaite",
+      "shirt": 4,
+      "distance": 10136,
+      "topSpeed": 30,
+      "rating": 5.7
+     },
+     {
+      "team": "EVE",
+      "name": "Vitaliy Mykolenko",
+      "shirt": 16,
+      "distance": 10172,
+      "topSpeed": 31.399999618530273,
+      "rating": 5.4
+     },
+     {
+      "team": "EVE",
+      "name": "Harrison Armstrong",
+      "shirt": 45,
+      "distance": 12824,
+      "topSpeed": 32.79999923706055,
+      "rating": 6.3
+     },
+     {
+      "team": "EVE",
+      "name": "James Garner",
+      "shirt": 37,
+      "distance": 10655,
+      "topSpeed": 32,
+      "rating": 7.5
+     },
+     {
+      "team": "EVE",
+      "name": "Merlin Röhl",
+      "shirt": 34,
+      "distance": 8658,
+      "topSpeed": 34.20000076293945,
+      "rating": 6.6
+     },
+     {
+      "team": "EVE",
+      "name": "Kiernan Dewsbury-Hall",
+      "shirt": 8,
+      "distance": 9319,
+      "topSpeed": 30.600000381469727,
+      "rating": 6.3
+     },
+     {
+      "team": "EVE",
+      "name": "Tyrique George",
+      "shirt": 19,
+      "distance": 5376,
+      "topSpeed": 28.100000381469727,
+      "rating": 6.2
+     },
+     {
+      "team": "EVE",
+      "name": "Thierno Barry",
+      "shirt": 11,
+      "distance": 8096,
+      "topSpeed": 30.700000762939453,
+      "rating": 6
+     },
+     {
+      "team": "EVE",
+      "name": "Jack Grealish",
+      "shirt": 10,
+      "distance": 5125,
+      "topSpeed": 28.899999618530273,
+      "rating": 6.5
+     },
+     {
+      "team": "EVE",
+      "name": "Michael Keane",
+      "shirt": 5,
+      "distance": 2460,
+      "topSpeed": 29.100000381469727,
+      "rating": 6.6
+     },
+     {
+      "team": "EVE",
+      "name": "Brennan Johnson",
+      "shirt": 22,
+      "distance": 2789,
+      "topSpeed": 30.5,
+      "rating": 5.9
+     },
+     {
+      "team": "EVE",
+      "name": "Hayden Hackney",
+      "shirt": 30,
+      "distance": 3038,
+      "topSpeed": 29.5,
+      "rating": 6.2
+     },
+     {
+      "team": "EVE",
+      "name": "Christian Nørgaard",
+      "shirt": 23,
+      "distance": 1219,
+      "topSpeed": 23.399999618530273,
+      "rating": null
+     }
+    ]
+   },
+   "zones": {
+    "home": {
+     "total": {
+      "left": 45,
+      "center": 29,
+      "right": 26
+     },
+     "firstHalf": {
+      "left": 45,
+      "center": 32,
+      "right": 23
+     },
+     "secondHalf": {
+      "left": 45,
+      "center": 28,
+      "right": 27
+     }
+    },
+    "away": {
+     "total": {
+      "left": 31,
+      "center": 26,
+      "right": 43
+     },
+     "firstHalf": {
+      "left": 31,
+      "center": 31,
+      "right": 38
+     },
+     "secondHalf": {
+      "left": 30,
+      "center": 18,
+      "right": 52
+     }
+    }
+   },
+   "checks": {
+    "shotmapGoals": 4,
+    "shotmapComplete": true
+   },
+   "injuryFlag": true,
+   "extractVersion": 2,
+   "fetchedAt": "2026-11-24T08:53:02.590Z",
+   "heat": {
+    "gridX": 6,
+    "gridY": 4,
+    "players": [
+     {
+      "team": "EVE",
+      "name": "Kiernan Dewsbury-Hall",
+      "n": 61,
+      "cx": 52.1,
+      "cy": 27.7,
+      "spread": 28.4,
+      "grid": "0,7,10,0,1,0,4,2,5,3,5,4,1,1,2,8,3,0,0,1,1,1,1,1"
+     },
+     {
+      "team": "EVE",
+      "name": "Jordan Pickford",
+      "n": 58,
+      "cx": 13.8,
+      "cy": 31.5,
+      "spread": 14.1,
+      "grid": "0,0,1,0,0,0,23,11,3,0,0,0,17,2,0,0,0,0,0,1,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "James Tarkowski",
+      "n": 24,
+      "cx": 33.3,
+      "cy": 42.4,
+      "spread": 21.9,
+      "grid": "0,0,0,0,0,0,1,0,5,2,0,0,4,4,3,0,0,0,0,2,3,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Sepp van den Berg",
+      "n": 112,
+      "cx": 39.1,
+      "cy": 24,
+      "spread": 25.1,
+      "grid": "12,7,3,9,1,0,7,20,18,13,0,3,0,5,3,2,1,0,1,1,2,4,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jake O'Brien",
+      "n": 45,
+      "cx": 32.8,
+      "cy": 48.5,
+      "spread": 25.6,
+      "grid": "1,1,0,0,0,0,2,3,0,0,0,0,10,4,0,1,0,0,1,6,4,10,2,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Harrison Armstrong",
+      "n": 44,
+      "cx": 38,
+      "cy": 48.2,
+      "spread": 28.7,
+      "grid": "0,0,0,0,1,0,1,0,1,3,1,1,7,3,1,0,1,0,3,7,8,4,2,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Thierno Barry",
+      "n": 40,
+      "cx": 55.6,
+      "cy": 34.7,
+      "spread": 31.7,
+      "grid": "0,1,0,2,2,2,2,2,3,3,0,0,4,0,3,2,5,3,0,1,0,4,0,1"
+     },
+     {
+      "team": "EVE",
+      "name": "Merlin Röhl",
+      "n": 44,
+      "cx": 38.3,
+      "cy": 51.3,
+      "spread": 31.3,
+      "grid": "0,1,1,0,1,0,2,1,0,0,1,0,5,2,0,1,0,0,7,5,6,4,6,1"
+     },
+     {
+      "team": "BRE",
+      "name": "Mikkel Damsgaard",
+      "n": 136,
+      "cx": 66.2,
+      "cy": 24.9,
+      "spread": 26,
+      "grid": "0,5,9,10,24,8,0,3,4,12,16,3,1,1,2,14,8,1,2,0,0,5,8,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Keane Lewis-Potter",
+      "n": 74,
+      "cx": 65.3,
+      "cy": 15.3,
+      "spread": 28.7,
+      "grid": "0,9,7,10,18,3,1,2,2,1,6,7,0,0,0,0,1,4,0,0,1,0,2,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Callum Wilson",
+      "n": 37,
+      "cx": 73,
+      "cy": 33.6,
+      "spread": 27.5,
+      "grid": "0,0,2,0,0,0,1,1,0,3,4,7,1,0,0,4,7,6,0,0,1,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jarrad Branthwaite",
+      "n": 60,
+      "cx": 22.8,
+      "cy": 26.9,
+      "spread": 20.8,
+      "grid": "4,6,2,0,0,0,19,6,4,4,0,0,8,5,0,0,1,0,0,0,1,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Yehor Yarmoliuk",
+      "n": 122,
+      "cx": 55.1,
+      "cy": 36.6,
+      "spread": 25.5,
+      "grid": "0,3,3,5,6,0,1,7,9,13,9,0,1,4,9,7,6,0,0,4,11,17,6,1"
+     },
+     {
+      "team": "BRE",
+      "name": "Vitaly Janelt",
+      "n": 113,
+      "cx": 54.3,
+      "cy": 22.7,
+      "spread": 25.7,
+      "grid": "0,10,13,18,9,2,0,7,12,7,7,3,2,1,9,6,0,1,0,0,0,1,4,1"
+     },
+     {
+      "team": "BRE",
+      "name": "Dango Ouattara",
+      "n": 47,
+      "cx": 71.6,
+      "cy": 46.3,
+      "spread": 24.4,
+      "grid": "0,0,0,0,0,0,0,2,2,5,2,1,1,0,1,3,8,3,0,0,1,4,6,8"
+     },
+     {
+      "team": "EVE",
+      "name": "Vitaliy Mykolenko",
+      "n": 53,
+      "cx": 29.3,
+      "cy": 12.5,
+      "spread": 21.6,
+      "grid": "5,17,10,5,1,0,10,2,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Kristoffer Ajer",
+      "n": 82,
+      "cx": 42.6,
+      "cy": 46.1,
+      "spread": 24.3,
+      "grid": "0,0,0,0,0,0,0,7,2,0,0,0,3,14,19,6,3,2,6,4,2,9,2,3"
+     },
+     {
+      "team": "BRE",
+      "name": "Jaidon Anthony",
+      "n": 91,
+      "cx": 70.4,
+      "cy": 18.2,
+      "spread": 26.3,
+      "grid": "1,1,9,16,19,14,1,1,3,2,5,7,0,0,1,0,3,1,0,2,1,3,1,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Michael Kayode",
+      "n": 69,
+      "cx": 62.7,
+      "cy": 53.8,
+      "spread": 30.2,
+      "grid": "0,0,0,0,1,4,0,0,0,0,0,0,2,3,0,0,3,6,2,6,11,14,13,4"
+     },
+     {
+      "team": "EVE",
+      "name": "James Garner",
+      "n": 72,
+      "cx": 39.6,
+      "cy": 31.6,
+      "spread": 29,
+      "grid": "1,5,6,2,4,2,2,8,6,1,0,0,5,12,1,3,1,0,1,4,2,5,1,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Tyrique George",
+      "n": 21,
+      "cx": 49.6,
+      "cy": 14,
+      "spread": 24.1,
+      "grid": "0,5,5,1,1,1,0,2,1,4,0,1,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Caoimhín Kelleher",
+      "n": 50,
+      "cx": 13.4,
+      "cy": 34.8,
+      "spread": 11.7,
+      "grid": "0,0,0,0,0,0,17,8,0,0,0,0,17,5,1,0,0,0,0,2,0,0,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Jack Grealish",
+      "n": 19,
+      "cx": 45.5,
+      "cy": 13,
+      "spread": 23.2,
+      "grid": "0,1,6,2,2,1,3,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Kevin Schade",
+      "n": 15,
+      "cx": 80.2,
+      "cy": 31,
+      "spread": 24.8,
+      "grid": "0,0,0,0,1,2,0,1,0,1,3,2,0,0,0,0,1,2,0,0,0,0,2,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Michael Keane",
+      "n": 23,
+      "cx": 25.5,
+      "cy": 46.5,
+      "spread": 23.1,
+      "grid": "0,0,0,0,0,0,2,1,0,0,0,0,4,5,1,0,2,0,1,7,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Malick Diouf",
+      "n": 27,
+      "cx": 67.9,
+      "cy": 9.7,
+      "spread": 25.5,
+      "grid": "0,4,3,4,9,5,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Mathias Jensen",
+      "n": 41,
+      "cx": 57.7,
+      "cy": 23.8,
+      "spread": 25.4,
+      "grid": "1,5,2,4,5,1,0,4,1,3,2,1,0,0,2,4,5,0,0,0,0,1,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Hayden Hackney",
+      "n": 15,
+      "cx": 44.9,
+      "cy": 48.8,
+      "spread": 24.2,
+      "grid": "0,0,0,0,0,0,2,1,0,0,0,0,0,0,1,2,0,0,0,3,1,3,2,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Brennan Johnson",
+      "n": 4,
+      "cx": 77.6,
+      "cy": 30,
+      "spread": 23.7,
+      "grid": "0,0,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Fábio Carvalho",
+      "n": 22,
+      "cx": 70.6,
+      "cy": 19.2,
+      "spread": 21.3,
+      "grid": "0,1,2,1,4,2,0,0,2,2,5,1,0,0,0,0,1,1,0,0,0,0,0,0"
+     },
+     {
+      "team": "BRE",
+      "name": "Mamadou Sangaré",
+      "n": 23,
+      "cx": 58.7,
+      "cy": 39.1,
+      "spread": 19.2,
+      "grid": "0,0,1,0,0,0,0,0,3,2,2,0,0,1,1,5,2,0,0,1,1,4,0,0"
+     },
+     {
+      "team": "EVE",
+      "name": "Christian Nørgaard",
+      "n": 4,
+      "cx": 54.3,
+      "cy": 47.2,
+      "spread": 19,
+      "grid": "0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,2,0,0,0,0,0,1,0,0"
+     }
+    ]
+   }
   }
  },
  "attempts": {},
- "updatedAt": "2026-11-23T23:33:10.748Z",
+ "updatedAt": "2026-11-24T08:53:03.395Z",
  "verification": {
   "source": "pulselive /stats/match possession_percentage",
   "tolerance": 2,
