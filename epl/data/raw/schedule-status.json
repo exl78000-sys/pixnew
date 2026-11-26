@@ -1,9 +1,9 @@
 {
  "_note": "官方賽程狀態快照 + 本站自建的改期歷史(供應商不提供歷史,changes 永久累積)。產生:npm run schedule:status。",
- "fetchedAt": "2026-11-25T21:15:08.530Z",
+ "fetchedAt": "2026-11-26T07:16:17.094Z",
  "leagues": {
   "pl": {
-   "fetchedAt": "2026-11-25T21:15:08.530Z",
+   "fetchedAt": "2026-11-26T07:16:17.094Z",
    "count": 380,
    "matches": [
     {
@@ -3049,7 +3049,7 @@
    ]
   },
   "en2": {
-   "fetchedAt": "2026-11-25T21:15:08.530Z",
+   "fetchedAt": "2026-11-26T07:16:17.094Z",
    "count": 552,
    "matches": [
     {
@@ -3381,14 +3381,6 @@
      "matchday": 4
     },
     {
-     "fdId": 561803,
-     "home": "BIR",
-     "away": "SOU",
-     "utcDate": "2026-09-01T18:45:00Z",
-     "status": "FINISHED",
-     "matchday": 4
-    },
-    {
      "fdId": 561804,
      "home": "SWA",
      "away": "WAT",
@@ -3400,6 +3392,14 @@
      "fdId": 561797,
      "home": "STK",
      "away": "NOR",
+     "utcDate": "2026-09-01T19:00:00Z",
+     "status": "FINISHED",
+     "matchday": 4
+    },
+    {
+     "fdId": 561803,
+     "home": "BIR",
+     "away": "SOU",
      "utcDate": "2026-09-01T19:00:00Z",
      "status": "FINISHED",
      "matchday": 4
@@ -4657,7 +4657,7 @@
      "home": "WAT",
      "away": "BLB",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "SCHEDULED",
+     "status": "FINISHED",
      "matchday": 17
     },
     {
@@ -4665,7 +4665,7 @@
      "home": "BOL",
      "away": "WBA",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "SCHEDULED",
+     "status": "FINISHED",
      "matchday": 17
     },
     {
@@ -4673,7 +4673,7 @@
      "home": "BUR",
      "away": "BIR",
      "utcDate": "2026-11-25T19:45:00Z",
-     "status": "SCHEDULED",
+     "status": "FINISHED",
      "matchday": 17
     },
     {
@@ -4681,7 +4681,7 @@
      "home": "STK",
      "away": "MIL",
      "utcDate": "2026-11-25T20:00:00Z",
-     "status": "SCHEDULED",
+     "status": "FINISHED",
      "matchday": 17
     },
     {
@@ -14777,6 +14777,16 @@
    "from": "2027-01-30T15:00:00Z",
    "to": "2027-02-01T20:00:00Z",
    "detectedAt": "2026-11-19T18:49:53.012Z"
+  },
+  {
+   "league": "en2",
+   "kind": "rescheduled",
+   "fdId": 561803,
+   "home": "BIR",
+   "away": "SOU",
+   "from": "2026-09-01T18:45:00Z",
+   "to": "2026-09-01T19:00:00Z",
+   "detectedAt": "2026-11-26T07:16:17.094Z"
   }
  ]
 }
