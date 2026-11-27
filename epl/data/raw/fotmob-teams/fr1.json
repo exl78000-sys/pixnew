@@ -2,7 +2,7 @@
  "league": "fr1",
  "season": "2026-27",
  "source": "fotmob teams",
- "fetchedAt": "2026-11-22T03:29:52.854Z",
+ "fetchedAt": "2026-11-27T07:16:01.620Z",
  "teams": [
   {
    "code": "PSG",
@@ -217,6 +217,187 @@
      "loss": 1,
      "pointsPerGame": 2.3,
      "winPercentage": 0.7
+    }
+   ],
+   "coachHistoryFull": true
+  },
+  {
+   "code": "PFC",
+   "fotmobId": 6379,
+   "fotmobName": "Paris FC",
+   "fetchedAt": "2026-11-08T16:32:51.506Z",
+   "color": "#0C1C3D",
+   "teamColors": {
+    "darkMode": "#0453a6",
+    "lightMode": "#0C1C3D",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Jean Bouin",
+   "city": "Paris",
+   "location": [
+    "48.843148388",
+    "2.252916098"
+   ],
+   "capacity": 20000,
+   "surface": "Artificial turf",
+   "opened": 1925,
+   "coachHistory": [
+    {
+     "id": 557879,
+     "name": "Jean-Luc Vasseur",
+     "season": "2015/2016",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 3,
+     "draw": 8,
+     "loss": 11,
+     "pointsPerGame": 0.77,
+     "winPercentage": 0.14
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2016/2017",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 15,
+     "draw": 9,
+     "loss": 10,
+     "pointsPerGame": 1.59,
+     "winPercentage": 0.44
+    },
+    {
+     "id": 944080,
+     "name": "Fabien Mercadal",
+     "season": "2017/2018",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 16,
+     "draw": 13,
+     "loss": 9,
+     "pointsPerGame": 1.61,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 1141972,
+     "name": "Stéphane Gilli",
+     "season": "2019/2020",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 0,
+     "draw": 0,
+     "loss": 3,
+     "pointsPerGame": 0,
+     "winPercentage": 0
+    },
+    {
+     "id": 176584,
+     "name": "René Girard",
+     "season": "2019/2020",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 3,
+     "draw": 4,
+     "loss": 2,
+     "pointsPerGame": 1.44,
+     "winPercentage": 0.33
+    },
+    {
+     "id": 176584,
+     "name": "René Girard",
+     "season": "2020/2021",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 17,
+     "draw": 13,
+     "loss": 8,
+     "pointsPerGame": 1.68,
+     "winPercentage": 0.45
+    },
+    {
+     "id": 651422,
+     "name": "Thierry Laurey",
+     "season": "2021/2022",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 20,
+     "draw": 10,
+     "loss": 8,
+     "pointsPerGame": 1.84,
+     "winPercentage": 0.53
+    },
+    {
+     "id": 651422,
+     "name": "Thierry Laurey",
+     "season": "2022/2023",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 15,
+     "draw": 10,
+     "loss": 13,
+     "pointsPerGame": 1.45,
+     "winPercentage": 0.39
+    },
+    {
+     "id": 1141972,
+     "name": "Stéphane Gilli",
+     "season": "2023/2024",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 16,
+     "draw": 11,
+     "loss": 11,
+     "pointsPerGame": 1.55,
+     "winPercentage": 0.42
+    },
+    {
+     "id": 1141972,
+     "name": "Stéphane Gilli",
+     "season": "2024/2025",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 21,
+     "draw": 6,
+     "loss": 7,
+     "pointsPerGame": 2.03,
+     "winPercentage": 0.62
+    },
+    {
+     "id": 1141972,
+     "name": "Stéphane Gilli",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 5,
+     "draw": 8,
+     "loss": 10,
+     "pointsPerGame": 1,
+     "winPercentage": 0.22
+    },
+    {
+     "id": 176574,
+     "name": "Antoine Kombouare",
+     "season": "2025/2026",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 6,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 1.91,
+     "winPercentage": 0.55
+    },
+    {
+     "id": 24105,
+     "name": "Liam Rosenior",
+     "season": "2026/2027",
+     "leagueId": 53,
+     "leagueName": "Ligue 1",
+     "win": 6,
+     "draw": 2,
+     "loss": 2,
+     "pointsPerGame": 2,
+     "winPercentage": 0.6
     }
    ],
    "coachHistoryFull": true
@@ -493,187 +674,6 @@
      "draw": 3,
      "loss": 1,
      "pointsPerGame": 2.1,
-     "winPercentage": 0.6
-    }
-   ],
-   "coachHistoryFull": true
-  },
-  {
-   "code": "PFC",
-   "fotmobId": 6379,
-   "fotmobName": "Paris FC",
-   "fetchedAt": "2026-11-08T16:32:51.506Z",
-   "color": "#0C1C3D",
-   "teamColors": {
-    "darkMode": "#0453a6",
-    "lightMode": "#0C1C3D",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Jean Bouin",
-   "city": "Paris",
-   "location": [
-    "48.843148388",
-    "2.252916098"
-   ],
-   "capacity": 20000,
-   "surface": "Artificial turf",
-   "opened": 1925,
-   "coachHistory": [
-    {
-     "id": 557879,
-     "name": "Jean-Luc Vasseur",
-     "season": "2015/2016",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 3,
-     "draw": 8,
-     "loss": 11,
-     "pointsPerGame": 0.77,
-     "winPercentage": 0.14
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2016/2017",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 15,
-     "draw": 9,
-     "loss": 10,
-     "pointsPerGame": 1.59,
-     "winPercentage": 0.44
-    },
-    {
-     "id": 944080,
-     "name": "Fabien Mercadal",
-     "season": "2017/2018",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 16,
-     "draw": 13,
-     "loss": 9,
-     "pointsPerGame": 1.61,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2019/2020",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 0,
-     "draw": 0,
-     "loss": 3,
-     "pointsPerGame": 0,
-     "winPercentage": 0
-    },
-    {
-     "id": 176584,
-     "name": "René Girard",
-     "season": "2019/2020",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 3,
-     "draw": 4,
-     "loss": 2,
-     "pointsPerGame": 1.44,
-     "winPercentage": 0.33
-    },
-    {
-     "id": 176584,
-     "name": "René Girard",
-     "season": "2020/2021",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 17,
-     "draw": 13,
-     "loss": 8,
-     "pointsPerGame": 1.68,
-     "winPercentage": 0.45
-    },
-    {
-     "id": 651422,
-     "name": "Thierry Laurey",
-     "season": "2021/2022",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 20,
-     "draw": 10,
-     "loss": 8,
-     "pointsPerGame": 1.84,
-     "winPercentage": 0.53
-    },
-    {
-     "id": 651422,
-     "name": "Thierry Laurey",
-     "season": "2022/2023",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 15,
-     "draw": 10,
-     "loss": 13,
-     "pointsPerGame": 1.45,
-     "winPercentage": 0.39
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2023/2024",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 16,
-     "draw": 11,
-     "loss": 11,
-     "pointsPerGame": 1.55,
-     "winPercentage": 0.42
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2024/2025",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 21,
-     "draw": 6,
-     "loss": 7,
-     "pointsPerGame": 2.03,
-     "winPercentage": 0.62
-    },
-    {
-     "id": 1141972,
-     "name": "Stéphane Gilli",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 5,
-     "draw": 8,
-     "loss": 10,
-     "pointsPerGame": 1,
-     "winPercentage": 0.22
-    },
-    {
-     "id": 176574,
-     "name": "Antoine Kombouare",
-     "season": "2025/2026",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 6,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 1.91,
-     "winPercentage": 0.55
-    },
-    {
-     "id": 24105,
-     "name": "Liam Rosenior",
-     "season": "2026/2027",
-     "leagueId": 53,
-     "leagueName": "Ligue 1",
-     "win": 6,
-     "draw": 2,
-     "loss": 2,
-     "pointsPerGame": 2,
      "winPercentage": 0.6
     }
    ],
@@ -2934,6 +2934,128 @@
    "coachHistoryFull": true
   },
   {
+   "code": "LMA",
+   "fotmobId": 8682,
+   "fotmobName": "Le Mans",
+   "fetchedAt": "2026-11-09T05:08:04.864Z",
+   "color": "#D60000",
+   "teamColors": {
+    "darkMode": "#D60000",
+    "lightMode": "#D60000",
+    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
+    "fontLightMode": "rgba(255, 255, 255, 1.0)"
+   },
+   "venue": "Stade Marie-Marvingt",
+   "city": "Le Mans",
+   "location": [
+    "47.959223534",
+    "0.223524570"
+   ],
+   "capacity": 25064,
+   "surface": "Grass",
+   "opened": 2011,
+   "coachHistory": [
+    {
+     "id": 1125489,
+     "name": "Denis Zanko",
+     "season": "2012/2013",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 9,
+     "draw": 6,
+     "loss": 18,
+     "pointsPerGame": 1,
+     "winPercentage": 0.27
+    },
+    {
+     "id": 1135661,
+     "name": "Richard Déziré",
+     "season": "2018/2019",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 16,
+     "draw": 11,
+     "loss": 7,
+     "pointsPerGame": 1.74,
+     "winPercentage": 0.47
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2019/2020",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 0,
+     "draw": 1,
+     "loss": 0,
+     "pointsPerGame": 1,
+     "winPercentage": 0
+    },
+    {
+     "id": 1135661,
+     "name": "Richard Déziré",
+     "season": "2019/2020",
+     "leagueId": 110,
+     "leagueName": "Ligue 2",
+     "win": 6,
+     "draw": 4,
+     "loss": 16,
+     "pointsPerGame": 0.85,
+     "winPercentage": 0.23
+    },
+    {
+     "id": 176587,
+     "name": "Didier Ollé-Nicolle",
+     "season": "2020/2021",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 13,
+     "draw": 13,
+     "loss": 8,
+     "pointsPerGame": 1.53,
+     "winPercentage": 0.38
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2022/2023",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 10,
+     "draw": 13,
+     "loss": 11,
+     "pointsPerGame": 1.26,
+     "winPercentage": 0.29
+    },
+    {
+     "id": 1523248,
+     "name": "Réginald Ray",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 6,
+     "draw": 7,
+     "loss": 7,
+     "pointsPerGame": 1.25,
+     "winPercentage": 0.3
+    },
+    {
+     "id": 1141920,
+     "name": "Mathieu Chabert",
+     "season": "2023/2024",
+     "leagueId": 8970,
+     "leagueName": "Ligue 3",
+     "win": 7,
+     "draw": 3,
+     "loss": 2,
+     "pointsPerGame": 2,
+     "winPercentage": 0.58
+    }
+   ],
+   "coachHistoryFull": true,
+   "coachMissing": "Patrick Videira"
+  },
+  {
    "code": "TRO",
    "fotmobId": 10242,
    "fotmobName": "Troyes",
@@ -3643,128 +3765,6 @@
     }
    ],
    "coachHistoryFull": true
-  },
-  {
-   "code": "LMA",
-   "fotmobId": 8682,
-   "fotmobName": "Le Mans",
-   "fetchedAt": "2026-11-09T05:08:04.864Z",
-   "color": "#D60000",
-   "teamColors": {
-    "darkMode": "#D60000",
-    "lightMode": "#D60000",
-    "fontDarkMode": "rgba(255, 255, 255, 1.0)",
-    "fontLightMode": "rgba(255, 255, 255, 1.0)"
-   },
-   "venue": "Stade Marie-Marvingt",
-   "city": "Le Mans",
-   "location": [
-    "47.959223534",
-    "0.223524570"
-   ],
-   "capacity": 25064,
-   "surface": "Grass",
-   "opened": 2011,
-   "coachHistory": [
-    {
-     "id": 1125489,
-     "name": "Denis Zanko",
-     "season": "2012/2013",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 9,
-     "draw": 6,
-     "loss": 18,
-     "pointsPerGame": 1,
-     "winPercentage": 0.27
-    },
-    {
-     "id": 1135661,
-     "name": "Richard Déziré",
-     "season": "2018/2019",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 16,
-     "draw": 11,
-     "loss": 7,
-     "pointsPerGame": 1.74,
-     "winPercentage": 0.47
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2019/2020",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 0,
-     "draw": 1,
-     "loss": 0,
-     "pointsPerGame": 1,
-     "winPercentage": 0
-    },
-    {
-     "id": 1135661,
-     "name": "Richard Déziré",
-     "season": "2019/2020",
-     "leagueId": 110,
-     "leagueName": "Ligue 2",
-     "win": 6,
-     "draw": 4,
-     "loss": 16,
-     "pointsPerGame": 0.85,
-     "winPercentage": 0.23
-    },
-    {
-     "id": 176587,
-     "name": "Didier Ollé-Nicolle",
-     "season": "2020/2021",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 13,
-     "draw": 13,
-     "loss": 8,
-     "pointsPerGame": 1.53,
-     "winPercentage": 0.38
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2022/2023",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 10,
-     "draw": 13,
-     "loss": 11,
-     "pointsPerGame": 1.26,
-     "winPercentage": 0.29
-    },
-    {
-     "id": 1523248,
-     "name": "Réginald Ray",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 6,
-     "draw": 7,
-     "loss": 7,
-     "pointsPerGame": 1.25,
-     "winPercentage": 0.3
-    },
-    {
-     "id": 1141920,
-     "name": "Mathieu Chabert",
-     "season": "2023/2024",
-     "leagueId": 8970,
-     "leagueName": "Ligue 3",
-     "win": 7,
-     "draw": 3,
-     "loss": 2,
-     "pointsPerGame": 2,
-     "winPercentage": 0.58
-    }
-   ],
-   "coachHistoryFull": true,
-   "coachMissing": "Patrick Videira"
   },
   {
    "code": "ANG",
