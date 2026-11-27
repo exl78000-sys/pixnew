@@ -1066,9 +1066,26 @@ try {
                **要帶目前聯賽** —— 隊碼跨聯賽重複(BUR 在英超與英冠都有),
                只存隊碼的話關注英冠的 Burnley 會標到英超那一支身上。 */ ''}
           ${followStar(C.league(), t.code, { label: true })}</h1>
-          <p class="small">${sub}</p></div></div>
+          <p class="small">${sub}</p>${calendarLinks(t)}</div></div>
       <div class="row small" style="margin-top:6px"><a href="${C.link('teams')}">← 回球隊列表</a></div>
     </div>`;
+  }
+
+  /* 加入行事曆(2026-11-27,N6):build-ics 逐隊寫的 data/ics/{聯賽}/{隊碼}.ics。
+     訂閱網址要是**絕對**網址(行事曆 App 在站外抓),從目前頁面推,不寫死站台網域。
+     單檔版沒有網站可以訂閱,整段不畫(不留一顆點了沒反應的按鈕)。 */
+  function calendarLinks(t) {
+    if (C.BUNDLE || !/^https?:$/.test(location.protocol)) return '';
+    const https = new URL(`data/ics/${C.league()}/${encodeURIComponent(t.code)}.ics`, location.href).href;
+    const webcal = https.replace(/^https?:/, 'webcal:');
+    return `<details class="cal-sub" data-no-tidy><summary class="pill">加入行事曆</summary>
+      <div class="cal-sub-body small">
+        <a class="pill accent" href="${C.esc(webcal)}">訂閱(iPhone / Mac / Outlook)</a>
+        <a class="pill accent" href="https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}" target="_blank" rel="noopener">加到 Google 行事曆</a>
+        <a class="pill" href="${C.esc(https)}" download>下載 .ics</a>
+        <div class="tiny dim">訂閱的話,改期、開球時間公布、比分都會跟著更新(本站一天部署兩次,行事曆 App 自己決定多久重抓一次,通常幾小時到一天)。
+          只有日期的場次是全天事件、標「時間待定」—— 不編時間。下載的檔案不會更新。</div>
+      </div></details>`;
   }
 
   /* KPI 列。第四格原本是「前四 / 降級 → 97.5% / 0%」——

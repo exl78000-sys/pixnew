@@ -1223,3 +1223,10 @@ table.tfold:not(.open) tbody tr:nth-child(n+7) { display: none; }
   border-radius: 8px; background: transparent; color: inherit; cursor: pointer; min-width: 0; }
 .ms-team span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ms-team:hover, .ms-team:focus-visible { border-color: var(--accent); }
+
+/* 球隊頁「加入行事曆」(N6,2026-11-27) */
+.cal-sub { margin-top: 6px; }
+.cal-sub > summary { list-style: none; display: inline-flex; cursor: pointer; }
+.cal-sub > summary::-webkit-details-marker { display: none; }
+.cal-sub-body { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; max-width: 560px; }
+.cal-sub-body .tiny { flex-basis: 100%; }
