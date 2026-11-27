@@ -13,7 +13,7 @@
  * predict 捲到預測那一段,teams 或沒帶就停在頁首。 */
 import * as C from './core.js?v=662b4d9f';
 import { renderFollowTeams } from './follow-view.js?v=24338a79';
-import { renderPredict } from './predict-view.js?v=e2f95b8c';
+import { renderPredict } from './predict-view.js?v=d4ffbb0d';
 
 const app = document.getElementById('app');
 

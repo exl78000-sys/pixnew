@@ -1,4 +1,5 @@
 import * as C from './core.js?v=662b4d9f';
+import { matchCardSpec, shareCard } from './share-card.js?v=27148ee5';
 
 const app = document.getElementById('app');
 
@@ -175,6 +176,9 @@ try {
           ? `<a class="pill info tiny" href="#panel-post" data-view="post">看賽後分析 ↓</a>`
           : `<a class="pill info tiny" href="${C.link('index')}#live">看本輪比賽現況 →</a>`}
       </div>
+      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:10px">
+        <span class="tiny dim" id="shareMsg" aria-live="polite"></span>
+        <button class="pill" type="button" id="shareCardBtn">分享圖卡</button></div>
     </div>
 
     ${/* **比賽進行中也要看得到事件。** 時間軸原本只畫在 f.played 的賽後分頁裡,
@@ -326,6 +330,22 @@ try {
         : '<div class="note">這場尚未取得逐球員與實際 xG 資料，因此目前只能對照最終比分與賽前機率。</div>'}
     </section>` : ''}
     ${C.foot(meta)}`;
+    /* 分享圖卡(N7):圖上的字串就是上面頁首印出來的那幾個(同一個 C.pct、同一組 headP),不另外算。 */
+    document.getElementById('shareCardBtn')?.addEventListener('click', async () => {
+      const msg = document.getElementById('shareMsg');
+      const spec = matchCardSpec({
+        home: C.name(f.home), away: C.name(f.away), homeCrest: H?.crest ?? null, awayCrest: A?.crest ?? null,
+        sub: `${C.LEAGUES[C.league()]?.zh ?? ''} ${f.season}・第 ${f.round} 輪・${f.kickoff ? `${C.kickoffLocal(f.kickoff)}(${C.tzName()})` : C.dateFull(f.date)}`,   // 圖離開本站之後沒有人知道是哪個時區
+        played: !!f.played, preFrozen: headIsPre,
+        score: f.played ? `${f.fh} : ${f.fa}` : null,
+        xg: headP?.xgHome != null && headP?.xgAway != null ? `${headP.xgHome} : ${headP.xgAway}` : null,
+        probs: headP ? { home: C.pct(headP.home, 0), draw: C.pct(headP.draw, 0), away: C.pct(headP.away, 0) } : null,
+      });
+      if (!spec) { msg.textContent = '這一場沒有可以畫的數字。'; return; }
+      msg.textContent = '產生中…';
+      const how = await shareCard(spec, `${f.season}-${f.home}-${f.away}.png`);
+      msg.textContent = { shared: '', cancelled: '', downloaded: '已下載圖檔', failed: '這個瀏覽器畫不出圖檔' }[how] ?? '';
+    });
 
     setupAnalysisTabs(f.played ? 'compare' : 'pre');
 

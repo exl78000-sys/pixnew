@@ -1,6 +1,7 @@
 import * as C from './core.js?v=662b4d9f';
 import { followedIn } from './follow.js?v=02130043';
 import { scorePredictions, outcomeOf, pickOf, matchKey, OUTCOMES } from './predict-score.js?v=ed79f760';
+import { predictCardSpec, shareCard } from './share-card.js?v=27148ee5';
 
 /* 我的預測(跨聯賽單一頁,掛對戰模擬旁邊)。
  *
@@ -235,6 +236,19 @@ export async function renderPredict(host) {
       ${state.tab === 'pick' ? pickPanel(L, recs) : tablePanel(L, scored)}
       ${L.meta ? C.foot(L.meta) : ''}`;
       bind();
+      /* 分享圖卡(N7):圖上的字串跟「成績」那幾張卡同一批 C.pct,不另外算;第一列是畫面最上面那張卡
+         (有模型可比就是「你 vs 模型」那一批、沒有就是你自己的),沒有的那一列(沒盤口的市場)不畫。 */
+      app.querySelector('#sharePredict')?.addEventListener('click', async () => {
+        const t = scored.vsModel ?? scored.solo, msg = app.querySelector('#sharePredictMsg');
+        const spec = predictCardSpec({ comp: L.zh, n: t?.n,
+          rows: [['你', t ? C.pct(t.you, 1) : null], ['模型最看好的那一邊', t?.model != null ? C.pct(t.model, 1) : null],
+            ['市場最看好的那一邊', t?.market != null ? C.pct(t.market, 1) : null]],
+          exact: scored.exact ? `比分完全猜中 ${scored.exact.hit} / ${scored.exact.n}` : null });
+        if (!spec) { msg.textContent = '還沒有已完賽的預測可以分享。'; return; }
+        msg.textContent = '產生中…';
+        const how = await shareCard(spec, `my-predictions-${L.lg}.png`);
+        msg.textContent = { shared: '', cancelled: '', downloaded: '已下載圖檔', failed: '這個瀏覽器畫不出圖檔' }[how] ?? '';
+      });
     }
 
     function pickPanel(L, recs) {
@@ -364,7 +378,10 @@ export async function renderPredict(host) {
         </div>` : '';
       return `
       <div style="margin-top:14px"></div>
-      ${s.solo ? '' : '<div class="note">這個賽事還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
+      ${s.solo ? `<div class="row" style="justify-content:flex-end;gap:8px;margin-bottom:10px">
+          <span class="tiny dim" id="sharePredictMsg" aria-live="polite"></span>
+          <button class="pill" type="button" id="sharePredict">分享圖卡</button></div>`
+        : '<div class="note">這個賽事還沒有已完賽的預測。到「這一輪」填幾場,踢完就會出現成績。</div>'}
       ${/* 沒有對手的賽事(歐冠)只給你自己的命中率 —— 沒有這一段的話,
            那裡的預測踢完之後畫面上什麼都不會出現。 */''}
       ${/* 歐冠的模型只涵蓋一部分場次:「你 vs 模型」只算兩邊都有的(比較一律在同一批場次上做),
