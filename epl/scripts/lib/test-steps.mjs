@@ -39,6 +39,8 @@ export const STEPS = [
   ['scripts/test-intl.mjs', []],
   /* 「如果…會怎樣」(2026-11-27):瀏覽器那一段在 Node 裡重跑,逐聯賽比 sim.json。只讀產物。 */
   ['scripts/test-whatif.mjs', []],
+  /* 總覽「我的球隊」條(2026-11-27,N5):純函式 + 各聯賽 overview.json 的性質。 */
+  ['scripts/test-glance.mjs', []],
   /* 德義法球隊頁(FotMob)→ 收件匣 → 核對器(2026-10-09):不連網,抓取器那段用假的 fetch。 */
   ['scripts/test-league-teams.mjs', []],
   ['scripts/test-pulse-shots.mjs', []],

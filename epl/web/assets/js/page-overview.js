@@ -1,4 +1,5 @@
 import * as C from './core.js?v=662b4d9f';
+import { mountMyStrip } from './my-strip.js?v=1c350c4c';
 
 const app = document.getElementById('app');
 
@@ -23,6 +24,7 @@ try {
   const entries = Object.keys(C.LEAGUES);
   app.innerHTML = `
   <div class="page-head"><h1>總覽</h1></div>
+  <div id="myStrip"></div>
   <div class="section"><h2>即將到來</h2><span class="hint">未來 7 天・勾選存在這個瀏覽器</span></div>
   <div id="upcoming">${C.skel(4)}</div>
   <div class="section"><h2>各聯賽</h2><span class="hint">點分頁直接進去・只列這個聯賽真的做得出來的頁</span></div>
@@ -49,6 +51,10 @@ try {
   /* 某個聯賽少了必要的資料集就整張卡不畫,不要畫一張半空的 ——
      半空的卡看起來像那個聯賽壞了,而實際上多半是還沒 build。 */
   const leagues = loaded.filter(x => x.data.meta && x.data.fixtures);
+  /* 「我的球隊」條(N5):各聯賽到齊才畫,一次畫好,之後的整頁重畫只是把它搬回去 —— 不在 render 裡重算,
+     不然覆蓋即時比分的每一分鐘都會把「你支持哪一隊?」那張選到一半的卡洗掉。 */
+  const myStrip = document.getElementById('myStrip');
+  mountMyStrip(myStrip, leagues);
   const skipped = loaded.filter(x => !x.data.meta || !x.data.fixtures);
 
   /* 跨聯賽的資料集掛在英超目錄下(它們本來就是跨聯賽的一份)。
@@ -691,6 +697,7 @@ try {
     && Date.parse(f.kickoff) > nowT && Date.parse(f.kickoff) <= nowT + 7 * 86400000);   // 覆蓋後重畫不要把讀者捲回頂端(跟實時頁同一招)
   app.innerHTML = `
   <div class="page-head"><h1>總覽</h1></div>
+  <div id="myStripSlot"></div>
   ${/* 頁首的介紹段、資料時效與四張數字卡拿掉了(2026-11-07,使用者:「這段可拿掉」)—— 聯賽數、球隊數、
         已完賽場數在下面各聯賽的卡片上都有,介紹段講的事每張卡也各自直說。**資料時效不能跟著消失**(鐵則四):
         搬到頁尾那一行。 */''}
@@ -754,6 +761,7 @@ try {
   <footer class="foot wrap">聯賽資料建置於 ${C.esc(C.kickoffLocal(leagues[0]?.data.meta.builtAt))}${
     shared.cups?.retrievedAt ? `・盃賽資料抓取於 ${C.esc(C.kickoffLocal(shared.cups.retrievedAt))}` : ''}。資料來源:${sources || '見各頁'}。
     預測僅供分析參考,不構成任何投注建議。</footer>`;
+  document.getElementById('myStripSlot')?.replaceWith(myStrip);   // 同一個節點搬回來,點到一半的狀態與事件都還在
   bindUpcoming();
   C.startCountdowns();   // 「即將到來」的倒數要會走,不然停在載入當下慢慢變錯
   if (focus) app.querySelector(focus)?.focus({ preventScroll: true });

@@ -1206,3 +1206,20 @@ table.tfold:not(.open) tbody tr:nth-child(n+7) { display: none; }
 .whatif-ripple > span { display: inline-flex; align-items: center; gap: 5px; }
 .good-text { color: var(--win); }
 .bad-text { color: var(--loss); }
+
+/* 總覽「我的球隊」條(N5,2026-11-27) */
+.ms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.ms-card { display: flex; flex-direction: column; gap: 6px; color: inherit; text-decoration: none; min-width: 0; }
+.ms-card:hover { border-color: var(--accent); }
+.ms-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ms-head b { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-line { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; font-size: 13px; }
+.ms-line > span:not(.tiny):not(.frm):not(.ms-when) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12em; }
+.ms-when { margin-left: auto; }
+.ms-pick { margin-bottom: 14px; }
+.ms-leagues { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.ms-teams { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; }
+.ms-team { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: 1px solid var(--line);
+  border-radius: 8px; background: transparent; color: inherit; cursor: pointer; min-width: 0; }
+.ms-team span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-team:hover, .ms-team:focus-visible { border-color: var(--accent); }
