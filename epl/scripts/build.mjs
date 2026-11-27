@@ -609,11 +609,10 @@ async function main() {
   }
 
   // ── 賽季模擬 ──────────────────────────────
-  const sim = simulateSeason({
-    model, fixtures: curMatches.filter(m => !m.played), codes: curCodes, played: curPlayed, runs: RUNS,
-    // 英超後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
-    relegated: 3,
-  });
+  /* 這一組同時寫進 meta.model.simConfig:瀏覽器的「如果…會怎樣」照同一組名額與種子重跑(2026-11-27,N4)。 */
+  // 英超後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
+  const simConfig = { runs: RUNS, seed: 20262027, relegated: 3 };
+  const sim = simulateSeason({ model, fixtures: curMatches.filter(m => !m.played), codes: curCodes, played: curPlayed, ...simConfig });
   const simBy = new Map(sim.map(s => [s.code, s]));
 
   // ── 開季賽程難度 ──────────────────────────
@@ -1070,7 +1069,7 @@ async function main() {
       rho: model.rho,
       decayXi: model.xi,
       promotedPrior: model.promoted,
-      simulationRuns: RUNS,
+      simulationRuns: RUNS, simConfig,
       backtest,
       caveats: [
         '模型只吃比賽結果與 FPL 統計,不含轉會、傷病與賽程密度的人工調整。',

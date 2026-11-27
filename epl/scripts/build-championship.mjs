@@ -341,16 +341,17 @@ async function main() {
     console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
   }
 
-  const sim = simulateSeason({
-    model, fixtures: curLeague.filter(m => !m.played),
-    codes: curCodes, played: curPlayed, runs: RUNS, seed: 20262702,
+  /* 這一組同時寫進 meta.model.simConfig:瀏覽器的「如果…會怎樣」照同一組名額與種子重跑(2026-11-27,N4)。 */
+  const simConfig = {
+    runs: RUNS, seed: 20262702,
     // 英冠前 2 直升英超、3~6 打附加賽 ——「前四」在這裡不是一條界線
     promotion: 2,
     /* 附加賽區是第 3~6 名(`playoffPct`)。原本畫面拿 top6Pct 當附加賽區,那含直升的前 2 名 */
     promotionPlayoff: 6,
     // 後 3 名直接降到英甲,沒有降級附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
     relegated: 3,
-  });
+  };
+  const sim = simulateSeason({ model, fixtures: curLeague.filter(m => !m.played), codes: curCodes, played: curPlayed, ...simConfig });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));
   const curBy = new Map(curTable.map(x => [x.code, x]));
@@ -762,7 +763,7 @@ async function main() {
       /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */
       sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
-      promotedPrior: model.promoted, simulationRuns: RUNS,
+      promotedPrior: model.promoted, simulationRuns: RUNS, simConfig,
       /* 沒有回測就不給準度數字(鐵則二)。available:false 會讓首頁那兩個 KPI
          顯示「—」與「尚未回測」,而不是空白或 0 —— 0 看起來像一個很好的分數。 */
       backtest,

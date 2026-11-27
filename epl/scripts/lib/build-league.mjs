@@ -393,11 +393,9 @@ export async function buildLeague(L) {
   /* 直接降級的名額要呼叫端講明,**不給預設值**:德甲法甲後 2 名、義甲後 3 名,
      照抄任何一個給另一個都是假數字。第 16 名的附加賽只給「打到這一名」的機率(relegationPlayoffPct)。 */
   if (!Number.isInteger(L.relegated)) throw new Error(`${L.zh}:沒有給 relegated(直接降級幾名)`);
-  const sim = simulateSeason({
-    model, fixtures: curMatches.filter(m => !m.played),
-    codes: curCodes, played: curPlayed, runs: RUNS, seed: 20262703,
-    relegated: L.relegated, relegationPlayoff: L.relegationPlayoff === true,
-  });
+  /* 這一組同時寫進 meta.model.simConfig:瀏覽器的「如果…會怎樣」照同一組名額與種子重跑(2026-11-27,N4)。 */
+  const simConfig = { runs: RUNS, seed: 20262703, relegated: L.relegated, ...(L.relegationPlayoff === true ? { relegationPlayoff: true } : {}) };
+  const sim = simulateSeason({ model, fixtures: curMatches.filter(m => !m.played), codes: curCodes, played: curPlayed, ...simConfig });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));
   const curBy = new Map(curTable.map(x => [x.code, x]));
@@ -1033,7 +1031,7 @@ export async function buildLeague(L) {
          欄位名一律照抄既有聯賽,不要自己取(CLAUDE.md:產物的欄位名是跟前端的約定)。 */
       sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
-      promotedPrior: model.promoted, simulationRuns: RUNS,
+      promotedPrior: model.promoted, simulationRuns: RUNS, simConfig,
       /* 給測試讀的結構化欄位,空陣列 = 補比分那一步沒有拒收過任何一季。 */
       scoreCheck: { refused: scoreRefusals },
       caveats: [

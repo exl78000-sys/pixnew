@@ -358,16 +358,10 @@ async function main() {
     console.log(`  已完賽場次的賽前預測(走查回測):${n} 場・跳過 ${pm.skipped} 場・RPS ${pm.rps ?? '—'}`);
   }
 
-  const sim = simulateSeason({
-    model,
-    fixtures: curMatches.filter(m => !m.played),
-    codes: curCodes,
-    played: curPlayed,
-    runs: RUNS,
-    seed: 20262701,
-    // 西甲後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
-    relegated: 3,
-  });
+  /* 這一組同時寫進 meta.model.simConfig:瀏覽器的「如果…會怎樣」照同一組名額與種子重跑(2026-11-27,N4)。 */
+  // 西甲後 3 名直接降級、沒有附加賽 —— 寫出來而不是靠預設值,這是這個聯賽的事實
+  const simConfig = { runs: RUNS, seed: 20262701, relegated: 3 };
+  const sim = simulateSeason({ model, fixtures: curMatches.filter(m => !m.played), codes: curCodes, played: curPlayed, ...simConfig });
   const simBy = new Map(sim.map(x => [x.code, x]));
   const lastBy = new Map(lastTable.map(x => [x.code, x]));
   const curBy = new Map(curTable.map(x => [x.code, x]));
@@ -1103,7 +1097,7 @@ async function main() {
       /* 對戰模擬的前端參數(未捨入)—— golden 測試守著等價性 */
       sim: { ...simParams(model), elo: ELO_PARAMS },
       homeAdvantage: round(Math.exp(model.gamma), 3), rho: model.rho, decayXi: model.xi,
-      promotedPrior: model.promoted, simulationRuns: RUNS, backtest,
+      promotedPrior: model.promoted, simulationRuns: RUNS, simConfig, backtest,
       /* 這些話會原樣印在模型頁上,所以**每一句都要跟這次 build 的實際資料一致**。
          兩句舊的已經過期又講錯:
          - 「最後一輪上游沒有比分,該季實際納入 750 場而不是 380 場」——

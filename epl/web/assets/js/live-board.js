@@ -1,6 +1,7 @@
 import * as C from './core.js?v=662b4d9f';
 import { followedIn } from './follow.js?v=02130043';
 import { mountSimTable } from './sim-table.js?v=5deb20b5';
+import { mountWhatIf } from './whatif-view.js?v=e9ea7104';
 
 /* 聯賽頁的「比賽現況」與積分榜(2026-11-07,使用者:「聯賽跟實時戰況如何簡化合併?」→「併成一頁」)。
 
@@ -23,6 +24,7 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
   const isLiveMode = () => !!live.liveMode;
   /* 積分榜看哪一張:讀者切過就記在這個區塊裡(重畫不跳回去);預設看目前的 */
   let standView = 'cur';
+  const whatifState = {};   // 「如果…」按過的結果與算好的模擬:每 30 秒重畫時要留著(2026-11-27,N4)
   /* 球員檔平常不跟即時戰況一起載入;第一次開報告才取得,之後沿用快取。
      讀的是 players-list(2026-09-27,A6 第二段):這裡只拿它對賽後報告的頭貼(code → photo),列表那一份就有;
      球員連結本身直接進球員的完整頁(bindPlayerLinks 不用 resolvePlayer)。 */
@@ -279,18 +281,21 @@ export function mountLiveBoard(el, { meta, fixtures, table, sim, teams, analysis
     <div class="section"><h2>積分榜</h2>
       <span class="hint">${standView === 'cur'
         ? `${meta.currentSeason}・依目前已完賽場次計算・點球隊看球隊頁`
+        : standView === 'whatif' ? '自己指定某一隊接下來的結果,看整季機率怎麼變(假設情境)'
         : `蒙地卡羅模擬 ${meta.model.simulationRuns.toLocaleString()} 次賽季・同一個賽季的另一種看法`}</span></div>
-    ${C.tabs([{ key: 'cur', label: '目前' }, { key: 'sim', label: '預測(跑完整季)' }], standView, { attr: 'data-stand', label: '積分榜' })}
+    ${C.tabs([{ key: 'cur', label: '目前' }, { key: 'sim', label: '預測(跑完整季)' },
+      ...(meta.model?.simConfig ? [{ key: 'whatif', label: '如果…會怎樣' }] : [])], standView, { attr: 'data-stand', label: '積分榜' })}
     <div style="margin-top:10px">
     ${standView === 'cur' ? (curPlayed > 0 ? '<div id="curTable"></div>' : `
       <div class="note">${meta.currentSeason} 目前還沒有已完賽的比賽進入資料源,積分榜是空的。
         ${isLaLiga
           ? '西甲賽果會由西甲同步流程帶入。'
           : '賽果由各聯賽的賽果來源帶入,會自動併進這張表。'}</div>`)
-      : '<div id="simTable"></div>'}
+      : standView === 'whatif' ? '<div id="whatifBox"></div>' : '<div id="simTable"></div>'}
     </div>`;
 
     if (standView === 'sim') mountSimTable('simTable', { sim, teams, table, meta });
+    if (standView === 'whatif') mountWhatIf(document.getElementById('whatifBox'), { meta, fixtures, table, state: whatifState });
 
     if (standView === 'cur' && curPlayed > 0) {
       // 列全部隊伍(含尚未出賽的),名次才不會跳號

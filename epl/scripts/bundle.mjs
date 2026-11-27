@@ -59,6 +59,8 @@ async function main() {
      **follow 要排在最前面** —— 賽程表、積分榜、實時戰況、動態、盃賽都 import 它
      (共用模組引用共用模組,照相依排)。 */
   'follow', 'fixture-list', 'sim-table',
+  /* 「如果…會怎樣」(2026-11-27):season-sim 是建站與瀏覽器共用的整季模擬,whatif-view 引用它與 follow;排在 live-board 前面 */
+  'season-sim', 'whatif-view',
   /* 聯賽頁的比賽現況與積分榜(2026-11-07 實時戰況併進聯賽頁時抽出來的);它引用 follow 與 sim-table,排在它們後面 */
   'live-board', 'ucl-view', 'predict-core', 'predict-score',
   /* 戰術那幾段(2026-11-07 戰術頁併進球隊頁時抽出來的),page-teams 引用它 */

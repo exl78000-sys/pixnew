@@ -1182,3 +1182,27 @@ table.tfold:not(.open) tbody tr:nth-child(n+7) { display: none; }
 }
 .game-sum[hidden] { display: none; }
 @media (max-width: 700px) { .game-panel #gPanel { max-height: none; overflow: visible; } }
+
+/* 「如果…會怎樣」(2026-11-27,N4):一場一列 —— 對手在左、三顆按鈕在右;手機上按鈕換到下一行 */
+.whatif-list { display: grid; gap: 6px; margin-top: 10px; }
+.whatif-fx { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  padding: 8px 10px; border: 1px solid var(--line-soft); border-radius: var(--radius-sm); }
+.whatif-opp { display: grid; gap: 2px; min-width: 0; }
+.whatif-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+/* 手機:隊名長短不一時按鈕有時在旁邊、有時掉到下一行,看起來亂 —— 一律放下一行 */
+@media (max-width: 560px) { .whatif-fx { flex-direction: column; align-items: stretch; } }
+.whatif-result { margin-top: 12px; }
+.whatif-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+.whatif-zone { display: grid; gap: 2px; padding: 10px; border-radius: var(--radius-sm); background: #ffffff08; }
+.whatif-zone b { font-size: 22px; font-variant-numeric: tabular-nums; }
+.whatif-pos { display: flex; align-items: flex-end; gap: 2px; height: 70px; margin-top: 12px; }
+.whatif-pos-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; min-width: 0; }
+.whatif-pos-col i { display: block; width: 100%; background: var(--ink-3); border-radius: 2px 2px 0 0; }
+.whatif-pos-col i.top { background: var(--accent); }
+.whatif-pos-col i.good { background: var(--accent-3); }
+.whatif-pos-col i.bad { background: var(--loss); }
+.whatif-pos-col span { font-size: 9px; color: var(--ink-3); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.whatif-ripple { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 12.5px; }
+.whatif-ripple > span { display: inline-flex; align-items: center; gap: 5px; }
+.good-text { color: var(--win); }
+.bad-text { color: var(--loss); }
