@@ -25,7 +25,7 @@ function crestOf(t, size = 22) {
   if (t?.crest) return `<img class="crest" src="${C.esc(t.crest)}" alt="" width="${size}" height="${size}" loading="lazy" style="width:${size}px;height:${size}px">`;
   return `<span class="badge" style="background:${C.esc(t?.colors?.[0] ?? '#444')};color:#fff">${C.esc(t?.code ?? '?')}</span>`;
 }
-const msName = t => t?.en ?? t?.zh ?? t?.code ?? '?';   // 全站目前印英文隊名(要不要全面改中文是 N1,等使用者決定),這裡跟著全站
+const msName = t => t?.en ?? t?.zh ?? t?.code ?? '?';   // 全站印英文隊名(使用者 2026-11-28 決定不改中文,N1 不做),這裡跟著全站
 
 const RES = { W: '勝', D: '和', L: '負' };   // 顏色走全站的 .frm(近況那一排同一套)
 

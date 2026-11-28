@@ -1,5 +1,5 @@
 import * as C from './core.js?v=662b4d9f';
-import { mountMyStrip } from './my-strip.js?v=1c350c4c';
+import { mountMyStrip } from './my-strip.js?v=efaa5c99';
 
 const app = document.getElementById('app');
 
